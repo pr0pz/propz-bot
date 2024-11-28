@@ -8,6 +8,7 @@
 deno.lock
 obs-overlays/build
 twitch-bot/config/auth/
+twitch-bot/data
 
 ._*
 .Spotlight-V100
