@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 import '@propz/helpers.ts';
@@ -73,7 +73,7 @@ export class Bot
 		const wsId: string = crypto.randomUUID();
 
 		//socket.addEventListener( 'error', (event) => log( event ) );
-		socket.addEventListener( 'message', () => socket.send( JSON.stringify({ type: 'status', text: 'pong' } ) ) );
+		socket.addEventListener( 'message', () => socket.send( 'pong' ) );
 
 		socket.addEventListener( 'open', () =>
 		{
