@@ -1,0 +1,6 @@
+{
+	"name": "@propz/bot",
+	"exports": {
+		".": "./main.ts"
+	}
+}

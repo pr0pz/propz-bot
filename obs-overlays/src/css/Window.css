@@ -1,0 +1,74 @@
+/**
+ * Window Wrapper
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+.window {
+	background-clip: border-box;
+	background: #fff;
+	border-radius: 2rem;
+	box-shadow: 0 0 4rem rgba( var(--color-primary-rgb), .25 );
+	border: .2rem solid var(--color-primary);
+	display: inline-block;
+	white-space: nowrap;
+}
+
+	.window-header {
+		display: block;
+		padding: 1rem 2rem;
+		border-top-left-radius: inherit;
+		border-top-right-radius: inherit;
+		border-bottom: .2rem solid currentColor;
+		background: var(--color-beige);
+		line-height: 0;
+
+		&:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		&.reverse .window-button {
+			float: right;
+		}
+	}
+
+	.window-button {
+		float: left;
+		border-radius: 100%;
+		width: 2.5rem;
+		height: 2.5rem;
+		background: var(--color-green);
+		margin-right: 1rem;
+
+		&.yellow{background:var(--color-yellow)}
+		&.red{background:var(--color-red)}
+	}
+
+	.window-body {
+		position: relative;
+		border-bottom-left-radius: inherit;
+		border-bottom-right-radius: inherit;
+		overflow: hidden;
+		padding: 4rem;
+		display: flex;
+	}
+
+		.alert-title-wrapper .window-body {
+			padding-bottom: 8rem;
+		}
+
+	.window.window-dark {
+		border-color: var(--color-secondary);
+		background: var(--color-primary);
+
+		.window-header {
+			border-color: var(--color-secondary);
+			background: var(--color-secondary);
+		}
+		.window-body {
+			background: var(--color-primary);
+		}
+	}

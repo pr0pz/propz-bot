@@ -1,0 +1,6 @@
+{
+	"name": "@propz/overlays",
+	"exports": {
+		".": "./src/main.tsx"
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"guildmemberadd": {
+		"message": {
+			"de": [
+				"Willkommen **[user]** in unserer Kreativ-Community! 🌐 Freu dich auf inspirierende Gespräche und kreativen Austausch. 🚀",
+				"**[user]** hat den Discord-Code geknackt! 🌈 Herzlich willkommen! Bereit für kreative Abenteuer? 💻",
+				"Moinsen **@[user]** - schön, dass du unserer Discord-Crew beigetreten bist! 🚀 Vorhang auf für kreative Ideen und Coding-Geplauder. 💬",
+				"**[user]** ist jetzt Teil unserer Discord-Oase! 🎶 Freu dich auf den harmonischen Austausch von Design- und Code-Melodien. 🌟",
+				"Die Design & Code Tore öffnen sich für **[user]**! 🌌 Herzlich willkommen in unserer Discord-Oase. Mach es dir gemütlich! 🌈"
+			]
+		},
+		"messageImage": {
+			"de": [
+				"Hi & Willkommen|im Kreativ-Paradies",
+				"Hey & Willkommen|in der kreativen Oase",
+				"Hi & Willkommen|zur Discord-Crew",
+				"Hey & Willkommen|in die Kreativzentrale",
+				"Hi & Willkommen|im der Discord Oase",
+				"Hola die Waldfee|und willkommen"
+			]
+		}
+	}
+}

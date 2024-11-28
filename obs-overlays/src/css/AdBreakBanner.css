@@ -1,0 +1,49 @@
+/**
+ * Ad Break Banner
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+#ad-break-box {
+	font-size: 3.5rem;
+	font-weight: 700;
+	display: inline-block;
+	position: absolute;
+	top: 4rem;
+	right: 4rem;
+	opacity: 0;
+	top: -4rem;
+	animation: ad-break-slidein 180s ease-in-out;
+	overflow: hidden;
+
+	@keyframes ad-break-slidein {
+		0%{top:-4rem;opacity:0}
+		1%{top:4rem;opacity:1}
+		99%{top:4rem;opacity:1}
+		100%{top:-4rem;opacity:0}
+	}
+}
+
+	#ad-break-inner {
+		position: relative;
+		z-index: 1;
+	}
+
+	#ad-break-inner-bg {	
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top:0;
+		left:0;
+		animation-name: ad-break-countdown;
+		animation-duration: 180s;
+		animation-timing-function: linear;
+		border-right: .4rem dashed rgba( var(--color-primary-rgb), .25 );
+		z-index: 0;
+	}
+
+	@keyframes ad-break-countdown {
+		0%{width:0%}
+		100%{width:100%}
+	}

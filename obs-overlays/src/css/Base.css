@@ -1,0 +1,130 @@
+/**
+ * Base styles
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+*,
+*:before,
+*:after {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	--color-primary: #1F1F23;
+	--color-primary-rgb: 31, 31, 35;
+	--color-secondary: #37373E;
+	--color-secondary-rgb: 55, 55, 62;
+	--color-tertiary: #80808E;
+	--color-dark: var(--color-primary);
+	--color-yellow: #FFDB49;
+	--color-green: #71FF8C;
+	--color-purple:#C7C7F1;
+	--color-red: #FFBEBA;
+	--color-blue: #5AC8FA;
+	--color-beige: #FEF2E0;
+
+	--border-size: .2rem;
+	--border-radius: 1rem;
+	--border-radius-big: 2rem;
+
+	--font-family: 'Titillium Web', sans-serif;
+	--font-family-headline: 'Titillium Web', sans-serif;
+	--font-family-chat: 'VCR OSD Mono', monospace
+}
+
+html {
+	font-size: 10px;
+}
+
+body {
+	font-size: 2rem;
+	font-family: var(--font-family);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+	html, body, #root, #wrapper {
+		height: 100%;
+		overflow: hidden;
+		background: 0 !important;
+	}
+
+
+#wrapper {
+	display: flex;
+}
+
+	.shadow{box-shadow:.5rem .5rem 0 var(--color-dark)!important}
+	.radius{border-radius:var(--border-radius)!important}
+	.radius-big{border-radius:var(--border-radius-big)!important}
+	.border{border:var(--border-size) solid var(--color-dark)!important}
+	.gradient-yellow{background-image:linear-gradient(to top right,var(--color-yellow),#FFF500)!important}
+	.gradient-green{background-image:linear-gradient(to top right,var(--color-green),#D6FF70)!important}
+	.gradient-colorful{background-image:linear-gradient(90deg,var(--color-yellow) 0%,var(--color-red) 20%,var(--color-beige) 40%,var(--color-purple) 60%,var(--color-blue) 80%,var(--color-green) 100%) !important}
+
+	#videoboard {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 16/9;
+		position: absolute;
+		inset: 0;
+		margin: auto;
+	}
+
+	.browser {
+		background-clip: border-box;
+		background: #fff;
+	}
+
+		.browser-header {
+			display: block;
+			padding: 1rem 2rem;
+			border-top-left-radius: inherit;
+			border-top-right-radius: inherit;
+			border-bottom: var(--border-size) solid currentColor;
+			background: var(--color-beige);
+			line-height: 0;
+
+			&:after {
+				content: "";
+				display: table;
+				clear: both;
+			}
+		}
+
+		.browser-button {
+			float: left;
+			border-radius: 100%;
+			width: 2rem;
+			height: 2rem;
+			background: var(--color-green);
+			margin-right: 1rem;
+
+			&.yellow{background:var(--color-yellow)}
+			&.red{background:var(--color-red)}
+		}
+
+		.browser-body {
+			padding: 2rem;
+			position: relative;
+			border-bottom-left-radius: inherit;
+			border-bottom-right-radius: inherit;
+		}
+
+	.browser-dark {
+		border-color: var(--color-secondary) !important;
+		background: var(--color-primary);
+		box-shadow: .5rem .5rem 0 rgba( var(--color-secondary-rgb), .7) !important;
+
+		.browser-header {
+			border-color: var(--color-secondary) !important;
+			background: var(--color-secondary);
+		}
+		.browser-body {
+			background: var(--color-dark);
+		}
+	}

@@ -1,0 +1,69 @@
+/**
+ * Focus
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+#focus {
+	opacity: 0;
+	animation-name: focus-slidein;
+	animation-duration: 300s;
+	animation-timing-function: linear;
+	padding: 0;
+	align-self: flex-start;
+	background: rgb( 255 255 255 / 1 );
+	padding: 1.5rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	font-size: 3rem;
+	line-height: 1;
+
+	@keyframes focus-slidein {
+		0%{top:-4rem;opacity:0}
+		0.5%{top:0;opacity:1}
+		99.5%{top:0;opacity:1}
+		100%{top:-4rem;opacity:0}
+	}
+}
+
+	#focus-inner {
+		display: flex;
+		gap: 1rem
+	}
+
+	#focus-timer {
+		font-weight: 400;
+	}
+
+	/*
+
+	#focus-inner {
+		padding: 3rem;
+		overflow: clip;
+		border-radius: inherit;
+		position: relative;
+
+		& > * {
+			position: relative;
+			z-index: 1;
+		} 
+	}
+
+	#focus-bg {
+		position: absolute;
+		top:0;
+		left:0;
+		width: 100%;
+		height: 0;
+		animation-name: focus-bg;
+		animation-duration: 300s;
+		animation-timing-function: linear;
+		@extend .gradient-colorful;
+		z-index: 0;
+
+		@keyframes focus-bg {
+			0%{height:0%}
+			100%{height:100%}
+		}
+	}*/

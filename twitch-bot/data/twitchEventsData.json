@@ -1,0 +1,11 @@
+[
+	{
+		"eventType": "follow",
+		"eventUsername": "propz_tv",
+		"eventTimestamp": 663947590,
+		"extra": {
+			"titleAlert": "Neuer Follower",
+			"titleEvent": "Follow"
+		}
+	}
+]

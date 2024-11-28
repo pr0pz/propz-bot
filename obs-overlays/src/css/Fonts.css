@@ -1,0 +1,76 @@
+/**
+ * Fonts
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+/*	====================
+	Fonts
+
+	Wichtig:
+	1. Nur im .woff2 Format
+	2. Name der font-family sinnvoll wählen
+	3. font-display setzen: fallback oder optional
+	4. font-fallback entsprechend sinnvoll setzen (settings)
+
+	Weitere Informationen:
+	https://3perf.com/talks/web-perf-101/#fonts-header
+	==================== */
+
+	@font-face {
+		font-family: 'Titillium Web';
+		font-style: normal;
+		font-weight: 400;
+		src:
+			local( 'Titillium Web Regular' ),
+			local( 'TitilliumWeb-Regular' ),
+			url( 'https://propz.de/wp-content/themes/propz/assets/fonts/titillium-web-regular.woff2' ) format('woff2');
+	}
+
+	@font-face {
+		font-family: 'Titillium Web';
+		font-style: normal;
+		font-weight: 700;
+		src:
+			local( 'Titillium Web Bold' ),
+			local( 'TitilliumWeb-Bold' ),
+			url( 'https://propz.de/wp-content/themes/propz/assets/fonts/titillium-web-700.woff2' ) format('woff2');
+	}
+
+	@font-face {
+		font-family: 'Titillium Web';
+		font-style: normal;
+		font-weight: 900;
+		src:
+			local( 'Titillium Web Black' ),
+			local( 'TitilliumWeb-Black' ),
+			url( 'https://propz.de/wp-content/themes/propz/assets/fonts/titillium-web-900.woff2' ) format('woff2');
+	}
+
+	@font-face {
+		font-family: 'Colombo Sans Font';
+		font-style: normal;
+		font-weight: 400;
+		src:
+			local( 'Colombo Sans Font Regular' ),
+			local( 'ColomboSansFont-Regular' ),
+			url( 'https://propz.de/wp-content/themes/propz/assets/fonts/colombo-sans-font-regular.woff2' ) format('woff2');
+	}
+
+	@font-face {
+		font-family: 'VCR OSD Mono';
+		font-style: normal;
+		font-weight: 400;
+		src:
+			local( 'VCR OSD Mono Regular' ),
+			local( 'VCROSDMono-Regular' ),
+			url( 'https://propz.de/wp-content/themes/propz/assets/fonts/vcr-osd-mono-regular.woff2' ) format('woff2');
+	}
+
+	@font-face {
+		font-family: 'Digital-7 Mono';
+		font-style: normal;
+		font-weight: normal;
+		src: url( 'https://propz.de/wp-content/themes/propz/assets/fonts/digital-7-mono.woff2' ) format('woff2');
+	}

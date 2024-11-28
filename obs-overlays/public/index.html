@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>propz Stream</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="propz Stream Frontend Stuff" />
+
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="stylesheet" href="/dist/app.css" />
+		<script type="module" src="/dist/bundle.js"></script>
+
+		<script>
+		function triggerEvent( eventType, eventUser = 'propz_tv', eventCount = 0, eventText = '' )
+		{
+			const data = {
+				user: eventUser,
+				profilePictureUrl: 'https://static-cdn.jtvnw.net/jtv_user_pictures/17cfddab-98e3-4a74-ae9e-366ededf0c8e-profile_image-300x300.png',
+				type: eventType,
+				count: eventCount ? eventCount : Math.floor( Math.random() * 10 ) + 1,
+				text: eventText ?? 'Ich bin eine kleine Spatzbirne. Dein Stream ist aber mega nice omegalul',
+				color: '#ffff00'
+			};
+
+			console.log( data );
+			
+			// Create and Dispatch the event on some element (document in this case)
+			const event = new CustomEvent( 'message', {
+				detail: data
+			});
+			document.dispatchEvent( event );
+		}
+		</script>
+
+	</head>
+	<body>
+
+		<div id="root"></div>
+
+	</body>
+</html>

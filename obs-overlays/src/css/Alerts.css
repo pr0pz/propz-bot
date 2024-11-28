@@ -1,0 +1,386 @@
+/**
+ * Chat list
+ * 
+ * @author Wellington Estevo
+ * @version 1.0.0
+ */
+
+#alerts {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: center;
+	justify-content: center;
+	width: 100%;
+}
+
+	.alert {
+		text-align:center;
+		font-size: 6rem;
+		position: relative;
+		animation: alert 10s ease-in-out;
+		max-width: 60rem;
+		
+		transform: translateY(-100vh);
+		opacity: 0;
+	}
+
+		/* Special stylings */
+		.alert-ban {
+			background: 0;
+			padding-top: 24rem;
+
+			#alert-image,
+			#alert-avatar {
+				position: absolute;
+				right: -50vw;
+				opacity: 1;
+				animation: ban 8.5s linear;
+				animation-delay: 1.5s;
+				top: -20%;
+				filter: drop-shadow(0 0 4rem rgba(var(--color-primary-rgb), .25));
+			}
+
+				#alert-image {
+					transform: translateX(100%);
+
+					img {width: unset;}
+				}
+
+				#alert-avatar {
+					animation-name: ban-avatar;
+				}
+
+			#alert-avatar:before,
+			#alert-avatar:after {
+				content: "";
+				position: absolute;
+				width: 100%;
+				display: block;
+				z-index: 1;
+				left: 0;
+			}
+
+			#alert-avatar:before {
+				top: 0;
+				border-radius: 100%;
+				border: 2rem solid red;
+				height: 100%;
+			}
+			#alert-avatar:after {
+				background: red;
+				height: 3rem;
+				position: absolute;
+				top: 50%;
+				z-index: 1;
+				transform: rotate(45deg);
+			}
+
+			.alert-title-wrapper {
+				margin-top: 0;
+			}
+
+			#alert-background {
+				display: none;
+			}
+		}
+		.alert-follow {
+			#alert-image {width:150%;left:-25%}
+		}
+		.alert-cheer {
+			#alert-image img{width:50%;}
+			.alert-title-wrapper{margin-top:-3rem}
+		}
+		.alert-communitysub {
+			#alert-image{left:10%}
+		}
+		.alert-communitysub-2 {
+			.alert-title-wrapper{margin-top:-11rem}
+		}
+		/*.alert-raid,
+		.alert-resub-1,
+		.alert-resub-2,
+		.alert-resub-3 {
+		}*/
+			.alert-raid #alert-image img{max-width: 55rem;}
+
+		.alert-sub,
+		.alert-kofisubscription {
+			.alert-title-wrapper {
+				margin-top: -4rem
+			}
+		}
+		.alert-subgift .alert-title-wrapper{margin-top:0}
+		.alert-kofidonation,
+		.alert-kofishoporder {
+			#alert-image img{width:50%}
+		}
+
+		.alert-chatscore {
+			#alert-count {
+				width: auto;
+				height: auto;
+				padding: 0 2rem;
+				right: -10rem;
+			}
+		}
+
+	/* Image */
+	#alert-image {
+		position: relative;
+
+		img {
+			width: 100%;
+			max-width: 70rem;
+			display: block;
+			margin: 0 auto;
+		}
+	}
+
+	/* Title */
+	.alert-title-wrapper {
+		position: relative;
+		z-index: 2;
+		left: -4rem;
+		text-align: left;
+	}
+
+		#alert-title {
+			font-family: var(--font-family-headline);
+			font-weight: 900;
+			text-transform: uppercase;
+			line-height: 1;
+		}
+
+	/* Count */
+	#alert-count {
+		position: absolute;
+		background: linear-gradient(to top right, #FF8C85, var(--color-red));
+		border-radius: 100%;
+		top: 4rem;
+		right: -6rem;
+		z-index: 1;
+		text-align: center;
+		line-height: 14rem;
+		height: 14rem;
+		width: 14rem;
+		font-weight: 900;
+		font-size: 120%;
+		transform: scale(.75) rotate(15deg);
+		animation: heartbeat 1.5s infinite;
+		animation-delay: 2s;
+		box-shadow: 0 0 4rem rgba(#000,.25);
+	}
+
+	/* User */
+	.alert-user-wrapper {
+		position: relative;
+		z-index:3;
+		font-weight: 900;
+		line-height: 1;
+		right: -4rem;
+		margin: -4rem 0 0 0;
+		text-transform: uppercase;
+		text-align: right;
+	}
+		#alert-user {
+			display: inline-block;
+		}
+
+		/* Username letters */
+		.animate-letter {
+			animation: wobble 1s infinite ease-in-out;
+			display: inline-block;
+		}
+
+		.animate-letter:nth-child(1) { animation-delay: 0.1s; }
+		.animate-letter:nth-child(2) { animation-delay: 0.2s; }
+		.animate-letter:nth-child(3) { animation-delay: 0.3s; }
+		.animate-letter:nth-child(4) { animation-delay: 0.4s; }
+		.animate-letter:nth-child(5) { animation-delay: 0.5s; }
+		.animate-letter:nth-child(6) { animation-delay: 0.6s; }
+		.animate-letter:nth-child(7) { animation-delay: 0.7s; }
+		.animate-letter:nth-child(8) { animation-delay: 0.8s; }
+		.animate-letter:nth-child(9) { animation-delay: 0.9s; }
+		.animate-letter:nth-child(10) { animation-delay: 1s; }
+		.animate-letter:nth-child(11) { animation-delay: 1.1s; }
+		.animate-letter:nth-child(12) { animation-delay: 1.2s; }
+		.animate-letter:nth-child(13) { animation-delay: 1.3s; }
+		.animate-letter:nth-child(14) { animation-delay: 1.4s; }
+		.animate-letter:nth-child(15) { animation-delay: 1.5s; }
+		.animate-letter:nth-child(16) { animation-delay: 1.6s; }
+		.animate-letter:nth-child(17) { animation-delay: 1.7s; }
+		.animate-letter:nth-child(18) { animation-delay: 1.8s; }
+		.animate-letter:nth-child(19) { animation-delay: 1.9s; }
+		.animate-letter:nth-child(20) { animation-delay: 2s; }
+		.animate-letter:nth-child(21) { animation-delay: 2.1s; }
+		.animate-letter:nth-child(22) { animation-delay: 2.2s; }
+		.animate-letter:nth-child(23) { animation-delay: 2.3s; }
+		.animate-letter:nth-child(24) { animation-delay: 2.4s; }
+		.animate-letter:nth-child(25) { animation-delay: 2.5s; }
+		.animate-letter:nth-child(26) { animation-delay: 2.6s; }
+		.animate-letter:nth-child(27) { animation-delay: 2.7s; }
+		.animate-letter:nth-child(28) { animation-delay: 2.8s; }
+		.animate-letter:nth-child(29) { animation-delay: 2.9s; }
+		.animate-letter:nth-child(30) { animation-delay: 3s; }
+
+	/* Text */
+	#alert-text {
+		font-size: 50%;
+		line-height: 1.2;
+		display: inline-block;
+		padding: 3rem 4rem 4rem;
+		color:#fff
+	}
+
+	/* User Avatar */
+	#alert-avatar {
+		position: absolute;
+		right:-50%;
+		top:100vh;
+		opacity: 0;
+		border-radius: 100%;
+		overflow: hidden;
+		box-shadow: 0 0 4rem rgba(#000, .25);
+		z-index: 1;
+		width: 30rem;
+		height: 30rem;
+		filter: drop-shadow(0 0 4rem rgba(#000, .25));
+
+		animation-duration: 8.5s;
+		animation-timing-function: linear;
+		animation-delay: 1.5s;
+		animation-name: avatar;
+	}
+
+	#alert-user,
+	#alert-sender,
+	#alert-amount{
+		color: #ff0000;
+		letter-spacing: .2rem;
+	}
+
+	#alert-background {
+		background: rgba(var(--color-primary-rgb), .5);
+		width: 100%;
+		height: 70%;
+		border-radius: 4rem;
+		position: absolute;
+		top: 0;
+		z-index: -1;
+		box-shadow: 0 0 4rem rgba(var(--color-primary-rgb)
+		, .25);
+	}
+
+		.has-text #alert-background {
+			height: 100%;
+		}
+
+	/* .alert animation */
+	@keyframes alert {
+		0% {
+			transform: translateY(70vh);
+			opacity: 0;
+		}
+		20% {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		80% {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(-100vh);
+			opacity: 0;
+		}
+	}
+
+	@keyframes avatar {
+		0% {
+			top: -60vh;
+			opacity: 1;
+		}
+		20% {
+			top: 20%;
+			transform: rotate(45deg);
+		}
+		40% {
+			top: 30%;
+		}
+		60% {
+			top: 40%;
+		}
+		80% {
+			top: 50%;
+			opacity: 1;
+			transform: rotate(-45deg);
+		}
+		100% {
+			top: 100vh;
+			opacity: 0;
+		}
+	}
+
+	/* animate-letter */
+	@keyframes wobble
+	{
+		0% {
+			-webkit-transform: translate3d(0, 0, 0);
+			transform: translate3d(0, 0, 0);
+		}
+		15% {
+			-webkit-transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+			transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+		}
+		30% {
+			-webkit-transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+			transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+		}
+		45% {
+			-webkit-transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+			transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+		}
+		60% {
+			-webkit-transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+			transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+		}
+		75% {
+			-webkit-transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+			transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+		}
+		100% {
+			-webkit-transform: translate3d(0, 0, 0);
+			transform: translate3d(0, 0, 0);
+		}
+	}
+
+	@keyframes heartbeat
+	{
+		0% {
+			transform: scale( .75 ) rotate( 15deg );
+		}
+		60% {
+			transform: scale( 1 ) rotate( 15deg );
+		}
+		100% {
+			transform: scale( .75 ) rotate( 15deg );
+		}
+	}
+
+	@keyframes ban
+	{
+		0%{right:-50vw}
+		100%{right:100vw}
+	}
+
+	@keyframes ban-avatar
+	{
+		0%{
+			right:-50vw;
+			transform: rotate(0);
+		}
+		100%{
+			right:100vw;
+			transform: rotate(360deg);
+		}
+	}

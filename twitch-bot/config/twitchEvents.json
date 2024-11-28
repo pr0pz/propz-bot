@@ -1,0 +1,932 @@
+{
+	"adbreak": {
+		"message": {
+			"de": "Ab geht's in die Werbepause 📢 Gönnt euch mal ein Erfrischungsgetränk 🧃",
+			"en": "Time for a commercial break 📢 Treat yourself to a refreshing drink 🧃"
+		}
+	},
+	"ban": {
+		"extra": {
+			"de": {
+				"titleAlert": "Ban und Tschüss"
+			},
+			"en": {
+				"titleAlert": "Ban and Bye Bye"
+			}
+		}
+	},
+
+	"follow": {
+		"isAnnouncement": true,
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Großes Dankeschön an [user] für den Design & Code Boost! 🚀🌟 Herzlich willkommen im kreativen Gefolge!",
+				"[user] hat den Follow-Code geknackt! 🎉 Wir freuen uns über deine digitale Anwesenheit!",
+				"Willkommen in der Design & Code Alliance [user]! 🚀 Lass uns gemeinsam kreativ werden!",
+				"Der Code-Herzschlag steigt! ❤️ Willkommen im Design & Code Club, [user]!",
+				"[user] hat den 'Follow the Creative Flow' Button gedrückt! 🌈 Herzlich willkommen im kreativen Stream!"
+			],
+			"en": [
+				"Big thanks to [user] for the Design & Code Boost! 🚀🌟 Welcome to the creative entourage!",
+				"[user] cracked the follow code! 🎉 We are thrilled with your digital presence!",
+				"Welcome to the Design & Code Alliance [user]! 🚀 Let's get creative together!",
+				"The code heartbeat is rising! ❤️ Welcome to the Design & Code Club, [user]!",
+				"[user] pressed the 'Follow the Creative Flow' button! 🌈 Welcome to the creative stream!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Neuer Follower",
+				"titleEvent": "Follow"
+			},
+			"en": {
+				"titleAlert": "New Follower",
+				"titleEvent": "Follow"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"rewardchangebackground": {
+		"obs": [
+			{
+				"requestType": "SetSourceFilterEnabled",
+				"requestData": {
+					"sourceName": "[Video] Colorful",
+					"sourceUuid": "",
+					"filterName": "random-background",
+					"filterEnabled": true
+				}
+			},
+			{
+				"requestType": "SetSourceFilterEnabled",
+				"requestData": {
+					"sourceName": "[Video] Halloween",
+					"sourceUuid": "",
+					"filterName": "random-background",
+					"filterEnabled": true
+				}
+			},
+			{
+				"requestType": "SetSourceFilterEnabled",
+				"requestData": {
+					"sourceName": "[Video] Christmas",
+					"sourceUuid": "",
+					"filterName": "random-background",
+					"filterEnabled": true
+				}
+			}
+		]
+	},
+	"rewardconfetti": {
+		"disableOnFocus": true,
+		"obs": [
+			{
+				"requestType": "TriggerMediaInputAction",
+				"requestData": {
+					"inputName": "[Video] Confetti: Bottom Left Right",
+					"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+				}
+			},
+			{
+				"requestType": "TriggerMediaInputAction",
+				"requestData": {
+					"inputName": "[Sound] Airhorn",
+					"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+				}
+			}
+		]
+	},
+	"rewarddisconnect": {
+		"_comment": "[Video] Stream Disconnect",
+		"disableOnFocus": true,
+		"obs": {
+			"requestType": "SetSceneItemEnabled",
+			"requestData": {
+				"sceneName": "[R] VIDEOBOARD",
+				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
+				"sceneItemId": 10,
+				"sceneItemEnabled": true
+			}
+		}
+	},
+	"rewarddragonfire": {
+		"_comment": "[Video] Dragon Fire",
+		"obs": {
+			"requestType": "SetSceneItemEnabled",
+			"requestData": {
+				"sceneName": "[R] VIDEOBOARD",
+				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
+				"sceneItemId": 5,
+				"sceneItemEnabled": true
+			}
+		}
+	},
+	"rewardduvogel": {
+		"_comment": "[Video] Fichtls Lied",
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
+	"rewardfireworks": {
+		"obs": [
+			{
+				"requestType": "TriggerMediaInputAction",
+				"requestData": {
+					"inputName": "[Video] Fireworks Rain",
+					"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+				}
+			},
+			{
+				"requestType": "TriggerMediaInputAction",
+				"requestData": {
+					"inputName": "[Video] Bill Ted Guitar",
+					"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+				}
+			}
+		]
+	},
+	"rewardfuntastico": {
+		"_comment": "[Video] Zungenpritschler",
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
+	"rewardhydrate": {
+		"hasSound": true,
+		"message": {
+			"de": "Prost [user]! Ich trink ja schon... ☕️💧",
+			"en": "Cheers [user]! I'm already drinking... ☕️💧"
+		}
+	},
+	"rewardletstrip": {
+		"_comment": "[Video] Dragon Trip",
+		"obs": {
+			"requestType": "SetSceneItemEnabled",
+			"requestData": {
+				"sceneName": "[R] VIDEOBOARD",
+				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
+				"sceneItemId": 6,
+				"sceneItemEnabled": true
+			}
+		}
+	},
+	"rewardpedro": {
+		"disableOnFocus": true,
+		"obs": {
+			"requestType": "SetCurrentProgramScene",
+			"requestData": {
+				"sceneName": "[S] REWARD / PEDRO",
+				"sceneUuid": ""
+			}
+		}
+	},
+	"rewardquack": {
+		"disableOnFocus": true,
+		"hasSound": true
+	},
+	"rewardonfire": {
+		"_comment": "[Video] On Fire",
+		"obs": {
+			"requestType": "SetSceneItemEnabled",
+			"requestData": {
+				"sceneName": "[R] VIDEOBOARD",
+				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
+				"sceneItemId": 7,
+				"sceneItemEnabled": true
+			}
+		}
+	},
+	"rewardwrongscene": {
+		"eventText": {
+			"de": "Falsche Szene mein Freund. Wechsel mal die Szene.",
+			"en": "Wrong scene my friend. You're in the wrong scene."
+		}
+	},
+	"rewardshakeitoff": {
+		"disableOnFocus": true,
+		"obs": {
+			"requestType": "SetCurrentProgramScene",
+			"requestData": {
+				"sceneName": "[S] REWARD / SHAKEITOFF",
+				"sceneUuid": ""
+			}
+		}
+	},
+
+	"streamonline": {
+		"isAnnouncement": true,
+		"message": {
+			"de": [
+				"Der Kreativitäts-Ride mit [user] beginnt! 🚀 Herzlich willkommen im Stream, bereit für kreative Design-Action?",
+				"Nerd-Alarm! 🚨💡 [user] ist live im Twitchversum - schnallt euch an! 🎉",
+				"Willkommen im Live-Design-Theater mit [user]! 🎬 Die Kreativität fließt - lasst uns gemeinsam gestalten! 🚀",
+				"[user] hat den Geek-Gate geöffnet! 🚀 Lass uns gemeinsam ins Twitchversum eintauchen!",
+				"Stream-Start: [user] ist online! 🚀 Bereit fürs kreative Coding und Design-Zauber? 🎨"
+			],
+			"en": [
+				"The creativity ride with [user] begins! 🚀 Welcome to the stream, ready for creative design action?",
+				"Nerd alert! 🚨💡 [user] is live in the Twitchverse - buckle up! 🎉",
+				"Welcome to the live design theater with [user]! 🎬 Creativity is flowing - let's create together! 🚀",
+				"[user] has opened the geek gate! 🚀 Let's dive into the Twitchverse together!",
+				"Stream start: [user] is online! 🚀 Ready for creative coding and design magic? 🎨"
+			]
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Confetti: Bottom Left Right",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"streamoffline": {
+		"isAnnouncement": true,
+		"message": {
+			"de": [
+				"Vielen Dank, dass ihr heute dabei wart! Der Stream-Vorhang fällt, aber die kreative Reise geht weiter.🚀 Bis zum nächsten Mal! ✌🏻",
+				"Das kreative Chaos geht für heute zu Ende. Danke an alle fürs Mitmachen und bis zum nächsten Stream! 🚀",
+				"Zeit, den Design & Code Vorhang zu schließen. Danke, dass ihr Teil des Streams wart! Bis bald für mehr Coding-Abenteuer!",
+				"Ein herzliches Dankeschön an alle, die heute dabei waren! 🌟 Der Stream mag vorbei sein, aber die Code-Community bleibt stark. Bis zum nächsten Design-Gipfel! 🌈",
+				"Der kreative Vorhang fällt, doch die Pixelgeschichte geht weiter. 🎉 Danke an alle, für euer inspirierendes Mitwirken! Auf bald im Kreativ-Kosmos! 💖"
+			],
+			"en": [
+				"Thank you all for joining today! The stream curtain falls, but the creative journey continues. 🚀 See you next time! ✌🏻",
+				"The creative chaos ends for today. Thanks to everyone for participating and see you in the next stream! 🚀",
+				"Time to close the Design & Code curtain. Thanks for being part of the stream! See you soon for more coding adventures!",
+				"A heartfelt thank you to everyone who joined today! 🌟 The stream may be over, but the code community stays strong. Until the next design summit! 🌈",
+				"The creative curtain falls, but the pixel story continues. 🎉 Thanks to everyone for your inspiring participation! See you soon in the creative cosmos! 💖"
+			]
+		}
+	},
+
+	"cheer": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"[user] bringt Glitzer ins Spiel! 🌈 Danke für die Cheers, du machst den Stream bunter! 🎉",
+				"Kreativ-Feuerwerk mit [user]! 🎉 Danke für die bunte Ladung Cheer, du bist der Funke im kreativen Kosmos! 💖",
+				"[user] hat den Cheer-Regen gestartet! 🌟 Herzlichen Dank, du bringst Farbe in den Stream!",
+				"Nerd-Alarm mit [user]! 🚨 Vielen Dank für die energetischen Code-Cheers, du bist der leuchtende Stern im Chat! 💫",
+				"[user] verbreitet Cheer-Magie in der Design-Arena! 🌟 Danke für die strahlenden Cheer-Momente, du machst den Stream einzigartig! 💖"
+			],
+			"en": [
+				"[user] brings glitter into play! 🌈 Thanks for the cheers, you make the stream more colorful! 🎉",
+				"Creative fireworks with [user]! 🎉 Thanks for the colorful load of cheers, you are the spark in the creative cosmos! 💖",
+				"[user] started the cheer rain! 🌟 Thank you, you bring color into the stream!",
+				"Nerd alert with [user]! 🚨 Thanks for the energetic code cheers, you are the shining star in the chat! 💫",
+				"[user] spreads cheer magic in the design arena! 🌟 Thanks for the radiant cheer moments, you make the stream unique! 💖"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Cheeeeeeers!!",
+				"titleEvent": "Bits"
+			},
+			"en": {
+				"titleAlert": "Cheeeeeeers!!",
+				"titleEvent": "Bits"
+			}
+		}
+	},
+	"chatscore-100": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🤓 [user] ist nun Chat-Newbie",
+			"en": "[count]x 🤓 [user] is now a Chat-Newbie"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Newbie",
+				"titleEvent": "Chat-Newbie"
+			},
+			"en": {
+				"titleAlert": "Chat-Newbie",
+				"titleEvent": "Chat-Newbie"
+			}
+		}
+	},
+	"chatscore-500": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😎 [user] ist ein Chat-Enthusiast",
+			"en": "[count]x 😎 [user] is a Chat-Enthusiast"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Enthusiast",
+				"titleEvent": "Chat-Enthusiast"
+			},
+			"en": {
+				"titleAlert": "Chat-Enthusiast",
+				"titleEvent": "Chat-Enthusiast"
+			}
+		}
+	},
+	"chatscore-1000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😮 [user] ist ein Chat-Veteran",
+			"en": "[count]x 😮 [user] is a Chat-Veteran"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Veteran",
+				"titleEvent": "Chat-Veteran"
+			},
+			"en": {
+				"titleAlert": "Chat-Veteran",
+				"titleEvent": "Chat-Veteran"
+			}
+		}
+	},
+	"chatscore-2000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😲 [user] ist der Chat-Guru",
+			"en": "[count]x 😲 [user] is the Chat-Guru"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Guru",
+				"titleEvent": "Chat-Guru"
+			},
+			"en": {
+				"titleAlert": "Chat-Guru",
+				"titleEvent": "Chat-Guru"
+			}
+		}
+	},
+	"chatscore-3000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🫠 [user] ist die Chat-Meisterin",
+			"en": "[count]x 🫠 [user] is the Chat-Master"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Meister",
+				"titleEvent": "Chat-Master"
+			},
+			"en": {
+				"titleAlert": "Chat-Master",
+				"titleEvent": "Chat-Master"
+			}
+		}
+	},
+	"chatscore-4000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🥳 [user] ist die absolute Chat-Expertin",
+			"en": "[count]x 🥳 [user] is the ultimate Chat-Expert"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Experte",
+				"titleEvent": "Chat-Expert"
+			},
+			"en": {
+				"titleAlert": "Chat-Expert",
+				"titleEvent": "Chat-Expert"
+			}
+		}
+	},
+	"chatscore-5000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🤩 [user] ist ein heftiger Chat-Champion",
+			"en": "[count]x 🤩 [user] is an intense Chat-Champion"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Champion",
+				"titleEvent": "Chat-Champion"
+			},
+			"en": {
+				"titleAlert": "Chat-Champion",
+				"titleEvent": "Chat-Champion"
+			}
+		}
+	},
+	"chatscore-6000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🥵 [user] ist eine absolute Chat-Legende",
+			"en": "[count]x 🥵 [user] is an absolute Chat-Legend"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Legende",
+				"titleEvent": "Chat-Legend"
+			},
+			"en": {
+				"titleAlert": "Chat-Legend",
+				"titleEvent": "Chat-Legend"
+			}
+		}
+	},
+	"chatscore-7000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😵‍💫 [user] ist ein absoluter Chat-Hero",
+			"en": "[count]x 😵‍💫 [user] is an absolute Chat-Hero"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Hero",
+				"titleEvent": "Chat-Hero"
+			},
+			"en": {
+				"titleAlert": "Chat-Hero",
+				"titleEvent": "Chat-Hero"
+			}
+		}
+	},
+	"chatscore-8000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😵 [user] ist die heftigste Chat-Koryphäe",
+			"en": "[count]x 😵 [user] is the most intense Chat-Coryphée"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Koryphäe",
+				"titleEvent": "Chat-Coryphée"
+			},
+			"en": {
+				"titleAlert": "Chat-Coryphée",
+				"titleEvent": "Chat-Coryphée"
+			}
+		}
+	},
+	"chatscore-9000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 😱 [user] ist der oberste Chat-Meistergeist",
+			"en": "[count]x 😱 [user] is the supreme Chat-Mastermind"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Meistergeist",
+				"titleEvent": "Chat-Mastermind"
+			},
+			"en": {
+				"titleAlert": "Chat-Mastermind",
+				"titleEvent": "Chat-Mastermind"
+			}
+		}
+	},
+	"chatscore-10000": {
+		"saveEvent": true,
+		"message": { 
+			"de": "[count]x 🤯 [user] ist die heftigste Chat-Göttlichkeit",
+			"en": "[count]x 🤯 [user] is the most intense Chat-Divinity"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Chat-Göttlichkeit",
+				"titleEvent": "Chat-Divinity"
+			},
+			"en": {
+				"titleAlert": "Chat-Divinity",
+				"titleEvent": "Chat-Divinity"
+			}
+		}
+	},
+	"first": {
+		"message": {
+			"de": [
+				"Willkommen, [user]! 🎨✨ Gemeinsam gestalten wir das digitale Twitchversum! 💻🚀",
+				"Neues Gesicht im Design-Dojo! 🎉 Herzlich willkommen, [user]!",
+				"Moin [user]! 🌟 Du bringst kreativen Schwung in unseren Canvas! ✨",
+				"Ein frischer Wind weht durch den Chat - Herzlich willkommen, [user]! 🚀",
+				"[user] betritt die kreative Arena! 🎨 Bereit für Code- und Design-Magie? 🌈"
+			],
+			"en": [
+				"Welcome, [user]! 🎨✨ Together we shape the digital Twitchverse! 💻🚀",
+				"New face in the design dojo! 🎉 Welcome, [user]!",
+				"Hello [user]! 🌟 You bring creative momentum to our canvas! ✨",
+				"A fresh breeze blows through the chat - Welcome, [user]! 🚀",
+				"[user] enters the creative arena! 🎨 Ready for code and design magic? 🌈"
+			]
+		}
+	},
+	"firstchatter": {
+		"message": {
+			"de": "BOOYAKASHA! Erster Chat des Streams geht an [user] 🔥",
+			"en": "BOOYAKASHA! First chat of the stream goes to [user] 🔥"
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Erster Chatter"
+			},
+			"en": {
+				"titleAlert": "First Chatter"
+			}
+		},
+		"obs": [
+			{
+				"requestType": "TriggerMediaInputAction",
+				"requestData": {
+					"inputName": "[Video] Fireworks Rain",
+					"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+				}
+			}
+		]
+	},
+	"communitysub": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Wow, [user] verbreitet Abo-Liebe im Stream! 💖 Danke fürs Teilen des kreativen Glücks!",
+				"Geschenkte Abos von [user]! 🎉 Spread the coding love - danke für die großzügige Unterstützung!",
+				"[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke, du machst den Stream noch bunter!",
+				"Abo-Überraschung von [user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz, [user]!",
+				"[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks, du machst den Nerd-Kosmos noch strahlender!"
+			],
+			"en": [
+				"Wow, [user] spreads sub-love in the stream! 💖 Thanks for sharing the creative joy!",
+				"Gifted subs from [user]! 🎉 Spread the coding love - thanks for the generous support!",
+				"[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts, you make the stream even brighter!",
+				"Sub surprise from [user]! 🎁 Thanks for the gifted coding extravaganza, [user]!",
+				"[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness, you make the nerd universe even brighter!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Subs für alle",
+				"titleEvent": "Sub Gift"
+			},
+			"en": {
+				"titleAlert": "Subs for Everyone",
+				"titleEvent": "Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-2": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Wow, [user] verbreitet Abo-Liebe im Stream! 💖 Danke fürs Teilen des kreativen Glücks!",
+				"Geschenkte Abos von [user]! 🎉 Spread the coding love - danke für die großzügige Unterstützung!",
+				"[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke, du machst den Stream noch bunter!",
+				"Abo-Überraschung von [user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz, [user]!",
+				"[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks, du machst den Nerd-Kosmos noch strahlender!"
+			],
+			"en": [
+				"Wow, [user] spreads sub-love in the stream! 💖 Thanks for sharing the creative joy!",
+				"Gifted subs from [user]! 🎉 Spread the coding love - thanks for the generous support!",
+				"[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts, you make the stream even brighter!",
+				"Sub surprise from [user]! 🎁 Thanks for the gifted coding extravaganza, [user]!",
+				"[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness, you make the nerd universe even brighter!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Mega Sub Geschenk",
+				"titleEvent": "Sub Gift"
+			},
+			"en": {
+				"titleAlert": "Mega Sub Gift",
+				"titleEvent": "Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"focusstart": {
+		"eventText": {
+			"de": "Fokus ist jetzt angesagt, fokussiere die mal. Fokus!",
+			"en": "Focus time now, get focused. Focus!"
+		},
+		"obs": {
+			"requestType": "SetInputMute",
+			"requestData": {
+				"inputName": "[Browser] Chat",
+				"inputUuid": "",
+				"inputMuted": true
+			}
+		}
+	},
+	"focusstop": {
+		"obs": {
+			"requestType": "SetInputMute",
+			"requestData": {
+				"inputName": "[Browser] Chat",
+				"inputUuid": "",
+				"inputMuted": false
+			}
+		}
+	},
+	"raid": {
+		"saveEvent": true,
+		"isAnnouncement": true,
+		"message": {
+			"de": [
+				"Raid-Alarm! 🚨 Vielen Dank an [user] und der Community für den unerwarteten Nerd-Überfall! 🎉",
+				"[user] führt die kreative Raid-Invasion an! 🚀 Herzlichen Dank für den überraschenden Support, wir rocken die Nerd-Arena!",
+				"Der [user]-Raid bringt kreative Verstärkung! 🎉 Willkommen, Raider, wir sind bereit für ein kreatives Feuerwerk! 🎇",
+				"Nerd-Alarm! [user] und die Raid-Crew im Anflug! 🚀 Danke für den unerwarteten kreativen Ansturm, wir nehmen die Herausforderung an!",
+				"[user] hat den kreativen Raid-Knopf gedrückt! 🚨 Herzlich willkommen an alle Raider - gemeinsam gestalten wir das Twitchversum! 🎉"
+			],
+			"en": [
+				"Raid alert! 🚨 Thanks to [user] and the community for the unexpected nerd raid! 🎉",
+				"[user] leads the creative raid invasion! 🚀 Thanks for the surprise support, we're rocking the nerd arena!",
+				"The [user] raid brings creative reinforcement! 🎉 Welcome, raiders, we're ready for a creative fireworks show! 🎇",
+				"Nerd alert! [user] and the raid crew incoming! 🚀 Thanks for the unexpected creative rush, we're up for the challenge!",
+				"[user] hit the creative raid button! 🚨 Welcome all raiders - together we shape the Twitchverse! 🎉"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Raid-Alarm",
+				"titleEvent": "Raid"
+			},
+			"en": {
+				"titleAlert": "Raid Alert",
+				"titleEvent": "Raid"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Rain",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"startraid": {
+		"isAnnouncement": true,
+		"message": {
+			"de": "🚀 Ab gehts in den raid zu [user] 🌟",
+			"en": "🚀 Let's go! We're raiding [user] 🌟"
+		}
+	},
+	"resub-1": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"[user] ist zurück im Abo-Club! 🎉 Danke für das erneute Abonnement - gemeinsam gestalten wir die Code-Welt! ✨",
+				"Der Code-Treue [user] ist wieder an Bord! 🚀 Willkommen zurück im Abo-Kosmos, lass uns kreativ weitermachen!",
+				"[user] bleibt dem Abo-Code treu! 🌟 Danke fürs erneute Abonnement - deine Unterstützung ist unschätzbar! 🚀",
+				"Resub-Alert! [user] ist zurück im VIP-Bereich! 🚀 Vielen Dank für deine anhaltende Abo-Liebe, [user]! 🌟",
+				"Willkommen zurück im Abo-Universum, [user]! 🎉 Deine Treue zum Code ist unbezahlbar - lass uns gemeinsam weiterentwickeln!"
+			],
+			"en": [
+				"[user] is back in the sub club! 🎉 Thanks for resubscribing - together we shape the coding world! ✨",
+				"The code-loyal [user] is back on board! 🚀 Welcome back to the sub cosmos, let's continue to be creative!",
+				"[user] remains loyal to the sub code! 🌟 Thanks for resubscribing - your support is invaluable! 🚀",
+				"Resub alert! [user] is back in the VIP section! 🚀 Thanks for your continued sub love, [user]! 🌟",
+				"Welcome back to the sub universe, [user]! 🎉 Your loyalty to the code is priceless - let's continue developing together!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Resub mit Ehre",
+				"titleEvent": "Resub"
+			},
+			"en": {
+				"titleAlert": "Resub with Honor",
+				"titleEvent": "Resub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"resub-2": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"[user] ist ein echter Abo-Veteran! 🌟 Resub Nummer [count], deine Unterstützung macht den Stream besonders! 🚀",
+				"Der Kreativ-Abenteurer [user] bleibt am Ball! 🚀 Resub Nummer [count], danke für deine anhaltende Abo-Magie! 💖",
+				"Resub-Count steigt! [user] bleibt im Abo-Fluss! 🌊🚀 Danke für Resub Nummer [count], gemeinsam machen wir Code-Geschichte!",
+				"[user] hat den Resub-Button erneut gedrückt! 🔄 Vielen Dank für Resub Nummer [count], deine Treue zur Kreativität ist inspirierend! 🌟",
+				"Resub-Party mit [user]! 🎉 Herzlich willkommen zurück im Abo-Universum, [count]x und kein Ende in Sicht!"
+			],
+			"en": [
+				"[user] is a real sub veteran! 🌟 Resub number [count], your support makes the stream special! 🚀",
+				"The creative adventurer [user] stays on track! 🚀 Resub number [count], thanks for your ongoing sub magic! 💖",
+				"Resub count rising! [user] stays in the sub flow! 🌊🚀 Thanks for resub number [count], together we make code history!",
+				"[user] hit the resub button again! 🔄 Thanks for resub number [count], your loyalty to creativity is inspiring! 🌟",
+				"Resub party with [user]! 🎉 Welcome back to the sub universe, [count]x and no end in sight!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Resub mit Mega Ehre",
+				"titleEvent": "Resub"
+			},
+			"en": {
+				"titleAlert": "Resub with Mega Honor",
+				"titleEvent": "Resub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"resub-3": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"[user] - der Abo-Meister! 🌟🚀 Resub Nummer [count], deine Unterstützung ist der Anker unseres kreativen Kosmos!",
+				"Resub-Legende [user] ist wieder am Start! 🚀 Herzlichen Dank für Resub Nummer [count], du machst den Stream legendär!",
+				"Code-Titan [user] bleibt ungeschlagen! 🌌 Resub Nummer [count], danke für den anhaltenden Nerd-Support! 🚀",
+				"[user] hat den Resub-Olymp erklommen! 🏆 Resub Nummer [count], du bist ein Abo-Champion im Twitchversum!",
+				"Resub-Exzellenz mit [user]! 🌟 Herzlichen Dank für Resub Nummer [count], deine Unterstützung ist unübertroffen! 🚀"
+			],
+			"en": [
+				"[user] - the sub master! 🌟🚀 Resub number [count], your support is the anchor of our creative cosmos!",
+				"Resub legend [user] is back! 🚀 Thanks for resub number [count], you make the stream legendary!",
+				"Code titan [user] remains unbeaten! 🌌 Resub number [count], thanks for the ongoing nerd support! 🚀",
+				"[user] has reached the resub Olympus! 🏆 Resub number [count], you're a sub champion in the Twitchverse!",
+				"Resub excellence with [user]! 🌟 Thanks for resub number [count], your support is unmatched! 🚀"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Resub mit Omega Ehre",
+				"titleEvent": "Resub"
+			},
+			"en": {
+				"titleAlert": "Resub with Omega Honor",
+				"titleEvent": "Resub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"sub": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Ein herzliches Dankeschön an [user] für den Abo-Boost! 🌟 Deine Unterstützung gibt dem Stream eine extra Portion Style!",
+				"[user] hat das Design-Abonnement entschlüsselt! 💖 Herzlichen Glückwunsch zum VIP-Zugang, willkommen im Abo-Kosmos!",
+				"Abo-Party mit [user]! 🎉 Danke für das Abonnement - gemeinsam gestalten wir die Code-Welt! ✨",
+				"Die Abo-Sirenen singen für [user]! 🎶 Herzlich willkommen im exklusiven Kreativitäts-Zirkel!",
+				"[user] hat den Abo-Code erfolgreich eingetragen! 🌟 Willkommen im VIP-Bereich, lass uns kreativ durchstarten!"
+			],
+			"en": [
+				"A big thank you to [user] for the sub boost! 🌟 Your support gives the stream an extra touch of style!",
+				"[user] has unlocked the design subscription! 💖 Congratulations on your VIP access, welcome to the sub cosmos!",
+				"Sub party with [user]! 🎉 Thanks for subscribing - together we shape the coding world! ✨",
+				"The sub sirens sing for [user]! 🎶 Welcome to the exclusive creativity circle!",
+				"[user] has successfully entered the sub code! 🌟 Welcome to the VIP section, let's get creative!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Danke für die Sub-Ehre!",
+				"titleEvent": "Sub"
+			},
+			"en": {
+				"titleAlert": "Thanks for the Sub Honor!",
+				"titleEvent": "Sub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"subgift": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Wow, [user] verbreitet Abo-Liebe im Stream! 💖 Danke fürs Teilen des kreativen Glücks!",
+				"Geschenkte Abos von [user]! 🎉 Spread the coding love - danke für die großzügige Unterstützung!",
+				"[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke, du machst den Stream noch bunter!",
+				"Abo-Überraschung von [user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz, [user]!",
+				"[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks, du machst den Nerd-Kosmos noch strahlender!"
+			],
+			"en": [
+				"Wow, [user] spreads sub-love in the stream! 💖 Thanks for sharing the creative joy!",
+				"Gifted subs from [user]! 🎉 Spread the coding love - thanks for the generous support!",
+				"[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts, you make the stream even brighter!",
+				"Sub surprise from [user]! 🎁 Thanks for the gifted coding extravaganza, [user]!",
+				"[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness, you make the nerd universe even brighter!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Geschenk im Anmarsch",
+				"titleEvent": "Subgift"
+			},
+			"en": {
+				"titleAlert": "Gift Incoming",
+				"titleEvent": "Subgift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+
+	"kofidonation": {
+		"hasVideo": true,
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"WOW, [user]! Vielen Dank für die Moneten und die hammermäßige Unterstützung 🔨",
+				"Extrem kremige Unterstützung von [user]! Danke dir vielmals fürs Zaster! 💸",
+				"Ach du lieber Scholli... [user] hat was springen lassen, vielen Dank für die Unterstützung! 💵",
+				"BOOOOM!!! Wer hat da gerade die Zaster-Kanone abgefeuert? Danke für deine großzügige Unterstützung [user]! 💥",
+				"PROST!!! Die nächste Runde geht auf [user]! 🍹 Granatenstarker Support, danke dir vielmals!"
+			],
+			"en": [
+				"WOW, [user]! Thanks for the cash and the amazing support 🔨",
+				"Extremely creamy support from [user]! Thank you so much for the money! 💸",
+				"Oh my gosh... [user] dropped some cash, thank you for the support! 💵",
+				"BOOOOM!!! Who just fired the money cannon? Thanks for your generous support [user]! 💥",
+				"CHEERS!!! The next round is on [user]! 🍹 Awesome support, thank you so much!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Zaster, Flocken und Moneten",
+				"titleEvent": "Donation"
+			},
+			"en": {
+				"titleAlert": "Money, Money, Money",
+				"titleEvent": "Donation"
+			}
+		}
+	},
+	"kofishoporder": {
+		"saveEvent": true,
+		"extra": {
+			"de": {
+				"titleAlert": "Shoppingfieber",
+				"titleEvent": "Bestellung"
+			},
+			"en": {
+				"titleAlert": "Shopping Fever",
+				"titleEvent": "Order"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"kofisubscription": {
+		"saveEvent": true,
+		"extra": {
+			"de": {
+				"titleAlert": "Danke für den Sub-Support!",
+				"titleEvent": "Sub"
+			},
+			"en": {
+				"titleAlert": "Thanks for the Sub-Support!",
+				"titleEvent": "Sub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	}
+}
