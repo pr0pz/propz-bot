@@ -20,7 +20,7 @@ const AdBreakBox = () =>
 			!event.detail?.type ||
 			!event.detail.count ||
 			event.detail.type !== 'adbreak'
-		) return ( () => {} );
+		) return;
 
 		setAdBreakLength( event.detail.count );
 		const timeOutLength = event.detail.count * 1000;

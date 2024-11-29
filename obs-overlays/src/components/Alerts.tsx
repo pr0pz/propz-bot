@@ -2,12 +2,13 @@
  * Alert Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
-import Alert from "./Alert.tsx";
+import Alert from './Alert.tsx';
+import { log } from '../../../shared/helpers.ts';
 
 const Alerts = () =>
 {
@@ -29,7 +30,7 @@ const Alerts = () =>
 				!events?.[ event.detail.type ] &&
 				!event.detail?.extra?.titleAlert
 			)
-		) return ( () => {} );
+		) return;
 
 		enqueueEvent( event.detail );
 	},
@@ -53,8 +54,7 @@ const Alerts = () =>
 		if ( isAnimating || eventQueue.length === 0 ) return;
 
 		const nextEvent = eventQueue[0];
-
-		console.log( `%c› ALERTS: processing event - ${ nextEvent.type }`, process.env.CONSOLE_SUCCESS );
+		log( nextEvent.type );
 
 		// Trigger animation
 		setIsAnimating( true );
@@ -69,7 +69,7 @@ const Alerts = () =>
 			// ??
 			// Remove to test
 			setAlert();
-			console.log( `%c› ALERTS: timeout passed`, process.env.CONSOLE_SUCCESS );
+			log( `timeout passed` );
 		}, 10000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	};
 
@@ -80,7 +80,7 @@ const Alerts = () =>
 	 */
 	const enqueueEvent = ( eventDetails ) => {
 		setEventQueue( prevEvents => [...prevEvents, eventDetails] );
-		console.log( `%c› ALERTS: enqueueEvent - ${ eventDetails.type }`, process.env.CONSOLE_SUCCESS );
+		log( eventDetails.type );
 	};
 
 	/**
@@ -114,7 +114,7 @@ const Alerts = () =>
 			return;
 		}*/
 		setAlert( eventDetails );
-		console.log( `%c› ALERTS: Alert processed: ${ eventDetails.type }`, process.env.CONSOLE_SUCCESS );
+		log( eventDetails.type );
 	}
 
 	/**

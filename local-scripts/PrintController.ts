@@ -2,7 +2,7 @@
  * Printer Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import usb from 'usb';
@@ -291,13 +291,22 @@ export default class PrintController
 
 	private async printData( data: ImageBuffer )
 	{
-		// Nach USB-Geräten suchen, die mit dem angegebenen Vendor- und Produkt-IDs übereinstimmen
-		const device = await usb.findByIds( this.VID, this.PID );
+		let device: usb.usb.Device|undefined;
 
-		if ( !device )
+		try
 		{
-			log( new Error( 'Printer not found' ) );
-			Deno.exit(1);
+			device = await usb.findByIds( this.VID, this.PID );
+
+			if ( !device )
+			{
+				log( new Error( 'Printer not found' ) );
+				return;
+			}
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return;
 		}
 
 		device.__open();
@@ -313,8 +322,6 @@ export default class PrintController
 		const outEndpoint = deviceInterface.endpoint( 0x01 );
 		//const inEndpoint = interface.endpoint(0x82);
 		//log( 'Printer endpoint ready' );
-
-		log( 'sending image' );
 
 		// Send the image data to the printer
 		outEndpoint.transfer( data, (error: unknown) =>

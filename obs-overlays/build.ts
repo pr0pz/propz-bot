@@ -2,7 +2,7 @@
  * This file builds the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import * as esbuild from 'esbuild';
@@ -43,6 +43,7 @@ try {
 		format: 'esm',
 		platform: 'browser',
 		jsx: 'automatic',
+		sourcemap: true,
 		define: {
 			'process.env.BOT_URL': `"${botUrl}"`,
 			'process.env.OBS_WEBSOCKET_URL': `"${obsUrl}"`,

@@ -2,11 +2,12 @@
  * LED Display Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
+import { log } from '../../../shared/helpers.ts';
 
 const LedDisplay = () =>
 {
@@ -27,13 +28,13 @@ const LedDisplay = () =>
 		)
 		{
 			setEvent();
-			return ( () => {} );
+			return;
 		}
 		
 		if (
 			!event.detail?.type ||
 			!events.includes( event.detail.type )
-		) return ( () => {} );
+		) return;
 
 		enqueueEvent( event.detail );
 	},
@@ -57,8 +58,7 @@ const LedDisplay = () =>
 		if ( isAnimating || eventQueue.length === 0 ) return;
 
 		const nextEvent = eventQueue[0];
-
-		console.log( `%c› LEDDISPLAY: processing event - ${ nextEvent.type }`, process.env.CONSOLE_SUCCESS );
+		log( nextEvent.type );
 
 		// Trigger animation
 		setIsAnimating( true );
@@ -73,7 +73,7 @@ const LedDisplay = () =>
 			// ??
 			// Remove to test
 			setEvent();
-			console.log( `%c› LEDDISPLAY: timeout passed`, process.env.CONSOLE_SUCCESS );
+			log( `timeout passed` );
 		}, 20000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	};
 
@@ -84,7 +84,7 @@ const LedDisplay = () =>
 	 */
 	const enqueueEvent = ( eventDetails ) => {
 		setEventQueue( prevEvents => [...prevEvents, eventDetails] );
-		console.log( `%c› LEDDISPLAY: enqueueEvent - ${ eventDetails.type }`, process.env.CONSOLE_SUCCESS );
+		log( `enqueueEvent - ${ eventDetails.type }` );
 	};
 
 	/**
@@ -109,7 +109,7 @@ const LedDisplay = () =>
 		if ( events.includes( eventDetails.type ) )
 		{
 			setEvent( eventDetails );
-			console.log( `%c› LEDDISPLAY: Message processed: ${ eventDetails.type }`, process.env.CONSOLE_SUCCESS );
+			log( `Message processed: ${ eventDetails.type }` );
 		}
 		else
 		{

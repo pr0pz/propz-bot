@@ -2,7 +2,7 @@
  * OBS Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import OBSWebSocket from 'obs-websocket-js';
@@ -16,14 +16,17 @@ export default class ObsController
 	constructor()
 	{
 		this.obs = new OBSWebSocket();
+		this.obs.on( 'ConnectionClosed', this.onConnectionClosed );
 	}
 
-	/** Connect to OBS Websocket. */
 	async connect()
 	{
 		const obsUrl = process.env.OBS_WEBSOCKET_URL || '';
 		const obsPort = process.env.OBS_WEBSOCKET_PORT || '';
 		const obsPassword = process.env.OBS_WEBSOCKET_PASSWORD || '';
+		// const obsUrl = Deno.env.get( 'OBS_WEBSOCKET_URL' ) || '';
+		// const obsPort = Deno.env.get( 'OBS_WEBSOCKET_PORT' ) || '';
+		// const obsPassword = Deno.env.get( 'OBS_WEBSOCKET_PASSWORD' ) || '';
 
 		if ( !obsUrl || !obsPort || !obsPassword )
 		{
@@ -34,7 +37,6 @@ export default class ObsController
 		try
 		{
 			await this.obs.connect( 'ws://' + obsUrl + ':' + obsPort, obsPassword );
-			this.obs.on( 'ConnectionClosed', this.onConnectionClosed );
 			log( 'OBS Connected' );
 		}
 		catch ( error: unknown )
@@ -44,7 +46,6 @@ export default class ObsController
 		}
 	}
 
-	/** Send commands to OBS */
 	async sendCommands( commands: ObsData|ObsData[] )
 	{
 		if ( !commands ) return;

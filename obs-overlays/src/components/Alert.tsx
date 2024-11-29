@@ -2,11 +2,12 @@
  * Single ALert
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { useEffect, useState } from "react";
 import { useEvent } from '../EventContext.tsx';
+import { log } from '../../../shared/helpers.ts';
 
 const Alert = ( propz ) =>
 {
@@ -37,7 +38,7 @@ const Alert = ( propz ) =>
 		if (
 			!tts ||
 			ttsPlaystate
-		) return ( () => {} );
+		) return;
 
 		tts.pause();
 		tts.currentTime = 0;
@@ -59,8 +60,8 @@ const Alert = ( propz ) =>
 				setTts( tts );
 				setTtsPlaystate( true );
 
-				tts.pause();
-				tts.load();
+				//tts.pause();
+				//tts.load();
 				tts.play();
 
 				setTimeout( () =>
@@ -79,21 +80,20 @@ const Alert = ( propz ) =>
 			audio = new Audio( audioFile );
 			audio.volume = 0.2;
 			audio.loop = false;
-			audio.play()
+			//audio.pause();
+			//audio.load();
+			audio.play();
 		}
-		catch( error: unknown )
-		{
-			console.warn( `› ALERTS: Couldn't play audio file › ${ ( error as Error ).message }` );
-		}
+		catch ( error: unknown ) { log( error ) }
 	
 		// Cleanup: Pause and reset audio when the component is unmounted
 		return () =>
 		{
-			if ( audio )
+			/*if ( audio )
 			{
-				audio.pause();
+				//audio.pause();
 				audio.currentTime = 0;
-			}
+			}*/
 		};
 	},
 	// eslint-disable-next-line

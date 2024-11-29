@@ -2,11 +2,12 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
+import { log } from '../../../shared/helpers.ts';
 
 const Mediaboard = () =>
 {
@@ -22,7 +23,7 @@ const Mediaboard = () =>
 				!event?.detail?.hasVideo
 			) ||
 			!event.detail.type
-		) return ( () => {} );
+		) return;
 
 		const mediaName = event.detail.type === 'command' ? event.detail.text.replace( '!', '' ) : event.detail.type;
 		enqueueMedia( mediaName );
@@ -52,7 +53,7 @@ const Mediaboard = () =>
 	const enqueueMedia = ( mediaName: string ) =>
 	{
 		setMediaQueue( prevEvents => [...prevEvents, mediaName] );
-		console.log( `%c› SOUNDBOARD: enqueueMedia - ${ mediaName }`, process.env.CONSOLE_SUCCESS );
+		log( `enqueueMedia - ${ mediaName }` );
 	};
 
 	const playAudio = ( mediaName: string ) =>
@@ -61,8 +62,8 @@ const Mediaboard = () =>
 			const audio = new Audio( `sound/sound-${mediaName}.mp3` );
 			audio.volume = 1;
 			audio.loop = false;
-			audio.play().catch((error) => {
-				console.warn( `› MEDIABOARD: Couldn't play sound file ${mediaName} › ${error.message}` );
+			audio.play().catch((_error) => {
+				log( new Error( `Couldn't play sound file ${mediaName}` ) );
 				audio.pause();
 				audio.currentTime = 0;
 				setIsPlaying(false);
@@ -70,7 +71,7 @@ const Mediaboard = () =>
 				return;
 			});
 
-			console.log( `%c› MEDIABOARD: playing ▶️ ${ mediaName }`, process.env.CONSOLE_SUCCESS );
+			log( `playing ▶️ ${ mediaName }` );
 
 			audio.addEventListener( 'ended', () =>
 			{
@@ -80,10 +81,7 @@ const Mediaboard = () =>
 				setMediaQueue( mediaQueue => mediaQueue.slice(1) );
 			});
 		}
-		catch( error: unknown )
-		{
-			console.warn( `› MEDIABOARD: Couldn't play sound file ${mediaName} › ${error?.message}` );
-		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	const playVideo = ( mediaName ) =>
@@ -98,15 +96,15 @@ const Mediaboard = () =>
 		try {
 			document.body.appendChild(video);
 
-			video.play().catch((error) => {
-				console.warn( `› MEDIABOARD: Couldn't play video file ${mediaName} › ${error.message}` );
+			video.play().catch((_error) => {
+				log( new Error( `Couldn't play video file ${mediaName}` ) );
 				video.remove();
 				setIsPlaying(false);
 				setMediaQueue( mediaQueue => mediaQueue.slice(1));
 				return;
 			});
 
-			console.log( `%c› MEDIABOARD: playing ▶️ ${ mediaName }`, process.env.CONSOLE_SUCCESS );
+			log( `playing ▶️ ${ mediaName }` );
 
 			video.addEventListener( 'ended', () =>
 			{
@@ -117,10 +115,7 @@ const Mediaboard = () =>
 				setMediaQueue( mediaQueue => mediaQueue.slice(1) );
 			});
 		}
-		catch( error: unknown )
-		{
-			console.warn( `› MEDIABOARD: Couldn't play video file ${mediaName} › ${error?.message}` );
-		}
+		catch( error: unknown ) { log( error )}
 	}
 
 	return;

@@ -2,7 +2,7 @@
  * Chat Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ const Chat = () =>
 			!event ||
 			!event?.detail?.type ||
 			event.detail.type !== 'message'
-		) return ( () => {} );
+		) return;
 
 		processMessage( event.detail );
 	},

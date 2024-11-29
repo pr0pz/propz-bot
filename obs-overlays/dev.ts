@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -66,6 +66,7 @@ try {
 		format: 'esm',
 		platform: 'browser',
 		jsx: 'automatic',
+		sourcemap: true,
 		define: {
 			'process.env.NODE_ENV': '"development"',
 			'process.env.BOT_URL': `"${botUrl}"`,
@@ -73,8 +74,7 @@ try {
 			'process.env.OBS_WEBSOCKET_PORT': `"${obsPort}"`,
 			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`,
 			'process.env.CONSOLE_SUCCESS': `"${consoleSuccess}"`
-		},
-		minify: true
+		}
 	});
 
 	// Build CSS file

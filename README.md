@@ -1,7 +1,7 @@
 # __Propz Stream Bot 🎉__
 
 [![Made with Deno](https://img.shields.io/static/v1?label&message=Deno&color=70ffaf&logo=deno&logoColor=323330)](https://deno.com/)
-![Made with JavaScript](https://img.shields.io/static/v1?label&message=JavaScript&color=f0db4f&logo=javascript&logoColor=323330)
+![Made with Typescript](https://img.shields.io/static/v1?label&message=Typescript&color=3871c6&logo=typescript&logoColor=fff)
 ![Made with React](https://img.shields.io/static/v1?label&message=React&color=61dbfb&logo=react&logoColor=323330)
 [![Made with Twurple](https://img.shields.io/static/v1?label&message=Twurple&color=647d0f&logo=twitch&logoColor=fff)](https://twurple.js.org/)
 [![Made with Discord.js](https://img.shields.io/static/v1?label&message=Discord.js&color=379c6f&logo=discord&logoColor=fff)](https://discord.js.org/)

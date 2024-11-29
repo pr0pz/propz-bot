@@ -2,12 +2,12 @@
  * Global event context
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import WebsocketController from '../../shared/websocket.ts';
-import ObsController from '../../shared/obs.ts';
+import ObsController from '../../shared/ObsController.ts';
 
 const EventContext = createContext();
 
@@ -22,11 +22,11 @@ export const EventProvider = ({ children }) =>
 	const websocketController = new WebsocketController();
 	const obsController = new ObsController();
 
-	useEffect( async () =>
+	useEffect( () =>
 	{
 		// Build websocket connection
 		websocketController.connect();
-		await obsController.connect();
+		obsController.connect();
 
 		const eventHandler = ( event ) =>
 		{

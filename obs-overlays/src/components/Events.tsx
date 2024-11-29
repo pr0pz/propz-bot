@@ -5,9 +5,10 @@
  * @version 1.0.0
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import Event from './Event.tsx';
+import { log } from '../../../shared/helpers.ts';
 
 const Events = () =>
 {
@@ -21,7 +22,7 @@ const Events = () =>
 			if (
 				!event?.detail?.type ||
 				!event.detail?.extra?.titleEvent
-			) return ( () => {} );
+			) return;
 
 			processEvent( event.detail );
 		}
@@ -44,11 +45,11 @@ const Events = () =>
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify( { "request": "getEvents" } )
+			body: '{ "request": "getEvents" }'
 		};
 
 		try {
-			const response = await fetch( `https://${ Deno.env.get( 'BOT_BOT_URL' ) }/api`, fetchOptions );
+			const response = await fetch( `https://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
 	
 			data.data.slice(-5).forEach( (event) =>
@@ -63,10 +64,7 @@ const Events = () =>
 				processEvent( eventDetails );
 			});
 		}
-		catch ( err )
-		{
-			console.error( `› EVENTS: setInitialEvents ›${ err.code ? ' (' + err.code + ')' : ' ›' } ${err.message}` );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 

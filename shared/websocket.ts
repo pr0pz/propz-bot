@@ -2,7 +2,7 @@
  * Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import EventEmitter from 'events';
@@ -50,7 +50,7 @@ export default class WebsocketController
 		setInterval( () =>
 		{
 			if ( this.ws?.readyState === 1 )
-				this.ws.send( 'ping' );
+				this.ws.send( '{"type":"ping"}' );
 		}, 10000 );
 	}
 

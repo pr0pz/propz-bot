@@ -73,7 +73,7 @@ export class Bot
 		const wsId: string = crypto.randomUUID();
 
 		//socket.addEventListener( 'error', (event) => log( event ) );
-		socket.addEventListener( 'message', () => socket.send( 'pong' ) );
+		socket.addEventListener( 'message', () => socket.send( '{"type":"pong"}' ) );
 
 		socket.addEventListener( 'open', () =>
 		{

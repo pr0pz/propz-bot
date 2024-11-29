@@ -2,7 +2,7 @@
  * Single Chat message
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import parse from 'html-react-parser';
@@ -21,7 +21,7 @@ const ChatMessage = ( propz ) =>
 			!event ||
 			!event?.detail?.text ||
 			event.detail.text !== '!clear'
-		) return ( () => {} );
+		) return;
 
 		setMessage( '*** STREAM HYGIENE ***' );
 		setUser( '*** STREAM HYGIENE ***' );
