@@ -2,30 +2,16 @@
  * Discord Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import '@propz/helpers.ts';
+import '@propz/prototypes.ts';
 
-import {
-	type Attachment,
-	type AttachmentBuilder,
-	type Channel,
-	Client,
-	type Collection,
-	type EmbedBuilder,
-	type ForumChannel,
-	type ForumThreadChannel,
-	GatewayIntentBits,
-	type Guild,
-	type GuildForumThreadCreateOptions,
-	type GuildMember,
-	type Interaction,
-	type Message,
-	type Snowflake
-} from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { DiscordUtils } from './DiscordUtils.ts';
 import { getMessage, log } from '@propz/helpers.ts';
+
+import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, ForumChannel, ForumThreadChannel, Guild, GuildForumThreadCreateOptions, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
 import type { BotData } from '../bot/BotData.ts';
 import type { StreamData } from '@propz/types.ts';
 

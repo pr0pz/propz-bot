@@ -4,11 +4,13 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import { type AccessToken, RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
+import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
 import { log } from '@propz/helpers.ts';
+
+import type { AccessToken } from '@twurple/auth';
 
 export class TwitchAuth
 {

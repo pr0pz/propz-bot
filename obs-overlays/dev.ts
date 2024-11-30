@@ -2,11 +2,12 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.3
  */
 
 import { serveDir } from '@std/http/file-server';
 import * as esbuild from 'esbuild';
+import { log } from '@propz/helpers.ts';
 
 const botUrl = Deno.env.get('BOT_URL') || '';
 const obsUrl = Deno.env.get( 'OBS_WEBSOCKET_URL' ) || '';
@@ -16,10 +17,22 @@ const consoleSuccess = Deno.env.get( 'CONSOLE_SUCCESS' ) || '';
 
 const rootDir = 'obs-overlays';
 const tmpDir = await Deno.makeTempDir();
+const clients = new Set<WebSocket>();
+let jsCtx;
+let cssCtx;
 
-async function requestHandler(req: Request): Promise<Response>
+function requestHandler(req: Request)
 {
 	const { pathname} = new URL( req.url );
+
+	// Add WebSocket endpoint for live reload
+	if ( pathname === '/esbuild' )
+	{
+		const { socket, response } = Deno.upgradeWebSocket(req);
+		clients.add(socket);
+		socket.onclose = () => clients.delete(socket);
+		return response;
+	}
 
 	// Serve files in /dist folder from temp folder
 	if ( pathname.startsWith( '/dist' ) )
@@ -43,23 +56,37 @@ async function requestHandler(req: Request): Promise<Response>
 	}
 
 	// Server public index.html as default response
-	const html = await Deno.readTextFile( `./${rootDir}/public/index.html`);
+	// Add websocket conenction for hot reload
+	const html = Deno.readTextFileSync( `./${rootDir}/public/index.html`).replace( '</body>', '<script>new WebSocket("ws://127.0.0.1:8000/esbuild").addEventListener("message", () => location.reload());</script></body>' );
 	return new Response( html, {
 		headers: { 'content-type': 'text/html' }
 	});
 }
 
-async function cleanup()
+function cleanup()
 {
-	await jsCtx.dispose();
-	await cssCtx.dispose();
-	await Deno.remove(tmpDir, { recursive: true });
-	console.log('› 🧹 Cleanup');
+	jsCtx.dispose();
+	cssCtx.dispose();
+	Deno.remove(tmpDir, { recursive: true });
+	log('🧹 Cleanup');
+	esbuild.stop();
+}
+
+function sendReload()
+{
+	for( const client of clients )
+	{
+		try {
+			client.send('reload');
+		} catch {
+			clients.delete(client);
+		}
+	}
 }
 
 try {
 	// Build JS bundle
-	const jsCtx = await esbuild.context({
+	jsCtx = await esbuild.context({
 		entryPoints: [ `${rootDir}/src/main.tsx` ],
 		bundle: true,
 		outfile: `${tmpDir}/bundle.js`,
@@ -74,16 +101,32 @@ try {
 			'process.env.OBS_WEBSOCKET_PORT': `"${obsPort}"`,
 			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`,
 			'process.env.CONSOLE_SUCCESS': `"${consoleSuccess}"`
-		}
+		},
+		plugins: [{
+			name: 'reload',
+			setup(build) {
+				build.onEnd(() => {
+					sendReload();
+				});
+			},
+		}]
 	});
 
 	// Build CSS file
-	const cssCtx = await esbuild.context({
+	cssCtx = await esbuild.context({
 		entryPoints: [ `${rootDir}/src/css/App.css`],
 		bundle: true,
 		outfile: `${tmpDir}/app.css`,
 		loader: { '.css': 'css' },
-		minify: true
+		minify: true,
+		plugins: [{
+			name: 'reload',
+			setup(build) {
+				build.onEnd(() => {
+					sendReload();
+				});
+			},
+		}]
 	});
 
 	// Start watching both contexts
@@ -92,14 +135,14 @@ try {
 		cssCtx.watch()
 	]);
 
-	console.log('› esbuild watching for changes...');
+	log('watching for changes...');
 
 	Deno.serve( { hostname: '127.0.0.1'}, requestHandler );
-	Deno.addSignalListener('SIGTERM', cleanup);
-	Deno.addSignalListener('SIGINT', cleanup);
+	Deno.addSignalListener( 'SIGTERM', cleanup );
+	Deno.addSignalListener( 'SIGINT', cleanup );
 }
-catch (error)
+catch ( error: unknown )
 {
-	console.error(error);
+	log( error );
 	Deno.exit(1);
 }

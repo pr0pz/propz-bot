@@ -4,11 +4,11 @@
  * https://dev.streamelements.com/docs/api-docs/5fff39cc30655-channel-redemptions
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import type { StreamElementsError, StreamElementsViewerStats } from '@propz/types.ts';
 import { log } from '@propz/helpers.ts';
+import type { StreamElementsError, StreamElementsViewerStats } from '@propz/types.ts';
 
 export class StreamElements
 {

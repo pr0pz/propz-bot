@@ -2,18 +2,25 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import {
-	type ApiClient,
-	type CommercialLength,
-	type HelixStream,
-	HelixUser
-} from '@twurple/api';
+import '@propz/prototypes.ts';
 
-import { type ChatMessage, ChatUser, parseChatMessage } from '@twurple/chat';
+import { HelixUser } from '@twurple/api';
+import { ChatUser, parseChatMessage } from '@twurple/chat';
+import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
+import { Youtube } from '../external/Youtube.ts';
+import { StreamElements } from '../external/StreamElements.ts';
+import { TwitchChat } from './TwitchChat.ts';
+import { TwitchEvents } from './TwitchEvents.ts';
+import { TwitchCommands } from './TwitchCommands.ts';
 
+import type { ApiClient, CommercialLength, HelixStream } from '@twurple/api';
+import type { ChatMessage } from '@twurple/chat';
+import type { Discord } from '../discord/Discord.ts';
+import type { BotData } from '../bot/BotData.ts';
+import type { BotWebsocket } from '../bot/BotWebsocket.ts';
 import type {
 	StreamData,
 	StreamDataApi,
@@ -28,17 +35,6 @@ import type {
 	KofiData
 } from '@propz/types.ts';
 
-import '@propz/helpers.ts';
-import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
-import type { Discord } from '../discord/Discord.ts';
-import { Youtube } from '../external/Youtube.ts';
-import { StreamElements } from '../external/StreamElements.ts';
-import type { BotData } from '../bot/BotData.ts';
-import type { BotWebsocket } from '../bot/BotWebsocket.ts';
-import { TwitchChat } from './TwitchChat.ts';
-import { TwitchEvents } from './TwitchEvents.ts';
-import { TwitchCommands } from './TwitchCommands.ts';
-
 export abstract class TwitchUtils
 {
 	// Controllers
@@ -51,7 +47,7 @@ export abstract class TwitchUtils
 	public commands: TwitchCommands;
 	
 	// Runtime vars
-	public isTesting: boolean = false;
+	public isDev: boolean = false;
 	public focus: boolean = false;
 	public streamFirstChatter: string = '';
 	public stream: HelixStream|null = null;
@@ -72,8 +68,8 @@ export abstract class TwitchUtils
 		this.setStreamFirstChatter( this.data.userName );
 
 		// Running localy for testing?
-		if ( Deno.args?.[0]?.toString() === 'test' )
-			this.isTesting = true;
+		if ( Deno.args?.[0]?.toString() === 'dev' )
+			this.isDev = true;
 	}
 
 	/** Set the current stream */

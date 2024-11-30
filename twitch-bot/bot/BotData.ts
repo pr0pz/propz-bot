@@ -2,12 +2,13 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
-import { type ApiClient, HelixUser } from '@twurple/api';
+import { HelixUser } from '@twurple/api';
 
+import type { ApiClient } from '@twurple/api';
 import type {
 	SimpleUser,
 	TwitchBadge,

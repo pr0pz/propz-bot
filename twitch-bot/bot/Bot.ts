@@ -2,11 +2,12 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.0.1
+ * @version 1.0.3
  */
 
-import '@propz/helpers.ts';
+import '@propz/prototypes.ts';
 import { log } from '@propz/helpers.ts';
+
 import type { Discord } from '../discord/Discord.ts';
 import type { Twitch } from '../twitch/Twitch.ts';
 import type { BotWebsocket } from './BotWebsocket.ts';

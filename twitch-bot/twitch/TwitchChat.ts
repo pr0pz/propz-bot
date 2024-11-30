@@ -2,26 +2,16 @@
  * Twitch Chat Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import '@propz/helpers.ts';
-import {
-	ChatClient,
-	type ChatCommunitySubInfo,
-	type ChatMessage,
-	type ChatPrimeCommunityGiftInfo,
-	type ChatRaidInfo,
-	type ChatSubGiftInfo,
-	type ChatSubGiftUpgradeInfo,
-	type ChatSubInfo,
-	type ChatSubUpgradeInfo,
-	type ClearChat,
-	type UserNotice
-} from '@twurple/chat';
-import type { HelixChatAnnouncementColor } from '@twurple/api';
+import '@propz/prototypes.ts';
+import { ChatClient } from '@twurple/chat';
 import { getRandomNumber, log } from '@propz/helpers.ts';
+
+import type { ChatCommunitySubInfo, ChatMessage, ChatPrimeCommunityGiftInfo, ChatRaidInfo, ChatSubGiftInfo, ChatSubGiftUpgradeInfo, ChatSubInfo, ChatSubUpgradeInfo, ClearChat, UserNotice } from '@twurple/chat';
 import type { TwitchUtils } from './TwitchUtils.ts';
+import type { HelixChatAnnouncementColor } from '@twurple/api';
 
 export class TwitchChat
 {

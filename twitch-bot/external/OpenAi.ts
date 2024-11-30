@@ -2,7 +2,7 @@
  * OpenAI
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 import { log } from '@propz/helpers.ts';

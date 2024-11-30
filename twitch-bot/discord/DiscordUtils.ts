@@ -2,15 +2,17 @@
  * Discord Helper
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import '@propz/helpers.ts';
+import '@propz/prototypes.ts';
 import puppeteer from 'puppeteer';
-import { AttachmentBuilder, EmbedBuilder, type GuildMember } from 'discord.js';
+import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
 import { log } from '@propz/helpers.ts';
-import type { GithubData, StreamData } from '@propz/types.ts';
 import { Buffer } from 'node:buffer';
+
+import type { GuildMember } from 'discord.js';
+import type { GithubData, StreamData } from '@propz/types.ts';
 
 export class DiscordUtils
 {

@@ -2,15 +2,16 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
+
+import { OpenAI } from '../external/OpenAi.ts';
+import { Youtube } from '../external/Youtube.ts';
+import { log } from '@propz/helpers.ts';
 
 import type { CommercialLength } from '@twurple/api';
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
-import { OpenAI } from '../external/OpenAi.ts';
-import { Youtube } from '../external/Youtube.ts';
 import type { TwitchUtils } from './TwitchUtils.ts';
-import { log } from '@propz/helpers.ts';
 
 export class TwitchCommands
 {
@@ -129,6 +130,10 @@ export class TwitchCommands
 				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-commands'
 			},
 			description: ''
+		},
+		delphin: {
+			aliases: [ 'delfin', 'dolphin', 'golfinho' ],
+			hasSound: true
 		},
 		discord: {
 			aliases: [ 'dc', 'ds' ],

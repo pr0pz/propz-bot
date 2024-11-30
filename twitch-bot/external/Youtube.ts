@@ -4,11 +4,11 @@
  * https://developers.google.com/youtube/v3/docs/search/list#usage
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import type { YoutubeApiResponse } from '@propz/types.ts';
 import { log } from '@propz/helpers.ts';
+import type { YoutubeApiResponse } from '@propz/types.ts';
 
 export class Youtube
 {

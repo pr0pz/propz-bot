@@ -2,16 +2,17 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
-import '@propz/helpers.ts';
+import '@propz/prototypes.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
+import { getMessage, sanitizeMessage } from '@propz/helpers.ts';
+
 import type { Discord } from '../discord/Discord.ts';
 import type { HelixUser } from '@twurple/api';
 import type { ChatMessage, ChatUser } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
-import { getMessage, sanitizeMessage } from '@propz/helpers.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
 import type { ApiRequest, ApiResponse, SimpleUser, TwitchCommandOptions } from '@propz/types.ts';
 

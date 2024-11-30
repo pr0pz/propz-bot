@@ -2,11 +2,12 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 import { getRewardSlug, log } from '@propz/helpers.ts';
+
 import type {
 	EventSubChannelAdBreakBeginEvent,
 	EventSubChannelFollowEvent,
