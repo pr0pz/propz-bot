@@ -2,7 +2,7 @@
  * Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import EventEmitter from 'events';
@@ -14,9 +14,8 @@ export default class WebsocketController
 	public websocketUrl: string;
 	public websocketEvents: EventEmitter = new EventEmitter();
 
-	constructor()
+	constructor( botUrl: string )
 	{
-		const botUrl = process.env.BOT_URL || '';
 		const websocketPrefix = botUrl.includes( 'localhost' ) ? 'ws' : 'wss';
 		this.websocketUrl = `${websocketPrefix}://${botUrl}/websocket`;
 	}
@@ -26,8 +25,8 @@ export default class WebsocketController
 		try {
 			this.ws = new WebSocket( this.websocketUrl );
 			this.ws.addEventListener( 'open', this.onOpen );
-			this.ws.addEventListener( 'close', this.onCloseOrError );
-			this.ws.addEventListener( 'error', this.onCloseOrError );
+			this.ws.addEventListener( 'close', this.onClose );
+			this.ws.addEventListener( 'error', this.onError );
 			this.ws.addEventListener( 'message', this.onMessage );
 		}
 		catch( error: unknown ) { log( error ) }
@@ -37,13 +36,13 @@ export default class WebsocketController
 	{
 		if ( !this.ws ) return;
 		this.ws.removeEventListener( 'open', this.onOpen );
-		this.ws.removeEventListener( 'close', this.onCloseOrError );
-		this.ws.removeEventListener( 'error', this.onCloseOrError );
+		this.ws.removeEventListener( 'close', this.onClose );
+		this.ws.removeEventListener( 'error', this.onError );
 		this.ws.removeEventListener( 'message', this.onMessage );
 		this.ws = null;
 	}
 
-	onOpen = () =>
+	onOpen = ( _event: Event ) =>
 	{
 		log( 'Connected to propz-bot' );
 		// Pings in regular intervals
@@ -54,21 +53,26 @@ export default class WebsocketController
 		}, 10000 );
 	}
 
-	onCloseOrError = ( event: unknown ) =>
+	onClose = ( event: CloseEvent ) =>
 	{
-		log( event );
+		log( event.reason );
 		this.disconnect();
 		setTimeout( () => this.connect(), 5000 );
 	}
 
-	onMessage = ( event: unknown ) =>
+	onError = ( event: Event ) =>
 	{
-		let data = null;
-		if ( !event || !('data' in event) ) return;
-
-		try { data = JSON.parse( event.data ); }
-		catch ( error: unknown ) { log( error ); return; }
-
-		this.websocketEvents.emit( 'message', { detail: data });
+		log( new Error( `Websocket error: ${event.type}` ) );
+		this.disconnect();
+		setTimeout( () => this.connect(), 5000 );
+	}
+	
+	onMessage = ( event: MessageEvent ) =>
+	{
+		try {
+			const data = JSON.parse( event.data );
+			this.websocketEvents.emit( 'message', { detail: data });
+		}
+		catch ( error: unknown ) { log( error ) }
 	}
 }

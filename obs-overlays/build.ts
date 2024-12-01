@@ -51,7 +51,10 @@ try {
 			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`,
 			'process.env.CONSOLE_SUCCESS': `"${consoleSuccess}"`
 		},
-		minify: true
+		minify: true,
+		alias: {
+			'@propz': './shared/',
+		}
 	});
 
 	// Build CSS bundle

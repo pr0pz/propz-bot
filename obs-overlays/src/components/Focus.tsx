@@ -2,7 +2,7 @@
  * Focus Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from "react";
@@ -11,15 +11,11 @@ import { useEvent } from '../EventContext.tsx';
 const Focus = () =>
 {
 	const event = useEvent();
-	const [ focusLength, setFocusLength ] = useState( 0 );
+	const [ focusLength, setFocusLength ] = useState<number>( 0 );
 
 	useEffect( () =>
 	{
-		if (
-			!event ||
-			!event.detail?.type ||
-			event.detail.type !== 'focusstart'
-		) return;
+		if ( event?.detail?.type !== 'focusstart' ) return;
 
 		// Minutes
 		setFocusLength( event.detail.count );
@@ -30,14 +26,14 @@ const Focus = () =>
 			setFocusLength( 0 );
 		}, timeOutLength );
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 
 	if ( !focusLength ) return;
 
 	return(
 		<div id="focus" className="radius border shadow" style={{ animationDuration: `${ focusLength * 60 }s` }}>
 			<div id="focus-inner">
-				<div>Focus! </div>
+				<div>Focus!</div>
 				<FocusTimer length={ focusLength } />
 			</div>
 		</div>
@@ -52,10 +48,10 @@ export default Focus;
  * @param {object} props 
  * @returns 
  */
-const FocusTimer = ( propz ) =>
+const FocusTimer = ( propz: { length: number } ) =>
 {
-	const [minutes, setMinutes] = useState( Math.floor( propz.length ) );
-	const [seconds, setSeconds] = useState( 0 );
+	const [minutes, setMinutes] = useState<number>( Math.floor( propz.length ) );
+	const [seconds, setSeconds] = useState<number>( 0 );
 
 	useEffect(() =>
 	{

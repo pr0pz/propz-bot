@@ -1,5 +1,5 @@
 {
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"nodeModulesDir":"auto",
 	"fmt": {
 		"singleQuote": true,
@@ -29,26 +29,6 @@
 		"build": "deno run -A --env-file ./obs-overlays/build.ts"
 	},
 	"imports": {
-		"@propz/": "./shared/",
-		"@std/fs": "jsr:@std/fs@^1.0.6",
-		"@std/http": "jsr:@std/http@^1.0.11",
-		"@twurple/auth": "npm:@twurple/auth@^7.2.0",
-		"@twurple/api": "npm:@twurple/api@^7.2.0",
-		"@twurple/chat": "npm:@twurple/chat@^7.2.0",
-		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.2.0",
-		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.2.0",
-		"discord.js": "npm:discord.js@14.16.3",
-		"esbuild": "npm:esbuild@^0.24.0",
-		"events": "npm:events@^3.3.0",
-		"html-react-parser": "npm:html-react-parser@^5.1.18",
-		"obs-websocket-js": "npm:obs-websocket-js@^5.0.6",
-		"openai": "jsr:@openai/openai@^4.71.1",
-		"puppeteer": "npm:puppeteer@^23.9.0",
-		"sharp": "npm:sharp@^0.33.5",
-		"react": "npm:react@18.3.1",
-		"react-dom": "npm:react-dom@18.3.1",
-		"react-dom/client": "npm:react-dom@18.3.1/client",
-		"react-router-dom": "npm:react-router-dom@7.0.1",
-		"usb": "npm:usb@^2.14.0"
+		"@propz/": "./shared/"
 	}
 }

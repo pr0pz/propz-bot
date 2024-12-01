@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -376,7 +376,7 @@ export class BotData
 
 		for( const [rewardSlug, reward] of Object.entries( rewards ) )
 		{
-			if ( reward.id === 0 )
+			if ( reward.id === '' )
 			{
 				try
 				{

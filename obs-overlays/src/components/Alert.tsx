@@ -2,14 +2,14 @@
  * Single ALert
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from "react";
 import { useEvent } from '../EventContext.tsx';
 import { log } from '../../../shared/helpers.ts';
 
-const Alert = ( propz ) =>
+const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: string; title: string; count: number; user: string; profilePictureUrl?: string; key: string } ) =>
 {
 	const event = useEvent();
 	const [tts, setTts] = useState( null );
@@ -22,12 +22,7 @@ const Alert = ( propz ) =>
 	// Reset Playstate
 	useEffect( () =>
 	{
-		if (
-			!event ||
-			!event?.detail?.text ||
-			event.detail.text !== '!clear'
-		) return;
-
+		if ( event.detail?.text !== 'clear' ) return;
 		setTtsPlaystate( false );
 	},
 	[event]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -105,7 +100,7 @@ const Alert = ( propz ) =>
 	 * @param {string} userName 
 	 * @returns {React.JSX.Element}
 	 */
-	const splitUpUsername = ( userName ) =>
+	const splitUpUsername = ( userName: string ) =>
 	{
 		const userNameLetter = userName.split('');
 		const userNameSplitted = userNameLetter.map( ( letter, index ) => {

@@ -2,5 +2,17 @@
 	"name": "@propz/bot",
 	"exports": {
 		".": "./main.ts"
+	},
+	"imports": {
+		"@std/fs": "jsr:@std/fs@^1.0.6",
+		"@std/node": "jsr:@std/node@^1.0.6",
+		"@twurple/auth": "npm:@twurple/auth@^7.2.0",
+		"@twurple/api": "npm:@twurple/api@^7.2.0",
+		"@twurple/chat": "npm:@twurple/chat@^7.2.0",
+		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.2.0",
+		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.2.0",
+		"discord.js": "npm:discord.js@14.16.3",
+		"openai": "jsr:@openai/openai@^4.71.1",
+		"puppeteer": "npm:puppeteer@^23.9.0"
 	}
 }

@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -18,8 +18,8 @@ const consoleSuccess = Deno.env.get( 'CONSOLE_SUCCESS' ) || '';
 const rootDir = 'obs-overlays';
 const tmpDir = await Deno.makeTempDir();
 const clients = new Set<WebSocket>();
-let jsCtx;
-let cssCtx;
+let jsCtx: any;
+let cssCtx: any;
 
 function requestHandler(req: Request)
 {
@@ -109,7 +109,10 @@ try {
 					sendReload();
 				});
 			},
-		}]
+		}],
+		alias: {
+			'@propz': './shared/',
+		}
 	});
 
 	// Build CSS file

@@ -2,7 +2,7 @@
  * AdBreakBanner
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from "react";
@@ -11,15 +11,13 @@ import { useEvent } from '../EventContext.tsx';
 const AdBreakBox = () =>
 {
 	const event = useEvent();
-	const [ adBreakLength, setAdBreakLength ] = useState( 0 );
+	const [ adBreakLength, setAdBreakLength ] = useState<number>( 0 );
 
 	useEffect( () =>
 	{
 		if (
-			!event ||
-			!event.detail?.type ||
-			!event.detail.count ||
-			event.detail.type !== 'adbreak'
+			!event?.detail?.count ||
+			event?.detail?.type !== 'adbreak'
 		) return;
 
 		setAdBreakLength( event.detail.count );
@@ -30,7 +28,7 @@ const AdBreakBox = () =>
 			setAdBreakLength( 0 );
 		}, timeOutLength );
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 
 	if ( !adBreakLength ) return;
 
@@ -57,13 +55,12 @@ export default AdBreakBox;
 /**
  * Pretime (time passed)
  * 
- * @param {object} props 
- * @returns 
+ * @param {object} propz 
  */
-const AdBreakTimer = ( propz ) =>
+const AdBreakTimer = ( propz: { length: number } ) =>
 {
-	const [minutes, setMinutes] = useState( Math.floor( propz.length / 60 ) );
-	const [seconds, setSeconds] = useState( Math.floor( propz.length % 60 ) );
+	const [minutes, setMinutes] = useState<number>( Math.floor( propz.length / 60 ) );
+	const [seconds, setSeconds] = useState<number>( Math.floor( propz.length % 60 ) );
 
 	useEffect(() =>
 	{

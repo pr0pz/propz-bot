@@ -1,1 +1,11 @@
-{}
+{
+	"name": "@propz/local-scripts",
+	"exports": {
+		".": "./main.ts"
+	},
+	"imports": {
+		"puppeteer": "npm:puppeteer@^23.9.0",
+		"sharp": "npm:sharp@^0.33.5",
+		"usb": "npm:usb@^2.14.0"
+	}
+}

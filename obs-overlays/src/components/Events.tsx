@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from 'react';
@@ -10,34 +10,26 @@ import { useEvent } from '../EventContext.tsx';
 import Event from './Event.tsx';
 import { log } from '../../../shared/helpers.ts';
 
+import type { TwitchEventData, WebSocketData } from '../../../shared/types.ts';
+
 const Events = () =>
 {
 	const event = useEvent();
-	const [events, setEvents] = useState([]);
+	const [events, setEvents] = useState<typeof Event[]>([]);
 
 	useEffect( () =>
 	{
 		if ( event )
 		{
-			if (
-				!event?.detail?.type ||
-				!event.detail?.extra?.titleEvent
-			) return;
-
+			if ( !event.detail?.extra?.titleEvent ) return;
 			processEvent( event.detail );
 		}
 
-		// Get initiale vents
 		setInitialEvents();
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 	
-
-	/**
-	 * Initialy fill events
-	 * 
-	 * @returns {void}
-	 */
+	/** Initialy fill events */
 	const setInitialEvents = async () =>
 	{
 		const fetchOptions = {
@@ -52,13 +44,15 @@ const Events = () =>
 			const response = await fetch( `https://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
 	
-			data.data.slice(-5).forEach( (event) =>
+			data.data.slice(-5).forEach( (event: TwitchEventData) =>
 			{
-				const eventDetails = {
+				const eventDetails: WebSocketData = {
 					'key': crypto.randomUUID(),
 					'type': event.eventType,
 					'user': event.eventUsername,
-					'count': event.eventCount,
+					'text': '',
+					'count': event.eventCount || 0,
+					'color': '',
 					'extra': event.extra
 				}
 				processEvent( eventDetails );
@@ -67,21 +61,19 @@ const Events = () =>
 		catch ( error: unknown ) { log( error ) }
 	}
 
-
-	/**
-	 * Process incoming events.
+	/** Process incoming events.
 	 * 
-	 * @param {Object} eventDetails All event details
+	 * @param {WebSocketData} eventDetails All event details
 	 */
-	const processEvent = ( eventDetails ) =>
+	const processEvent = ( eventDetails: WebSocketData ) =>
 	{
 		if ( !eventDetails || !eventDetails?.type ) return;
 
-		const newEvent = <Event user={ eventDetails.user } key={ eventDetails.key } title={ eventDetails.extra.titleEvent ?? '' } count={ eventDetails.count || 0 } />;
+		const newEvent = <Event type={ eventDetails.type } user={ eventDetails.user } key={ eventDetails.key } title={ eventDetails.extra!.titleEvent ?? '' } count={ eventDetails.count || 0 } />;
 
-		setEvents( (prevEvents) =>
+		setEvents( (prevEvents: typeof Event[]) =>
 		{
-			let updatedEvents = [...prevEvents];
+			const updatedEvents = [...prevEvents];
 			updatedEvents.unshift( newEvent );
 
 			if ( updatedEvents.length > 6 )
@@ -93,7 +85,7 @@ const Events = () =>
 
 	return(
 		<section id="events">
-			{ events.map( (event, index) => ( event ) ) }
+			{ events.map( (event, _index) => ( event ) ) }
 		</section>
 	);
 }

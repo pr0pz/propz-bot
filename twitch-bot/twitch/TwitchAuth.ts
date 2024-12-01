@@ -4,16 +4,18 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
 import { log } from '@propz/helpers.ts';
+import { ensureDir } from '@std/fs';
 
 import type { AccessToken } from '@twurple/auth';
 
 export class TwitchAuth
 {
+	private authFolder: string;
 	private authFile: string;
 	private authProvider: RefreshingAuthProvider|null = null;
 	private scopes = [
@@ -87,7 +89,8 @@ export class TwitchAuth
 
 	constructor()
 	{
-		this.authFile = `./twitch-bot/config/auth/twitch_${ this.userId }_${ this.tokenFileNonce }.json`;
+		this.authFolder = `./twitch-bot/config/auth`;
+		this.authFile = `${this.authFolder}/twitch_${ this.userId }_${ this.tokenFileNonce }.json`;
 
 		this.authProvider = new RefreshingAuthProvider({
 			clientId: this.clientId,
@@ -109,6 +112,7 @@ export class TwitchAuth
 	/** Get tokenData for further auth process */
 	private async getTokenData(): Promise<AccessToken|undefined>
 	{
+		await ensureDir( this.authFolder );
 		try {
 			const newTokenData = Deno.readTextFileSync( this.authFile );
 			log( `Tokendata ready (from file)` );

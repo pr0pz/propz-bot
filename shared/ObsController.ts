@@ -2,7 +2,7 @@
  * OBS Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import OBSWebSocket from 'obs-websocket-js';
@@ -19,6 +19,7 @@ export default class ObsController
 		this.obs.on( 'ConnectionClosed', this.onConnectionClosed );
 	}
 
+	/** Connenct to OBS */
 	async connect()
 	{
 		const obsUrl = process.env.OBS_WEBSOCKET_URL || '';
@@ -37,15 +38,12 @@ export default class ObsController
 		try
 		{
 			await this.obs.connect( 'ws://' + obsUrl + ':' + obsPort, obsPassword );
-			log( 'OBS Connected' );
+			log( 'OBS connected' );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			setTimeout( () => this.connect(), 30000 );
-		}
+		catch ( _error: unknown ) { /* Don't do anything here, onConnectionClosed gets triggered */ }
 	}
 
+	/** Send command to OBS */
 	async sendCommands( commands: ObsData|ObsData[] )
 	{
 		if ( !commands ) return;
@@ -67,9 +65,10 @@ export default class ObsController
 		catch ( error: unknown ) { log( error ) }
 	}
 
-	onConnectionClosed = ( error: unknown ) =>
+	/** Fire on connection close */
+	onConnectionClosed = ( _error: unknown ) =>
 	{
-		log( error );
+		log( new Error( 'OBS connection closed. Reconnecting in 30s' ) );
 		setTimeout( () => this.connect(), 30000 );
 	}
 }

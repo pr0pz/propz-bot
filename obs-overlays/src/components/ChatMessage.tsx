@@ -2,31 +2,26 @@
  * Single Chat message
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import parse from 'html-react-parser';
 import { useEvent } from '../EventContext.tsx';
 import { useEffect, useState } from 'react';
 
-const ChatMessage = ( propz ) =>
+const ChatMessage = ( propz: { message: string; user: string; color?: string; key: string } ) =>
 {
 	const event = useEvent();
-	const [chatMessage, setMessage] = useState( propz.message );
-	const [chatUser, setUser] = useState( propz.user );
+	const [chatMessage, setMessage] = useState<string>( propz.message );
+	const [chatUser, setUser] = useState<string>( propz.user );
 
 	useEffect( () =>
 	{
-		if (
-			!event ||
-			!event?.detail?.text ||
-			event.detail.text !== '!clear'
-		) return;
-
+		if ( event?.detail?.text !== 'clear' ) return;
 		setMessage( '*** STREAM HYGIENE ***' );
 		setUser( '*** STREAM HYGIENE ***' );
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 	
 	return (
 		<li className='chat-message-wrapper browser radius border shadow'>
@@ -35,7 +30,7 @@ const ChatMessage = ( propz ) =>
 			</div>
 			<div className='chat-message browser-body'>{ parse( chatMessage ) }</div>
 		</li>
-	)
+	);
 }
 
 export default ChatMessage;

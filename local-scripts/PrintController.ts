@@ -2,7 +2,7 @@
  * Printer Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import usb from 'usb';
@@ -10,7 +10,7 @@ import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 import { Buffer } from 'node:buffer'; // To download images if necessary
 import { log } from '@propz/helpers.ts';
-import type { ImageBuffer, Pixel, PrintAlertEvents } from '@propz/types.ts';
+import type { ImageBuffer, Pixel, PrintAlertEvents, WebSocketData } from '@propz/types.ts';
 
 export default class PrintController
 {
@@ -77,12 +77,12 @@ export default class PrintController
 	private VID = 0x04b8;
 	private PID = 0x0202;
 
-	public async print( eventDetail: unknown )
+	public async print( eventDetail: WebSocketData )
 	{
 		if ( !eventDetail ) return;
 		const {type, user, count = 0} = eventDetail;
 
-		const dataToPrint = await this.setupData( type, user, count );
+		const dataToPrint = await this.setupData( type, user, count || 0 );
 		if ( !dataToPrint ) return;
 		
 		this.printData( dataToPrint );

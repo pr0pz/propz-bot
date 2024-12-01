@@ -312,6 +312,7 @@ export interface SimpleUser {
 }
 
 export interface WebSocketData {
+	key: string,
 	type: string;
 	user: string;
 	text: string;

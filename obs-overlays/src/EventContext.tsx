@@ -2,12 +2,12 @@
  * Global event context
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import WebsocketController from '../../shared/websocket.ts';
-import ObsController from '../../shared/ObsController.ts';
+import WebsocketController from '@propz/websocket.ts';
+// import ObsController from '@propz/ObsController.ts';
 
 const EventContext = createContext();
 
@@ -19,22 +19,25 @@ export const useEvent = () =>
 export const EventProvider = ({ children }) =>
 {
 	const [event, setEvent] = useState( null );
-	const websocketController = new WebsocketController();
-	const obsController = new ObsController();
+	const websocketController = new WebsocketController( process.env.BOT_URL || '' );
+	// const obsController = new ObsController();
 
 	useEffect( () =>
 	{
-		// Build websocket connection
 		websocketController.connect();
-		obsController.connect();
+		//obsController.connect();
 
-		const eventHandler = ( event ) =>
+		const eventHandler = ( event: CustomEvent ) =>
 		{
-			if ( !event?.detail?.type ) return;
-			event.detail.key = crypto.randomUUID();
+			if (
+				!event?.detail?.type ||
+				event?.detail?.type === 'pong'
+			) return;
+			
+			console.table( event.detail );
 
-			if ( event?.details?.obs )
-				obsController.sendCommands( event.details.obs );
+			// if ( event?.detail?.obs )
+			// 	obsController.sendCommands( event.detail.obs );
 
 			setEvent( event );
 		}

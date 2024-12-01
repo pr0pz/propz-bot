@@ -2,57 +2,41 @@
  * LED Display Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import { log } from '../../../shared/helpers.ts';
 
+import type { WebSocketData } from '../../../shared/types.ts';
+
 const LedDisplay = () =>
 {
-	const [currentEvent, setEvent] = useState();
-	const [eventQueue, setEventQueue] = useState([]);
-	const [isAnimating, setIsAnimating] = useState(false);
+	const [currentEvent, setEvent] = useState<WebSocketData>();
+	const [eventQueue, setEventQueue] = useState<WebSocketData[]>([]);
+	const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
 	const event = useEvent();
-	const events = [ 'cheer', 'rewardtts' ];
+	const events = new Set([ 'cheer', 'rewardtts' ]);
 
 	useEffect( () =>
 	{
-		if ( !event ) return;
-
-		if (
-			event.detail?.text &&
-			event.detail.text === '!clear'
-		)
+		if ( event?.detail?.text === 'clear' )
 		{
 			setEvent();
 			return;
 		}
 		
-		if (
-			!event.detail?.type ||
-			!events.includes( event.detail.type )
-		) return;
-
+		if ( !events.has( event.detail.type ) ) return;
 		enqueueEvent( event.detail );
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 
-	// Handling event queue
-	useEffect( () =>
-	{
-		processEventQueue();
-	},
-	[ eventQueue, isAnimating, currentEvent ]) // eslint-disable-line react-hooks/exhaustive-deps
+	useEffect( () => processEventQueue(), [ eventQueue, isAnimating, currentEvent ]);
 
-	/**
-	 * Process Event queue.
-	 * 
-	 * @returns {void}
-	 */
-	const processEventQueue = async () =>
+	/** Process Event queue */
+	const processEventQueue = () =>
 	{
 		// Wait for animation to end
 		if ( isAnimating || eventQueue.length === 0 ) return;
@@ -68,67 +52,45 @@ const LedDisplay = () =>
 		// Timeout könnte optional sein, abhängig von der gewünschten Logik
 		setTimeout( () =>
 		{
-			setEventQueue( (eventQueue) => eventQueue.slice(1) );
+			setEventQueue( (eventQueue: WebSocketData[]) => eventQueue.slice(1) );
 			setIsAnimating( false );
 			// ??
 			// Remove to test
 			setEvent();
 			log( `timeout passed` );
 		}, 20000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
-	};
-
-	/**
-	 * Enqueue event in waitlist
-	 * 
-	 * @param {Object} event 
-	 */
-	const enqueueEvent = ( eventDetails ) => {
-		setEventQueue( prevEvents => [...prevEvents, eventDetails] );
-		log( `enqueueEvent - ${ eventDetails.type }` );
-	};
-
-	/**
-	 * Process incoming events.
-	 * 
-	 * eventDetails {
-		color: '#ffff00'
-		count: 9
-		key: '998c075d-df99-4eaa-9b62-117507b1be2a'
-		profilePictureUrl: 'https://static-cdn.jtvnw.net/jtv_user_pictures/17cfddab-98e3-4a74-ae9e-366ededf0c8e-profile_image-300x300.png'
-		text: ''
-		type: 'raid'
-		user: 'PropzMaster'
 	}
+
+	/** Enqueue event in waitlist
+	 * 
+	 * @param {WebSocketData} eventDetails 
+	 */
+	const enqueueEvent = ( eventDetails: WebSocketData ) =>
+	{
+		setEventQueue( (prevEvents: WebSocketData[]) => [...prevEvents, eventDetails] );
+		log( `enqueueEvent - ${ eventDetails.type }` );
+	}
+
+	/** Process incoming events.
 	 * 
 	 * @param {Object} eventDetails All event details
 	 */
-	const processEvent = ( eventDetails ) =>
+	const processEvent = ( eventDetails: WebSocketData ) =>
 	{
-		if ( !eventDetails || !eventDetails?.type ) return;
-
-		if ( events.includes( eventDetails.type ) )
-		{
-			setEvent( eventDetails );
-			log( `Message processed: ${ eventDetails.type }` );
-		}
-		else
-		{
-			setEvent();
-		}
+		setEvent( eventDetails );
+		log( `Message processed: ${ eventDetails.type }` );
 	}
 
-	/**
-	 * Render current event.
+	/** Render current event.
 	 * 
-	 * @param {Object} data 
-	 * @returns {React.JSX.Element}
+	 * @param {WebSocketData} eventDetails
 	 */
-	const renderEvent = ( data ) =>
+	const renderEvent = ( eventDetails: WebSocketData ) =>
 	{
-		if ( !data ) return;
-		const text = `${ data.user }: ${ data.text }`;
+		if ( !eventDetails ) return;
+		const text = `${ eventDetails.user }: ${ eventDetails.text }`;
 		// eslint-disable-next-line
-		return <marquee scrollamount="20px" scrolldelay="120" style={{ color:data.color }}>{ text }</marquee>;
+		return <marquee scrollamount="20px" scrolldelay="120" style={{ color:eventDetails.color }}>{ text }</marquee>;
 	}
 
 	if ( !currentEvent ) return;

@@ -2,10 +2,10 @@
  * Single Event
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.4
  */
 
-const Event = ( propz ) =>
+const Event = ( propz: { type: string; count: number; title: string; user: string; key: string } ) =>
 {
 	return(
 		<div className={ `event event-${ propz.type }` }>

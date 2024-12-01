@@ -2,5 +2,9 @@
 	"name": "@propz/shared",
 	"exports": {
 		".": "./helper.ts"
+	},
+	"imports": {
+		"events": "npm:events@^3.3.0",
+		"obs-websocket-js": "npm:obs-websocket-js@^5.0.6"
 	}
 }

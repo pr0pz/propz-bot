@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.4
  */
 
 import { useEffect, useState } from 'react';
@@ -17,27 +17,27 @@ const Mediaboard = () =>
 
 	useEffect( () =>
 	{
+		if ( event.detail?.text === 'clear' )
+		{
+			setMediaQueue();
+			setIsPlaying(false);
+			return;
+		}
+
 		if (
-			(
-				!event?.detail?.hasSound &&
-				!event?.detail?.hasVideo
-			) ||
-			!event.detail.type
+			!event?.detail?.hasSound &&
+			!event?.detail?.hasVideo
 		) return;
 
 		const mediaName = event.detail.type === 'command' ? event.detail.text.replace( '!', '' ) : event.detail.type;
 		enqueueMedia( mediaName );
 	},
-	[event]) // eslint-disable-line react-hooks/exhaustive-deps
+	[event]);
 
-	useEffect( () =>
-	{
-		processMediaQueue();
-	},
-	[ mediaQueue, isPlaying ]) // eslint-disable-line react-hooks/exhaustive-deps
+	useEffect( () => processMediaQueue(), [ mediaQueue, isPlaying ] );
 
 	/** Process Event queue */
-	const processMediaQueue = async () =>
+	const processMediaQueue = () =>
 	{
 		if ( isPlaying || mediaQueue.length === 0 ) return;
 		setIsPlaying( true );
@@ -48,14 +48,15 @@ const Mediaboard = () =>
 
 	/** Enqueue event in waitlist
 	 * 
-	 * @param {Object} event 
+	 * @param {string} mediaName 
 	 */
 	const enqueueMedia = ( mediaName: string ) =>
 	{
-		setMediaQueue( prevEvents => [...prevEvents, mediaName] );
+		setMediaQueue( (prevEvents: string[]) => [...prevEvents, mediaName] );
 		log( `enqueueMedia - ${ mediaName }` );
 	};
 
+	/** Play audio file */
 	const playAudio = ( mediaName: string ) =>
 	{
 		try {
@@ -67,7 +68,7 @@ const Mediaboard = () =>
 				audio.pause();
 				audio.currentTime = 0;
 				setIsPlaying(false);
-				setMediaQueue( mediaQueue => mediaQueue.slice(1));
+				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1));
 				return;
 			});
 
@@ -78,29 +79,30 @@ const Mediaboard = () =>
 				audio.pause();
 				audio.currentTime = 0;
 				setIsPlaying( false );
-				setMediaQueue( mediaQueue => mediaQueue.slice(1) );
+				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1) );
 			});
 		}
 		catch( error: unknown ) { log( error ) }
 	}
 
-	const playVideo = ( mediaName ) =>
+	/** Play video file */
+	const playVideo = ( mediaName: string ) =>
 	{
-		const video = document.createElement('video');
-		video.src = `video/video-${mediaName}.webm`;
-		video.id = 'videoboard';
-		video.volume = 1;
-		video.loop = false;
-		//video.addEventListener( 'error', () => {} );
-
 		try {
+			const video = document.createElement('video');
+			video.src = `video/video-${mediaName}.webm`;
+			video.id = 'videoboard';
+			video.volume = 1;
+			video.loop = false;
+			//video.addEventListener( 'error', () => {} );
+
 			document.body.appendChild(video);
 
 			video.play().catch((_error) => {
 				log( new Error( `Couldn't play video file ${mediaName}` ) );
 				video.remove();
 				setIsPlaying(false);
-				setMediaQueue( mediaQueue => mediaQueue.slice(1));
+				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1));
 				return;
 			});
 
@@ -112,7 +114,7 @@ const Mediaboard = () =>
 				video.currentTime = 0;
 				video.remove();
 				setIsPlaying( false );
-				setMediaQueue( mediaQueue => mediaQueue.slice(1) );
+				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1) );
 			});
 		}
 		catch( error: unknown ) { log( error )}
