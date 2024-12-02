@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.8
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -120,6 +120,7 @@ try {
 		entryPoints: [ `${rootDir}/src/css/App.css`],
 		bundle: true,
 		outfile: `${tmpDir}/app.css`,
+		target: ['chrome103'],
 		loader: { '.css': 'css' },
 		minify: true,
 		plugins: [{

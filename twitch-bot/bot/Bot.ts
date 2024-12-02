@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.8
  */
 
 import '@propz/prototypes.ts';
@@ -70,6 +70,9 @@ export class Bot
 	 */
 	private handleWebsocket( req: Request ): Response
 	{
+		if ( req.headers.get( 'upgrade' ) !== 'websocket' )
+			return new Response( null, { status: 400 } );
+		
 		const { socket, response } = Deno.upgradeWebSocket( req );
 		const wsId: string = crypto.randomUUID();
 

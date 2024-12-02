@@ -2,7 +2,7 @@
  * This file builds the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.2
+ * @version 1.0.8
  */
 
 import * as esbuild from 'esbuild';
@@ -61,6 +61,7 @@ try {
 	const cssCtx = await esbuild.context({
 		entryPoints: [ `${rootDir}/src/css/App.css` ],
 		bundle: true,
+		target: [ 'chrome103' ],
 		outfile: `${rootDir}/build/dist/app.css`,
 		loader: { '.css': 'css' },
 		minify: true
