@@ -2,7 +2,7 @@
  * Focus Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.6
  */
 
 import { useEffect, useState } from "react";
@@ -15,7 +15,10 @@ const Focus = () =>
 
 	useEffect( () =>
 	{
-		if ( event?.detail?.type !== 'focusstart' ) return;
+		if (
+			!event ||
+			event.detail.type !== 'focusstart'
+		) return;
 
 		// Minutes
 		setFocusLength( event.detail.count );

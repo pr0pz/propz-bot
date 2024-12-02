@@ -2,7 +2,7 @@
  * Display
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.6
  */
 
 #leddisplay {
@@ -15,6 +15,7 @@
 	height:var(--led-display-height);
 	width:100%;
 	padding: 0 1rem 1rem 0;
+}
 
 	@keyframes led-display-slidein {
 		0%{top:calc( var(--led-display-height) * -1 );opacity:0}
@@ -22,7 +23,6 @@
 		99%{top:0rem;opacity:1}
 		100%{top:calc( var(--led-display-height) * -1 );opacity:0}
 	}
-}
 
 	marquee {
 		background: var(--color-primary);

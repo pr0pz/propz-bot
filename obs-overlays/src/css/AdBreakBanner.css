@@ -2,7 +2,7 @@
  * Ad Break Banner
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.6
  */
 
 #ad-break-box {
@@ -16,6 +16,7 @@
 	top: -4rem;
 	animation: ad-break-slidein 180s ease-in-out;
 	overflow: hidden;
+}
 
 	@keyframes ad-break-slidein {
 		0%{top:-4rem;opacity:0}
@@ -23,7 +24,6 @@
 		99%{top:4rem;opacity:1}
 		100%{top:-4rem;opacity:0}
 	}
-}
 
 	#ad-break-inner {
 		position: relative;
