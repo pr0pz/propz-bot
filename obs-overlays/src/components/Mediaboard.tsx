@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.5
  */
 
 import { useEffect, useState } from 'react';
@@ -17,7 +17,8 @@ const Mediaboard = () =>
 
 	useEffect( () =>
 	{
-		if ( event.detail?.text === 'clear' )
+		if ( !event ) return;
+		if ( event.detail.text === 'clear' )
 		{
 			setMediaQueue();
 			setIsPlaying(false);
@@ -25,11 +26,15 @@ const Mediaboard = () =>
 		}
 
 		if (
-			!event?.detail?.hasSound &&
-			!event?.detail?.hasVideo
+			!event.detail.hasSound &&
+			!event.detail.hasVideo
 		) return;
 
-		const mediaName = event.detail.type === 'command' ? event.detail.text.replace( '!', '' ) : event.detail.type;
+		/**
+		 * text = command to lower case
+		 * type = rewards -> alle sound/video rewards haben keinen text
+		 */
+		const mediaName = event.detail.type.startsWith( 'reward' ) ? event.detail.type : event.detail.text;
 		enqueueMedia( mediaName );
 	},
 	[event]);

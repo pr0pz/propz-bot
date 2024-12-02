@@ -20,12 +20,12 @@ const init = () =>
 
 	const printController = new PrintController();
 
-	ws.websocketEvents.on( 'message', async ( event ) =>
+	ws.websocketEvents.on( 'message', async ( event: CustomEvent ) =>
 	{
 		if ( !event?.detail?.type ) return;
 
-		if ( event?.details?.obs )
-			obs.sendCommands( event.details.obs );
+		if ( event?.detail?.obs )
+			obs.sendCommands( event.detail.obs );
 
 		await printController.print( event.detail );
 	});
