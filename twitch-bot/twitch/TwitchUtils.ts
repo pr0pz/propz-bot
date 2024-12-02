@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.7
  */
 
 import '@propz/prototypes.ts';
@@ -337,9 +337,9 @@ export abstract class TwitchUtils
 				messageParts.push( `<img src='${ emotes[ messagePart.name ] }' alt='${ messagePart.name }' class='emote emote-known' />` );
 			}
 			// Replace unknown Emotes
-			else
+			else if ( messagePart.type === 'emote' )
 			{
-				messageParts.push( `<img src='https://static-cdn.jtvnw.net/emoticons/v2/${ emotes[ messagePart.name ] }/static/dark/3.0' alt='${ messagePart.name }' class='emote emote-unknown' />` );
+				messageParts.push( `<img src='https://static-cdn.jtvnw.net/emoticons/v2/${ messagePart.id }/static/dark/3.0' alt='${ messagePart.name }' class='emote emote-unknown' />` );
 			}
 		}
 
