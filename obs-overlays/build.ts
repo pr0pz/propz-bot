@@ -2,7 +2,7 @@
  * This file builds the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.0.10
  */
 
 import * as esbuild from 'esbuild';
@@ -29,7 +29,7 @@ try {
 
 	// Copy public files to build directory
 	await copy( `${rootDir}/public`, `${rootDir}/build`, { overwrite: true });
-	console.log('› 📋 Copied public files');
+	log('📋 Copied public files');
 
 	// Build JS bundle
 	const jsCtx = await esbuild.context({
