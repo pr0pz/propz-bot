@@ -2,7 +2,7 @@
  * Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.9
  */
 
 import EventEmitter from 'events';
@@ -44,7 +44,7 @@ export default class WebsocketController
 
 	onOpen = ( _event: Event ) =>
 	{
-		log( 'Connected to propz-bot' );
+		log( '✅ Connected to propz-bot' );
 		// Pings in regular intervals
 		setInterval( () =>
 		{

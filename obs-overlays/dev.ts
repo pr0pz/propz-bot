@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.8
+ * @version 1.0.9
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -10,11 +10,6 @@ import * as esbuild from 'esbuild';
 import { log } from '@propz/helpers.ts';
 
 const botUrl = Deno.env.get('BOT_URL') || '';
-const obsUrl = Deno.env.get( 'OBS_WEBSOCKET_URL' ) || '';
-const obsPort = Deno.env.get( 'OBS_WEBSOCKET_PORT' ) || '';
-const obsPassword = Deno.env.get( 'OBS_WEBSOCKET_PASSWORD' ) || '';
-const consoleSuccess = Deno.env.get( 'CONSOLE_SUCCESS' ) || '';
-
 const rootDir = 'obs-overlays';
 const tmpDir = await Deno.makeTempDir();
 const clients = new Set<WebSocket>();
@@ -96,11 +91,7 @@ try {
 		sourcemap: true,
 		define: {
 			'process.env.NODE_ENV': '"development"',
-			'process.env.BOT_URL': `"${botUrl}"`,
-			'process.env.OBS_WEBSOCKET_URL': `"${obsUrl}"`,
-			'process.env.OBS_WEBSOCKET_PORT': `"${obsPort}"`,
-			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`,
-			'process.env.CONSOLE_SUCCESS': `"${consoleSuccess}"`
+			'process.env.BOT_URL': `"${botUrl}"`
 		},
 		plugins: [{
 			name: 'reload',
@@ -139,7 +130,7 @@ try {
 		cssCtx.watch()
 	]);
 
-	log('watching for changes...');
+	log( 'watching for changes...' );
 
 	Deno.serve( { hostname: '127.0.0.1'}, requestHandler );
 	Deno.addSignalListener( 'SIGTERM', cleanup );

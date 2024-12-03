@@ -2,18 +2,14 @@
  * This file builds the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.8
+ * @version 1.0.9
  */
 
 import * as esbuild from 'esbuild';
 import { copy } from '@std/fs';
+import { log } from '@propz/helpers.ts';
 
-const botUrl = Deno.env.get('BOT_URL') || '';
-const obsUrl = Deno.env.get( 'OBS_WEBSOCKET_URL' ) || '';
-const obsPort = Deno.env.get( 'OBS_WEBSOCKET_PORT' ) || '';
-const obsPassword = Deno.env.get( 'OBS_WEBSOCKET_PASSWORD' ) || '';
-const consoleSuccess = Deno.env.get( 'CONSOLE_SUCCESS' ) || '';
-
+const botUrl = Deno.env.get( 'BOT_URL' ) || '';
 const rootDir = 'obs-overlays';
 
 try {
@@ -45,11 +41,7 @@ try {
 		jsx: 'automatic',
 		sourcemap: true,
 		define: {
-			'process.env.BOT_URL': `"${botUrl}"`,
-			'process.env.OBS_WEBSOCKET_URL': `"${obsUrl}"`,
-			'process.env.OBS_WEBSOCKET_PORT': `"${obsPort}"`,
-			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`,
-			'process.env.CONSOLE_SUCCESS': `"${consoleSuccess}"`
+			'process.env.BOT_URL': `"${botUrl}"`
 		},
 		minify: true,
 		alias: {
@@ -79,13 +71,13 @@ try {
 		cssCtx.dispose()
 	]);
 
-	console.log('› ✅ Build completed successfully');
+	log( '✅ Build completed successfully' );
 	esbuild.stop();
 	Deno.exit(0);
 }
-catch (error)
+catch ( error: unknown )
 {
-	console.error('› ❌ Build failed:', error);
+	log( error );
 	esbuild.stop();
 	Deno.exit(1);
 }

@@ -2,7 +2,7 @@
  * Discord Helper
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.9
  */
 
 import '@propz/prototypes.ts';
@@ -24,7 +24,7 @@ export class DiscordUtils
 	{
 		if ( !member || !message ) return;
 		try {
-			let htmlContent = Deno.readTextFileSync( './bot/discord/DiscordWelcome.html' );
+			let htmlContent = Deno.readTextFileSync( './twitch-bot/discord/DiscordWelcome.html' );
 			const colors = [ 'red', 'green', 'yellow', 'beige', 'blue', 'purple' ];
 			const splittedText = message.split( '|' );
 			const avatarUrl = member.displayAvatarURL({ extension: 'jpg', size: 512 });

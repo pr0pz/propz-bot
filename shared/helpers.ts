@@ -2,18 +2,18 @@
  * Helper functions
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.9
  */
 
 /** Log function + overloads
  * 
  * @param {string|unknown} input Message or unknown error object
  */
-export function log( input: string|number|unknown, verbose?: boolean )
+export function log( input: string|number|unknown, isWarning = false, verbose?: boolean )
 {
+	if ( verbose === false ) return;
 	if ( typeof input === 'undefined' ) return;
 	if ( typeof input === 'number' ) input = input.toString();
-	if ( verbose === false ) return;
 
 	// Get stack trace for caller information
 	const stackLines = new Error().stack?.split('\n');
@@ -25,16 +25,30 @@ export function log( input: string|number|unknown, verbose?: boolean )
 	const file = match ? match[2] : 'file';
 	const line = match ? ':' + match[3] : '';
 	const fn = match?.[1] && match[1] !== 'anonymous' ? ' ' + match[1] : '';
+	const icon = isWarning ? '🟡' : '❌';
+	const date = new Date().toLocaleDateString( 'de-DE', {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+	});
 	
-	let message: string = `<${file.replace('.class', '')}${line}>${fn}`;
-	if ( typeof input === 'string' )
+	let message: string = `${date} <${file.replace('.class', '')}${line}>${fn}`;
+	if ( isWarning )
+	{
+		console.warn( message + ` ${icon} ${input}` );
+		return;
+	}
+	else if ( typeof input === 'string' )
 	{
 		console.log( message + ` › ${input}` );
 		return;
 	}
 	else if ( input instanceof Error )
 	{
-		message += ` › ${input.message}`;
+		message += ` ${icon} ${input.message}`;
 	}
 	else if ( typeof input === 'object' && input !== null && 'message' in input )
 	{
@@ -151,4 +165,33 @@ export function getRewardSlug( rewardName: string )
 {
 	if ( !rewardName ) return '';
 	return 'reward' + rewardName.trim().replace( /[\W]+/gi, '' ).toLowerCase();
+}
+
+/** Exec cli command
+ * 
+ * @param {string} command
+ * @param {string} args
+ */
+export function execCommand( command: string, args: string|string[] )
+{
+	args = !Array.isArray( args ) ? [ args ] : args;
+	const cmd = new Deno.Command( command, {
+		args: args
+	});
+	
+	try
+	{
+		const { stdout, stderr } = cmd.outputSync();
+		const err = new TextDecoder().decode( stderr ).trim();
+		const output = new TextDecoder().decode( stdout ).trim();
+		return err || output;
+	}
+	catch( error: unknown )
+	{
+		log( error );
+		if ( error instanceof Error )
+			return error.message;
+
+		return '';
+	}
 }

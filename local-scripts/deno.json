@@ -4,6 +4,7 @@
 		".": "./main.ts"
 	},
 	"imports": {
+		"obs-websocket-js": "npm:obs-websocket-js@^5.0.6",
 		"puppeteer": "npm:puppeteer@^23.9.0",
 		"sharp": "npm:sharp@^0.33.5",
 		"usb": "npm:usb@^2.14.0"
