@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.11
+ * @version 1.0.14
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -503,6 +503,10 @@ export class TwitchCommands
 			},
 			onlyMods: true
 		},
+		rain: {
+			cooldown: 60,
+			description: 'Let it rain'
+		},
 		reload: {
 			handler: async () =>
 			{
@@ -815,6 +819,10 @@ export class TwitchCommands
 				en: 'Browser: https://arc.net / Design: https://www.figma.com / Coding: https://code.visualstudio.com / Orga: https://excalidraw.com https://www.notion.so / Stream: https://obsproject.com https://www.touch-portal.com https://restream.io / Twitch: https://twurple.js.org / FTP: https://panic.com/transmit / CMS: https://wordpress.org'
 			},
 			description: 'Alle benutzen Tools'
+		},
+		tornado: {
+			cooldown: 60,
+			description: 'Tornado twister!'
 		},
 		twurple: {
 			message: {

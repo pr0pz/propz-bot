@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { useEvent } from '../EventContext.tsx';
 import ChatMessage from "./ChatMessage.tsx";
-import type { WebSocketData } from '../../../shared/types.ts';
+import type { WebSocketData } from '@propz/types.ts';
 
 const Chat = () =>
 {	

@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { useEvent } from '../EventContext.tsx';
-import { log } from '../../../shared/helpers.ts';
+import { log } from '@propz/helpers.ts';
 
 const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: string; title: string; count: number; user: string; profilePictureUrl?: string; key: string } ) =>
 {

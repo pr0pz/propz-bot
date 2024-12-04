@@ -2,15 +2,15 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.14
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import Event from './Event.tsx';
-import { log } from '../../../shared/helpers.ts';
+import { log } from '@propz/helpers.ts';
 
-import type { TwitchEventData, WebSocketData } from '../../../shared/types.ts';
+import type { TwitchEventData, WebSocketData } from '@propz/types.ts';
 
 const Events = () =>
 {

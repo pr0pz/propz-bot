@@ -2,7 +2,7 @@
  * Base styles
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.0.14
  */
 
 *,
@@ -51,6 +51,8 @@ body {
 		height: 100%;
 		overflow: hidden;
 		background: 0 !important;
+		position: relative;
+		z-index: 1;
 	}
 
 

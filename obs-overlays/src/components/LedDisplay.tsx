@@ -2,14 +2,14 @@
  * LED Display Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.13
+ * @version 1.0.14
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
-import { log } from '../../../shared/helpers.ts';
+import { log } from '@propz/helpers.ts';
 
-import type { WebSocketData } from '../../../shared/types.ts';
+import type { WebSocketData } from '@propz/types.ts';
 
 const LedDisplay = () =>
 {
