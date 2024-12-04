@@ -2,7 +2,7 @@
  * Emote Effects
  * 
  * @author Wellington Estevo
- * @version 1.0.14
+ * @version 1.0.15
  */
 
 import { useEffect, useState } from 'react';
@@ -92,7 +92,7 @@ const EmoteEffects = () =>
 			setEvent();
 			document.querySelector( '#animation' )?.remove();
 			log( `event processed` );
-		}, 30000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
+		}, 50000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	}
 
 	/** Make Emotes Rain.
