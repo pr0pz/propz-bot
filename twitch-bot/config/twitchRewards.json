@@ -168,6 +168,19 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
+	"rewardsus": {
+		"id": "e8a4be54-cf7d-4384-bbb2-205eb8051c49",
+		"title": "SUS",
+		"cost": 300,
+		"backgroundColor": "#EC8988",
+		"prompt": "Propz acting sus",
+		"globalCooldown": 60,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
 	"rewardtts": {
 		"id": "8b98f7af-c6c0-4d14-99ed-b3beb3e3b171",
 		"title": "TTS",

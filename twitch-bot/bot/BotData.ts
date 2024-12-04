@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.11
+ * @version 1.0.12
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -568,20 +568,22 @@ export class BotData
 	}
 
 	/** Reload all JSON data files and update class properties */
-	async reloadData()
+	reloadData()
 	{
 		try {
-			const discordEvents = JSON.parse(await Deno.readTextFile('./twitch-bot/config/discordEvents.json'));
-			const events = JSON.parse(await Deno.readTextFile('./twitch-bot/config/twitchEvents.json'));
-			const reactions = JSON.parse(await Deno.readTextFile('./twitch-bot/config/twitchReactions.json'));
-			const rewards = JSON.parse(await Deno.readTextFile('./twitch-bot/config/twitchRewards.json'));
-			const timers = JSON.parse(await Deno.readTextFile('./twitch-bot/config/twitchTimers.json'));
+			const discordEvents = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/discordEvents.json' ));
+			const events = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchEvents.json' ));
+			const reactions = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchReactions.json' ));
+			const rewards = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchRewards.json' ));
+			const timers = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchTimers.json' ));
 
 			this.discordEvents = discordEvents;
 			this.events = events;
 			this.reactions = reactions;
 			this.rewards = rewards;
 			this.timers = timers;
+
+			this.setRewards();
 		}
 		catch (error) { log(error) }
 	}
