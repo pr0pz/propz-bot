@@ -2,7 +2,7 @@
  * LED Display Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.13
  */
 
 import { useEffect, useState } from 'react';
@@ -17,12 +17,13 @@ const LedDisplay = () =>
 	const [eventQueue, setEventQueue] = useState<WebSocketData[]>([]);
 	const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-	const event = useEvent();
+	const event: CustomEvent = useEvent();
 	const events = new Set([ 'cheer', 'rewardtts' ]);
 
 	useEffect( () =>
 	{
-		if ( event?.detail?.text === 'clear' )
+		if ( !event ) return;
+		if ( event.detail?.text === 'clear' )
 		{
 			setEvent();
 			return;
@@ -35,7 +36,6 @@ const LedDisplay = () =>
 
 	useEffect( () => processEventQueue(), [ eventQueue, isAnimating, currentEvent ]);
 
-	/** Process Event queue */
 	const processEventQueue = () =>
 	{
 		// Wait for animation to end
@@ -57,29 +57,13 @@ const LedDisplay = () =>
 			// ??
 			// Remove to test
 			setEvent();
-			log( `timeout passed` );
+			log( `event processed` );
 		}, 20000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	}
 
-	/** Enqueue event in waitlist
-	 * 
-	 * @param {WebSocketData} eventDetails 
-	 */
-	const enqueueEvent = ( eventDetails: WebSocketData ) =>
-	{
-		setEventQueue( (prevEvents: WebSocketData[]) => [...prevEvents, eventDetails] );
-		log( `enqueueEvent - ${ eventDetails.type }` );
-	}
+	const enqueueEvent = ( eventDetails: WebSocketData ) => setEventQueue( ( prevEvents: WebSocketData[] ) => [...prevEvents, eventDetails] );
 
-	/** Process incoming events.
-	 * 
-	 * @param {Object} eventDetails All event details
-	 */
-	const processEvent = ( eventDetails: WebSocketData ) =>
-	{
-		setEvent( eventDetails );
-		log( `Message processed: ${ eventDetails.type }` );
-	}
+	const processEvent = ( eventDetails: WebSocketData ) => setEvent( eventDetails );
 
 	/** Render current event.
 	 * 

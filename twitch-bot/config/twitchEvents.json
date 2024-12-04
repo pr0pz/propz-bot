@@ -168,20 +168,6 @@
 			}
 		}
 	},
-	"rewardpedro": {
-		"disableOnFocus": true,
-		"obs": {
-			"requestType": "SetCurrentProgramScene",
-			"requestData": {
-				"sceneName": "[S] REWARD / PEDRO",
-				"sceneUuid": ""
-			}
-		}
-	},
-	"rewardquack": {
-		"disableOnFocus": true,
-		"hasSound": true
-	},
 	"rewardonfire": {
 		"_comment": "[Video] On Fire",
 		"obs": {
@@ -194,19 +180,19 @@
 			}
 		}
 	},
+	"rewardpedro": {
+		"disableOnFocus": true,
+		"obs": {
+			"requestType": "SetCurrentProgramScene",
+			"requestData": {
+				"sceneName": "[S] REWARD / PEDRO",
+				"sceneUuid": ""
+			}
+		}
+	},
 	"rewardrip": {
 		"disableOnFocus": true,
 		"hasVideo": true
-	},
-	"rewardsus": {
-		"disableOnFocus": true,
-		"hasVideo": true
-	},
-	"rewardwrongscene": {
-		"eventText": {
-			"de": "Falsche Szene mein Freund. Wechsel mal die Szene.",
-			"en": "Wrong scene my friend. You're in the wrong scene."
-		}
 	},
 	"rewardshakeitoff": {
 		"disableOnFocus": true,
@@ -218,7 +204,21 @@
 			}
 		}
 	},
-
+	"rewardsus": {
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
+	"rewardwrongscene": {
+		"eventText": {
+			"de": "Falsche Szene mein Freund. Wechsel mal die Szene.",
+			"en": "Wrong scene my friend. You're in the wrong scene."
+		}
+	},
+	"rewardwtf": {
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
+	
 	"streamonline": {
 		"isAnnouncement": true,
 		"message": {

@@ -2,23 +2,26 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.5
+ * @version 1.0.13
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import { log } from '../../../shared/helpers.ts';
+import type { WebSocketData } from '@propz/types.ts';
 
 const Mediaboard = () =>
 {
-	const event = useEvent();
-	const [mediaQueue, setMediaQueue] = useState<string[]>([]);
+	const event: CustomEvent = useEvent();
+	const [mediaQueue, setMediaQueue] = useState<WebSocketData[]>([]);
 	const [isPlaying, setIsPlaying] = useState(false);
 
 	useEffect( () =>
 	{
 		if ( !event ) return;
-		if ( event.detail.text === 'clear' )
+
+		const detail = event.detail as WebSocketData;
+		if ( detail.text === 'clear' )
 		{
 			setMediaQueue();
 			setIsPlaying(false);
@@ -26,22 +29,16 @@ const Mediaboard = () =>
 		}
 
 		if (
-			!event.detail.hasSound &&
-			!event.detail.hasVideo
+			!detail.hasSound &&
+			!detail.hasVideo
 		) return;
 
-		/**
-		 * text = command to lower case
-		 * type = rewards -> alle sound/video rewards haben keinen text
-		 */
-		const mediaName = event.detail.type.startsWith( 'reward' ) ? event.detail.type : event.detail.text;
-		enqueueMedia( mediaName );
+		setMediaQueue( ( prevEvents: WebSocketData[] ) => [...prevEvents, detail] );
 	},
 	[event]);
 
 	useEffect( () => processMediaQueue(), [ mediaQueue, isPlaying ] );
 
-	/** Process Event queue */
 	const processMediaQueue = () =>
 	{
 		if ( isPlaying || mediaQueue.length === 0 ) return;
@@ -51,79 +48,69 @@ const Mediaboard = () =>
 		playVideo( mediaQueue[0] );
 	};
 
-	/** Enqueue event in waitlist
-	 * 
-	 * @param {string} mediaName 
-	 */
-	const enqueueMedia = ( mediaName: string ) =>
+	const playAudio = ( media: WebSocketData ) =>
 	{
-		setMediaQueue( (prevEvents: string[]) => [...prevEvents, mediaName] );
-		log( `enqueueMedia - ${ mediaName }` );
-	};
-
-	/** Play audio file */
-	const playAudio = ( mediaName: string ) =>
-	{
+		if ( !media.hasSound ) return;
+		const mediaName = getMediaName( media );
 		try {
 			const audio = new Audio( `sound/sound-${mediaName}.mp3` );
 			audio.volume = 1;
 			audio.loop = false;
-			audio.play().catch((_error) => {
-				log( new Error( `Couldn't play sound file ${mediaName}` ) );
-				audio.pause();
-				audio.currentTime = 0;
+			audio.play().catch( ( error: unknown ) =>
+			{
+				log( error );
 				setIsPlaying(false);
-				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1));
+				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1));
 				return;
-			});
-
-			log( `playing ▶️ ${ mediaName }` );
+			}).then( () => log( `playing ▶️ ${ mediaName }` ) );
 
 			audio.addEventListener( 'ended', () =>
 			{
-				audio.pause();
-				audio.currentTime = 0;
+				audio.remove();
 				setIsPlaying( false );
-				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1) );
+				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
 			});
 		}
 		catch( error: unknown ) { log( error ) }
 	}
 
-	/** Play video file */
-	const playVideo = ( mediaName: string ) =>
+	const playVideo = ( media: WebSocketData ) =>
 	{
+		if ( !media.hasVideo ) return;
+		const mediaName = getMediaName( media );
 		try {
 			const video = document.createElement('video');
 			video.src = `video/video-${mediaName}.webm`;
 			video.id = 'videoboard';
 			video.volume = 1;
 			video.loop = false;
-			//video.addEventListener( 'error', () => {} );
 
 			document.body.appendChild(video);
 
-			video.play().catch((_error) => {
-				log( new Error( `Couldn't play video file ${mediaName}` ) );
+			video.play().catch( ( error: unknown ) =>
+			{
+				log( error );
 				video.remove();
 				setIsPlaying(false);
-				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1));
+				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1));
 				return;
-			});
-
-			log( `playing ▶️ ${ mediaName }` );
+			}).then( () => log( `playing ▶️ ${ mediaName }` ) );
 
 			video.addEventListener( 'ended', () =>
 			{
-				video.pause();
-				video.currentTime = 0;
 				video.remove();
 				setIsPlaying( false );
-				setMediaQueue( (mediaQueue: string[]) => mediaQueue.slice(1) );
+				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
 			});
 		}
 		catch( error: unknown ) { log( error )}
 	}
+
+	/**
+	 * text = command to lower case
+	 * type = rewards -> alle sound/video rewards haben keinen text
+	 */
+	const getMediaName = ( media: WebSocketData ) => media.type.startsWith( 'reward' ) ? media.type : media.text;
 
 	return;
 }
