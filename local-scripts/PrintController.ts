@@ -2,7 +2,7 @@
  * Printer Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.11
  */
 
 import usb from 'usb';
@@ -10,6 +10,8 @@ import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 import { Buffer } from 'node:buffer'; // To download images if necessary
 import { log } from '@propz/helpers.ts';
+
+import type { OutEndpoint } from 'usb';
 import type { ImageBuffer, Pixel, PrintAlertEvents, WebSocketData } from '@propz/types.ts';
 
 export default class PrintController
@@ -148,7 +150,7 @@ export default class PrintController
 	
 			// Get the height of the element
 			const elementHeight = await page.evaluate(() => {
-				const element = document.querySelector('#window');
+				const element = document.querySelector('#window') as HTMLElement;
 				return element?.offsetHeight || 0;
 			});
 	
@@ -314,22 +316,26 @@ export default class PrintController
 		device.open();
 		//log( 'Printer connection opened' );
 		
-		const deviceInterface = device.interface();
+		const deviceInterface = device.interface(0);
 		deviceInterface.claim();
 		//log( 'Printer interface claimed' );
 
 		
-		const outEndpoint = deviceInterface.endpoint( 0x01 );
+		const outEndpoint = deviceInterface.endpoint( 0x01 ) as OutEndpoint;
+		if ( !outEndpoint )
+		{
+			log( new Error( 'Endpoint not found' ) );
+			return;
+		}
 		//const inEndpoint = interface.endpoint(0x82);
 		//log( 'Printer endpoint ready' );
 
-		// Send the image data to the printer
-		outEndpoint.transfer( data, (error: unknown) =>
+		outEndpoint.transfer( data as Buffer, (error: unknown, actual: number ) =>
 		{
 			if ( error )
 				log( error );
 			else
-				log( 'Image sent' );
+				log( `Image sent › ${actual} bytes transfered` );
 		});
 	}
 }

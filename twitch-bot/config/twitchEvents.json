@@ -53,6 +53,11 @@
 			}
 		}
 	},
+	"rewardboom": {
+		"disableOnFocus": true,
+		"hasVideo": true,
+		"hasSound": true
+	},
 	"rewardchangebackground": {
 		"obs": [
 			{
@@ -112,18 +117,6 @@
 				"sceneName": "[R] VIDEOBOARD",
 				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
 				"sceneItemId": 10,
-				"sceneItemEnabled": true
-			}
-		}
-	},
-	"rewarddragonfire": {
-		"_comment": "[Video] Dragon Fire",
-		"obs": {
-			"requestType": "SetSceneItemEnabled",
-			"requestData": {
-				"sceneName": "[R] VIDEOBOARD",
-				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
-				"sceneItemId": 5,
 				"sceneItemEnabled": true
 			}
 		}
@@ -200,6 +193,14 @@
 				"sceneItemEnabled": true
 			}
 		}
+	},
+	"rewardrip": {
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
+	"rewardsus": {
+		"disableOnFocus": true,
+		"hasVideo": true
 	},
 	"rewardwrongscene": {
 		"eventText": {

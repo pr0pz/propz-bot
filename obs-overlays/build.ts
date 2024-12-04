@@ -2,11 +2,10 @@
  * This file builds the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.10
+ * @version 1.0.11
  */
 
 import * as esbuild from 'esbuild';
-import { copy } from '@std/fs';
 import { log } from '@propz/helpers.ts';
 
 const botUrl = Deno.env.get( 'BOT_URL' ) || '';
@@ -15,7 +14,7 @@ const rootDir = 'obs-overlays';
 try {
 	// Remove existing build directory
 	try {
-		await Deno.remove( `${rootDir}/build`, { recursive: true });
+		await Deno.remove( `${rootDir}/public/build`, { recursive: true });
 	} catch (error) {
 		// Ignore error if directory doesn't exist
 		if (!(error instanceof Deno.errors.NotFound)) {
@@ -24,18 +23,13 @@ try {
 	}
 
 	// Create fresh build directory
-	await Deno.mkdir( `${rootDir}/build`, { recursive: true });
-	await Deno.mkdir( `${rootDir}/build/dist`, { recursive: true });
-
-	// Copy public files to build directory
-	await copy( `${rootDir}/public`, `${rootDir}/build`, { overwrite: true });
-	log('📋 Copied public files');
+	await Deno.mkdir( `${rootDir}/public/build`, { recursive: true });
 
 	// Build JS bundle
 	const jsCtx = await esbuild.context({
 		entryPoints: [ `${rootDir}/src/main.tsx` ],
 		bundle: true,
-		outfile: `${rootDir}/build/dist/bundle.js`,
+		outfile: `${rootDir}/public/build/app.js`,
 		format: 'esm',
 		platform: 'browser',
 		jsx: 'automatic',
@@ -54,7 +48,7 @@ try {
 		entryPoints: [ `${rootDir}/src/css/App.css` ],
 		bundle: true,
 		target: [ 'chrome103' ],
-		outfile: `${rootDir}/build/dist/app.css`,
+		outfile: `${rootDir}/public/build/app.css`,
 		loader: { '.css': 'css' },
 		minify: true
 	});

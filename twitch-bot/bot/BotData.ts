@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.0.11
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -383,6 +383,7 @@ export class BotData
 					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( this.userId, reward );
 					rewards[ rewardSlug ].id = rewardCreated.id;
 					log( `createCustomReward › ${rewardSlug} › ${rewardCreated.id}` );
+					this.saveFile( 'twitchRewards', rewards, 'config' );
 				}
 				catch( error: unknown ) { log( error ) }
 			}
@@ -419,7 +420,7 @@ export class BotData
 	async setbots()
 	{
 		this.bots = await TwitchInsights.getBots();
-		this.saveFile( 'twitchBots', bots, '' );
+		this.saveFile( 'twitchBots', bots );
 	}
 
 	/** Initially set main user object */
@@ -546,18 +547,20 @@ export class BotData
 	 * @param {string} fileName Name of file to be saved
 	 * @param {Object} fileData Data to be saved
 	 */
-	saveFile( fileName: string, fileData: unknown = null, spacing: string = '\t' )
+	saveFile( fileName: string, fileData: unknown = null, folder: string = 'data' )
 	{
-		if ( !fileName || !fileData )
+		if ( !fileName || !fileData || !folder )
 		{
-			log( new Error( 'Missing file name/data' ) );
+			log( new Error( 'Missing file name/data/folder' ) );
 			return;
 		}
+
+		const spacing = fileName.toLowerCase().includes( 'twitchbots' ) ? '' : '\t';
 
 		try
 		{
 			Deno.writeTextFile(
-				`./twitch-bot/data/${fileName}.json`,
+				`./twitch-bot/${folder}/${fileName}.json`,
 				JSON.stringify( fileData, null, spacing )
 			);
 		}

@@ -6,7 +6,7 @@
 .env
 .vscode/
 deno.lock
-obs-overlays/build
+obs-overlays/public/build
 twitch-bot/config/auth/
 twitch-bot/data
 

@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.0.11
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -294,6 +294,11 @@ export class TwitchCommands
 			},
 			description: 'Influencer für arme'
 		},
+		internet: {
+			aliases: [ 'internetz', 'dial' ],
+			disableOnFocus: true,
+			hasSound: true,
+		},
 		jenny: {
 			cooldown: 30,
 			hasSound: true,
@@ -443,12 +448,6 @@ export class TwitchCommands
 		nice: {
 			cooldown: 120,
 			hasSound: true,
-			disableOnFocus: true
-		},
-		nuke: {
-			cooldown: 20,
-			hasSound: true,
-			hasVideo: true,
 			disableOnFocus: true
 		},
 		ohno: {
@@ -666,11 +665,6 @@ export class TwitchCommands
 			],
 			onlyMods: true
 		},
-		rip: {
-			cooldown: 60,
-			hasVideo: true,
-			disableOnFocus: true
-		},
 		roadmap: {
 			message: {
 				de: 'Roadmaps für alle DEVs und die es werden wollen ▶️ https://roadmap.sh',
@@ -747,6 +741,10 @@ export class TwitchCommands
 				en: '[user] 👋 slaps [target] around with a big large 🐟trout'
 			},
 		},
+		snow: {
+			hasVideo: true,
+			cooldown: 30
+		},
 		so: {
 			handler: (options: TwitchCommandOptions) =>
 			{
@@ -774,10 +772,6 @@ export class TwitchCommands
 				this.twitch.sendStremOnlineDataToDiscord();
 			},
 			onlyMods: true
-		},
-		sus: {
-			cooldown: 60,
-			hasVideo: true,
 		},
 		tee: {
 			aliases: [ 'tea' ],

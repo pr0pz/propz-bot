@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.0.11
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -30,11 +30,11 @@ function requestHandler(req: Request)
 	}
 
 	// Serve files in /dist folder from temp folder
-	if ( pathname.startsWith( '/dist' ) )
+	if ( pathname.startsWith( '/build' ) )
 	{
 		return serveDir(req, { 
 			fsRoot: tmpDir,
-			urlRoot: 'dist'
+			urlRoot: 'build'
 		});
 	}
 
@@ -84,13 +84,12 @@ try {
 	jsCtx = await esbuild.context({
 		entryPoints: [ `${rootDir}/src/main.tsx` ],
 		bundle: true,
-		outfile: `${tmpDir}/bundle.js`,
+		outfile: `${tmpDir}/app.js`,
 		format: 'esm',
 		platform: 'browser',
 		jsx: 'automatic',
 		sourcemap: true,
 		define: {
-			'process.env.NODE_ENV': '"development"',
 			'process.env.BOT_URL': `"${botUrl}"`
 		},
 		plugins: [{
