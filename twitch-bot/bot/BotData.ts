@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.12
+ * @version 1.0.16
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -128,15 +128,11 @@ export class BotData
 	}
 
 	/** Get random quote */
-	getQuote( chatMessage: string )
+	getQuote( quoteId: number = 0 )
 	{
-		if ( !chatMessage ) return '';
-
 		const quotes = this.quotes;
 		if ( quotes.length === 0 ) return '';
 
-		const chatMessageSplitted = chatMessage.split( ' ' );
-		const quoteId = chatMessageSplitted[1] ? parseInt( chatMessageSplitted[1] ) : 0;
 		const quoteIndex = quoteId > 0 ? quoteId : getRandomNumber( quotes.length, 1 );
 		const quote = quotes[ quoteIndex ];
 

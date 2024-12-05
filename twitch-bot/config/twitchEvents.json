@@ -190,6 +190,10 @@
 			}
 		}
 	},
+	"rewardquack": {
+		"disableOnFocus": true,
+		"hasSound": true
+	},
 	"rewardrip": {
 		"disableOnFocus": true,
 		"hasVideo": true

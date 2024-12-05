@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.14
+ * @version 1.0.16
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -270,10 +270,10 @@ export class TwitchCommands
 		},
 		github: {
 			message: {
-				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️',
-				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️'
+				de: "Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻",
+				en: "Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻"
 			},
-			description: 'Hier lebt das kreative Chaos'
+			description: "Creative Coding Chaos"
 		},
 		hallelujah: {
 			aliases: [ 'halleluja', 'aleluia' ],
@@ -491,9 +491,9 @@ export class TwitchCommands
 		},
 		quote: {
 			description: 'Random quote.',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: (options: TwitchCommandOptions) =>
 			{
-				return await this.twitch.data.getQuote( options.message );
+				return this.twitch.data.getQuote( parseInt( options.param ) || 0 );
 			}
 		},
 		raid: {
@@ -665,7 +665,16 @@ export class TwitchCommands
 						'inputUuid': '',
 						'propertyName': 'refreshnocache'
 					}
-				}
+				},
+				{
+					'requestType': 'SetSourceFilterEnabled',
+					'requestData': {
+						'sourceName': '[Clone] Webcam (Desktop)',
+						'sourceUuid': '',
+						'filterName': 'reset-zoom',
+						'filterEnabled': true
+					}
+				},
 			],
 			onlyMods: true
 		},
