@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.0.7
+ * @version 1.0.17
  */
 
 import '@propz/prototypes.ts';
@@ -287,7 +287,7 @@ export abstract class TwitchUtils
 
 		author = await this.data.getUser( author );
 		// Couldnt find user, so assume the author is me
-		chatMessageSplitted.splice( 0, !author ? 1 : 2 );
+		if ( author ) chatMessageSplitted.splice( 0, 1 );
 		author = author ? author.name : this.data.userDisplayName;
 
 		const quoteText = chatMessageSplitted.join( ' ' );
