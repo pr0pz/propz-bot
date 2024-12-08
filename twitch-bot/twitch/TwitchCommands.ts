@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.16
+ * @version 1.0.19
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -930,11 +930,6 @@ export class TwitchCommands
 		wololo: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true
-		},
-		wtf: {
-			cooldown: 60,
-			hasVideo: true,
 			disableOnFocus: true
 		},
 		wtfisgoingon: {

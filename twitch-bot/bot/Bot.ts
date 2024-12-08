@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.0.8
+ * @version 1.0.19
  */
 
 import '@propz/prototypes.ts';
@@ -76,18 +76,18 @@ export class Bot
 		const { socket, response } = Deno.upgradeWebSocket( req );
 		const wsId: string = crypto.randomUUID();
 
-		//socket.addEventListener( 'error', (event) => log( event ) );
+		socket.addEventListener( 'error', (event) => log( event ) );
 		socket.addEventListener( 'message', () => socket.send( '{"type":"pong"}' ) );
 
 		socket.addEventListener( 'open', () =>
 		{
-			log( `WebSocket client connected › ${wsId}` );
+			log( `WS client connected › ${wsId}` );
 			this.ws.wsConnections.set( wsId, socket );
 		});
 
 		socket.addEventListener( 'close', () =>
 		{
-			log( `WebSocket client disconnected › ${wsId}` );
+			log( `WS client disconnected › ${wsId}` );
 			this.ws.wsConnections.delete( wsId );
 		});
 
