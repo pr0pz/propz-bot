@@ -2,10 +2,10 @@
  * Single ALert
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.1.0
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import { log } from '@propz/helpers.ts';
 

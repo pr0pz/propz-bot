@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.1.0
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -11,6 +11,7 @@ import { getRewardSlug, log } from '@propz/helpers.ts';
 import type {
 	EventSubChannelAdBreakBeginEvent,
 	EventSubChannelFollowEvent,
+	EventSubChannelRaidEvent,
 	EventSubChannelRedemptionAddEvent,
 	EventSubChannelShieldModeBeginEvent,
 	EventSubChannelShieldModeEndEvent,
@@ -175,6 +176,16 @@ export class TwitchEvents
 			user: event.broadcasterDisplayName,
 			eventCount: durationSeconds
 		});
+	}
+
+	onChannelRaidFrom = ( event: EventSubChannelRaidEvent ) =>
+	{
+		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );
+	}
+
+	onChannelRaidTo = ( event: EventSubChannelRaidEvent ) =>
+	{
+		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );
 	}
 
 	/** Subscribes to events that represent Shield Mode being activated in a channel.

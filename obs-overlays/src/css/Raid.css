@@ -1,0 +1,155 @@
+/**
+ * Raid
+ * 
+ * @author Wellington Estevo
+ * @version 1.1.0
+ */
+
+#raid {
+	--animation-duration: 1s;
+	--animation-timeout: 30s;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+	gap: 2rem;
+	width: 100%;
+	padding-right: 10rem;
+
+	text-align:center;
+	font-size: 6rem;
+	position: relative;
+	font-family: var(--font-family-headline);
+	font-weight: 900;
+	text-transform: uppercase;
+	line-height: 1;
+}
+
+	#raid-title-wrapper,
+	#raid-avatar-wrapper {
+		display: grid;
+		justify-items: flex-end;
+		position: relative;
+	}
+
+	#raid-title-wrapper {
+		opacity: 0;
+		animation:
+			slide-in-up var(--animation-duration) ease-in-out .5s forwards,
+			slide-in-up var(--animation-duration) ease-in-out var(--animation-timeout) forwards reverse;
+	}
+
+
+	#raid-title {
+		margin-bottom: -4rem;
+	}
+
+		#raid-title .window-body {
+			padding: 2rem;
+			padding-bottom: 6rem;
+		}
+
+		#raid-user {
+			margin-right: -4rem;
+			margin-bottom: 2rem;
+
+			.window-body {
+				padding: 3rem;
+			}
+		}
+
+		#raid-arrows {
+			opacity: 0;
+			animation:
+				slide-in-down var(--animation-duration) ease-in-out .5s forwards,
+				slide-in-down var(--animation-duration) ease-in-out var(--animation-timeout) forwards reverse;
+		}
+
+		#raid-arrows img {
+			position: relative;
+			animation: arrow-bounce-1 var(--animation-duration) ease-in-out infinite;
+
+			&:nth-child(2) {
+				top: -30px;
+				left: 30px;
+				animation-delay: 0.2s;
+				animation-name: arrow-bounce-2;
+
+			}
+			&:nth-child(3) {
+				right: -70px;
+				top: 15px;
+				animation-delay: 0.4s;
+				animation-name: arrow-bounce-3;
+			}
+		}
+
+		#raid-avatar img{
+			transform: translate3d(150%,0,0) rotate(360deg);
+			transform-origin: center center;
+			animation:
+				roll-avatar-in var(--animation-duration) ease-in-out forwards,
+				roll-avatar-in var(--animation-duration) ease-in-out var(--animation-timeout) forwards reverse;
+
+			border-radius: 100%;
+			background: #fff;
+			box-shadow: 0 0 4rem rgb(0 0 0 / .75);
+		}
+
+
+		@keyframes arrow-bounce-1 {
+			0%, 100% {
+				transform: translate3d(0,0,0);
+			}
+			50% {
+				transform: translate3d(-15px,-15px,0);
+			}
+		}
+
+		@keyframes arrow-bounce-2 {
+			0%, 100% {
+				transform: translate3d(0,0,0);
+			}
+			50% {
+				transform: translate3d(0,-15px,0);
+			}
+		}
+
+		@keyframes arrow-bounce-3 {
+			0%, 100% {
+				transform: translate3d(0,0,0);
+			}
+			50% {
+				transform: translate3d(20px,-20px,0);
+			}
+		}
+
+		@keyframes roll-avatar-in {
+			from {
+				transform: translate3d(150%,0,0) rotate(360deg);
+			}
+			to {
+				transform: translate3d(0,0,0) rotate(0deg);
+			}
+		}
+
+		@keyframes slide-in-up {
+			from {
+				transform: translate3d(0,100%,0);
+				opacity: 0;
+			}
+			to {
+				transform: translate3d(0,0,0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes slide-in-down {
+			from {
+				transform: translate3d(0,-100%,0);
+				opacity: 0;
+			}
+			to {
+				transform: translate3d(0,0,0);
+				opacity: 1;
+			}
+		}

@@ -2,10 +2,10 @@
  * Chat Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.1.0
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import ChatMessage from "./ChatMessage.tsx";
 import type { WebSocketData } from '@propz/types.ts';

@@ -681,6 +681,10 @@
 		"message": {
 			"de": "🚀 Ab gehts in den raid zu [user] 🌟",
 			"en": "🚀 Let's go! We're raiding [user] 🌟"
+		},
+		"eventText": {
+			"de": "Ab geht der Raid",
+			"en": "Let's raid to"
 		}
 	},
 	"resub-1": {
