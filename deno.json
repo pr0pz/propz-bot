@@ -1,5 +1,5 @@
 {
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"nodeModulesDir":"auto",
 	"fmt": {
 		"singleQuote": true,
@@ -17,8 +17,11 @@
 		"./shared"
 	],
 	"compilerOptions": {
-		"jsx": "react-jsxdev",
-		"jsxImportSource": "react",
+		"jsx": "react-jsx",
+		"jsxFactory": "React.createElement",
+		"jsxFragmentFactory": "React.Fragment",
+		"jsxImportSource": "npm:react",
+		"jsxImportSourceTypes": "npm:@types/react",
 		"lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
 	},
 	"tasks": {
