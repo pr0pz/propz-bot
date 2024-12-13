@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.0.18
+ * @version 1.1.2
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -139,7 +139,7 @@ export class BotData
 		if ( !quote ) return '';
 
 		const date = new Date( Date.parse( quote.date ) );
-		const message = `${ quote.quote } - ${ quote.user } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: '4-digit' } ) } / ${ quote.vod } ]`;
+		const message = `${ quote.quote } - ${ quote.user } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod } ]`;
 
 		return message;
 	}

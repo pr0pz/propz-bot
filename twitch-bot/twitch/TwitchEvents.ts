@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.1.2
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -45,6 +45,8 @@ export class TwitchEvents
 		this.listener.onChannelAdBreakBegin( this.twitch.data.userId, this.onChannelAdBreakBegin );
 		this.listener.onChannelShieldModeBegin( this.twitch.data.userId, this.twitch.data.userId, this.onChannelShieldModeBegin );
 		this.listener.onChannelShieldModeEnd( this.twitch.data.userId, this.twitch.data.userId, this.onChannelShieldModeEnd );
+		this.listener.onChannelRaidFrom( this.twitch.data.userId, this.onChannelRaidFrom );
+		this.listener.onChannelRaidTo( this.twitch.data.userId, this.onChannelRaidTo );
 	}
 
 	/** Start listener */
@@ -178,11 +180,19 @@ export class TwitchEvents
 		});
 	}
 
+	/** Subscribes to events that represent a broadcaster being raided by another broadcaster.
+	 * 
+	 * @param {EventSubChannelRaidEvent} event The function that will be called for any new notifications.
+	*/
 	onChannelRaidFrom = ( event: EventSubChannelRaidEvent ) =>
 	{
 		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );
 	}
 
+	/** Subscribes to events that represent a broadcaster raiding another broadcaster.
+	 * 
+	 * @param {EventSubChannelRaidEvent} event The function that will be called for any new notifications.
+	*/
 	onChannelRaidTo = ( event: EventSubChannelRaidEvent ) =>
 	{
 		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );

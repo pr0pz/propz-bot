@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.0.17
+ * @version 1.1.2
  */
 
 import '@propz/prototypes.ts';
@@ -295,7 +295,7 @@ export abstract class TwitchUtils
 		const videoTimestamp = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 ) - 20;
 
 		const quote: TwitchQuote = {
-			date: new Date().toString(),
+			date: new Date().toISOString(),
 			category: this.stream?.gameName || '',
 			quote: quoteText.sanitize(),
 			user: author.sanitize(),
