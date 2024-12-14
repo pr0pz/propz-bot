@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import { log } from '@propz/helpers.ts';
+import Window from './Window.tsx';
 
 const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: string; title: string; count: number; user: string; profilePictureUrl?: string; key: string } ) =>
 {
@@ -146,37 +147,13 @@ const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: s
 			}
 			
 			<div className="alert-title-wrapper">
-
-				<div id="alert-title" className="window">
-					<div className="window-header">
-						<span className="window-button red"></span>
-						<span className="window-button yellow"></span>
-						<span className="window-button green"></span>
-					</div>
-
-					<div className="window-body">
-						{ propz.title }
-					</div>
-				</div>
-				
+				<Window id="alert-title">{ propz.title }</Window>
 			</div>
 
 			{ propz.user &&
 				<>
 					<div className="alert-user-wrapper">
-
-						<div id="alert-user" className="window window-dark">
-							<div className="window-header">
-								<span className="window-button red"></span>
-								<span className="window-button yellow"></span>
-								<span className="window-button green"></span>
-							</div>
-
-							<div className="window-body">
-							{ splitUpUsername( propz.user ) }
-							</div>
-						</div>
-
+						<Window id="alert-title" theme="dark">{ splitUpUsername( propz.user ) }</Window>
 					</div>
 					{ propz.profilePictureUrl &&
 						<div id="alert-avatar">

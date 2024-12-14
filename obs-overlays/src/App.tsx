@@ -18,6 +18,7 @@ import Mediaboard from './components/Mediaboard.tsx';
 import LedDisplay from './components/LedDisplay.tsx';
 import Focus from './components/Focus.tsx';
 import Obs from './components/Obs.tsx';
+import Credits from './components/Credits.tsx';
 
 const App = () =>
 {
@@ -41,6 +42,7 @@ const App = () =>
 					<Route path="/leddisplay" element={ <LedDisplay /> } />
 					<Route path="/focus" element={ <Focus /> } />
 					<Route path="/obs" element={ <Obs /> } />
+					<Route path="/credits" element={ <Credits /> } />
 				</Routes>
 			</section>
 		</EventProvider>

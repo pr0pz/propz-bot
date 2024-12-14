@@ -74,7 +74,7 @@ const LedDisplay = () =>
 		if ( !eventDetails ) return;
 		const text = `${ eventDetails.user }: ${ eventDetails.text }`;
 		// eslint-disable-next-line
-		return <marquee scrollamount="20px" scrolldelay="120" style={{ color:eventDetails.color }}>{ text }</marquee>;
+		return <marquee id="led" scrollamount="20px" scrolldelay="120" style={{ color:eventDetails.color }}>{ text }</marquee>;
 	}
 
 	if ( !currentEvent ) return;

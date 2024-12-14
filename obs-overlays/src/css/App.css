@@ -2,12 +2,13 @@
  * Main Stylesheet
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.1.3
  */
 
 @import 'Fonts.css';
 @import 'Base.css';
 @import 'Chat.css';
+@import 'Credits.css';
 @import 'AdBreakBanner.css';
 @import 'Alerts.css';
 @import 'Events.css';

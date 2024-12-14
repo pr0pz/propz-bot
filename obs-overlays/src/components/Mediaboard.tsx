@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.14
+ * @version 1.1.3
  */
 
 import { useEffect, useState } from 'react';
@@ -112,7 +112,7 @@ const Mediaboard = () =>
 	 */
 	const getMediaName = ( media: WebSocketData ) => media.type.startsWith( 'reward' ) ? media.type : media.text;
 
-	return;
+	return( <></> );
 }
 
 export default Mediaboard;

@@ -1,0 +1,67 @@
+/**
+ * Chat list
+ * 
+ * @author Wellington Estevo
+ * @version 1.1.3
+ */
+
+#credits {
+	/*transform: perspective(3rem) rotateX(2deg);
+	font-size: 220%;*/
+	padding: 0 5vw;
+}
+
+	.credits-wrapper {
+		margin-bottom: 6rem;
+		display: grid;
+		justify-content: start;
+	}
+
+		.credits-wrapper .window-body {
+			display: grid;
+			justify-items: start;
+			gap: 2rem;
+			font-weight: 900;
+			font-size: 200%;
+		}
+
+			.credits-entry 	.window-light {
+				text-transform: uppercase;
+				font-size: 150%;
+			}
+
+				.credits-entry .window-light .window-body {
+					padding: 2rem 3rem 4rem;
+				}
+
+			.credits-entry .window-dark {
+				translate: 30% -3rem;
+			}
+
+	.credits-entry {
+		display: flex;
+		gap: 2rem;
+		align-items: center;
+		width: 100%;
+	}
+
+		.credits-entry .sep {
+			display: none;
+		}
+
+		.credits-entry .user {
+			flex-grow: 1;
+		}
+
+		.credits-entry img {
+			width: 7.5rem;
+			border-radius: 100%;
+		}
+
+		.credits-entry .count {
+			display: inline-block;
+			padding: 0 1.5rem;
+			background: #fff;
+			box-shadow: .5rem .5rem 0 var(--color-tertiary);
+			border: var(--border--size) solid var(--color-secondary);
+		}

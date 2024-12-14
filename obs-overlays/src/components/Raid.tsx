@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
+import Window from './Window.tsx';
 import type { WebSocketData } from '@propz/types.ts';
 
 const Raid = () =>
@@ -37,30 +38,8 @@ const Raid = () =>
 		<div id="raid" className={ `raid` }>
 
 			<div id="raid-title-wrapper">
-				<div id="raid-title" className="window">
-					<div className="window-header">
-						<span className="window-button red"></span>
-						<span className="window-button yellow"></span>
-						<span className="window-button green"></span>
-					</div>
-
-					<div className="window-body">
-						{ raid.text }
-					</div>
-				</div>
-				
-				<div id="raid-user" className="window window-dark">
-					<div className="window-header">
-						<span className="window-button red"></span>
-						<span className="window-button yellow"></span>
-						<span className="window-button green"></span>
-					</div>
-
-					<div className="window-body" style={ { color: raid.color } }>
-						{ raid.user }
-					</div>
-				</div>
-
+				<Window id="raid-title">{ raid.text }</Window>
+				<Window id="raid-user" color={ raid.color }>{ raid.user }</Window>
 			</div>
 
 			<div id="raid-avatar-wrapper">
