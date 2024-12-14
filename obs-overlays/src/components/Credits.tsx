@@ -2,7 +2,7 @@
  * Stream Credits
  * 
  * @author Wellington Estevo
- * @version 1.1.3
+ * @version 1.1.4
  */
 
 import { useEffect, useState } from 'react';
@@ -11,6 +11,7 @@ import { log } from '@propz/helpers.ts';
 import Window from './Window.tsx';
 
 import type { WebSocketData } from '@propz/types.ts';
+import Button from './Button.tsx';
 
 const Credits = () =>
 {
@@ -125,7 +126,12 @@ const Credits = () =>
 		const values = [];
 		[...events[name]].sort( (a, b) => b[1].count - a[1].count ).forEach( ([user, value]) =>
 		{
-			values.push( <div className={ name + ' credits-entry' } key={ user }><img src={ value.profilePictureUrl } /><span className='user' style={{color: value.color}}>{ user }</span>{ value.count && <><span className='sep'>✖</span><span className='count radius border'>{ value.count ?? '' }</span></> }</div> );
+			values.push(
+				<div className={ name + ' credits-entry' } key={ user }><img src={ value.profilePictureUrl } />
+					<span className='user' style={{color: value.color}}>{ user }</span>
+					{ value.count && <Button theme='dark'>{ value.count ?? '' }</Button> }
+				</div>
+			);
 		});
 		return values;
 	}
@@ -164,7 +170,7 @@ const Credits = () =>
 			}
 			{ events.chatters.size > 0 &&
 				<div id="chatters" className='credits-wrapper'>
-					<Window id="chatters">Chatters</Window>
+					<Window>Chatters</Window>
 					<Window theme="dark">{ getValues( 'chatters' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}

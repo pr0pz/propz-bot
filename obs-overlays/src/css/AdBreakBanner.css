@@ -12,17 +12,15 @@
 	position: absolute;
 	top: 4rem;
 	right: 4rem;
-	opacity: 0;
-	top: -4rem;
-	animation: ad-break-slidein 180s ease-in-out;
+	animation:
+		ad-break-slidein 1s ease-in-out forwards,
+		ad-break-slidein 1s ease-in-out 179s forwards reverse;
 	overflow: hidden;
 }
 
 	@keyframes ad-break-slidein {
-		0%{top:-4rem;opacity:0}
-		1%{top:4rem;opacity:1}
-		99%{top:4rem;opacity:1}
-		100%{top:-4rem;opacity:0}
+		from{translate:-4rem;opacity:0}
+		to{translate:0;opacity:1}
 	}
 
 	#ad-break-inner {

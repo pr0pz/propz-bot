@@ -1,62 +1,43 @@
 /**
- * AdBreakBanner
+ * AdBreakBox
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.1.4
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
+import Window from './Window.tsx';
 
 const AdBreakBox = () =>
 {
 	const event = useEvent();
 	const [ adBreakLength, setAdBreakLength ] = useState<number>( 0 );
+	const [ adTitle, setAdTitle ] = useState( 'WERBUNG' );
 
 	useEffect( () =>
 	{
-		if (
-			!event?.detail?.count ||
-			event?.detail?.type !== 'adbreak'
-		) return;
+		if ( event?.detail?.type !== 'adbreak' ) return;
 
-		setAdBreakLength( event.detail.count );
-		const timeOutLength = event.detail.count * 1000;
-
-		setTimeout( () => 
-		{
-			setAdBreakLength( 0 );
-		}, timeOutLength );
+		const length = parseInt( event.detail.count ) || 180;
+		setAdBreakLength( length );
+		setAdTitle( event.detail.extra.titleEvent || 'WERBUNG' );
+		setTimeout( () => setAdBreakLength(0), length * 1000 );
 	},
 	[event]);
 
 	if ( !adBreakLength ) return;
 
 	return(
-		<div id="ad-break-box" className="browser radius-big border shadow" style={{ animationDuration: `${ adBreakLength }s` }}>
-			<div className="browser-header">
-				<div className="browser-header-buttons">
-					<span className="browser-button red"></span>
-					<span className="browser-button yellow"></span>
-					<span className="browser-button"></span>
-				</div>
-			</div>
-			<div className="browser-body">
-				<div id="ad-break-inner">
-					Werbungsblub <AdBreakTimer length={ adBreakLength } />
-				</div>
-				<div id="ad-break-inner-bg" className="gradient-green" style={{ animationDuration: `${ adBreakLength }s` }}></div>
-			</div>
-		</div>
+		<Window id="ad-break-box">
+			<div id="ad-break-inner">{ adTitle } <AdBreakTimer length={ adBreakLength } /></div>
+			<div id="ad-break-inner-bg" className="gradient-green" style={{ animationDuration: `${ adBreakLength }s` }}></div>
+		</Window>
 	)
 }
 export default AdBreakBox;
 
-/**
- * Pretime (time passed)
- * 
- * @param {object} propz 
- */
+/** The countdown timer */
 const AdBreakTimer = ( propz: { length: number } ) =>
 {
 	const [minutes, setMinutes] = useState<number>( Math.floor( propz.length / 60 ) );
@@ -88,10 +69,6 @@ const AdBreakTimer = ( propz: { length: number } ) =>
 
 		return () => clearInterval( countdown );
 	}, [ minutes, seconds ]);
-
-/*	==========
-	Render
-	========== */
 
 	return (
 		<span id="ad-break-timer">({ minutes }:{ seconds.toLocaleString( 'de-DE', {minimumIntegerDigits: 2 } ) })</span>

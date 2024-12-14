@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.1.2
+ * @version 1.1.4
  */
 
 import '@propz/prototypes.ts';
@@ -694,9 +694,19 @@ export abstract class TwitchUtils
 	handleTimers()
 	{
 		const minutesPassed = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 / 60 );
-		const message = getMessage( this.data.timers?.[ minutesPassed ]?.message, this.streamLanguage ) || '';
+		if ( !minutesPassed ) return;
 
-		if ( !minutesPassed || !message ) return;
+		const timer = this.data.timers[ minutesPassed ];
+		if ( !timer ) return;
+
+		const message = getMessage( timer.message, this.streamLanguage );
+		if ( !message ) return;
+
+		if ( timer.isAnnouncement )
+		{
+			this.chat.sendAnnouncement( message );
+			return;
+		}
 		this.chat.sendAction( message );
 	}
 

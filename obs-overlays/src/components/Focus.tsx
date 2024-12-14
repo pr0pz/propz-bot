@@ -2,11 +2,12 @@
  * Focus Manager
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.1.4
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
+import Button from './Button.tsx';
 
 const Focus = () =>
 {
@@ -16,41 +17,26 @@ const Focus = () =>
 
 	useEffect( () =>
 	{
-		if (
-			!event ||
-			event.detail.type !== 'focusstart'
-		) return;
-
-		setFocusLength( event.detail.count );
-		const timeOutLength = event.detail.count * 60 * 1000;
-
-		setTimeout( () => 
-		{
-			setFocusLength( 0 );
-		}, timeOutLength );
+		if ( event?.detail?.type !== 'focusstart' ) return;
+		const length = event.detail.count || 10;
+		setFocusLength( length );
+		setTimeout( () => setFocusLength( 0 ), length * 60 * 1000 );
 	},
 	[event]);
 
 	if ( !focusLength ) return;
 
 	return(
-		<div id="focus" className="radius border shadow" style={{ animationDuration: `${ focusLength * 60 }s` }}>
-			<div id="focus-inner">
-				<div>Focus!</div>
-				<FocusTimer length={ focusLength } />
-			</div>
-		</div>
+		<Button id="focus" style={ { '--animation-out-delay': `${focusLength * 60 - 2}s` } as React.CSSProperties }>
+			Focus!
+			<FocusTimer length={ focusLength } />
+		</Button>
 	)
 }
 
 export default Focus;
 
-/**
- * Pretime (time passed)
- * 
- * @param {object} props 
- * @returns 
- */
+/** Focus timer countdown */
 const FocusTimer = ( propz: { length: number } ) =>
 {
 	const [minutes, setMinutes] = useState<number>( Math.floor( propz.length ) );
@@ -82,10 +68,6 @@ const FocusTimer = ( propz: { length: number } ) =>
 
 		return () => clearInterval( countdown );
 	}, [ minutes, seconds ]);
-
-/*	==========
-	Render
-	========== */
 
 	return (
 		<div id="focus-timer">{ minutes }:{ seconds.toLocaleString( 'de-DE', {minimumIntegerDigits: 2 } ) }</div>

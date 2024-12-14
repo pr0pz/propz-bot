@@ -41,12 +41,13 @@
 
 	#raid-title {
 		margin-bottom: -4rem;
-	}
 
-		#raid-title .window-body {
+
+		.window-body {
 			padding: 2rem;
 			padding-bottom: 6rem;
 		}
+	}
 
 		#raid-user {
 			margin-right: -4rem;

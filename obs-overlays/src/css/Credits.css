@@ -2,7 +2,7 @@
  * Chat list
  * 
  * @author Wellington Estevo
- * @version 1.1.3
+ * @version 1.1.4
  */
 
 #credits {
@@ -15,9 +15,8 @@
 		margin-bottom: 6rem;
 		display: grid;
 		justify-content: start;
-	}
 
-		.credits-wrapper .window-body {
+		.window-body {
 			display: grid;
 			justify-items: start;
 			gap: 2rem;
@@ -25,43 +24,45 @@
 			font-size: 200%;
 		}
 
-			.credits-entry 	.window-light {
-				text-transform: uppercase;
-				font-size: 150%;
-			}
+		.window-light {
+			text-transform: uppercase;
+			font-size: 150%;
+			justify-self: start;
+		}
 
-				.credits-entry .window-light .window-body {
-					padding: 2rem 3rem 4rem;
-				}
+		.window-light .window-body {
+			padding: 2rem 3rem 4rem;
+		}
 
-			.credits-entry .window-dark {
-				translate: 30% -3rem;
-			}
+		.window-dark {
+			translate: 30% -3rem;
+		}
+
+		/* Abstände etwas unterschiedlich weil mehr Abwechslung */
+		&:nth-child(2){translate: 10vw}
+		&:nth-child(2) .window-dark{translate: 20% -2.5rem}
+		&:nth-child(3){translate: -5vw}
+		&:nth-child(3) .window-dark{translate: 25% -2.74rem}
+		&:nth-child(5){translate: 5vw}
+		&:nth-child(3) .window-dark{translate: 15% -3rem}
+	}
 
 	.credits-entry {
 		display: flex;
 		gap: 2rem;
 		align-items: center;
 		width: 100%;
-	}
 
-		.credits-entry .sep {
-			display: none;
-		}
-
-		.credits-entry .user {
+		.user {
 			flex-grow: 1;
 		}
 
-		.credits-entry img {
+		img {
 			width: 7.5rem;
 			border-radius: 100%;
 		}
 
-		.credits-entry .count {
-			display: inline-block;
-			padding: 0 1.5rem;
-			background: #fff;
-			box-shadow: .5rem .5rem 0 var(--color-tertiary);
-			border: var(--border--size) solid var(--color-secondary);
+		.button {
+			border-color: var(--color-secondary) !important;
 		}
+	}

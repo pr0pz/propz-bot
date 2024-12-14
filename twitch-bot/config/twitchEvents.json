@@ -3,6 +3,14 @@
 		"message": {
 			"de": "Ab geht's in die Werbepause 📢 Gönnt euch mal ein Erfrischungsgetränk 🧃",
 			"en": "Time for a commercial break 📢 Treat yourself to a refreshing drink 🧃"
+		},
+		"extra": {
+			"de": {
+				"titleEvent": "AHH WERBUNG WTF OMG!!11!"
+			},
+			"en": {
+				"titleEvent": "AHH ADS WTF OMG!!11!"
+			}
 		}
 	},
 	"ban": {
