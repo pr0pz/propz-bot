@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.4
+ * @version 1.1.5
  */
 
 import type { Buffer } from 'node:buffer';
@@ -12,7 +12,7 @@ export interface BotReactionMessage {
 }
 
 export interface TwitchEventExtra {
-	titleAlert: string;
+	titleAlert?: string;
 	titleEvent?: string;
 }
 
