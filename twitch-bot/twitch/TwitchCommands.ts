@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.0.19
+ * @version 1.1.7
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -161,8 +161,11 @@ export class TwitchCommands
 		emotes: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				const emotes = Object.keys( this.twitch.data.emotes )
-					.filter( key => key.startsWith( 'propz' ) )
+				const emotes = this.twitch.data.emotes
+					.entries()
+					.map( ([key, _value]) => key )
+					.toArray()
+					.filter( (value) => value.startsWith( 'propz' ) )
 					.join( ' ' );
 				return options.commandMessage?.replace( '[emotes]', emotes );
 			},

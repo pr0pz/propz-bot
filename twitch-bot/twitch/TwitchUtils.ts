@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.1.6
+ * @version 1.1.7
  */
 
 import '@propz/prototypes.ts';
@@ -332,9 +332,9 @@ export abstract class TwitchUtils
 			}
 
 			// Replace known Emotes
-			if ( emotes[ messagePart.name ] )
+			if ( emotes.has( messagePart.name ) )
 			{
-				messageParts.push( `<img src='${ emotes[ messagePart.name ] }' alt='${ messagePart.name }' class='emote emote-known' />` );
+				messageParts.push( `<img src='${ emotes.get( messagePart.name ) }' alt='${ messagePart.name }' class='emote emote-known' />` );
 			}
 			// Replace unknown Emotes
 			else if ( messagePart.type === 'emote' )
@@ -346,7 +346,7 @@ export abstract class TwitchUtils
 		let messageWithEmotes = messageParts.join( ' ' );
 
 		// Replace all External Emotes
-		messageWithEmotes = messageWithEmotes.split(' ').map( word => emotes[word] ? `<img src='${ emotes[word] }' alt='${ word }' class='emote emote-external' />` : word ).join(' ');
+		messageWithEmotes = messageWithEmotes.split(' ').map( word => emotes.has( word ) ? `<img src='${ emotes.get( word ) }' alt='${ word }' class='emote emote-external' />` : word ).join(' ');
 		
 		return messageWithEmotes;
 	}
@@ -379,7 +379,7 @@ export abstract class TwitchUtils
 		const messageWithEmotes = [];
 		for( const word of messageParts.join( ' ' ).split( ' ' ) )
 		{
-			if ( !emotes[ word ] )
+			if ( !emotes.has( word ) )
 				messageWithEmotes.push( word );
 		}
 

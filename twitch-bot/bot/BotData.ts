@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.6
+ * @version 1.1.7
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -57,7 +57,7 @@ export class BotData
 
 	// Data
 	public bots: string[] = bots;
-	public emotes: TwitchEmote = emotes;
+	public emotes: Map<string,string>;
 	public eventsData: TwitchEventData[] = eventsData;
 	public quotes: TwitchQuote[] = quotes;
 	public twitchUsersData: TwitchUsersData = twitchUsersData;
@@ -72,6 +72,7 @@ export class BotData
 	{
 		this.twitchApi = twitchApi;
 		this.timers = this.toMap( timers );
+		this.emotes = this.toMap( emotes );
 	}
 
 	async init()
@@ -309,8 +310,8 @@ export class BotData
 		]);
 		const emotes = Object.assign( {}, emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV );
 
-		this.emotes = emotes;
-		this.saveFile( 'twitchEmotes', this.emotes );
+		this.emotes = this.toMap( emotes );
+		this.saveFile( 'twitchEmotes', emotes );
 	}
 
 	/** Set last 20 followers */
