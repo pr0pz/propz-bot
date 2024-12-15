@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.5
+ * @version 1.1.6
  */
 
 import type { Buffer } from 'node:buffer';
@@ -65,10 +65,8 @@ export interface TwitchReaction {
 }
 
 export interface TwitchTimers {
-	[key: string]: {
-		message?: BotReactionMessage;
-		isAnnouncement?: boolean;
-	}
+	message?: BotReactionMessage;
+	isAnnouncement?: boolean;
 }
 
 export interface TwitchEventData {

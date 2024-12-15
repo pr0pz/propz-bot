@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.1.4
+ * @version 1.1.6
  */
 
 import '@propz/prototypes.ts';
@@ -693,10 +693,8 @@ export abstract class TwitchUtils
 	/** Handle timed messages */
 	handleTimers()
 	{
-		const minutesPassed = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 / 60 );
-		if ( !minutesPassed ) return;
-
-		const timer = this.data.timers[ minutesPassed ];
+		const minutesPassed = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 / 60 ).toString();
+		const timer = this.data.timers.get( minutesPassed );
 		if ( !timer ) return;
 
 		const message = getMessage( timer.message, this.streamLanguage );

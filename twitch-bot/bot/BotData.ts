@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.2
+ * @version 1.1.6
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -53,7 +53,7 @@ export class BotData
 	public events: TwitchEvents = events;
 	public reactions: TwitchReaction[] = reactions;
 	public rewards: TwitchRewards = rewards;
-	public timers: TwitchTimers = timers;
+	public timers: Map<string,TwitchTimers>;
 
 	// Data
 	public bots: string[] = bots;
@@ -68,7 +68,11 @@ export class BotData
 	public badges: TwitchBadge[] = [];
 	public followers: TwitchEventData[] = [];
 
-	constructor( twitchApi: ApiClient ) { this.twitchApi = twitchApi }
+	constructor( twitchApi: ApiClient )
+	{
+		this.twitchApi = twitchApi;
+		this.timers = this.toMap( timers );
+	}
 
 	async init()
 	{
@@ -577,10 +581,16 @@ export class BotData
 			this.events = events;
 			this.reactions = reactions;
 			this.rewards = rewards;
-			this.timers = timers;
+			this.timers = this.toMap( timers );
 
 			this.setRewards();
 		}
 		catch (error) { log(error) }
 	}
+
+	/** Convert object with key and values to a map */
+	toMap = ( data: object ) => new Map( Object.entries( data ).map( ([key, value]) => [key, value] ) );
+
+	/** Convert Map to object with key and values */
+	toObject = ( data: Map<string, any> ) => Object.fromEntries( data );
 }
