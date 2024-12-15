@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.1.7
+ * @version 1.1.8
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -225,8 +225,8 @@ export class TwitchCommands
 				);
 			},
 			message: {
-				de: '[user] hat [count]x erste Chatterin › Rank: [rank]',
-				en: '[user] has [count]x first chatter › Rank: [rank]'
+				de: '[user] war [count]x erste Chatterin › Rank: [rank]',
+				en: '[user] was [count]x first chatter › Rank: [rank]'
 			},
 			description: 'First-Chat score'
 		},

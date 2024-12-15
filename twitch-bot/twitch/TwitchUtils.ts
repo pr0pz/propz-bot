@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.1.7
+ * @version 1.1.8
  */
 
 import '@propz/prototypes.ts';
@@ -179,27 +179,30 @@ export abstract class TwitchUtils
 		const userData = this.data.getUsersData();
 		if ( !userData ) return '';
 
-		let count: string|number = Number( userData[ user.id ][ type ] ) ?? 0;
+		let count: string|number = Number( userData.get( user.id )?.[ type ] ) ?? 0;
 		if ( !count ) return '';
 
 		// Sort users by type
-		const sortedUsers = Object.entries( userData )
-			.filter( ([_, data]) => data[type] !== undefined )
-			.sort( ([, a], [, b]) => 
+		const sortedUsers = userData
+			.entries()
+			.filter( ([_userId, user]) => user[type] !== undefined )
+			.map( ([userId,user]) => [userId, user[type] as number, user.name] )
+			.toArray()
+			.sort( (a, b) => 
 			{
 				// Aufsteigende Sortierung für 'follow'
 				if ( type === 'follow' )
 				{
-					return (a[type] as number) - (b[type] as number);
+					return (a[1] as number) - (b[1] as number);
 				}
 				// Absteigende Sortierung für andere Typen
 				else
 				{
-					return (b[type] as number) - (a[type] as number);
+					return (b[1] as number) - (a[1] as number);
 				}
 			});
 
-		const rank = sortedUsers.findIndex( ( [id, _data] ) => id === user.id ) + 1;
+		const rank = sortedUsers.findIndex( ( [id, _data, _userName] ) => id === user.id ) + 1;
 
 		if ( type === 'follow' )
 			count = getTimePassed( Date.now() - count * 1000 );

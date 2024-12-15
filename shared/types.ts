@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.6
+ * @version 1.1.8
  */
 
 import type { Buffer } from 'node:buffer';
@@ -110,10 +110,6 @@ export interface TwitchUserData {
 	firsts?: number;
 	[key: string]: string|number|undefined;
 }
-
-	export interface TwitchUsersData {
-		[key: string]: TwitchUserData;
-	}
 
 export type TwitchInsightsBot = [string, number, number];
 

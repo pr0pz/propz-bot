@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.7
+ * @version 1.1.8
  */
 
 import { getRandomNumber, log } from '@propz/helpers.ts';
@@ -21,8 +21,7 @@ import type {
 	TwitchRewards,
 	TwitchStreamDate,
 	TwitchTimers,
-	TwitchUserData,
-	TwitchUsersData
+	TwitchUserData
 } from '@propz/types.ts';
 
 // Config
@@ -60,7 +59,7 @@ export class BotData
 	public emotes: Map<string,string>;
 	public eventsData: TwitchEventData[] = eventsData;
 	public quotes: TwitchQuote[] = quotes;
-	public twitchUsersData: TwitchUsersData = twitchUsersData;
+	public twitchUsersData: Map<string,TwitchUserData>;
 
 	// Dynamic
 	public twitchUser: HelixUser|null = null;
@@ -73,6 +72,7 @@ export class BotData
 		this.twitchApi = twitchApi;
 		this.timers = this.toMap( timers );
 		this.emotes = this.toMap( emotes );
+		this.twitchUsersData = this.toMap( twitchUsersData );
 	}
 
 	async init()
@@ -245,13 +245,13 @@ export class BotData
 	/** Get data for twitch user/s
 	 * 
 	 * @param {string} userId User ID
-	 * @returns {TwitchUserData|TwitchUsersData}
+	 * @returns {TwitchUserData|Map<string,TwitchUserData>}
 	 */
-	getUsersData(): TwitchUsersData
+	getUsersData(): Map<string,TwitchUserData>
 	getUsersData( userId: string ): TwitchUserData
-	getUsersData( userId?: string ): TwitchUserData|TwitchUsersData
+	getUsersData( userId?: string ): TwitchUserData|Map<string,TwitchUserData>
 	{
-		if ( userId ) return this.twitchUsersData[ userId ] || {};
+		if ( userId ) return this.twitchUsersData.get( userId ) || {};
 		return this.twitchUsersData;
 	}
 
@@ -533,14 +533,14 @@ export class BotData
 			userData[ dataName ] = dataValue;
 		}
 
-		this.twitchUsersData[ user.id ] = userData;
+		this.twitchUsersData.set( user.id, userData );
 	}
 
 	/** Save users and events data */
 	saveUsersAndEventsData()
 	{
 		this.saveFile( 'twitchEventsData', this.eventsData );
-		this.saveFile( 'twitchUsersData', this.twitchUsersData );
+		this.saveFile( 'twitchUsersData', this.toObject( this.twitchUsersData ) );
 	}
 
 	/** Save data to file
@@ -593,5 +593,5 @@ export class BotData
 	toMap = ( data: object ) => new Map( Object.entries( data ).map( ([key, value]) => [key, value] ) );
 
 	/** Convert Map to object with key and values */
-	toObject = ( data: Map<string, any> ) => Object.fromEntries( data );
+	toObject = ( data: Map<string, string|TwitchTimers|TwitchUserData> ) => Object.fromEntries( data );
 }
