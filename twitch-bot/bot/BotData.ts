@@ -2,10 +2,10 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.9
+ * @version 1.1.10
  */
 
-import { getRandomNumber, getRewardSlug, log } from '@propz/helpers.ts';
+import { getRandomNumber, getRewardSlug, log, toMap, toObject } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
 import type { ApiClient } from '@twurple/api';
@@ -15,7 +15,7 @@ import type {
 	TwitchBadgeVersion,
 	TwitchEmote,
 	TwitchEventData,
-	TwitchEvents,
+	TwitchEvent,
 	TwitchQuote,
 	TwitchReaction,
 	TwitchReward,
@@ -48,8 +48,8 @@ export class BotData
 	public twitchApi: ApiClient;
 
 	// Config
-	public discordEvents: TwitchEvents = discordEvents;
-	public events: TwitchEvents = events;
+	public discordEvents: Map<string,TwitchEvent>;
+	public events: Map<string,TwitchEvent>;
 	public reactions: TwitchReaction[] = reactions;
 	public rewards: TwitchReward[] = rewards;
 	public timers: Map<string,TwitchTimers>;
@@ -70,9 +70,11 @@ export class BotData
 	constructor( twitchApi: ApiClient )
 	{
 		this.twitchApi = twitchApi;
-		this.timers = this.toMap( timers );
-		this.emotes = this.toMap( emotes );
-		this.twitchUsersData = this.toMap( twitchUsersData );
+		this.timers = toMap( timers );
+		this.discordEvents = toMap( discordEvents );
+		this.emotes = toMap( emotes );
+		this.events = toMap( events );
+		this.twitchUsersData = toMap( twitchUsersData );
 	}
 
 	async init()
@@ -129,7 +131,7 @@ export class BotData
 	getEvent( eventType: string )
 	{
 		if ( !eventType ) return {};
-		return this.events[ eventType ] || {};
+		return this.events.get( eventType ) || {};
 	}
 
 	/** Get random quote */
@@ -153,11 +155,11 @@ export class BotData
 	getLastEventsData( streamLanguage: string = 'de' )
 	{
 		streamLanguage = streamLanguage || 'de';
-		const events = this.events;
 		const eventsData = this.eventsData.slice(-10);
 		for( const [index, event] of eventsData.entries() )
 		{
-			eventsData[ index ].extra = events[ event.eventType ]?.extra?.[ streamLanguage ];
+			const eventSaved = this.getEvent( event.eventType );
+			eventsData[ index ].extra = eventSaved?.extra?.[ streamLanguage ];
 		}
 		return eventsData;
 	}
@@ -310,7 +312,7 @@ export class BotData
 		]);
 		const emotes = Object.assign( {}, emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV );
 
-		this.emotes = this.toMap( emotes );
+		this.emotes = toMap( emotes );
 		this.saveFile( 'twitchEmotes', emotes );
 	}
 
@@ -540,7 +542,7 @@ export class BotData
 	saveUsersAndEventsData()
 	{
 		this.saveFile( 'twitchEventsData', this.eventsData );
-		this.saveFile( 'twitchUsersData', this.toObject( this.twitchUsersData ) );
+		this.saveFile( 'twitchUsersData', toObject( this.twitchUsersData ) );
 	}
 
 	/** Save data to file
@@ -578,20 +580,14 @@ export class BotData
 			const rewards = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchRewards.json' ));
 			const timers = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchTimers.json' ));
 
-			this.discordEvents = discordEvents;
-			this.events = events;
+			this.discordEvents = toMap( discordEvents );
+			this.events = toMap( events );
 			this.reactions = reactions;
 			this.rewards = rewards;
-			this.timers = this.toMap( timers );
+			this.timers = toMap( timers );
 
 			this.setRewards();
 		}
 		catch (error) { log(error) }
 	}
-
-	/** Convert object with key and values to a map */
-	toMap = ( data: object ) => new Map( Object.entries( data ).map( ([key, value]) => [key, value] ) );
-
-	/** Convert Map to object with key and values */
-	toObject = ( data: Map<string, string|TwitchTimers|TwitchUserData> ) => Object.fromEntries( data );
 }

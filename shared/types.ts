@@ -2,18 +2,13 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.9
+ * @version 1.1.10
  */
 
 import type { Buffer } from 'node:buffer';
 
 export interface BotReactionMessage {
 	[key: string]: string|string[];
-}
-
-export interface TwitchEventExtra {
-	titleAlert?: string;
-	titleEvent?: string;
 }
 
 export interface TwitchCommand {
@@ -55,8 +50,9 @@ export interface TwitchEvent {
 	_comment?: string;
 }
 
-	export interface TwitchEvents {
-		[key: string]: TwitchEvent;
+	export interface TwitchEventExtra {
+		titleAlert?: string;
+		titleEvent?: string;
 	}
 
 export interface TwitchReaction {

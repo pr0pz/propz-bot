@@ -2,7 +2,7 @@
  * Discord Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.1.10
  */
 
 import '@propz/prototypes.ts';
@@ -284,7 +284,7 @@ export class Discord extends DiscordUtils
 		log( member.displayName );
 
 		const eventType = 'guildmemberadd';
-		const event = this.data.discordEvents[ eventType ];
+		const event = this.data.discordEvents.get( eventType );
 
 		if ( !event?.message?.de || !event?.messageImage?.de ) return;
 

@@ -2,8 +2,10 @@
  * Helper functions
  * 
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.1.10
  */
+
+import type { TwitchTimers, TwitchUserData } from '@propz/types.ts';
 
 /** Log function + overloads
  * 
@@ -194,4 +196,16 @@ export function execCommand( command: string, args: string|string[] )
 
 		return '';
 	}
+}
+
+/** Convert object with key and values to a map */
+export function toMap( data: object )
+{
+	return new Map( Object.entries( data ).map( ([key, value]) => [key, value] ) );
+}
+
+/** Convert Map to object with key and values */
+export function toObject( data: Map<string, string|TwitchTimers|TwitchUserData> )
+{
+	return Object.fromEntries( data );
 }
