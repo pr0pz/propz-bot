@@ -1,5 +1,5 @@
-{
-	"rewardboom": {
+[
+	{
 		"id": "8d9352dd-25da-4188-a12f-9cebb8462c4a",
 		"title": "Boom",
 		"cost": 300,
@@ -12,7 +12,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardchangebackground": {
+	{
 		"id": "19593ceb-3831-4ded-bfb6-f95048ac8f0d",
 		"title": "Change Background",
 		"cost": 100,
@@ -25,7 +25,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardconfetti": {
+	{
 		"id": "d6cd24e1-0b2d-4b04-94fa-e4ea74da5a84",
 		"title": "Confetti",
 		"cost": 100,
@@ -38,7 +38,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewarddisconnect": {
+	{
 		"id": "60b6043e-7c0e-42c2-b646-ec15bc80086f",
 		"title": "Disconnect",
 		"cost": 10000,
@@ -51,7 +51,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardduvogel": {
+	{
 		"id": "079fa080-9adb-4a18-89ad-93613f0ca56d",
 		"title": "Du Vogel!",
 		"cost": 5000,
@@ -64,7 +64,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardfireworks": {
+	{
 		"id": "e5a69e18-2728-49c1-9b23-37f24ad3c289",
 		"title": "Fireworks",
 		"cost": 300,
@@ -77,7 +77,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardfuntastico": {
+	{
 		"id": "d16b81e0-68bc-40cf-8c32-cbf8a6fba06a",
 		"title": "FUNtastico",
 		"cost": 7500,
@@ -90,7 +90,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardhydrate": {
+	{
 		"id": "752b1d58-cf41-4474-b450-e1f8f12f7083",
 		"title": "Hydrate!",
 		"cost": 100,
@@ -103,7 +103,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardletstrip": {
+	{
 		"id": "e7ac0d99-2325-4c33-9a5b-6c18f6712a83",
 		"title": "Let's Trip",
 		"cost": 400,
@@ -116,7 +116,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardonfire": {
+	{
 		"id": "3f3d0e7c-1557-4640-9f55-ffb010cd964f",
 		"title": "On fire!",
 		"cost": 500,
@@ -129,7 +129,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardpedro": {
+	{
 		"id": "d9b7fef1-02be-4332-9e1f-19c96b318343",
 		"title": "Pedro!",
 		"cost": 1000,
@@ -142,7 +142,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardquack": {
+	{
 		"id": "0437b7ac-fd50-4fe3-8674-1e4542636da7",
 		"title": "Quack",
 		"cost": 50,
@@ -155,7 +155,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardrip": {
+	{
 		"id": "4b5df704-a2a6-4b79-ae5e-8324dc5a9b20",
 		"title": "RIP",
 		"cost": 400,
@@ -168,7 +168,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardshakeitoff": {
+	{
 		"id": "7c6eb329-8aac-4a41-a7fd-741065f79dab",
 		"title": "Shake It Off",
 		"cost": 1000,
@@ -181,7 +181,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardsus": {
+	{
 		"id": "e8a4be54-cf7d-4384-bbb2-205eb8051c49",
 		"title": "SUS",
 		"cost": 200,
@@ -194,7 +194,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardtts": {
+	{
 		"id": "8b98f7af-c6c0-4d14-99ed-b3beb3e3b171",
 		"title": "TTS",
 		"cost": 1000,
@@ -207,7 +207,7 @@
 		"isEnabled": true,
 		"autoFulfill": false
 	},
-	"rewardwrongscene": {
+	{
 		"id": "f77d0917-bfee-41e5-a206-aaf951ab6f36",
 		"title": "Wrong Scene",
 		"cost": 10,
@@ -220,7 +220,7 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	},
-	"rewardwtf": {
+	{
 		"id": "cdbc34a1-58d4-41b5-b892-806b374a86d8",
 		"title": "WTF?!",
 		"cost": 600,
@@ -233,4 +233,4 @@
 		"isEnabled": true,
 		"autoFulfill": true
 	}
-}
+]

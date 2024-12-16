@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.8
+ * @version 1.1.9
  */
 
 import type { Buffer } from 'node:buffer';
@@ -97,10 +97,6 @@ export interface TwitchReward {
 	userInputRequired: boolean;
 	isEnabled: boolean;
 	autoFulfill: boolean;
-}
-
-export interface TwitchRewards {
-	[key: string]: TwitchReward;
 }
 
 export interface TwitchUserData {

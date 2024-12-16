@@ -2,10 +2,10 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.8
+ * @version 1.1.9
  */
 
-import { getRandomNumber, log } from '@propz/helpers.ts';
+import { getRandomNumber, getRewardSlug, log } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
 import type { ApiClient } from '@twurple/api';
@@ -18,7 +18,7 @@ import type {
 	TwitchEvents,
 	TwitchQuote,
 	TwitchReaction,
-	TwitchRewards,
+	TwitchReward,
 	TwitchStreamDate,
 	TwitchTimers,
 	TwitchUserData
@@ -51,7 +51,7 @@ export class BotData
 	public discordEvents: TwitchEvents = discordEvents;
 	public events: TwitchEvents = events;
 	public reactions: TwitchReaction[] = reactions;
-	public rewards: TwitchRewards = rewards;
+	public rewards: TwitchReward[] = rewards;
 	public timers: Map<string,TwitchTimers>;
 
 	// Data
@@ -83,7 +83,7 @@ export class BotData
 		this.setFollowers();
 		this.setMods();
 		this.setRewards();
-		this.setbots();
+		this.setBots();
 	}
 
 	/** Get own twitch user display name */
@@ -375,15 +375,15 @@ export class BotData
 		const rewards = this.rewards;
 		const rewardsCurrent = await this.twitchApi.channelPoints.getCustomRewards( this.userId, true );
 
-		for( const [rewardSlug, reward] of Object.entries( rewards ) )
+		for( const [index,reward] of rewards.entries() )
 		{
 			if ( reward.id === '' )
 			{
 				try
 				{
 					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( this.userId, reward );
-					rewards[ rewardSlug ].id = rewardCreated.id;
-					log( `createCustomReward › ${rewardSlug} › ${rewardCreated.id}` );
+					rewards[ index ].id = rewardCreated.id;
+					log( `createCustomReward › ${ getRewardSlug( reward.title ) } › ${rewardCreated.id}` );
 					this.saveFile( 'twitchRewards', rewards, 'config' );
 				}
 				catch( error: unknown ) { log( error ) }
@@ -418,7 +418,7 @@ export class BotData
 	}
 
 	/** Set Global Twitch Bot list */
-	async setbots()
+	async setBots()
 	{
 		this.bots = await TwitchInsights.getBots();
 		this.saveFile( 'twitchBots', bots );
