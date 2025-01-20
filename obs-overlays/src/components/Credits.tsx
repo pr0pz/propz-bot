@@ -18,6 +18,7 @@ const Credits = () =>
 	const event = useEvent();
 	const [events, setEvents] = useState({
 		chatters: new Map(), // chat counter
+		cheers: new Map(), // bits
 		subbers: new Map(), // subs and resubs
 		firstchatter: new Map(),
 		followers: new Map(),
@@ -53,6 +54,7 @@ const Credits = () =>
 				case 'streamonline':
 					return {
 						chatters: new Map(), // chat counter
+						cheers: new Map(), // bits
 						subbers: new Map(), // subs and resubs
 						firstchatter: new Map(),
 						followers: new Map(),
@@ -85,10 +87,19 @@ const Credits = () =>
 					});
 					break;
 
+				case 'cheer':
+					newEvents.cheers = new Map( prevEvents.cheers ).set( eventDetails.user,
+					{
+						count: ( prevEvents.cheers.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 ),
+						profilePictureUrl: eventDetails.profilePictureUrl,
+						color: eventDetails.color
+					});
+					break;
+			
 				case 'raid':
 					newEvents.raiders = new Map( prevEvents.raiders ).set( eventDetails.user,
 					{
-						count: ( prevEvents.raiders.get( eventDetails.user )?.count ?? 0 ) + 1,
+						count: eventDetails?.count || 1,
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
 					});
@@ -154,6 +165,12 @@ const Credits = () =>
 				<div id="gifters" className='credits-wrapper'>
 					<Window>Gifters</Window>
 					<Window theme="dark">{ getValues( 'gifters' ).map( (value) => ( value ) ) }</Window>
+				</div>
+			}
+			{ events.cheers.size > 0 &&
+				<div id="cheers" className='credits-wrapper'>
+					<Window>Bits baby</Window>
+					<Window theme="dark">{ getValues( 'cheers' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
 			{ events.followers.size > 0 &&

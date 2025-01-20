@@ -15,6 +15,7 @@
 		margin-bottom: 6rem;
 		display: grid;
 		justify-content: start;
+		position: relative;
 
 		.window-body {
 			display: grid;
@@ -35,16 +36,18 @@
 		}
 
 		.window-dark {
-			translate: 30% -3rem;
+			position: relative;
+			left: 30%;
+			top: -3rem;
 		}
 
 		/* Abstände etwas unterschiedlich weil mehr Abwechslung */
-		&:nth-child(2){translate: 10vw}
-		&:nth-child(2) .window-dark{translate: 20% -2.5rem}
-		&:nth-child(3){translate: -5vw}
-		&:nth-child(3) .window-dark{translate: 25% -2.74rem}
-		&:nth-child(5){translate: 5vw}
-		&:nth-child(3) .window-dark{translate: 15% -3rem}
+		&:nth-child(2){left: 10vw}
+		&:nth-child(2) .window-dark{left: 20%; top: -2.5rem}
+		&:nth-child(3){left: -5vw}
+		&:nth-child(3) .window-dark{left: 25%; top: -2.74rem}
+		&:nth-child(5){left: 5vw}
+		&:nth-child(3) .window-dark{left: 15%;top: -3rem}
 	}
 
 	.credits-entry {
