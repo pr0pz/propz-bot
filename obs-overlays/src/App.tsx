@@ -19,6 +19,7 @@ import LedDisplay from './components/LedDisplay.tsx';
 import Focus from './components/Focus.tsx';
 import Obs from './components/Obs.tsx';
 import Credits from './components/Credits.tsx';
+import Weather from './components/Weather.tsx';
 
 const App = () =>
 {
@@ -43,6 +44,7 @@ const App = () =>
 					<Route path="/focus" element={ <Focus /> } />
 					<Route path="/obs" element={ <Obs /> } />
 					<Route path="/credits" element={ <Credits /> } />
+					<Route path="/weather" element={ <Weather /> } />
 				</Routes>
 			</section>
 		</EventProvider>
