@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.1.10
+ * @version 1.2.1
  */
 
 import type { Buffer } from 'node:buffer';
@@ -356,6 +356,9 @@ export interface YoutubeApiResponse {
 
 export interface ApiRequest {
 	request: string;
+	data?: {
+		[key: string]: string
+	};
 }
 
 export interface ApiResponse {
@@ -422,4 +425,10 @@ export type PrintAlertEvents = {
 		title: string;
 		text?: string;
 	}
+}
+
+export interface WeatherData {
+	temp?: string,
+	icon?: string,
+	iconUrl?: string
 }

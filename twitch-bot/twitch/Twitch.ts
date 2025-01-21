@@ -2,12 +2,13 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.2.1
  */
 
 import '@propz/prototypes.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
 import { getMessage, sanitizeMessage } from '@propz/helpers.ts';
+import { OpenWeather } from '../external/OpenWeather.ts';
 
 import type { Discord } from '../discord/Discord.ts';
 import type { HelixUser } from '@twurple/api';
@@ -212,25 +213,25 @@ export class Twitch extends TwitchUtils
 	 * 
 	 * @param {Object} data Request data
 	 */
-	override async processApiCall( data: ApiRequest ): Promise<ApiResponse>
+	override async processApiCall( apiRequest: ApiRequest ): Promise<ApiResponse>
 	{
 		const response: ApiResponse = { 'data': false }
-		if ( !data?.request ) return response;
+		if ( !apiRequest?.request ) return response;
 
 		let user: HelixUser|SimpleUser|null = await this.data.getUser();
 		if ( !user ) return response;
 
 		user = await this.convertToSimplerUser( user );
 
-		if ( data.request.startsWith( 'command-') )
+		if ( apiRequest.request.startsWith( 'command-') )
 		{
-			const commandName = data.request.replace( 'command-', '' );
+			const commandName = apiRequest.request.replace( 'command-', '' );
 			this.processChatCommand( commandName, user );
 			response.data = true;
 			return response;
 		}
 
-		switch( data.request )
+		switch( apiRequest.request )
 		{
 			case 'chatCommands':
 				response.data = Object.fromEntries( this.commands.commands );
@@ -258,6 +259,15 @@ export class Twitch extends TwitchUtils
 
 			case 'getEvents':
 				response.data = this.data.getLastEventsData( this.streamLanguage );
+				break;
+
+			case 'getWeather':
+				if ( !apiRequest.data?.cityName || !apiRequest.data?.countryCode )
+					return response;
+
+				console.log( apiRequest );
+
+				response.data = await OpenWeather.handleWeatherRequest( apiRequest.data.cityName, apiRequest.data.countryCode );
 				break;
 		}
 
