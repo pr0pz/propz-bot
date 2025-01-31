@@ -2,7 +2,7 @@
  * Weather
  * 
  * @author Wellington Estevo
- * @version 1.2.2
+ * @version 1.2.3
  */
 
 import { useEffect, useState } from 'react';
@@ -11,8 +11,6 @@ import { useSearchParams } from 'react-router-dom';
 const Weather = () =>
 {
 	const [searchParams] = useSearchParams();
-	const [cityName, setCityName] = useState( '' );
-	const [countryCode, setCountryCode] = useState( '' );
 	const [worked, setWorked] = useState( false );
 	const [temp, setTemp] = useState( '' );
 	const [icon, setIcon] = useState( '' );
@@ -20,19 +18,19 @@ const Weather = () =>
 
 	useEffect( () =>
 	{
-		setCityName( searchParams.get('cityName') || '' );
-		setCountryCode( searchParams.get('countryCode') || '');
+		const city = searchParams.get('cityName') || '';
+		const country = searchParams.get('countryCode') || '';
 
-		if ( !cityName || !countryCode ) return;
-
-		checkTheWeather();
-		const weatherInterval = setInterval( checkTheWeather, 600 * 1000 );
+		checkTheWeather( city, country );
+		const weatherInterval = setInterval( () => checkTheWeather( city, country ), 600 * 1000 );
 
 		return () => clearInterval( weatherInterval );
-	}, []);
+	}, [ searchParams ]);
 
-	async function checkTheWeather()
+	async function checkTheWeather( cityName: string, countryCode: string )
 	{
+		if ( !cityName || !countryCode ) return;
+
 		const fetchOptions = {
 			method: 'POST',
 			headers: {

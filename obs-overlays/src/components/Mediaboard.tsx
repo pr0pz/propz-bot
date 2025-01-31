@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.1.3
+ * @version 1.2.3
  */
 
 import { useEffect, useState } from 'react';
@@ -59,6 +59,7 @@ const Mediaboard = () =>
 			audio.play().catch( ( error: unknown ) =>
 			{
 				log( error );
+				audio.remove();
 				setIsPlaying(false);
 				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1));
 				return;
@@ -103,7 +104,7 @@ const Mediaboard = () =>
 				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
 			});
 		}
-		catch( error: unknown ) { log( error )}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/**
