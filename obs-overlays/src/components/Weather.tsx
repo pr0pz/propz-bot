@@ -2,7 +2,7 @@
  * Weather
  * 
  * @author Wellington Estevo
- * @version 1.2.1
+ * @version 1.2.2
  */
 
 import { useEffect, useState } from 'react';
@@ -11,6 +11,8 @@ import { useSearchParams } from 'react-router-dom';
 const Weather = () =>
 {
 	const [searchParams] = useSearchParams();
+	const [cityName, setCityName] = useState( '' );
+	const [countryCode, setCountryCode] = useState( '' );
 	const [worked, setWorked] = useState( false );
 	const [temp, setTemp] = useState( '' );
 	const [icon, setIcon] = useState( '' );
@@ -18,14 +20,19 @@ const Weather = () =>
 
 	useEffect( () =>
 	{
+		setCityName( searchParams.get('cityName') || '' );
+		setCountryCode( searchParams.get('countryCode') || '');
+
+		if ( !cityName || !countryCode ) return;
+
 		checkTheWeather();
+		const weatherInterval = setInterval( checkTheWeather, 600 * 1000 );
+
+		return () => clearInterval( weatherInterval );
 	}, []);
 
 	async function checkTheWeather()
 	{
-		const cityName = searchParams.get('cityName') || '';
-		const countryCode = searchParams.get('countryCode') || '';
-
 		const fetchOptions = {
 			method: 'POST',
 			headers: {
@@ -55,8 +62,6 @@ const Weather = () =>
 			//if ( data.data.iconUrl !== image )
 		}
 		catch ( error: unknown ) { console.log( error ) }
-
-		setTimeout( checkTheWeather, 600 * 1000 );
 	}
 	
 	if ( !worked ) return;

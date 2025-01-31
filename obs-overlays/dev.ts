@@ -52,7 +52,7 @@ function requestHandler(req: Request)
 
 	// Server public index.html as default response
 	// Add websocket conenction for hot reload
-	const html = Deno.readTextFileSync( `./${rootDir}/public/index.html`).replace( '</body>', '<script>new WebSocket("ws://127.0.0.1:8000/esbuild").addEventListener("message", () => location.reload());</script></body>' );
+	const html = Deno.readTextFileSync( `./${rootDir}/public/index.html`).replace( '</body>', '<script>new WebSocket("ws://127.0.0.1:3000/esbuild").addEventListener("message", () => location.reload());</script></body>' );
 	return new Response( html, {
 		headers: { 'content-type': 'text/html' }
 	});
@@ -131,7 +131,7 @@ try {
 
 	log( 'watching for changes...' );
 
-	Deno.serve( { hostname: '127.0.0.1'}, requestHandler );
+	Deno.serve( { hostname: '127.0.0.1', port: 3000 }, requestHandler );
 	Deno.addSignalListener( 'SIGTERM', cleanup );
 	Deno.addSignalListener( 'SIGINT', cleanup );
 }

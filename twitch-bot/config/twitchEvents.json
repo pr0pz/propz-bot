@@ -122,7 +122,7 @@
 		"obs": {
 			"requestType": "SetSceneItemEnabled",
 			"requestData": {
-				"sceneName": "[R] VIDEOBOARD",
+				"sceneName": "[R] MEDIABOARD",
 				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
 				"sceneItemId": 10,
 				"sceneItemEnabled": true
@@ -169,7 +169,7 @@
 		"obs": {
 			"requestType": "SetSceneItemEnabled",
 			"requestData": {
-				"sceneName": "[R] VIDEOBOARD",
+				"sceneName": "[R] MEDIABOARD",
 				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
 				"sceneItemId": 6,
 				"sceneItemEnabled": true
@@ -181,7 +181,7 @@
 		"obs": {
 			"requestType": "SetSceneItemEnabled",
 			"requestData": {
-				"sceneName": "[R] VIDEOBOARD",
+				"sceneName": "[R] MEDIABOARD",
 				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
 				"sceneItemId": 7,
 				"sceneItemEnabled": true

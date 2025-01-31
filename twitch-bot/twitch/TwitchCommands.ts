@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.1.8
+ * @version 1.2.2
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -131,6 +131,12 @@ export class TwitchCommands
 			},
 			description: ''
 		},
+		dailydev: {
+			message: {
+				de: 'Die besten DEV News ▶️ https://propz.de/dailydev',
+				en: 'Check out the best dev news ▶️ https://propz.de/dailydev'
+			}
+		},
 		delphin: {
 			aliases: [ 'delfin', 'dolphin', 'golfinho' ],
 			hasSound: true
@@ -229,6 +235,13 @@ export class TwitchCommands
 				en: '[user] was [count]x first chatter › Rank: [rank]'
 			},
 			description: 'First-Chat score'
+		},
+		floripa: {
+			aliases: [ 'florianopolis', 'fpolis' ],
+			message: {
+				de: 'Bin hier › https://maps.app.goo.gl/nh8erwbu112ytM3V7',
+				en: 'I\'m here › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
+			}
 		},
 		fokus: {
 			handler: ( options: TwitchCommandOptions ) =>
@@ -682,6 +695,7 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		roadmap: {
+			aliases: [ 'roadmaps' ],
 			message: {
 				de: 'Roadmaps für alle DEVs und die es werden wollen ▶️ https://roadmap.sh',
 				en: 'Roadmaps for all DEVs and aspiring developers ▶️ https://roadmap.sh'

@@ -2,7 +2,7 @@
  * Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.2.2
  */
 
 import EventEmitter from 'events';
@@ -10,6 +10,7 @@ import { log } from './helpers.ts';
 
 export default class WebsocketController
 {
+	public pingInterval: number = 0;
 	public ws: WebSocket|null = null;
 	public websocketUrl: string;
 	public websocketEvents: EventEmitter = new EventEmitter();
@@ -35,6 +36,7 @@ export default class WebsocketController
 	disconnect()
 	{
 		if ( !this.ws ) return;
+		if ( this.pingInterval ) clearInterval( this.pingInterval );
 		this.ws.removeEventListener( 'open', this.onOpen );
 		this.ws.removeEventListener( 'close', this.onClose );
 		this.ws.removeEventListener( 'error', this.onError );
@@ -46,7 +48,7 @@ export default class WebsocketController
 	{
 		log( '✅ Connected to propz-bot' );
 		// Pings in regular intervals
-		setInterval( () =>
+		this.pingInterval = setInterval( () =>
 		{
 			if ( this.ws?.readyState === 1 )
 				this.ws.send( '{"type":"ping"}' );
