@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.1.2
+ * @version 1.2.4
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -85,9 +85,9 @@ export class TwitchEvents
 			const stream = await this.twitch.setStream();
 			if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
 			this.twitch.sendStremOnlineDataToDiscord( stream );
-		}, 20000 );
+		}, 10000 );
 	}
-	
+
 	/** Subscribes to events representing a stream going offline.
 	 * 
 	 * @param {EventSubStreamOfflineEvent} event An EventSub event representing a stream going offline.
@@ -96,6 +96,7 @@ export class TwitchEvents
 	{
 		if ( !event ) return;
 		this.twitch.setStream( null );
+		this.twitch.setStreamFirstChatter( this.twitch.data.userName );
 
 		this.twitch.processEvent({
 			eventType: 'streamoffline',

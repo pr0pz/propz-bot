@@ -231,7 +231,7 @@ export abstract class TwitchUtils
 			});
 		}
 	}
-	
+
 	/** Check for first chatter event.
 	 * 
 	 * @param {HelixUser} user User Object to check for
