@@ -2,11 +2,12 @@
  * Weather
  * 
  * @author Wellington Estevo
- * @version 1.2.3
+ * @version 1.2.5
  */
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { log } from '@propz/helpers.ts';
 
 const Weather = () =>
 {
@@ -59,7 +60,7 @@ const Weather = () =>
 
 			//if ( data.data.iconUrl !== image )
 		}
-		catch ( error: unknown ) { console.log( error ) }
+		catch ( error: unknown ) { log( error ) }
 	}
 	
 	if ( !worked ) return;

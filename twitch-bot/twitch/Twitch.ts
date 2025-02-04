@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.2.4
+ * @version 1.2.5
  */
 
 import '@propz/prototypes.ts';
@@ -264,8 +264,6 @@ export class Twitch extends TwitchUtils
 			case 'getWeather':
 				if ( !apiRequest.data?.cityName || !apiRequest.data?.countryCode )
 					return response;
-
-				console.log( apiRequest );
 
 				response.data = await OpenWeather.handleWeatherRequest( apiRequest.data.cityName, apiRequest.data.countryCode );
 				break;

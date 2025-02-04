@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.1.8
+ * @version 1.2.5
  */
 
 import '@propz/prototypes.ts';
@@ -583,7 +583,7 @@ export abstract class TwitchUtils
 			kofiData?.verification_token !== Deno.env.get( 'KOFI_TOKEN' )
 		) return 400;
 
-		console.log( `Webhook: Kofi ${ kofiData.type }` );
+		log( `Webhook: Kofi ${ kofiData.type }` );
 
 		const type = 'kofi' + kofiData.type.trim().replace( ' ', '' ).toLowerCase();
 		const name = kofiData.from_name || 'anonymous';
@@ -617,9 +617,6 @@ export abstract class TwitchUtils
 		if ( !event )
 			return false;
 
-		if ( this.data.isBot( userName ) )
-			return false;
-
 		// Killswitch
 		if (
 			this.killswitch &&
@@ -627,16 +624,19 @@ export abstract class TwitchUtils
 		) return false;
 		
 		// Prevent chatscore events to fire multiple times
-		const lastEvent: TwitchEventData = this.data.getLastEventsData( this.streamLanguage ).slice(-1)[0];
+		const lastEvent = this.data.getLastEventsData( this.streamLanguage ).slice(-1);
 		if (
-			lastEvent &&
+			lastEvent?.[0] &&
 			eventType.startsWith( 'chatscore' ) &&
-			eventType === lastEvent.eventType &&
-			userName === lastEvent.eventUsername
+			eventType === lastEvent[0].eventType &&
+			userName.toLowerCase() === lastEvent[0].eventUsername.toLowerCase()
 		) return false;
-
+		
 		// Focus Mode
 		if ( this.focus && event.disableOnFocus )
+			return false;
+		
+		if ( this.data.isBot( userName ) )
 			return false;
 
 		return true;

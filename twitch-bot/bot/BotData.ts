@@ -159,7 +159,8 @@ export class BotData
 		for( const [index, event] of eventsData.entries() )
 		{
 			const eventSaved = this.getEvent( event.eventType );
-			eventsData[ index ].extra = eventSaved?.extra?.[ streamLanguage ];
+			if ( eventSaved?.extra?.[ streamLanguage ] )
+				eventsData[ index ].extra = eventSaved.extra[ streamLanguage ];
 		}
 		return eventsData;
 	}

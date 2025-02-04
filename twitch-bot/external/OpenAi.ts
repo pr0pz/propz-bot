@@ -2,7 +2,7 @@
  * OpenAI
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.2.5
  */
 
 import { log } from '@propz/helpers.ts';
@@ -30,7 +30,6 @@ export class OpenAI
 				max_completion_tokens: 100
 			});
 
-			//console.log( response )
 			return response.choices?.[0]?.message?.content || '';
 		}
 		catch( error: unknown )
