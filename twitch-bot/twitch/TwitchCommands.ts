@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.2.2
+ * @version 1.2.6
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -112,6 +112,17 @@ export class TwitchCommands
 				en: '[user] has written [count] chat messages › Rank: [rank]'
 			},
 		},
+		chatting: {
+			onlyMods: true,
+			obs: [
+				{
+					'requestType': 'SetCurrentProgramScene',
+					'requestData': {
+						'sceneName': '[S] CHATTING'
+					}
+				}
+			]
+		},
 		christmas: {
 			cooldown: 30,
 			aliases: [ 'xmas' ],
@@ -185,6 +196,17 @@ export class TwitchCommands
 			cooldown: 20,
 			hasSound: true,
 			disableOnFocus: true
+		},
+		ende: {
+			onlyMods: true,
+			obs: [
+				{
+					'requestType': 'SetCurrentProgramScene',
+					'requestData': {
+						'sceneName': '[S] ENDE'
+					}
+				}
+			]
 		},
 		error: {
 			cooldown: 30,
@@ -472,7 +494,15 @@ export class TwitchCommands
 		},
 		pause: {
 			hasSound: true,
-			disableOnFocus: true
+			onlyMods: true,
+			obs: [
+				{
+					'requestType': 'SetCurrentProgramScene',
+					'requestData': {
+						'sceneName': '[S] PAUSE'
+					}
+				}
+			]
 		},
 		penpot: {
 			message: {
@@ -796,11 +826,69 @@ export class TwitchCommands
 			aliases: [ 'sb' ],
 			description: 'Alle Sounds',
 		},
+		scene: {
+			aliases: [ 'szene' ],
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				if (
+					!options?.message ||
+					!options.sender
+				) return '';
+
+				let sceneName = options.message;
+				if ( options.message.toLowerCase().includes( 'desktop' ) )
+				{
+					sceneName = '[S] DESKTOP';
+				}
+
+				this.twitch.ws.maybeSendWebsocketData({
+					type: 'command',
+					user: options.sender,
+					text: 'scene',
+					obs: [
+						{
+							'requestType': 'SetCurrentProgramScene',
+							'requestData': {
+								'sceneName': sceneName
+							}
+						}
+					]
+				});
+			},
+			onlyMods: true
+		},
+		start: {
+			onlyMods: true,
+			obs: [
+				{
+					'requestType': 'SetCurrentProgramScene',
+					'requestData': {
+						'sceneName': '[S] START'
+					}
+				}
+			]
+		},
 		streamonline: {
 			handler: () =>
 			{
 				this.twitch.sendStremOnlineDataToDiscord();
 			},
+			onlyMods: true
+		},
+		streamstart: {
+			obs: [
+				{
+					'requestType': 'StartStream'
+				}
+			],
+			onlyMods: true
+		},
+		streamstop: {
+			obs: [
+				{
+					'requestType': 'StopStream'
+				}
+			],
 			onlyMods: true
 		},
 		tee: {

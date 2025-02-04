@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.2.5
+ * @version 1.2.6
  */
 
 import '@propz/prototypes.ts';
@@ -28,7 +28,6 @@ import type {
 	StreamElementsViewerStats,
 	TwitchQuote,
 	TwitchUserData,
-	TwitchEventData,
 	ApiRequest,
 	ApiResponse,
 	SimpleUser,
