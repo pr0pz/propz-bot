@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.0.14
+ * @version 1.2.7
  */
 
 import { useEffect, useState } from 'react';
@@ -17,15 +17,12 @@ const Events = () =>
 	const event = useEvent();
 	const [events, setEvents] = useState<typeof Event[]>([]);
 
+	useEffect( () => setInitialEvents() , []);
+
 	useEffect( () =>
 	{
-		if ( event )
-		{
-			if ( !event.detail?.extra?.titleEvent ) return;
-			processEvent( event.detail );
-		}
-
-		setInitialEvents();
+		if ( !event?.detail?.extra?.titleEvent ) return;
+		processEvent( event.detail );
 	},
 	[event]);
 	
@@ -71,7 +68,7 @@ const Events = () =>
 
 		const newEvent = <Event type={ eventDetails.type } user={ eventDetails.user } key={ eventDetails.key } title={ eventDetails.extra!.titleEvent ?? '' } count={ eventDetails.count || 0 } />;
 
-		setEvents( (prevEvents: typeof Event[]) =>
+		setEvents( ( prevEvents: typeof Event[] ) =>
 		{
 			const updatedEvents = [...prevEvents];
 			updatedEvents.unshift( newEvent );
@@ -85,7 +82,7 @@ const Events = () =>
 
 	return(
 		<section id="events">
-			{ events.map( (event, _index) => ( event ) ) }
+			{ events.map( (event: Event, _index: number) => ( event ) ) }
 		</section>
 	);
 }
