@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.1.10
+ * @version 1.2.8
  */
 
 import { getRandomNumber, getRewardSlug, log, toMap, toObject } from '@propz/helpers.ts';
@@ -13,6 +13,8 @@ import type {
 	SimpleUser,
 	TwitchBadge,
 	TwitchBadgeVersion,
+	TwitchCredits,
+	TwitchCreditsData,
 	TwitchEmote,
 	TwitchEventData,
 	TwitchEvent,
@@ -33,6 +35,7 @@ import timers from '../config/twitchTimers.json' with { type: 'json' };
 
 // Data
 import bots from '../data/twitchBots.json' with { type: 'json' };
+import credits from '../data/twitchCredits.json' with { type: 'json' }
 import emotes from '../data/twitchEmotes.json' with { type: 'json' };
 import eventsData from '../data/twitchEventsData.json' with { type: 'json' };
 import quotes from '../data/twitchQuotes.json' with { type: 'json' };
@@ -56,6 +59,7 @@ export class BotData
 
 	// Data
 	public bots: string[] = bots;
+	public credits: TwitchCredits = credits;
 	public emotes: Map<string,string>;
 	public eventsData: TwitchEventData[] = eventsData;
 	public quotes: TwitchQuote[] = quotes;
@@ -256,6 +260,15 @@ export class BotData
 	{
 		if ( userId ) return this.twitchUsersData.get( userId ) || {};
 		return this.twitchUsersData;
+	}
+
+	/** Reset all Credits stats */
+	resetCredits()
+	{
+		for( const creditCat of Object.keys( this.credits ) )
+		{
+			this.credits[ creditCat ] = {}
+		}
 	}
 
 	/** Set all twitch channel badges
@@ -539,11 +552,79 @@ export class BotData
 		this.twitchUsersData.set( user.id, userData );
 	}
 
+	/** Update credits
+	 * 
+	 * @param {HelixUser|SimpleUser} user User Object
+	 * @param {string} eventName Name of Event
+	 * @param {number} count Event Count
+	 */
+	updateCredits( user: SimpleUser, eventType: string, eventCount: number )
+	{
+		const data: TwitchCreditsData = {
+			profilePictureUrl: user.profilePictureUrl || '',
+			color: user.color || '#C7C7F1'
+		}
+
+		switch ( eventType )
+		{
+			case 'firstchatter':
+				if ( this.credits?.firstchatter ) return;
+				this.credits.firstchatter[ user.displayName ] = data;
+				break;
+
+			case 'follow':
+				this.credits.follow[ user.displayName ] = data;
+				break;
+
+			case 'message':
+				if ( this.credits?.message?.[ user.displayName ]?.count )
+					eventCount = this.credits.message[ user.displayName ].count! + eventCount;
+
+				data.count = eventCount;
+				this.credits.message[ user.displayName ] = data;
+				break;
+
+			case 'cheer':
+				if ( this.credits?.cheer?.[ user.displayName ]?.count )
+					eventCount = this.credits.cheer[ user.displayName ].count! + eventCount;
+
+				data.count = eventCount;
+				this.credits.cheer[ user.displayName ] = data;
+				break;
+		
+			case 'raid':
+				data.count = eventCount;
+				this.credits.raid[ user.displayName ] = data;
+				break;
+
+			case 'sub':
+			case 'resub-1':
+			case 'resub-2':
+			case 'resub-3':
+				if ( this.credits?.sub?.[ user.displayName ]?.count )
+					eventCount = this.credits.sub[ user.displayName ].count! + eventCount;
+
+				data.count = eventCount;
+				this.credits.sub[ user.displayName ] = data;
+				break;
+
+			case 'subgift':
+			case 'communitysub':
+				if ( this.credits?.subgift?.[ user.displayName ]?.count )
+					eventCount = this.credits.subgift[ user.displayName ].count! + eventCount;
+
+				data.count = eventCount;
+				this.credits.subgift[ user.displayName ] = data;
+				break;
+		}
+	}
+
 	/** Save users and events data */
 	saveUsersAndEventsData()
 	{
 		this.saveFile( 'twitchEventsData', this.eventsData );
 		this.saveFile( 'twitchUsersData', toObject( this.twitchUsersData ) );
+		this.saveFile( 'twitchCredits', this.credits );
 	}
 
 	/** Save data to file

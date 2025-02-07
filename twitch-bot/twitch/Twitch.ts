@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.2.5
+ * @version 1.2.8
  */
 
 import '@propz/prototypes.ts';
@@ -47,6 +47,7 @@ export class Twitch extends TwitchUtils
 		Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
 			this.data.init();
+			this.data.resetCredits();
 		});
 	}
 
@@ -134,7 +135,10 @@ export class Twitch extends TwitchUtils
 
 		// Update message count
 		if ( this.isValidMessageText( chatMessageSanitized, msg ) )
+		{
 			this.data.updateUserData( user, 'messages', 1 );
+			this.data.updateCredits( user, 'message', 1 );
+		}
 
 		// Check for chat score
 		this.checkChatScore( user );
@@ -193,6 +197,8 @@ export class Twitch extends TwitchUtils
 				eventTimestamp: Math.floor( Date.now() / 1000 ),
 				eventCount: eventCount
 			});
+
+			this.data.updateCredits( user, eventType, eventCount );
 		}
 
 		// Check for event messages and send to chat.
@@ -237,6 +243,10 @@ export class Twitch extends TwitchUtils
 				response.data = Object.fromEntries( this.commands.commands );
 				break;
 			
+			case 'getCredits':
+				response.data = this.data.credits;
+				break;
+
 			case 'getEmotes':
 				response.data = this.data.emotes;
 				break;

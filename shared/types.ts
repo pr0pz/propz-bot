@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.2.1
+ * @version 1.2.8
  */
 
 import type { Buffer } from 'node:buffer';
@@ -131,6 +131,18 @@ export interface TwitchBadge {
 		id: string;
 		name: string;
 		url: string;
+	}
+
+export interface TwitchCredits {
+	[key: string]: {
+		[key: string]: TwitchCreditsData
+	}
+}
+
+	export interface TwitchCreditsData {
+		count?: number;
+		profilePictureUrl?: string;
+		color?: string;
 	}
 
 export interface FrankerFaceZResponse {

@@ -2,7 +2,7 @@
  * Websocket Controller
  * 
  * @author Wellington Estevo
- * @version 1.2.2
+ * @version 1.2.8
  */
 
 import EventEmitter from 'events';
@@ -17,7 +17,10 @@ export default class WebsocketController
 
 	constructor( botUrl: string )
 	{
-		const websocketPrefix = botUrl.includes( 'localhost' ) ? 'ws' : 'wss';
+		let websocketPrefix = 'wss';
+		if ( botUrl.includes( 'localhost' ) || botUrl.includes( '127.0.0.1' ) )
+			websocketPrefix = 'ws';
+
 		this.websocketUrl = `${websocketPrefix}://${botUrl}/websocket`;
 	}
 

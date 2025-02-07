@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.0.19
+ * @version 1.2.8
  */
 
 import '@propz/prototypes.ts';
@@ -44,7 +44,16 @@ export class Bot
 	{
 		// CORS Preflight-Request (OPTIONS)
 		if ( !req || req.method === 'OPTIONS' )
-			return new Response( null, { status: 204 });
+		{
+			return new Response( null, {
+				status: 204,
+				headers: { 
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+				} 
+			});
+		}
 
 		const url = new URL( req.url );
 
@@ -149,6 +158,9 @@ export class Bot
 				status: statusCode,
 				headers: {
 					'content-type': 'application/json',
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 				}
 			}
 		);

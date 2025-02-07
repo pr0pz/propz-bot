@@ -2,7 +2,7 @@
  * Stream Credits
  * 
  * @author Wellington Estevo
- * @version 1.1.4
+ * @version 1.2.8
  */
 
 import { useEffect, useState } from 'react';
@@ -17,24 +17,62 @@ const Credits = () =>
 {
 	const event = useEvent();
 	const [events, setEvents] = useState({
-		chatters: new Map(), // chat counter
-		cheers: new Map(), // bits
-		subbers: new Map(), // subs and resubs
+		message: new Map(), // chat counter
+		cheer: new Map(), // bits
+		sub: new Map(), // subs and resubs
 		firstchatter: new Map(),
-		followers: new Map(),
-		raiders: new Map(),
-		gifters: new Map() // all gifted subs
+		follow: new Map(),
+		raid: new Map(),
+		subgift: new Map() // all gifted subs
 	});
 
+	useEffect( () => setInititalCredits() ,[] );
 	useEffect( () =>
 	{
-		if ( event )
-		{
-			if ( !event.detail ) return;
+		if ( event?.detail )
 			processEvent( event.detail );
-		}
 	},
 	[event]);
+
+	const setInititalCredits = async () =>
+	{
+		const fetchOptions = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: '{ "request": "getCredits" }'
+		};
+
+		try {
+			let urlPrefix = 'https';
+			if ( process.env.BOT_URL.includes( 'localhost' ) || process.env.BOT_URL.includes( '127.0.0.1' ) )
+				urlPrefix = 'http';
+
+			console.log( `${urlPrefix}://${ process.env.BOT_URL }/api` );
+			console.log( fetchOptions );
+			
+			const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
+			const data = await response.json();
+	
+			for( const creditCat of Object.keys( data.data ) )
+			{
+				for ( const userName of Object.keys( data.data[ creditCat ] ) )
+				{
+					const eventDetails: WebSocketData = {
+						'key': crypto.randomUUID(),
+						'type': creditCat,
+						'user': userName,
+						'text': '',
+						'count': data.data[ creditCat ][ userName ].count || 0,
+						'color': data.data[ creditCat ][ userName ].color
+					}
+					processEvent( eventDetails );
+				}
+			}
+		}
+		catch ( error: unknown ) { log( error ) }
+	}
 
 	/** Process incoming events.
 	 * 
@@ -51,18 +89,8 @@ const Credits = () =>
 			
 			switch ( eventDetails.type )
 			{
-				case 'streamonline':
-					return {
-						chatters: new Map(), // chat counter
-						cheers: new Map(), // bits
-						subbers: new Map(), // subs and resubs
-						firstchatter: new Map(),
-						followers: new Map(),
-						raiders: new Map(),
-						gifters: new Map() // all gifted subs
-					}
-
 				case 'firstchatter':
+					if ( prevEvents.firstchatter ) break;
 					newEvents.firstchatter = new Map( prevEvents.firstchatter ).set( eventDetails.user,
 					{
 						profilePictureUrl: eventDetails.profilePictureUrl,
@@ -71,7 +99,7 @@ const Credits = () =>
 					break;
 
 				case 'follow':
-					newEvents.followers = new Map( prevEvents.followers ).set( eventDetails.user,
+					newEvents.follow = new Map( prevEvents.follow ).set( eventDetails.user,
 					{
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
@@ -79,25 +107,25 @@ const Credits = () =>
 					break;
 
 				case 'message':
-					newEvents.chatters = new Map( prevEvents.chatters ).set( eventDetails.user,
+					newEvents.message = new Map( prevEvents.message ).set( eventDetails.user,
 					{
-						count: ( prevEvents.chatters.get( eventDetails.user )?.count ?? 0 ) + 1,
+						count: ( prevEvents.message.get( eventDetails.user )?.count ?? 0 ) + 1,
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
 					});
 					break;
 
 				case 'cheer':
-					newEvents.cheers = new Map( prevEvents.cheers ).set( eventDetails.user,
+					newEvents.cheer = new Map( prevEvents.cheer ).set( eventDetails.user,
 					{
-						count: ( prevEvents.cheers.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 ),
+						count: ( prevEvents.cheer.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 ),
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
 					});
 					break;
 			
 				case 'raid':
-					newEvents.raiders = new Map( prevEvents.raiders ).set( eventDetails.user,
+					newEvents.raid = new Map( prevEvents.raid ).set( eventDetails.user,
 					{
 						count: eventDetails?.count || 1,
 						profilePictureUrl: eventDetails.profilePictureUrl,
@@ -109,9 +137,9 @@ const Credits = () =>
 				case 'resub-1':
 				case 'resub-2':
 				case 'resub-3':
-					newEvents.subbers = new Map( prevEvents.subbers ).set( eventDetails.user,
+					newEvents.sub = new Map( prevEvents.sub ).set( eventDetails.user,
 					{
-						count: ( prevEvents.subbers.get( eventDetails.user )?.count || 0 ) + 1,
+						count: ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + 1,
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
 					});
@@ -119,9 +147,9 @@ const Credits = () =>
 
 				case 'subgift':
 				case 'communitysub':
-					newEvents.gifters = new Map( prevEvents.gifters ).set( eventDetails.user,
+					newEvents.subgift = new Map( prevEvents.subgift ).set( eventDetails.user,
 					{
-						count: ( prevEvents.subbers.get( eventDetails.user )?.count ?? 0 ) + 1,
+						count: ( prevEvents.sub.get( eventDetails.user )?.count ?? 0 ) + 1,
 						profilePictureUrl: eventDetails.profilePictureUrl,
 						color: eventDetails.color
 					});
@@ -155,40 +183,40 @@ const Credits = () =>
 					<Window theme="dark">{ getValues( 'firstchatter' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.subbers.size > 0 &&
+			{ events.sub.size > 0 &&
 				<div id="subbers" className='credits-wrapper'>
 					<Window>Subbers</Window>
-					<Window theme="dark">{ getValues( 'subbers' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'sub' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.gifters.size > 0 &&
+			{ events.subgift.size > 0 &&
 				<div id="gifters" className='credits-wrapper'>
 					<Window>Gifters</Window>
-					<Window theme="dark">{ getValues( 'gifters' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'subgift' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.cheers.size > 0 &&
+			{ events.cheer.size > 0 &&
 				<div id="cheers" className='credits-wrapper'>
 					<Window>Bits baby</Window>
-					<Window theme="dark">{ getValues( 'cheers' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'cheer' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.followers.size > 0 &&
+			{ events.follow.size > 0 &&
 				<div id="followers" className='credits-wrapper'>
 					<Window>Followers</Window>
-					<Window theme="dark">{ getValues( 'followers' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'follow' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.raiders.size > 0 &&
+			{ events.raid.size > 0 &&
 				<div id="raiders" className='credits-wrapper'>
 					<Window>Raiders</Window>
-					<Window theme="dark">{ getValues( 'raiders' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'raid' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
-			{ events.chatters.size > 0 &&
+			{ events.message.size > 0 &&
 				<div id="chatters" className='credits-wrapper'>
 					<Window>Chatters</Window>
-					<Window theme="dark">{ getValues( 'chatters' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'message' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
 		</marquee>
