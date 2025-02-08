@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.2.7
+ * @version 1.2.9
  */
 
 import { useEffect, useState } from 'react';
@@ -17,14 +17,13 @@ const Events = () =>
 	const event = useEvent();
 	const [events, setEvents] = useState<typeof Event[]>([]);
 
-	useEffect( () => setInitialEvents() , []);
-
+	useEffect( () => { setInitialEvents() }, [] );
 	useEffect( () =>
 	{
-		if ( !event?.detail?.extra?.titleEvent ) return;
-		processEvent( event.detail );
+		if ( event?.detail )
+			processEvent( event.detail )
 	},
-	[event]);
+	[event] );
 	
 	/** Initialy fill events */
 	const setInitialEvents = async () =>
@@ -64,7 +63,12 @@ const Events = () =>
 	 */
 	const processEvent = ( eventDetails: WebSocketData ) =>
 	{
-		if ( !eventDetails || !eventDetails?.type ) return;
+		if (
+			!eventDetails ||
+			!eventDetails.type ||
+			!eventDetails.saveEvent ||
+			!eventDetails.extra?.titleEvent
+		) return;
 
 		const newEvent = <Event type={ eventDetails.type } user={ eventDetails.user } key={ eventDetails.key } title={ eventDetails.extra!.titleEvent ?? '' } count={ eventDetails.count || 0 } />;
 

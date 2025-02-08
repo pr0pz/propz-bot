@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.2.8
+ * @version 1.2.9
  */
 
 import '@propz/prototypes.ts';
@@ -47,11 +47,11 @@ export class Bot
 		{
 			return new Response( null, {
 				status: 204,
-				headers: { 
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-					'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-				} 
+				headers: {
+					'access-control-allow-origin': '*',
+					'access-control-allow-methods': 'GET, POST, OPTIONS',
+					'access-control-allow-headers': 'Content-Type, Authorization'
+				}
 			});
 		}
 
@@ -158,9 +158,9 @@ export class Bot
 				status: statusCode,
 				headers: {
 					'content-type': 'application/json',
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-					'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+					'access-control-allow-origin': '*',
+					'access-control-allow-methods': 'GET, POST, OPTIONS',
+					'access-control-allow-headers': 'Content-Type, Authorization'
 				}
 			}
 		);

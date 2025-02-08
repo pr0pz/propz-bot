@@ -2,7 +2,7 @@
  * Stream Credits
  * 
  * @author Wellington Estevo
- * @version 1.2.8
+ * @version 1.2.9
  */
 
 import { useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import { useEvent } from '../EventContext.tsx';
 import { log } from '@propz/helpers.ts';
 import Window from './Window.tsx';
 
-import type { WebSocketData } from '@propz/types.ts';
+import type { TwitchCreditsData, WebSocketData } from '@propz/types.ts';
 import Button from './Button.tsx';
 
 const Credits = () =>
@@ -26,7 +26,7 @@ const Credits = () =>
 		subgift: new Map() // all gifted subs
 	});
 
-	useEffect( () => setInititalCredits() ,[] );
+	useEffect( () => { setInititalCredits() } ,[] );
 	useEffect( () =>
 	{
 		if ( event?.detail )
@@ -86,73 +86,49 @@ const Credits = () =>
 		setEvents( prevEvents =>
 		{
 			const newEvents = { ...prevEvents };
+			const data: TwitchCreditsData = {
+				profilePictureUrl: eventDetails.profilePictureUrl,
+				color: eventDetails.color,
+			}
 			
 			switch ( eventDetails.type )
 			{
 				case 'firstchatter':
 					if ( prevEvents.firstchatter ) break;
-					newEvents.firstchatter = new Map( prevEvents.firstchatter ).set( eventDetails.user,
-					{
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					newEvents.firstchatter = new Map( prevEvents.firstchatter ).set( eventDetails.user, data );
 					break;
 
 				case 'follow':
-					newEvents.follow = new Map( prevEvents.follow ).set( eventDetails.user,
-					{
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					newEvents.follow = new Map( prevEvents.follow ).set( eventDetails.user, data );
 					break;
 
 				case 'message':
-					newEvents.message = new Map( prevEvents.message ).set( eventDetails.user,
-					{
-						count: ( prevEvents.message.get( eventDetails.user )?.count ?? 0 ) + 1,
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					data.count = ( prevEvents.message.get( eventDetails.user )?.count ?? 0 ) + 1;
+					newEvents.message = new Map( prevEvents.message ).set( eventDetails.user, data );
 					break;
 
 				case 'cheer':
-					newEvents.cheer = new Map( prevEvents.cheer ).set( eventDetails.user,
-					{
-						count: ( prevEvents.cheer.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 ),
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					data.count = ( prevEvents.cheer.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 );
+					newEvents.cheer = new Map( prevEvents.cheer ).set( eventDetails.user, data );
 					break;
 			
 				case 'raid':
-					newEvents.raid = new Map( prevEvents.raid ).set( eventDetails.user,
-					{
-						count: eventDetails?.count || 1,
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					data.count = eventDetails?.count || 1,
+					newEvents.raid = new Map( prevEvents.raid ).set( eventDetails.user, data );
 					break;
 
 				case 'sub':
 				case 'resub-1':
 				case 'resub-2':
 				case 'resub-3':
-					newEvents.sub = new Map( prevEvents.sub ).set( eventDetails.user,
-					{
-						count: ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + 1,
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					data.count = ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + 1,
+					newEvents.sub = new Map( prevEvents.sub ).set( eventDetails.user, data );
 					break;
 
 				case 'subgift':
 				case 'communitysub':
-					newEvents.subgift = new Map( prevEvents.subgift ).set( eventDetails.user,
-					{
-						count: ( prevEvents.sub.get( eventDetails.user )?.count ?? 0 ) + 1,
-						profilePictureUrl: eventDetails.profilePictureUrl,
-						color: eventDetails.color
-					});
+					data.count = ( prevEvents.sub.get( eventDetails.user )?.count ?? 0 ) + 1,
+					newEvents.subgift = new Map( prevEvents.subgift ).set( eventDetails.user, data );
 					break;
 			}
 			

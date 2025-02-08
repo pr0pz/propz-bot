@@ -2,7 +2,7 @@
  * Websocket Handler
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.2.9
  */
 
 import '@propz/prototypes.ts';
@@ -30,10 +30,11 @@ export class BotWebsocket
 		hasSound?: boolean,
 		hasVideo?: boolean,
 		extra?: TwitchEventExtra,
-		obs?: ObsData|ObsData[]
+		obs?: ObsData|ObsData[],
+		saveEvent?: boolean
 	})
 	{
-		const { type, user, text, count, extra, obs, hasSound, hasVideo } = options;
+		const { type, user, text, count, extra, obs, hasSound, hasVideo, saveEvent } = options;
 
 		if ( !this.wsConnections || !user || !type ) return;
 		
@@ -48,7 +49,8 @@ export class BotWebsocket
 			hasSound: hasSound || false,
 			hasVideo: hasVideo || false,
 			extra: extra || null,
-			obs: obs || null
+			obs: obs || null,
+			saveEvent: saveEvent || false
 		};
 
 		try

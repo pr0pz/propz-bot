@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.2.8
+ * @version 1.2.9
  */
 
 import type { Buffer } from 'node:buffer';
@@ -323,6 +323,7 @@ export interface WebSocketData {
 	extra?: TwitchEventExtra|null;
 	obs?: ObsData|ObsData[]|null;
 	profilePictureUrl?: string;
+	saveEvent?: boolean;
 }
 
 export interface YoutubeApiResponse {

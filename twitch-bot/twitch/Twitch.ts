@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.2.8
+ * @version 1.2.9
  */
 
 import '@propz/prototypes.ts';
@@ -185,7 +185,8 @@ export class Twitch extends TwitchUtils
 			extra: event.extra?.[ this.streamLanguage ],
 			obs: event.obs,
 			hasSound: event.hasSound,
-			hasVideo: event.hasVideo
+			hasVideo: event.hasVideo,
+			saveEvent: event.saveEvent
 		});
 
 		// Save Event data persistent
