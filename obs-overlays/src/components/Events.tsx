@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.2.9
+ * @version 1.2.10
  */
 
 import { useEffect, useState } from 'react';
@@ -49,7 +49,8 @@ const Events = () =>
 					'text': '',
 					'count': event.eventCount || 0,
 					'color': '',
-					'extra': event.extra
+					'extra': event.extra,
+					'saveEvent': true
 				}
 				processEvent( eventDetails );
 			});
