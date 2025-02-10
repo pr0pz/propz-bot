@@ -2,12 +2,13 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.2.6
+ * @version 1.3.0
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
 import { Youtube } from '../external/Youtube.ts';
 import { log } from '@propz/helpers.ts';
+import { OpenWeather } from '../external/OpenWeather.ts';
 
 import type { CommercialLength } from '@twurple/api';
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
@@ -1019,6 +1020,30 @@ export class TwitchCommands
 				en: 'Time for a sip of H2O ▶️ 💦'
 			},
 			description: '💦'
+		},
+		weather: {
+			aliases: [ 'wetter', 'tempo' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !options.param )
+					options.param = 'Florianopolis';
+	
+				const weatherData = await OpenWeather.handleWeatherRequest( options.param, '', this.twitch.streamLanguage );
+
+				if ( !weatherData?.temp ) return `Nah`;
+
+				return options.commandMessage
+					.replace( '[cityName]', weatherData.cityName )
+					.replace( '[countryCode]', weatherData.countryCode )
+					.replace( '[humidity]', weatherData.humidity )
+					.replace( '[temp]', weatherData.temp )
+					.replace( '[feelsLike]', weatherData.feelsLike )
+					.replace( '[description]', weatherData.description );
+			},
+			message: {
+				de: 'In [cityName] ([countryCode]) ists gerade [temp]° ([feelsLike]°)  ▶️  [description] mit [humidity]% Luftfeuchtigkeit',
+				en: 'The temp in [cityName] ([countryCode]) is [temp]° ([feelsLike]°) ▶️ [description] with [humidity]% humidity'
+			},
 		},
 		web: {
 			message: {

@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.2.9
+ * @version 1.3.0
  */
 
 import type { Buffer } from 'node:buffer';
@@ -440,8 +440,63 @@ export type PrintAlertEvents = {
 	}
 }
 
+export interface OpenWeatherResponse {
+	coord: {
+		lon: number;
+		lat: number;
+	};
+	weather: [
+		{
+			id: number;
+			main: string;
+			description: string;
+			icon: string;
+		}
+	];
+	base: string;
+	main: {
+		temp: number;
+		feels_like: number;
+		temp_min: number;
+		temp_max: number;
+		pressure: number;
+		humidity: number;
+		sea_level: number;
+		grnd_level: number;
+	};
+	visibility: number;
+	wind: {
+		speed: number;
+		deg: number;
+		gust: number;
+	};
+	rain?: {
+		[key: string]: number;
+	};
+	clouds: {
+		all: number;
+	};
+	dt: number;
+	sys: {
+		type: number;
+		id: number;
+		country: string;
+		sunrise: number;
+		sunset: number;
+	};
+	timezone: number;
+	id: number;
+	name: string;
+	cod: number;
+}
+
 export interface WeatherData {
-	temp?: string,
-	icon?: string,
-	iconUrl?: string
+	cityName: string;
+	countryCode: string;
+	description: string;
+	feelsLike: string;
+	humidity: string;
+	temp: string;
+	icon: string;
+	iconUrl: string;
 }
