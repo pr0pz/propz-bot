@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.3.0
+ * @version 1.3.2
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -109,8 +109,8 @@ export class TwitchCommands
 			},
 			description: 'Anzahl geschriebener Chat-Nachrichten',
 			message: {
-				de: '[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
-				en: '[user] has written [count] chat messages › Rank: [rank]'
+				de: '@[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
+				en: '@[user] has written [count] chat messages › Rank: [rank]'
 			},
 		},
 		chatting: {
@@ -240,8 +240,8 @@ export class TwitchCommands
 			},
 			description: 'First Chatter des Streams',
 			message: {
-				de: '[user] war heute die erste Chatterin 💬',
-				en: '[user] was the first chatter today 💬'
+				de: '@[user] war heute die erste Chatterin 💬',
+				en: '@[user] was the first chatter today 💬'
 			},
 		},
 		firstscore: {
@@ -254,8 +254,8 @@ export class TwitchCommands
 				);
 			},
 			message: {
-				de: '[user] war [count]x erste Chatterin › Rank: [rank]',
-				en: '[user] was [count]x first chatter › Rank: [rank]'
+				de: '@[user] war [count]x erste Chatterin › Rank: [rank]',
+				en: '@[user] was [count]x first chatter › Rank: [rank]'
 			},
 			description: 'First-Chat score'
 		},
@@ -292,8 +292,8 @@ export class TwitchCommands
 			aliases: [ 'follow' ],
 			description: 'Wie lange du mir folgst',
 			message: {
-				de: '[user] folgt [broadcaster] seit: [count]',
-				en: '[user] has been following [broadcaster] since: [count]'
+				de: '@[user] folgt [broadcaster] seit: [count]',
+				en: '@[user] has been following [broadcaster] since: [count]'
 			},
 		},
 		gameover: {
@@ -435,25 +435,30 @@ export class TwitchCommands
 			description: 'Lurkstart',
 			message: {
 				de: [
-					'[user] hat den Kreativitäts-Ninja-Modus aktiviert! 🕵️‍♂️ Viel Spaß beim Lurken!',
-					'[user] hat den Lurk-Modus aktiviert 🌙 genieße die kreative Stille und tauch auf, wenn du bereit bist! 🚀',
-					'[user] schleicht sich in die Kreativitätsnacht! 🌌 Wir sind bereit, wenn du wieder auftauchst!',
-					'Lurk-Level für [user] aktiviert! 👁️ Tauch auf, wenn die Kreativität ruft!',
-					'[user] ist im Lurk-Train! 🚂 Komm zurück, wenn du bereit für kreative Action bist!'
+					'@[user] hat den Kreativitäts-Ninja-Modus aktiviert! 🕵️‍♂️ Viel Spaß beim Lurken!',
+					'@[user] hat den Lurk-Modus aktiviert 🌙 genieße die kreative Stille und tauch auf, wenn du bereit bist! 🚀',
+					'@[user] schleicht sich in die Kreativitätsnacht! 🌌 Wir sind bereit, wenn du wieder auftauchst!',
+					'Lurk-Level für @[user] aktiviert! 👁️ Tauch auf, wenn die Kreativität ruft!',
+					'@[user] ist im Lurk-Train! 🚂 Komm zurück, wenn du bereit für kreative Action bist!'
 				],
 				en: [
-					'[user] has activated the Creativity Ninja Mode! 🕵️‍♂️ Enjoy lurking!',
-					'[user] has activated Lurk Mode 🌙 enjoy the creative silence and pop up when you\'re ready! 🚀',
-					'[user] sneaks into the night of creativity! 🌌 We\'re ready when you pop back up!',
-					'Lurk level activated for [user]! 👁️ Pop up when creativity calls!',
-					'[user] is on the Lurk Train! 🚂 Come back when you\'re ready for creative action!'
+					'@[user] has activated the Creativity Ninja Mode! 🕵️‍♂️ Enjoy lurking!',
+					'@[user] has activated Lurk Mode 🌙 enjoy the creative silence and pop up when you\'re ready! 🚀',
+					'@[user] sneaks into the night of creativity! 🌌 We\'re ready when you pop back up!',
+					'Lurk level activated for @[user]! 👁️ Pop up when creativity calls!',
+					'@[user] is on the Lurk Train! 🚂 Come back when you\'re ready for creative action!'
 				]
 			}
 		},
 		mahlzeit: {
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				const user = options.param || options.sender.displayName;
+				return options.commandMessage.replace( '[user]', user ); 
+			},
 			message: {
-				de: 'Mahlzeit [user]! 🍽️',
-				en: 'Mahlzeit [user]! 🍽️'
+				de: 'Mahlzeit @[user]! 🍽️',
+				en: 'Mahlzeit @[user]! 🍽️'
 			},
 			description: 'Selber Mahlzeit!'
 		},
@@ -798,8 +803,8 @@ export class TwitchCommands
 			},
 			description: 'Slap them good',
 			message: {
-				de: '[user] 👋 slaps [target] around with a big large 🐟trout',
-				en: '[user] 👋 slaps [target] around with a big large 🐟trout'
+				de: '@[user] 👋 slaps @[target] around with a big large 🐟trout',
+				en: '@[user] 👋 slaps @[target] around with a big large 🐟trout'
 			},
 		},
 		snow: {
@@ -961,18 +966,18 @@ export class TwitchCommands
 			description: 'Lurkstop',
 			message: {
 				de: [
-					'Willkommen zurück aus den Kreativ-Schatten, [user]! 🌟 Deine Rückkehr bringt frischen Wind in den Stream! ✨',
-					'Der Lurk-Meister ist zurück! 💡 [user], bereit für neue Design-Abenteuer?',
-					'Die Kreativitäts-Ninja ist wieder aufgetaucht! 🌌 Willkommen zurück, [user].',
-					'[user] hat das Lurk-Kostüm ausgezogen! 👋 Willkommen zurück im kreativen Rampenlicht.',
-					'Der Lurk-Modus ist vorbei - [user] kehrt zurück! 🚀 Freuen uns, dich wieder im Code-Kosmos zu haben!'
+					'Willkommen zurück aus den Kreativ-Schatten, @[user]! 🌟 Deine Rückkehr bringt frischen Wind in den Stream! ✨',
+					'Der Lurk-Meister ist zurück! 💡 @[user], bereit für neue Design-Abenteuer?',
+					'Die Kreativitäts-Ninja ist wieder aufgetaucht! 🌌 Willkommen zurück, @[user].',
+					'@[user] hat das Lurk-Kostüm ausgezogen! 👋 Willkommen zurück im kreativen Rampenlicht.',
+					'Der Lurk-Modus ist vorbei - @[user] kehrt zurück! 🚀 Freuen uns, dich wieder im Code-Kosmos zu haben!'
 				],
 				en: [
-					'Welcome back from the creative shadows, [user]! 🌟 Your return brings fresh air to the stream! ✨',
-					'The Lurk Master is back! 💡 [user], ready for new design adventures?',
-					'The Creativity Ninja has resurfaced! 🌌 Welcome back, [user].',
-					'[user] has shed the lurk costume! 👋 Welcome back to the creative spotlight.',
-					'The Lurk mode is over - [user] returns! 🚀 Glad to have you back in the code cosmos!'
+					'Welcome back from the creative shadows, @[user]! 🌟 Your return brings fresh air to the stream! ✨',
+					'The Lurk Master is back! 💡 @[user], ready for new design adventures?',
+					'The Creativity Ninja has resurfaced! 🌌 Welcome back, @[user].',
+					'@[user] has shed the lurk costume! 👋 Welcome back to the creative spotlight.',
+					'The Lurk mode is over - @[user] returns! 🚀 Glad to have you back in the code cosmos!'
 				]
 			},
 			
@@ -1009,8 +1014,8 @@ export class TwitchCommands
 				);
 			},
 			message: {
-				de: '[user] guckt [broadcaster] fleißig zu: [count] › Rank: [rank]',
-				en: '[user] is diligently watching [broadcaster]: [count] › Rank: [rank]'
+				de: '@[user] guckt [broadcaster] fleißig zu: [count] › Rank: [rank]',
+				en: '@[user] is diligently watching [broadcaster]: [count] › Rank: [rank]'
 			},
 		},
 		wasser: {

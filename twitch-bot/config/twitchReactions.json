@@ -2,93 +2,93 @@
 	{
 		"trigger": "^hej",
 		"message": [
-			"Hej! Hur är läget, [user]?",
-			"Hej [user]! Hur är läget?",
-			"Hej [user]! Allt bra?",
-			"Hej [user]! Vad gör du?",
-			"Hej [user]! Trevligt att se dig!",
-			"Hej [user]! Hur har din dag varit?"
+			"Hej! Hur är läget, @[user]?",
+			"Hej @[user]! Hur är läget?",
+			"Hej @[user]! Allt bra?",
+			"Hej @[user]! Vad gör du?",
+			"Hej @[user]! Trevligt att se dig!",
+			"Hej @[user]! Hur har din dag varit?"
 		]
 	},
 
 	{
 		"trigger": "^gr[uü]e?zi",
 		"message": [
-			"Grüezi [user] und willkommen! ✌🏻",
-			"Grüezi [user]! Was geht ab?",
-			"Grüezi [user]! Alles fresh?",
-			"Grüezi [user]! Bereit für einen kreativen Tag? 💡"
+			"Grüezi @[user] und willkommen! ✌🏻",
+			"Grüezi @[user]! Was geht ab?",
+			"Grüezi @[user]! Alles fresh?",
+			"Grüezi @[user]! Bereit für einen kreativen Tag? 💡"
 		]
 	},
 
 	{
 		"trigger": "^hola$",
 		"message": [
-			"Hola, ¿cómo estás [user]?",
-			"¡Hola [user]! ¿Qué tal todo?",
-			"¡Buenos días [user]! ¿Cómo va todo?",
-			"Hola [user], ¿cómo te encuentras?",
-			"¡Hola [user]! ¿Cómo estás hoy?"
+			"Hola, ¿cómo estás @[user]?",
+			"¡Hola @[user]! ¿Qué tal todo?",
+			"¡Buenos días @[user]! ¿Cómo va todo?",
+			"Hola @[user], ¿cómo te encuentras?",
+			"¡Hola @[user]! ¿Cómo estás hoy?"
 		]
 	},
 
 	{
 		"trigger": "^mahlzeit$",
-		"message": "Mahlzeit [user]! 🍽️"
+		"message": "Mahlzeit @[user]! 🍽️"
 	},
 	
 	{
 		"trigger": "^mittag$",
 		"message": [
-			"Mmmm... Mittagessen, [user]! Guten Appetit! 🍲",
-			"Mittag? Genieße das leckere essen [user]! 😋",
-			"Genieß deine Mittagspause, [user]!",
-			"Genieße dein Essen [user]! 🍽️",
-			"Mahlzeit [user]! Genieß die Pause"
+			"Mmmm... Mittagessen, @[user]! Guten Appetit! 🍲",
+			"Mittag? Genieße das leckere essen @[user]! 😋",
+			"Genieß deine Mittagspause, @[user]!",
+			"Genieße dein Essen @[user]! 🍽️",
+			"Mahlzeit @[user]! Genieß die Pause"
 		]
 	},
 
 	{
 		"trigger": "^moin$",
 		"message": [
-			"Moin [user] und willkommen! ✌🏻",
-			"Hey [user]! Moinsen! 🌞",
-			"Moinsen [user]! Was geht ab?",
-			"Moin moin [user]! Alles fresh?",
-			"Moin [user]! Bereit für einen kreativen Tag? 💡"
+			"Moin @[user] und willkommen! ✌🏻",
+			"Hey @[user]! Moinsen! 🌞",
+			"Moinsen @[user]! Was geht ab?",
+			"Moin moin @[user]! Alles fresh?",
+			"Moin @[user]! Bereit für einen kreativen Tag? 💡"
 		]
 	},
 
 	{
 		"trigger": "^oi",
 		"message": [
-			"Oi, tudo bem [user]?",
-			"Oi [user], tudo tranquilo?",
-			"Olá [user], tudo bom?",
-			"Oi [user], como você está?",
-			"E aí [user], tudo beleza?"
+			"Oi, tudo bem @[user]?",
+			"Oi @[user], tudo tranquilo?",
+			"Olá @[user], tudo bom?",
+			"Oi @[user], como você está?",
+			"E aí @[user], tudo beleza?"
 		]
 	},
 
 	{
 		"trigger": "^salam",
 		"message": [
-			"Alaykum Salam [user]",
-			"Salam [user]! Kifak?",
-			"Salam [user]! Keefak?",
-			"Marhaba [user]! Kif inti?",
-			"Ahlan [user]! Keifak?",
-			"Salam [user]! Shlonak?"
+			"Alaykum Salam @[user]",
+			"Salam @[user]! Kifak?",
+			"Salam @[user]! Keefak?",
+			"Marhaba @[user]! Kif inti?",
+			"Ahlan @[user]! Keifak?",
+			"Salam @[user]! Shlonak?"
 		]
 	},
 
 	{
 		"trigger": "^servus$|^grüß gott",
 		"message": [
-			"Servus [user] und willkommen! ✌🏻",
-			"Servus [user]! Was geht ab?",
-			"Servus [user]! Alles fresh?",
-			"Servus [user]! Bereit für einen kreativen Tag? 💡"
+			"Servus @[user] und willkommen! ✌🏻",
+			"Servus @[user]! Was geht ab?",
+			"Servus @[user]! Alles fresh?",
+			"Servus @[user]! Bereit für einen kreativen Tag? 💡"
 		]
 	}
 ]
