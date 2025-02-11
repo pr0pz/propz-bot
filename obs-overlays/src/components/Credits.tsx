@@ -2,7 +2,7 @@
  * Stream Credits
  * 
  * @author Wellington Estevo
- * @version 1.2.9
+ * @version 1.3.1
  */
 
 import { useEffect, useState } from 'react';
@@ -49,9 +49,6 @@ const Credits = () =>
 			if ( process.env.BOT_URL.includes( 'localhost' ) || process.env.BOT_URL.includes( '127.0.0.1' ) )
 				urlPrefix = 'http';
 
-			console.log( `${urlPrefix}://${ process.env.BOT_URL }/api` );
-			console.log( fetchOptions );
-			
 			const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
 	
@@ -60,12 +57,13 @@ const Credits = () =>
 				for ( const userName of Object.keys( data.data[ creditCat ] ) )
 				{
 					const eventDetails: WebSocketData = {
-						'key': crypto.randomUUID(),
-						'type': creditCat,
-						'user': userName,
-						'text': '',
-						'count': data.data[ creditCat ][ userName ].count || 0,
-						'color': data.data[ creditCat ][ userName ].color
+						key: crypto.randomUUID(),
+						type: creditCat,
+						user: userName,
+						profilePictureUrl: data.data[ creditCat ][ userName ].profilePictureUrl || '',
+						text: '',
+						count: data.data[ creditCat ][ userName ].count || 0,
+						color: data.data[ creditCat ][ userName ].color
 					}
 					processEvent( eventDetails );
 				}
@@ -81,7 +79,7 @@ const Credits = () =>
 	const processEvent = ( eventDetails: WebSocketData ) =>
 	{
 		if ( !eventDetails?.type ) return;
-		log( eventDetails.user + ' / ' + eventDetails.type );
+		//log( eventDetails.user + ' / ' + eventDetails.type + ' / ' + eventDetails.count );
 
 		setEvents( prevEvents =>
 		{
@@ -94,8 +92,8 @@ const Credits = () =>
 			switch ( eventDetails.type )
 			{
 				case 'firstchatter':
-					if ( prevEvents.firstchatter ) break;
-					newEvents.firstchatter = new Map( prevEvents.firstchatter ).set( eventDetails.user, data );
+					if ( prevEvents.firstchatter.size > 0 ) break;
+					newEvents.firstchatter = prevEvents.firstchatter.set( eventDetails.user, data );
 					break;
 
 				case 'follow':
@@ -103,17 +101,17 @@ const Credits = () =>
 					break;
 
 				case 'message':
-					data.count = ( prevEvents.message.get( eventDetails.user )?.count ?? 0 ) + 1;
+					data.count = ( prevEvents.message.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 );
 					newEvents.message = new Map( prevEvents.message ).set( eventDetails.user, data );
 					break;
 
 				case 'cheer':
-					data.count = ( prevEvents.cheer.get( eventDetails.user )?.count ?? 0 ) + ( eventDetails?.count || 1 );
+					data.count = ( prevEvents.cheer.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 );
 					newEvents.cheer = new Map( prevEvents.cheer ).set( eventDetails.user, data );
 					break;
 			
 				case 'raid':
-					data.count = eventDetails?.count || 1,
+					data.count = eventDetails.count || 1,
 					newEvents.raid = new Map( prevEvents.raid ).set( eventDetails.user, data );
 					break;
 
@@ -121,13 +119,13 @@ const Credits = () =>
 				case 'resub-1':
 				case 'resub-2':
 				case 'resub-3':
-					data.count = ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + 1,
+					data.count = ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 ),
 					newEvents.sub = new Map( prevEvents.sub ).set( eventDetails.user, data );
 					break;
 
 				case 'subgift':
 				case 'communitysub':
-					data.count = ( prevEvents.sub.get( eventDetails.user )?.count ?? 0 ) + 1,
+					data.count = ( prevEvents.subgift.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 ),
 					newEvents.subgift = new Map( prevEvents.subgift ).set( eventDetails.user, data );
 					break;
 			}
