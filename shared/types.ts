@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.3.0
+ * @version 1.3.3
  */
 
 import type { Buffer } from 'node:buffer';
@@ -18,8 +18,8 @@ export interface TwitchCommand {
 	disableOnFocus?: boolean;
 	discord?: string;
 	handler?: (options: TwitchCommandOptions) => Promise<string | void>|string|void;
-	hasSound?: boolean;
-	hasVideo?: boolean;
+	hasSound?: boolean|string;
+	hasVideo?: boolean|string;
 	message?: string|string[]|BotReactionMessage;
 	obs?: ObsData|ObsData[];
 	onlyMods?: boolean;
@@ -39,8 +39,8 @@ export interface TwitchEvent {
 	disableOnFocus?: boolean;
 	saveEvent?: boolean;
 	obs?:ObsData|ObsData[];
-	hasSound?: boolean;
-	hasVideo?: boolean;
+	hasSound?: boolean|string;
+	hasVideo?: boolean|string;
 	extra?: {
 		[key: string]: TwitchEventExtra;
 	};
@@ -317,8 +317,8 @@ export interface WebSocketData {
 	text: string;
 	count: number|null;
 	color: string;
-	hasSound?: boolean;
-	hasVideo?: boolean;
+	hasSound?: boolean|string;
+	hasVideo?: boolean|string;
 	badges?: string;
 	extra?: TwitchEventExtra|null;
 	obs?: ObsData|ObsData[]|null;

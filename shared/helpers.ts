@@ -2,7 +2,7 @@
  * Helper functions
  * 
  * @author Wellington Estevo
- * @version 1.1.10
+ * @version 1.3.3
  */
 
 import type { TwitchTimers, TwitchUserData } from '@propz/types.ts';
@@ -145,18 +145,14 @@ export function sanitizeMessage( message: string = '' )
 	return message;
 }
 
-/** Sleep for x seconds
+/** Sleep/Wait for x seconds
  * 
- * @param {number} seconds Seconds to sleep
+ * @param {number} milliseconds Seconds to sleep
  */
-export async function sleep( seconds: number )
+export async function sleep( ms: number = 500 )
 {
-	if ( !seconds ) return;
-	return await new Promise( function (resolve, _msgreject) {
-		setTimeout( function () {
-			resolve( 1 );
-		}, seconds * 1000 );
-	});
+	ms = ms || 500;
+	return new Promise( res => setTimeout(res, ms) );
 }
 
 /** Get Reward slug

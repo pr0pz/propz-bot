@@ -2,11 +2,11 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.2.4
+ * @version 1.3.3
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
-import { getRewardSlug, log } from '@propz/helpers.ts';
+import { getRewardSlug, log, sleep } from '@propz/helpers.ts';
 
 import type {
 	EventSubChannelAdBreakBeginEvent,
@@ -69,23 +69,36 @@ export class TwitchEvents
 	 * 
 	 * @param {EventSubStreamOnlineEvent} event An EventSub event representing a stream going live.
 	 */
-	onStreamOnline = ( event: EventSubStreamOnlineEvent ) =>
+	onStreamOnline = async ( event: EventSubStreamOnlineEvent ) =>
 	{
 		if ( !event ) return;
-		log( event.broadcasterDisplayName );
-		this.twitch.setStreamFirstChatter( '' );
+
+		// Try to get the stream 5 times
+		let stream = null;
+		let counter = 0;
+		while( stream === null && counter < 5 )
+		{
+			stream = await this.twitch.setStream();
+			if ( stream !== null ) break;
+			await sleep( 250 );
+			counter++;
+		}
+
+		if ( stream === null && counter === 5 )
+			log( new Error( `Couldn't get Stream data on Stream start` ) );
+
+		log( `${event.broadcasterDisplayName} / ${stream?.gameName} / ${counter}` );
+
+		// Check for test stream
+		if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
 
 		this.twitch.processEvent({
 			eventType: 'streamonline',
 			user: event.broadcasterName
 		});
 
-		setTimeout( async () =>
-		{
-			const stream = await this.twitch.setStream();
-			if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
-			this.twitch.sendStremOnlineDataToDiscord( stream );
-		}, 10000 );
+		this.twitch.setStreamFirstChatter( '' );
+		this.twitch.sendStremOnlineDataToDiscord( stream );
 	}
 
 	/** Subscribes to events representing a stream going offline.

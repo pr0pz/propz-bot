@@ -2,7 +2,7 @@
  * App
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.3.3
  */
 
 import { useEffect } from 'react';
@@ -12,12 +12,8 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { EventProvider } from './EventContext.tsx';
 import Chat from './components/Chat.tsx';
 import Events from './components/Events.tsx';
-import Alerts from './components/Alerts.tsx';
 import Main from './components/Main.tsx';
-import Mediaboard from './components/Mediaboard.tsx';
-import LedDisplay from './components/LedDisplay.tsx';
 import Focus from './components/Focus.tsx';
-import Obs from './components/Obs.tsx';
 import Credits from './components/Credits.tsx';
 import Weather from './components/Weather.tsx';
 
@@ -37,12 +33,8 @@ const App = () =>
 				<Routes location={ location } key={ location.key }>
 					<Route path="/" element={ <Main /> } />
 					<Route path="/chat" element={ <Chat /> } />
-					<Route path="/alerts" element={ <Alerts /> } />
 					<Route path="/events" element={ <Events /> } />
-					<Route path="/mediaboard" element={ <Mediaboard /> } />
-					<Route path="/leddisplay" element={ <LedDisplay /> } />
 					<Route path="/focus" element={ <Focus /> } />
-					<Route path="/obs" element={ <Obs /> } />
 					<Route path="/credits" element={ <Credits /> } />
 					<Route path="/weather" element={ <Weather /> } />
 				</Routes>

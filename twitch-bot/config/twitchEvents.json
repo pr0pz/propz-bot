@@ -202,6 +202,10 @@
 		"disableOnFocus": true,
 		"hasSound": true
 	},
+	"rewardpropz": {
+		"disableOnFocus": true,
+		"hasVideo": "propz"
+	},
 	"rewardrip": {
 		"disableOnFocus": true,
 		"hasVideo": true

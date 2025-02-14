@@ -39,6 +39,19 @@
 		"autoFulfill": true
 	},
 	{
+		"id": "954b0faa-87c0-4508-a7b1-628cd1a62b7c",
+		"title": "PROPZ!",
+		"cost": 100,
+		"backgroundColor": "#1f1f23",
+		"prompt": "",
+		"globalCooldown": 30,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
 		"id": "60b6043e-7c0e-42c2-b646-ec15bc80086f",
 		"title": "Disconnect",
 		"cost": 10000,
@@ -62,7 +75,7 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
-		"autoFulfill": false
+		"autoFulfill": true
 	},
 	{
 		"id": "e5a69e18-2728-49c1-9b23-37f24ad3c289",
@@ -75,7 +88,7 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
-		"autoFulfill": false
+		"autoFulfill": true
 	},
 	{
 		"id": "d16b81e0-68bc-40cf-8c32-cbf8a6fba06a",

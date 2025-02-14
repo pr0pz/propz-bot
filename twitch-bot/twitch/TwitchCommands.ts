@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.3.2
+ * @version 1.3.3
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -525,11 +525,8 @@ export class TwitchCommands
 			description: 'Was ich mache'
 		},
 		propz: {
-			message: {
-				de: 'propz an dich! Guck mal hier ▶️ https://propz.de',
-				en: 'propz back to you! Check out ▶️ https://propz.de'
-			},
-			description: 'Gib mal propz!'
+			hasVideo: true,
+			onlyMods: true
 		},
 		psx: {
 			cooldown: 120,

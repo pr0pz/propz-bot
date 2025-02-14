@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.2.3
+ * @version 1.3.3
  */
 
 import { useEffect, useState } from 'react';
@@ -107,11 +107,21 @@ const Mediaboard = () =>
 		catch( error: unknown ) { log( error ) }
 	}
 
-	/**
+	/** Get the right Video/Audio file name
+	 * 
 	 * text = command to lower case
 	 * type = rewards -> alle sound/video rewards haben keinen text
 	 */
-	const getMediaName = ( media: WebSocketData ) => media.type.startsWith( 'reward' ) ? media.type : media.text;
+	const getMediaName = ( media: WebSocketData ) =>
+	{
+		if ( media.hasSound && typeof media.hasSound === 'string' )
+			return media.hasSound;
+
+		if ( media.hasVideo && typeof media.hasVideo === 'string' )
+			return media.hasVideo;
+		
+		return media.type.startsWith( 'reward' ) ? media.type : media.text;
+	}
 
 	return( <></> );
 }
