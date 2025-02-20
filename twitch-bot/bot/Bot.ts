@@ -182,6 +182,9 @@ export class Bot
 			if ( this.discord.client )
 				await this.discord.client.destroy();
 
+			if ( this.twitch.data.db )
+				this.twitch.data.db.close();
+
 			Deno.exit();
 		});
 	}

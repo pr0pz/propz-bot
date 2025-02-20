@@ -7,6 +7,7 @@
 
 import { getRandomNumber, getRewardSlug, log, toMap, toObject } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
+import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type {
@@ -49,6 +50,7 @@ import { TwitchInsights } from '../external/TwitchInsights.ts';
 export class BotData
 {
 	public twitchApi: ApiClient;
+	public db: DB;
 
 	// Config
 	public discordEvents: Map<string,TwitchEvent>;
@@ -79,6 +81,7 @@ export class BotData
 		this.emotes = toMap( emotes );
 		this.events = toMap( events );
 		this.twitchUsersData = toMap( twitchUsersData );
+		this.db = new DB( './twitch-bot/bot/BotData.sql' );
 	}
 
 	async init()
@@ -90,6 +93,7 @@ export class BotData
 		this.setMods();
 		this.setRewards();
 		this.setBots();
+		this.initDatabase();
 	}
 
 	/** Get own twitch user display name */
@@ -668,5 +672,69 @@ export class BotData
 			this.setRewards();
 		}
 		catch (error) { log(error) }
+	}
+
+	// ********************
+
+	/** Init Database */
+	initDatabase()
+	{
+		if ( !this.db ) return;
+
+		this.db.execute(`
+			-- Twitch Users Table
+			CREATE TABLE IF NOT EXISTS twitch_users (
+				user_id INTEGER PRIMARY KEY,
+				username TEXT NOT NULL,
+				follow_date INTEGER,
+				message_count INTEGER DEFAULT 0,
+				first_count INTEGER DEFAULT 0
+			);
+			CREATE INDEX idx_users_username ON twitch_users(username);
+			CREATE INDEX idx_users_follow_date ON twitch_users(follow_date);
+
+			-- Twitch Events Table
+			CREATE TABLE IF NOT EXISTS twitch_events (
+				event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+				event_type TEXT NOT NULL,
+				user_id INTEGER NOT NULL,
+				username TEXT NOT NULL,  -- Keeping username for historical reference
+				timestamp INTEGER NOT NULL,
+				count INTEGER,
+				title_alert TEXT,
+				title_event TEXT,
+				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
+			);
+			CREATE INDEX idx_events_type ON twitch_events(event_type);
+			CREATE INDEX idx_events_user_id ON twitch_events(user_id);
+			CREATE INDEX idx_events_timestamp ON twitch_events(timestamp);
+
+			-- Twitch Quotes Table
+			CREATE TABLE IF NOT EXISTS twitch_quotes (
+				quote_id INTEGER PRIMARY KEY AUTOINCREMENT,
+				date TEXT NOT NULL,
+				category TEXT,
+				quote TEXT NOT NULL,
+				user_id INTEGER NOT NULL,
+				username TEXT NOT NULL,  -- Keeping username for historical reference
+				vod_url TEXT,
+				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
+			);
+			CREATE INDEX idx_quotes_user_id ON twitch_quotes(user_id);
+			CREATE INDEX idx_quotes_category ON twitch_quotes(category);
+			CREATE INDEX idx_quotes_date ON twitch_quotes(date);
+
+			-- Twitch Bots Table (simple array of bot usernames)
+			CREATE TABLE IF NOT EXISTS twitch_bots (
+				username TEXT PRIMARY KEY
+			);
+
+			-- Twitch Emotes Table
+			CREATE TABLE IF NOT EXISTS twitch_emotes (
+				emote_name TEXT PRIMARY KEY,
+				url TEXT NOT NULL
+			);
+			CREATE INDEX idx_emotes_url ON twitch_emotes(url);
+		`);
 	}
 }
