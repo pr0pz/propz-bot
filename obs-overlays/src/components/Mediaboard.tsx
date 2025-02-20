@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.4.0
  */
 
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ const Mediaboard = () =>
 	const event: CustomEvent = useEvent();
 	const [mediaQueue, setMediaQueue] = useState<WebSocketData[]>([]);
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [avatar, setAvatar] = useState(<></>);
 
 	useEffect( () =>
 	{
@@ -46,6 +47,7 @@ const Mediaboard = () =>
 
 		playAudio( mediaQueue[0] );
 		playVideo( mediaQueue[0] );
+		addAvatar( mediaQueue[0] );
 	};
 
 	const playAudio = ( media: WebSocketData ) =>
@@ -86,12 +88,13 @@ const Mediaboard = () =>
 			video.volume = 1;
 			video.loop = false;
 
-			document.body.appendChild(video);
+			document.getElementById( 'mediaboard' )?.appendChild(video);
 
 			video.play().catch( ( error: unknown ) =>
 			{
 				log( error );
 				video.remove();
+				setAvatar( <></> );
 				setIsPlaying(false);
 				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1));
 				return;
@@ -100,11 +103,18 @@ const Mediaboard = () =>
 			video.addEventListener( 'ended', () =>
 			{
 				video.remove();
+				setAvatar( <></> );
 				setIsPlaying( false );
 				setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
 			});
 		}
 		catch( error: unknown ) { log( error ) }
+	}
+
+	const addAvatar = ( media: WebSocketData ) =>
+	{
+		if ( !media.showAvatar ) return;
+		setAvatar( <img id="avatar" className={ 'event-' + media.type } src={ media.profilePictureUrl } /> );
 	}
 
 	/** Get the right Video/Audio file name
@@ -114,16 +124,18 @@ const Mediaboard = () =>
 	 */
 	const getMediaName = ( media: WebSocketData ) =>
 	{
-		if ( media.hasSound && typeof media.hasSound === 'string' )
+		if ( !media ) return '';
+
+		if ( typeof media.hasSound === 'string' )
 			return media.hasSound;
 
-		if ( media.hasVideo && typeof media.hasVideo === 'string' )
+		if ( typeof media.hasVideo === 'string' )
 			return media.hasVideo;
-		
-		return media.type.startsWith( 'reward' ) ? media.type : media.text;
+
+		return media.type?.startsWith( 'reward' ) ? media.type : ( media.text || media.type );
 	}
 
-	return( <></> );
+	return( <div id="mediaboard">{ avatar }</div> );
 }
 
 export default Mediaboard;

@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.4.0
  */
 
 import type { Buffer } from 'node:buffer';
@@ -41,6 +41,7 @@ export interface TwitchEvent {
 	obs?:ObsData|ObsData[];
 	hasSound?: boolean|string;
 	hasVideo?: boolean|string;
+	showAvatar?: boolean;
 	extra?: {
 		[key: string]: TwitchEventExtra;
 	};
@@ -319,6 +320,7 @@ export interface WebSocketData {
 	color: string;
 	hasSound?: boolean|string;
 	hasVideo?: boolean|string;
+	showAvatar?: boolean;
 	badges?: string;
 	extra?: TwitchEventExtra|null;
 	obs?: ObsData|ObsData[]|null;

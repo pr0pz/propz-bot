@@ -186,6 +186,7 @@ export class Twitch extends TwitchUtils
 			obs: event.obs,
 			hasSound: event.hasSound,
 			hasVideo: event.hasVideo,
+			showAvatar: event.showAvatar,
 			saveEvent: event.saveEvent
 		});
 

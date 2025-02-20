@@ -1,0 +1,47 @@
+/**
+ * Mediaboard
+ * 
+ * @author Wellington Estevo
+ * @version 1.4.0
+ */
+
+#mediabord,
+#videoboard {
+	position: absolute;
+	inset: 0;
+	aspect-ratio: 16/9;
+}
+
+#avatar {
+	position: absolute;
+	z-index: -1;
+	border-radius: 100%;
+	width: 115px;
+	height: 115px;
+	opacity: 0;
+	
+	&.event-propz {
+		rotate: 21deg;
+		top: 385px;
+		left: 1114px;
+		animation: appear 0s 1.5s forwards;
+	}
+
+	&.event-slap {
+		top: 350px;
+		left: 890px;
+		animation:
+			appear .5s 1s forwards,
+			avatar-slap 2s 3.5s forwards;
+	}
+}
+
+@keyframes appear { to {opacity:1} }
+
+@keyframes avatar-slap {
+	to {
+		left: -300px;
+		top: 500px;
+		rotate: -540deg;
+	}
+}

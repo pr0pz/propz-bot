@@ -651,6 +651,10 @@
 			}
 		}
 	},
+	"propz": {
+		"hasVideo": true,
+		"showAvatar": true
+	},
 	"raid": {
 		"saveEvent": true,
 		"isAnnouncement": true,
@@ -687,6 +691,10 @@
 				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
 			}
 		}
+	},
+	"slap": {
+		"hasVideo": true,
+		"showAvatar": true
 	},
 	"startraid": {
 		"isAnnouncement": true,

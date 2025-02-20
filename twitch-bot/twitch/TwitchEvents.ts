@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.4.0
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -91,13 +91,14 @@ export class TwitchEvents
 
 		// Check for test stream
 		if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
-
+		
+		this.twitch.setStreamFirstChatter( '' );
+		
 		this.twitch.processEvent({
 			eventType: 'streamonline',
 			user: event.broadcasterName
 		});
 
-		this.twitch.setStreamFirstChatter( '' );
 		this.twitch.sendStremOnlineDataToDiscord( stream );
 	}
 

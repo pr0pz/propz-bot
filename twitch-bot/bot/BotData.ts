@@ -238,10 +238,7 @@ export class BotData
 
 		try
 		{
-			if ( user.isNumeric() )
-				return await this.twitchApi.users.getUserById( user );
-			else
-				return await this.twitchApi.users.getUserByName( user );
+			return await this.twitchApi.users.getUserByName( user );
 		}
 		catch( error: unknown ) {
 			log( error );

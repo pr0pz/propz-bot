@@ -2,7 +2,7 @@
  * Helper functions
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.4.0
  */
 
 import type { TwitchTimers, TwitchUserData } from '@propz/types.ts';
@@ -139,7 +139,7 @@ export function sanitizeMessage( message: string = '' )
 	if ( !message ) return '';
 	// Only sanitize if message has some unsecure html tags
 	// We allow style + audio for fun
-	if ( message.match( /<(iframe|video|embed|track|script|link|applet|meta|xmp|noscript|comment|object|plaintext|listing)|dangerouslySetInnerHTML|setHTMLUnsafe/gi ) )
+	if ( message.match( /<(iframe|video|audio|img|embed|track|source|script|link|applet|meta|xmp|noscript|comment|object|plaintext|listing)|dangerouslySetInnerHTML|setHTMLUnsafe/gi ) )
 		message = message.sanitize();
 
 	return message;

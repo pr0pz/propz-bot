@@ -2,7 +2,7 @@
  * Raid
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.4.0
  */
 
 import { useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ const Raid = () =>
 
 			<div id="raid-title-wrapper">
 				<Window id="raid-title">{ raid.text }</Window>
-				<Window id="raid-user" color={ raid.color }>{ raid.user }</Window>
+				<Window id="raid-user" color={ raid.color } theme='dark'>{ raid.user }</Window>
 			</div>
 
 			<div id="raid-avatar-wrapper">

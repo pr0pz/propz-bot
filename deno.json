@@ -1,5 +1,5 @@
 {
-	"version": "1.3.3",
+	"version": "1.4.0",
 	"nodeModulesDir":"auto",
 	"fmt": {
 		"singleQuote": true,
@@ -28,7 +28,7 @@
 		"bot": "deno run -A --unstable-cron --env-file ./twitch-bot/main.ts dev",
 		"botwatch": "deno run --inspect-brk -A --unstable-cron --env-file --watch-exclude='./twitch-bot/*/*.json' --watch ./twitch-bot/main.ts dev",
 		"local": "deno run -A --env-file --watch ./local-scripts/main.ts",
-		"dev": "deno run --inspect -A --env-file --watch='./obs-overlays/src/' --watch='./shared/' ./obs-overlays/dev.ts",
+		"dev": "deno run -A --env-file --watch='./obs-overlays/src/' --watch='./shared/' ./obs-overlays/dev.ts",
 		"build": "deno run -A --env-file ./obs-overlays/build.ts"
 	},
 	"imports": {

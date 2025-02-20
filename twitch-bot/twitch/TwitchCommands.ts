@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.4.0
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -525,8 +525,13 @@ export class TwitchCommands
 			description: 'Was ich mache'
 		},
 		propz: {
-			hasVideo: true,
-			onlyMods: true
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				this.twitch.processEvent({
+					eventType: 'propz',
+					user: options.param || this.twitch.data.userName
+				});
+			}
 		},
 		psx: {
 			cooldown: 120,
@@ -794,6 +799,11 @@ export class TwitchCommands
 		slap: {
 			handler: (options: TwitchCommandOptions) =>
 			{
+				this.twitch.processEvent({
+					eventType: 'slap',
+					user: options.param || options.sender.displayName
+				});
+
 				return options.commandMessage
 					?.replace( '[target]', options.param || options.sender.displayName )
 					?.replace( '[user]', options.param ? options.sender.displayName : this.twitch.data.userDisplayName );

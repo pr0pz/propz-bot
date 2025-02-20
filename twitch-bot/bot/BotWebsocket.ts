@@ -29,12 +29,13 @@ export class BotWebsocket
 		count?: number,
 		hasSound?: boolean,
 		hasVideo?: boolean,
+		showAvatar?: boolean,
 		extra?: TwitchEventExtra,
 		obs?: ObsData|ObsData[],
 		saveEvent?: boolean
 	})
 	{
-		const { type, user, text, count, extra, obs, hasSound, hasVideo, saveEvent } = options;
+		const { type, user, text, count, extra, obs, hasSound, hasVideo, showAvatar, saveEvent } = options;
 
 		if ( !this.wsConnections || !user || !type ) return;
 		
@@ -48,6 +49,7 @@ export class BotWebsocket
 			profilePictureUrl: user.profilePictureUrl || '',
 			hasSound: hasSound || false,
 			hasVideo: hasVideo || false,
+			showAvatar: showAvatar || false,
 			extra: extra || null,
 			obs: obs || null,
 			saveEvent: saveEvent || false
