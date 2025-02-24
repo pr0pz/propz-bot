@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.2.8
+ * @version 1.4.1
  */
 
 import { getRandomNumber, getRewardSlug, log, toMap, toObject } from '@propz/helpers.ts';
@@ -690,8 +690,8 @@ export class BotData
 				message_count INTEGER DEFAULT 0,
 				first_count INTEGER DEFAULT 0
 			);
-			CREATE INDEX idx_users_username ON twitch_users(username);
-			CREATE INDEX idx_users_follow_date ON twitch_users(follow_date);
+			CREATE INDEX IF NOT EXISTS idx_users_username ON twitch_users(username);
+			CREATE INDEX IF NOT EXISTS idx_users_follow_date ON twitch_users(follow_date);
 
 			-- Twitch Events Table
 			CREATE TABLE IF NOT EXISTS twitch_events (
@@ -705,9 +705,9 @@ export class BotData
 				title_event TEXT,
 				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
 			);
-			CREATE INDEX idx_events_type ON twitch_events(event_type);
-			CREATE INDEX idx_events_user_id ON twitch_events(user_id);
-			CREATE INDEX idx_events_timestamp ON twitch_events(timestamp);
+			CREATE INDEX IF NOT EXISTS idx_events_type ON twitch_events(event_type);
+			CREATE INDEX IF NOT EXISTS idx_events_user_id ON twitch_events(user_id);
+			CREATE INDEX IF NOT EXISTS idx_events_timestamp ON twitch_events(timestamp);
 
 			-- Twitch Quotes Table
 			CREATE TABLE IF NOT EXISTS twitch_quotes (
@@ -720,9 +720,9 @@ export class BotData
 				vod_url TEXT,
 				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
 			);
-			CREATE INDEX idx_quotes_user_id ON twitch_quotes(user_id);
-			CREATE INDEX idx_quotes_category ON twitch_quotes(category);
-			CREATE INDEX idx_quotes_date ON twitch_quotes(date);
+			CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON twitch_quotes(user_id);
+			CREATE INDEX IF NOT EXISTS idx_quotes_category ON twitch_quotes(category);
+			CREATE INDEX IF NOT EXISTS idx_quotes_date ON twitch_quotes(date);
 
 			-- Twitch Bots Table (simple array of bot usernames)
 			CREATE TABLE IF NOT EXISTS twitch_bots (
@@ -734,7 +734,7 @@ export class BotData
 				emote_name TEXT PRIMARY KEY,
 				url TEXT NOT NULL
 			);
-			CREATE INDEX idx_emotes_url ON twitch_emotes(url);
+			CREATE INDEX IF NOT EXISTS idx_emotes_url ON twitch_emotes(url);
 		`);
 	}
 }

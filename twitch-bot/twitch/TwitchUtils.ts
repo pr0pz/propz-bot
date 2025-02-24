@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.2.6
+ * @version 1.4.1
  */
 
 import '@propz/prototypes.ts';
@@ -33,6 +33,7 @@ import type {
 	SimpleUser,
 	KofiData
 } from '@propz/types.ts';
+import { userMention } from 'discord.js';
 
 export abstract class TwitchUtils
 {
@@ -221,7 +222,10 @@ export abstract class TwitchUtils
 	setStreamFirstChatter( userName: string )
 	{
 		if ( typeof userName !== 'string' ) return;
-		this.streamFirstChatter = userName;
+
+		const firstChatter = Object.keys( this.data?.credits?.firstchatter );
+		this.streamFirstChatter = firstChatter?.[0] || userName;
+
 		if ( userName && userName !== this.data.userName )
 		{
 			this.processEvent({

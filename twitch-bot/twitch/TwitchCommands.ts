@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 1.4.1
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -801,18 +801,11 @@ export class TwitchCommands
 			{
 				this.twitch.processEvent({
 					eventType: 'slap',
-					user: options.param || options.sender.displayName
+					user: options.param || options.sender.displayName,
+					sender: options.param ? options.sender.displayName : this.twitch.data.userDisplayName
 				});
-
-				return options.commandMessage
-					?.replace( '[target]', options.param || options.sender.displayName )
-					?.replace( '[user]', options.param ? options.sender.displayName : this.twitch.data.userDisplayName );
 			},
 			description: 'Slap them good',
-			message: {
-				de: '@[user] 👋 slaps @[target] around with a big large 🐟trout',
-				en: '@[user] 👋 slaps @[target] around with a big large 🐟trout'
-			},
 		},
 		snow: {
 			hasVideo: true,

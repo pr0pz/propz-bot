@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.2.9
+ * @version 1.4.1
  */
 
 import '@propz/prototypes.ts';
@@ -157,10 +157,11 @@ export class Twitch extends TwitchUtils
 		user: HelixUser|ChatUser|SimpleUser|string,
 		eventCount?: number,
 		eventText?: string,
-		isTest?: boolean
+		isTest?: boolean,
+		sender?: string
 	})
 	{
-		let { eventType, user, eventCount = 0, eventText = '', isTest = false } = options;
+		let { eventType, user, eventCount = 0, eventText = '', isTest = false, sender = this.data.userDisplayName } = options;
 		
 		if ( !this.fireEvent( eventType, user ) ) return;
 
@@ -171,7 +172,10 @@ export class Twitch extends TwitchUtils
 			user = await this.data.getUser( userName ) || '';
 			// Twitch user not found = Probably kofi event
 			if ( typeof user === 'string' )
+			{
+				if ( !eventType.startsWith( 'kofi' ) ) return;
 				user = { name: userName, displayName: userName } as SimpleUser;
+			}
 		}
 		user = await this.convertToSimplerUser( user );
 
@@ -209,7 +213,8 @@ export class Twitch extends TwitchUtils
 
 		message = message.replaceAll( '[user]', user.displayName || user.name );
 		message = message.replaceAll( '[count]', eventCount.toString() );
-
+		message = message.replaceAll( '[sender]', sender );
+		
 		// Check for announcement
 		if ( event.isAnnouncement )
 			this.chat.sendAnnouncement( message );

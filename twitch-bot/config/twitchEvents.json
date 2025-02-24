@@ -694,6 +694,10 @@
 	},
 	"slap": {
 		"hasVideo": true,
+		"message": {
+			"de": "@[sender] 👋 slaps @[user] around with a big large 🐟trout",
+			"en": "@[sender] 👋 slaps @[user] around with a big large 🐟trout"
+		},
 		"showAvatar": true
 	},
 	"startraid": {
