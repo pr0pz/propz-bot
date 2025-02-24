@@ -2,12 +2,12 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.4.1
+ * @version 1.4.2
  */
 
 import '@propz/prototypes.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
-import { getMessage, sanitizeMessage } from '@propz/helpers.ts';
+import { getMessage, sanitizeMessage, mapToObject } from '@propz/helpers.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
 
 import type { Discord } from '../discord/Discord.ts';
@@ -275,6 +275,10 @@ export class Twitch extends TwitchUtils
 				break;
 
 			case 'getEvents':
+				response.data = mapToObject( this.data.events );
+				break;
+
+			case 'getLastEvents':
 				response.data = this.data.getLastEventsData( this.streamLanguage );
 				break;
 

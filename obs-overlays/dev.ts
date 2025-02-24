@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  * 
  * @author Wellington Estevo
- * @version 1.1.3
+ * @version 1.4.2
  */
 
 import { serveDir } from '@std/http/file-server';
@@ -41,7 +41,7 @@ function requestHandler(req: Request)
 	// Serve static files from public folder
 	if (
 		pathname.startsWith( '/img' ) ||
-		pathname.startsWith( '/sound' ) ||
+		pathname.startsWith( '/audio' ) ||
 		pathname.startsWith( '/video' )
 	)
 	{

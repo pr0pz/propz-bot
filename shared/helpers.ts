@@ -2,7 +2,7 @@
  * Helper functions
  * 
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 1.4.2
  */
 
 import type { TwitchTimers, TwitchUserData } from '@propz/types.ts';
@@ -195,9 +195,37 @@ export function execCommand( command: string, args: string|string[] )
 }
 
 /** Convert object with key and values to a map */
-export function toMap( data: object )
+export function objectToMap( data: object )
 {
 	return new Map( Object.entries( data ).map( ([key, value]) => [key, value] ) );
+}
+
+/** Convert map to object with key and values */
+export function mapToObject( data: Map<string, any> )
+{
+	const obj: { [key: string]: any } = {};
+	for( const [key, value] of data.entries() )
+	{
+		// Handle nested maps recursively
+		if( value instanceof Map )
+		{
+			obj[key] = toObject( value );
+		}
+		// Handle nested objects that might contain maps
+		else if( typeof value === 'object' && value !== null )
+		{
+			obj[key] = Object.entries( value ).reduce( (acc: any, [k, v]) => {
+				acc[k] = v instanceof Map ? toObject( v ) : v;
+				return acc;
+			}, {});
+		}
+		// Handle primitive values
+		else
+		{
+			obj[key] = value;
+		}
+	}
+	return obj;
 }
 
 /** Convert Map to object with key and values */

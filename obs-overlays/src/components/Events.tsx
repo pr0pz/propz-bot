@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.2.10
+ * @version 1.4.2
  */
 
 import { useEffect, useState } from 'react';
@@ -28,16 +28,20 @@ const Events = () =>
 	/** Initialy fill events */
 	const setInitialEvents = async () =>
 	{
+		let urlPrefix = 'https';
+		if ( process.env.BOT_URL.includes( 'localhost' ) || process.env.BOT_URL.includes( '127.0.0.1' ) )
+			urlPrefix = 'http';
+
 		const fetchOptions = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: '{ "request": "getEvents" }'
+			body: '{ "request": "getLastEvents" }'
 		};
 
 		try {
-			const response = await fetch( `https://${ process.env.BOT_URL }/api`, fetchOptions );
+			const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
 	
 			data.data.slice(-5).forEach( (event: TwitchEventData) =>

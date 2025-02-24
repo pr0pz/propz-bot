@@ -2,11 +2,11 @@
  * Mediaboard
  * 
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 1.4.2
  */
 
-#mediabord,
-#videoboard {
+#mediaboard,
+#mediaboard video {
 	position: absolute;
 	inset: 0;
 	aspect-ratio: 16/9;

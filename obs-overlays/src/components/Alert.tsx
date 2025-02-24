@@ -2,7 +2,7 @@
  * Single ALert
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.4.2
  */
 
 import { useEffect, useState } from 'react';
@@ -70,7 +70,7 @@ const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: s
 		// Alert Audio Sound
 		if ( propz?.noAudio ) return;
 
-		const audioFile = `/sound/alerts/${alertType}.mp3`;
+		const audioFile = `/audio/alerts/${alertType}.mp3`;
 		let audio;
 		try {
 			audio = new Audio( audioFile );

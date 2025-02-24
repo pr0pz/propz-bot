@@ -2,10 +2,10 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.4.1
+ * @version 1.4.2
  */
 
-import { getRandomNumber, getRewardSlug, log, toMap, toObject } from '@propz/helpers.ts';
+import { getRandomNumber, getRewardSlug, log, objectToMap, toObject } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
@@ -76,11 +76,11 @@ export class BotData
 	constructor( twitchApi: ApiClient )
 	{
 		this.twitchApi = twitchApi;
-		this.timers = toMap( timers );
-		this.discordEvents = toMap( discordEvents );
-		this.emotes = toMap( emotes );
-		this.events = toMap( events );
-		this.twitchUsersData = toMap( twitchUsersData );
+		this.timers = objectToMap( timers );
+		this.discordEvents = objectToMap( discordEvents );
+		this.emotes = objectToMap( emotes );
+		this.events = objectToMap( events );
+		this.twitchUsersData = objectToMap( twitchUsersData );
 		this.db = new DB( './twitch-bot/bot/BotData.sql' );
 	}
 
@@ -327,7 +327,7 @@ export class BotData
 		]);
 		const emotes = Object.assign( {}, emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV );
 
-		this.emotes = toMap( emotes );
+		this.emotes = objectToMap( emotes );
 		this.saveFile( 'twitchEmotes', emotes );
 	}
 
@@ -663,11 +663,11 @@ export class BotData
 			const rewards = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchRewards.json' ));
 			const timers = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/twitchTimers.json' ));
 
-			this.discordEvents = toMap( discordEvents );
-			this.events = toMap( events );
+			this.discordEvents = objectToMap( discordEvents );
+			this.events = objectToMap( events );
 			this.reactions = reactions;
 			this.rewards = rewards;
-			this.timers = toMap( timers );
+			this.timers = objectToMap( timers );
 
 			this.setRewards();
 		}
