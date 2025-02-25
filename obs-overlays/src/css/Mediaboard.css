@@ -2,7 +2,7 @@
  * Mediaboard
  * 
  * @author Wellington Estevo
- * @version 1.4.2
+ * @version 1.4.3
  */
 
 #mediaboard,
@@ -10,6 +10,7 @@
 	position: absolute;
 	inset: 0;
 	aspect-ratio: 16/9;
+	width: 100%;
 }
 
 #avatar {
@@ -20,7 +21,8 @@
 	height: 115px;
 	opacity: 0;
 	
-	&.event-propz {
+	&.event-propz,
+	&.event-rewardpropz {
 		rotate: 21deg;
 		top: 385px;
 		left: 1114px;

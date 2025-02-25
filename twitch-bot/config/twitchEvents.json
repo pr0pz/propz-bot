@@ -204,7 +204,8 @@
 	},
 	"rewardpropz": {
 		"disableOnFocus": true,
-		"hasVideo": "propz"
+		"hasVideo": "propz",
+		"showAvatar": true
 	},
 	"rewardrip": {
 		"disableOnFocus": true,
@@ -693,6 +694,7 @@
 		}
 	},
 	"slap": {
+		"disableOnFocus": true,
 		"hasVideo": true,
 		"message": {
 			"de": "@[sender] 👋 slaps @[user] around with a big large 🐟trout",

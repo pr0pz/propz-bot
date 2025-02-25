@@ -2,7 +2,7 @@
  * Media Manager
  * 
  * @author Wellington Estevo
- * @version 1.4.2
+ * @version 1.4.3
  */
 
 import { useEffect, useState } from 'react';
@@ -163,6 +163,10 @@ const Mediaboard = () =>
 		setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
 	}
 
+	/** Add Avatar to DOM for animation
+	 * 
+	 * @param {WebSocketData} media
+	*/
 	const addAvatar = ( media: WebSocketData ) =>
 	{
 		if ( !media.showAvatar ) return;
