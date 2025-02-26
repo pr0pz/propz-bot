@@ -4,19 +4,18 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.5.0
  */
 
 import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
 import { log } from '@propz/helpers.ts';
-import { ensureDir } from '@std/fs';
+import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
 import type { AccessToken } from '@twurple/auth';
 
 export class TwitchAuth
 {
-	private authFolder: string;
-	private authFile: string;
+	private dbPath = './twitch-bot/bot/BotData.sql';
 	private authProvider: RefreshingAuthProvider|null = null;
 	private scopes = [
 		'bits:read',
@@ -81,7 +80,6 @@ export class TwitchAuth
 	];
 
 	private userId = Deno.env.get( 'TWITCH_USER_ID' ) || '';
-	private tokenFileNonce = Deno.env.get( 'TWITCH_TOKENFILE_NONCE' ) || '';
 	private clientId = Deno.env.get( 'TWITCH_CLIENT_ID' ) || '';
 	private clientSecret = Deno.env.get( 'TWITCH_CLIENT_SECRET' ) || '';
 	private redirectUri = Deno.env.get( 'TWITCH_REDIRECT_URI' ) || '';
@@ -89,8 +87,7 @@ export class TwitchAuth
 
 	constructor()
 	{
-		this.authFolder = `./twitch-bot/config/auth`;
-		this.authFile = `${this.authFolder}/twitch_${ this.userId }_${ this.tokenFileNonce }.json`;
+		this.initDatabase();
 
 		this.authProvider = new RefreshingAuthProvider({
 			clientId: this.clientId,
@@ -99,31 +96,40 @@ export class TwitchAuth
 			appImpliedScopes: this.scopes
 		});
 
-		// Rewrite token data file on token refresh
+		// Rewrite token data on token refresh
 		this.authProvider.onRefresh( ( _userId: string, newTokenData: AccessToken ) =>
 		{
-			Deno.writeTextFileSync(
-				this.authFile,
-				JSON.stringify( newTokenData, null, "\t" )
-			);
+			const db = new DB( this.dbPath );
+			db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
+			db.close();
 		});
 	}
 
 	/** Get tokenData for further auth process */
 	private async getTokenData(): Promise<AccessToken|undefined>
 	{
-		await ensureDir( this.authFolder );
+		let db = new DB( this.dbPath );
 		try {
-			const newTokenData = Deno.readTextFileSync( this.authFile );
-			log( `Tokendata ready (from file)` );
-			return JSON.parse( newTokenData ) as AccessToken;
+			const results = db.queryEntries( `SELECT data FROM auth WHERE name = 'twitch'` );
+			const newTokenData = results?.[0]?.['data'] as string || '';
+						
+			if ( newTokenData )
+			{
+				log( `Tokendata ready (from DB)` );
+				return JSON.parse( newTokenData ) as AccessToken;
+			}
 		}
 		catch ( _error: unknown )
 		{
+			db.close();
 			log( `No tokendata found. Getting new from Twitch.` );
 		}
+		finally
+		{
+			db.close();
+		}
 
-		// File doesn't exist, so:
+		// DB data exist, so:
 		// Get the initial tokenData using the initial OAuth code
 		try {
 			const newTokenData = await exchangeCode(
@@ -133,16 +139,18 @@ export class TwitchAuth
 				this.redirectUri
 			);
 
-			// Write tokenData to file
-			Deno.writeTextFile(
-				this.authFile,
-				JSON.stringify( newTokenData, null, "\t" )
-			);
+			db = new DB( this.dbPath );
+			db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
+			db.close();
 
 			log( `Tokendata ready (from Twitch)` );
 			return newTokenData;
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			db.close();
+			log( error );
+		}
 	}
 
 	/** Returns authprovider */
@@ -168,5 +176,28 @@ export class TwitchAuth
 		catch( error: unknown ) { log( error ) }
 
 		return this.authProvider;
+	}
+
+	private initDatabase()
+	{
+		const db = new DB( this.dbPath );
+		try {
+			db.execute(`
+				-- Authentication
+				CREATE TABLE IF NOT EXISTS auth (
+					name PRIMARY KEY,
+					data TEXT NOT NULL
+				);
+			`);
+			db.execute(`INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '');`)
+		}
+		catch( error: unknown )
+		{
+			log( error );
+		}
+		finally
+		{
+			db.close();
+		}
 	}
 }

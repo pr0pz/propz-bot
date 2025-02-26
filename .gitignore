@@ -7,9 +7,9 @@
 .vscode/
 deno.lock
 obs-overlays/public/build
-twitch-bot/config/auth/
 twitch-bot/data
 
 ._*
 .Spotlight-V100
 .Trashes
+*.sql*

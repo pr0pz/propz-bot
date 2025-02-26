@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.4.1
+ * @version 1.5.0
  */
 
 import '@propz/prototypes.ts';
@@ -64,8 +64,6 @@ export abstract class TwitchUtils
 		this.chat = new TwitchChat( this );
 		this.events = new TwitchEvents( this );
 		this.commands = new TwitchCommands( this );
-		
-		this.setStreamFirstChatter( this.data.userName );
 
 		// Running localy for testing?
 		if ( Deno.args?.[0]?.toString() === 'dev' )
@@ -215,40 +213,29 @@ export abstract class TwitchUtils
 		return message;
 	}
 
-	/** First chat message of each stream.
+	/** Check and set firstchatter of each stream
 	 * 
-	 * @param {string} userName Username for first chat message
+	 * @param {SimpleUser} user user data
 	 */
-	setStreamFirstChatter( userName: string )
+	setStreamFirstChatter( user: SimpleUser )
 	{
-		if ( typeof userName !== 'string' ) return;
+		const firstChatter = Object.keys( this.data?.credits?.firstchatter )?.[0];
 
-		const firstChatter = Object.keys( this.data?.credits?.firstchatter );
-		this.streamFirstChatter = firstChatter?.[0] || userName;
-
-		if ( userName && userName !== this.data.userName )
-		{
-			this.processEvent({
-				eventType: 'firstchatter',
-				user: userName
-			});
-		}
-	}
-
-	/** Check for first chatter event.
-	 * 
-	 * @param {HelixUser} user User Object to check for
-	 */
-	checkFirstChatterEvent( user: SimpleUser )
-	{
 		if (
-			this.streamFirstChatter ||
+			firstChatter ||
 			user?.name === this.data.userName
 		) return;
-		
-		this.setStreamFirstChatter( user.name );
+
+		this.streamFirstChatter = user.displayName;
 		this.data.updateUserData( user, 'firsts', 1 );
+		this.data.updateCredits( user, 'firstchatter' );
+
+		this.processEvent({
+			eventType: 'firstchatter',
+			user: user.displayName
+		});
 	}
+
 
 	/** Check for chat score
 	 * 

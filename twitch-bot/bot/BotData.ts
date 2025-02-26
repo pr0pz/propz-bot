@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.4.2
+ * @version 1.5.0
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap, toObject } from '@propz/helpers.ts';
@@ -51,6 +51,7 @@ export class BotData
 {
 	public twitchApi: ApiClient;
 	public db: DB;
+	private preparedStatements: Map<string, any> = new Map();
 
 	// Config
 	public discordEvents: Map<string,TwitchEvent>;
@@ -559,7 +560,7 @@ export class BotData
 	 * @param {string} eventName Name of Event
 	 * @param {number} count Event Count
 	 */
-	updateCredits( user: SimpleUser, eventType: string, eventCount: number )
+	updateCredits( user: SimpleUser, eventType: string, eventCount: number = 1 )
 	{
 		const data: TwitchCreditsData = {
 			profilePictureUrl: user.profilePictureUrl || '',
@@ -672,6 +673,63 @@ export class BotData
 			this.setRewards();
 		}
 		catch (error) { log(error) }
+	}
+
+	/** Initialize commonly used prepared statements */
+	initPreparedStatements() {
+		// User operations
+		this.preparedStatements.set('insertUser', 
+			this.db.prepareQuery('INSERT OR IGNORE INTO twitch_users (user_id, username) VALUES (?, ?)'));
+		
+		this.preparedStatements.set('updateUserFollow', 
+			this.db.prepareQuery('UPDATE twitch_users SET follow_date = ? WHERE user_id = ?'));
+		
+		this.preparedStatements.set('incrementUserMessages', 
+			this.db.prepareQuery('UPDATE twitch_users SET message_count = message_count + 1 WHERE user_id = ?'));
+		
+		this.preparedStatements.set('incrementUserFirsts', 
+			this.db.prepareQuery('UPDATE twitch_users SET first_count = first_count + 1 WHERE user_id = ?'));
+		
+		// Event operations
+		this.preparedStatements.set('insertEvent', 
+			this.db.prepareQuery('INSERT INTO twitch_events (event_type, user_id, username, timestamp, count, title_alert, title_event) VALUES (?, ?, ?, ?, ?, ?, ?)'));
+		
+		// Quote operations
+		this.preparedStatements.set('insertQuote', 
+			this.db.prepareQuery('INSERT INTO twitch_quotes (date, category, quote, user_id, username, vod_url) VALUES (?, ?, ?, ?, ?, ?)'));
+	}
+
+	/** Use a prepared statement from the map */
+	executeStatement(statementName: string, params: any[]) {
+		const stmt = this.preparedStatements.get(statementName);
+		if (!stmt) {
+			log(`Prepared statement "${statementName}" not found`);
+			return null;
+		}
+		
+		try {
+			return stmt.execute(params);
+		} catch (error) {
+			log(`Error executing statement "${statementName}": ${error}`);
+			return null;
+		}
+	}
+
+	public cleanup() {
+		// Finalize all prepared statements
+		for (const [name, stmt] of this.preparedStatements.entries()) {
+			try {
+				stmt.finalize();
+			} catch (error) {
+				log(`Error finalizing statement "${name}": ${error}`);
+			}
+		}
+		this.preparedStatements.clear();
+		
+		// Close the database connection
+		if (this.db) {
+			this.db.close();
+		}
 	}
 
 	// ********************

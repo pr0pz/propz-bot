@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 1.5.0
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -92,8 +92,6 @@ export class TwitchEvents
 		// Check for test stream
 		if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
 		
-		this.twitch.setStreamFirstChatter( '' );
-		
 		this.twitch.processEvent({
 			eventType: 'streamonline',
 			user: event.broadcasterName
@@ -110,7 +108,6 @@ export class TwitchEvents
 	{
 		if ( !event ) return;
 		this.twitch.setStream( null );
-		this.twitch.setStreamFirstChatter( this.twitch.data.userName );
 
 		this.twitch.processEvent({
 			eventType: 'streamoffline',
