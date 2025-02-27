@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.0
+ * @version 1.5.1
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap, toObject } from '@propz/helpers.ts';
@@ -26,6 +26,7 @@ import type {
 	TwitchTimers,
 	TwitchUserData
 } from '@propz/types.ts';
+import type { PreparedQuery } from 'https://deno.land/x/sqlite/mod.ts';
 
 // Config
 import discordEvents from '../config/discordEvents.json' with { type: 'json' };
@@ -35,9 +36,7 @@ import rewards from '../config/twitchRewards.json' with { type: 'json' };
 import timers from '../config/twitchTimers.json' with { type: 'json' };
 
 // Data
-import bots from '../data/twitchBots.json' with { type: 'json' };
 import credits from '../data/twitchCredits.json' with { type: 'json' }
-import emotes from '../data/twitchEmotes.json' with { type: 'json' };
 import eventsData from '../data/twitchEventsData.json' with { type: 'json' };
 import quotes from '../data/twitchQuotes.json' with { type: 'json' };
 import twitchUsersData from '../data/twitchUsersData.json' with { type: 'json' };
@@ -61,9 +60,9 @@ export class BotData
 	public timers: Map<string,TwitchTimers>;
 
 	// Data
-	public bots: string[] = bots;
+	public bots: string[] = [];
 	public credits: TwitchCredits = credits;
-	public emotes: Map<string,string>;
+	public emotes: Map<string,string> = new Map();
 	public eventsData: TwitchEventData[] = eventsData;
 	public quotes: TwitchQuote[] = quotes;
 	public twitchUsersData: Map<string,TwitchUserData>;
@@ -79,7 +78,6 @@ export class BotData
 		this.twitchApi = twitchApi;
 		this.timers = objectToMap( timers );
 		this.discordEvents = objectToMap( discordEvents );
-		this.emotes = objectToMap( emotes );
 		this.events = objectToMap( events );
 		this.twitchUsersData = objectToMap( twitchUsersData );
 		this.db = new DB( './twitch-bot/bot/BotData.sql' );
@@ -95,6 +93,7 @@ export class BotData
 		this.setRewards();
 		this.setBots();
 		this.initDatabase();
+		this.initPreparedStatements();
 	}
 
 	/** Get own twitch user display name */
@@ -243,7 +242,7 @@ export class BotData
 
 		try
 		{
-			return await this.twitchApi.users.getUserByName( user );
+			return await this.twitchApi.users.getUserByName( user.toLowerCase() );
 		}
 		catch( error: unknown ) {
 			log( error );
@@ -254,14 +253,44 @@ export class BotData
 	/** Get data for twitch user/s
 	 * 
 	 * @param {string} userId User ID
-	 * @returns {TwitchUserData|Map<string,TwitchUserData>}
+	 * @returns {TwitchUserData|undefined}
 	 */
-	getUsersData(): Map<string,TwitchUserData>
-	getUsersData( userId: string ): TwitchUserData
-	getUsersData( userId?: string ): TwitchUserData|Map<string,TwitchUserData>
+	getUserData( userId: string )
 	{
-		if ( userId ) return this.twitchUsersData.get( userId ) || {};
-		return this.twitchUsersData;
+		if ( !userId ) return;
+		const result = this.executeStatement( 'get_user', userId );
+		if ( !result?.[0] ) return;
+		return {
+			user_id: result[0][0],
+			username: result[0][1],
+			follow_date: result[0][2],
+			message_count: result[0][3],
+			first_count: result[0][4]
+		} as TwitchUserData;
+	}
+
+	/** Get data for twitch user/s
+	 * 
+	 * @returns {Map<number,TwitchUserData>}
+	 */
+	getUsersData()
+	{
+		const users = new Map<string, TwitchUserData>();
+		const results = this.db.queryEntries<TwitchUserData>( 'SELECT * FROM twitch_users' );
+		if ( !results || results.length === 0 ) return users;
+
+		for( const user of results )
+		{
+			users.set( user.user_id, {
+				user_id: user.user_id,
+				username: user.username,
+				follow_date: user.follow_date,
+				message_count: user.message_count,
+				first_count: user.first_count
+			});
+		}
+
+		return users;
 	}
 
 	/** Reset all Credits stats */
@@ -329,7 +358,6 @@ export class BotData
 		const emotes = Object.assign( {}, emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV );
 
 		this.emotes = objectToMap( emotes );
-		this.saveFile( 'twitchEmotes', emotes );
 	}
 
 	/** Set last 20 followers */
@@ -360,10 +388,10 @@ export class BotData
 			followersData.push( follow );
 			
 			// Follower already exists
-			if ( this.getUsersData( follower.userId ).follow ) continue;
+			if ( this.getUserData( follower.userId )?.follow_date ) continue;
 			
 			this.addEvent( follow );
-			this.updateUserData( followerData, 'follow', followTimestamp );
+			this.updateUserData( followerData, 'follow_date', followTimestamp );
 		}
 
 		this.followers = followersData;
@@ -439,7 +467,6 @@ export class BotData
 	async setBots()
 	{
 		this.bots = await TwitchInsights.getBots();
-		this.saveFile( 'twitchBots', bots );
 	}
 
 	/** Initially set main user object */
@@ -532,26 +559,24 @@ export class BotData
 	 * @param {string} dataName Name of data to update
 	 * @param {string|int|boolean} dataValue New data value
 	 */
-	updateUserData( user: HelixUser|SimpleUser, dataName: string, dataValue: string|number )
+	updateUserData( user: HelixUser|SimpleUser, dataName: string, dataValue: string|number = '' )
 	{
-		if ( !user?.id || !dataName || !dataValue ) return;
-		const userData = this.getUsersData( user.id );
-	
+		if ( !user?.id || !dataName ) return;
+
+		const userData = this.getUserData( user.id );
+		if ( !userData ) this.executeStatement( 'add_user', user.id );
+
 		// Always update username, could change frequently
-		userData.name = user.name;
+		this.executeStatement( 'update_username', [ user.displayName, user.id ] );
 
 		// Types that need count up
-		if ( [ 'messages', 'firsts' ].includes( dataName ) )
+		if ( [ 'message_count', 'first_count' ].includes( dataName ) )
 		{
-			const count = ( Number( userData[ dataName ] ) || 0 ) + Number( dataValue );
-			userData[ dataName ] = count;
-		}
-		else
-		{
-			userData[ dataName ] = dataValue;
+			this.executeStatement( dataName, user.id );
+			return;
 		}
 
-		this.twitchUsersData.set( user.id, userData );
+		this.executeStatement( dataName, [ dataValue.toString() ?? '', user.id ] );
 	}
 
 	/** Update credits
@@ -570,7 +595,7 @@ export class BotData
 		switch ( eventType )
 		{
 			case 'firstchatter':
-				if ( this.credits?.firstchatter ) return;
+				if ( Object.keys( this.credits?.firstchatter ).length > 0 ) return;
 				this.credits.firstchatter[ user.displayName ] = data;
 				break;
 
@@ -676,42 +701,76 @@ export class BotData
 	}
 
 	/** Initialize commonly used prepared statements */
-	initPreparedStatements() {
+	initPreparedStatements()
+	{
 		// User operations
-		this.preparedStatements.set('insertUser', 
-			this.db.prepareQuery('INSERT OR IGNORE INTO twitch_users (user_id, username) VALUES (?, ?)'));
+		this.preparedStatements.set( 'add_user', 
+			this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (user_id) VALUES (?)' ) );
+
+		this.preparedStatements.set( 'get_user', 
+			this.db.prepareQuery( 'SELECT user_id, username, follow_date, message_count, first_count FROM twitch_users WHERE user_id = ?' ) );
+
+		this.preparedStatements.set( 'update_username', 
+			this.db.prepareQuery( 'UPDATE twitch_users SET username = ? WHERE user_id = ?' ) );
+	
+		this.preparedStatements.set( 'follow_date', 
+			this.db.prepareQuery( 'UPDATE twitch_users SET follow_date = ? WHERE user_id = ?' ) );
+
+		this.preparedStatements.set( 'message_count', 
+			this.db.prepareQuery( 'UPDATE twitch_users SET message_count = message_count + 1 WHERE user_id = ?' ) );
 		
-		this.preparedStatements.set('updateUserFollow', 
-			this.db.prepareQuery('UPDATE twitch_users SET follow_date = ? WHERE user_id = ?'));
-		
-		this.preparedStatements.set('incrementUserMessages', 
-			this.db.prepareQuery('UPDATE twitch_users SET message_count = message_count + 1 WHERE user_id = ?'));
-		
-		this.preparedStatements.set('incrementUserFirsts', 
-			this.db.prepareQuery('UPDATE twitch_users SET first_count = first_count + 1 WHERE user_id = ?'));
+		this.preparedStatements.set( 'first_count', 
+			this.db.prepareQuery( 'UPDATE twitch_users SET first_count = first_count + 1 WHERE user_id = ?' ) );
 		
 		// Event operations
-		this.preparedStatements.set('insertEvent', 
-			this.db.prepareQuery('INSERT INTO twitch_events (event_type, user_id, username, timestamp, count, title_alert, title_event) VALUES (?, ?, ?, ?, ?, ?, ?)'));
-		
+		this.preparedStatements.set( 'add_event', 
+			this.db.prepareQuery( 'INSERT INTO twitch_events (event_type, user_id, timestamp, count, title_alert, title_event) VALUES (?, ?, ?, ?, ?, ?)' ) );
+
 		// Quote operations
-		this.preparedStatements.set('insertQuote', 
-			this.db.prepareQuery('INSERT INTO twitch_quotes (date, category, quote, user_id, username, vod_url) VALUES (?, ?, ?, ?, ?, ?)'));
+		this.preparedStatements.set( 'add_quote', 
+			this.db.prepareQuery( 'INSERT INTO twitch_quotes (date, category, quote, user_id, vod_url) VALUES (?, ?, ?, ?, ?)' ) );
 	}
 
-	/** Use a prepared statement from the map */
-	executeStatement(statementName: string, params: any[]) {
-		const stmt = this.preparedStatements.get(statementName);
-		if (!stmt) {
-			log(`Prepared statement "${statementName}" not found`);
-			return null;
+	/** Use a prepared statement from the map
+	 * 
+	 * @param {string} statementName
+	 * @param {string[]} params
+	*/
+	executeStatement( statementName: string, params: any = '' ): any[]
+	{
+		if ( !statementName ) return [];
+		if ( !Array.isArray( params ) ) params = [ params ];
+
+		const stmt = this.preparedStatements.get( statementName ) as PreparedQuery;
+		if ( !stmt ) return [];
+
+		try
+		{
+			const results = stmt.execute( params );
+			// For statements that don't return rows (INSERT, UPDATE, DELETE)
+			// we can provide useful information		
+			if (
+				typeof results === 'undefined' ||
+				( Array.isArray( results ) && results.length === 0 )
+			)
+			{
+				// For operations that might create a new row
+				if ( statementName.toLowerCase().includes('add'))
+					return [ this.db.lastInsertRowId ];
+				
+				// For operations that might modify existing rows
+				if (
+					statementName.toLowerCase().includes('update') ||
+					statementName.toLowerCase().includes('delete')
+				)
+					return [ this.db.changes ];
+			}
+
+			return Array.isArray( results ) ? results : [ results ];
 		}
-		
-		try {
-			return stmt.execute(params);
-		} catch (error) {
-			log(`Error executing statement "${statementName}": ${error}`);
-			return null;
+		catch ( error: unknown )
+		{
+			log( error );
 		}
 	}
 
@@ -742,9 +801,9 @@ export class BotData
 		this.db.execute(`
 			-- Twitch Users Table
 			CREATE TABLE IF NOT EXISTS twitch_users (
-				user_id INTEGER PRIMARY KEY,
-				username TEXT NOT NULL,
-				follow_date INTEGER,
+				user_id TEXT PRIMARY KEY,
+				username TEXT UNIQUE DEFAULT '',
+				follow_date INTEGER DEFAULT 0,
 				message_count INTEGER DEFAULT 0,
 				first_count INTEGER DEFAULT 0
 			);
@@ -755,8 +814,7 @@ export class BotData
 			CREATE TABLE IF NOT EXISTS twitch_events (
 				event_id INTEGER PRIMARY KEY AUTOINCREMENT,
 				event_type TEXT NOT NULL,
-				user_id INTEGER NOT NULL,
-				username TEXT NOT NULL,  -- Keeping username for historical reference
+				user_id TEXT NOT NULL,
 				timestamp INTEGER NOT NULL,
 				count INTEGER,
 				title_alert TEXT,
@@ -773,26 +831,13 @@ export class BotData
 				date TEXT NOT NULL,
 				category TEXT,
 				quote TEXT NOT NULL,
-				user_id INTEGER NOT NULL,
-				username TEXT NOT NULL,  -- Keeping username for historical reference
+				user_id TEXT NOT NULL,
 				vod_url TEXT,
 				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
 			);
 			CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON twitch_quotes(user_id);
 			CREATE INDEX IF NOT EXISTS idx_quotes_category ON twitch_quotes(category);
 			CREATE INDEX IF NOT EXISTS idx_quotes_date ON twitch_quotes(date);
-
-			-- Twitch Bots Table (simple array of bot usernames)
-			CREATE TABLE IF NOT EXISTS twitch_bots (
-				username TEXT PRIMARY KEY
-			);
-
-			-- Twitch Emotes Table
-			CREATE TABLE IF NOT EXISTS twitch_emotes (
-				emote_name TEXT PRIMARY KEY,
-				url TEXT NOT NULL
-			);
-			CREATE INDEX IF NOT EXISTS idx_emotes_url ON twitch_emotes(url);
 		`);
 	}
 }

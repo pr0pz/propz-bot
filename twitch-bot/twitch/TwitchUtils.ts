@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.0
+ * @version 1.5.1
  */
 
 import '@propz/prototypes.ts';
@@ -164,7 +164,7 @@ export abstract class TwitchUtils
 	 * @param {string} message Message to search replace values
 	 * @param {keyof TwitchUserData} type Type of score to get
 	 */
-	async getUserScoreText( userName: string, message: string , type: keyof TwitchUserData = 'messages' )
+	async getUserScoreText( userName: string, message: string , type: keyof TwitchUserData = 'message_count' )
 	{
 		if (
 			!userName || !message || !type ||
@@ -176,6 +176,9 @@ export abstract class TwitchUtils
 
 		const userData = this.data.getUsersData();
 		if ( !userData ) return '';
+
+		const u = userData.get( user.id );
+		console.log( type, u );
 
 		let count: string|number = Number( userData.get( user.id )?.[ type ] ) ?? 0;
 		if ( !count ) return '';
@@ -189,7 +192,7 @@ export abstract class TwitchUtils
 			.sort( (a, b) => 
 			{
 				// Aufsteigende Sortierung für 'follow'
-				if ( type === 'follow' )
+				if ( type === 'follow_date' )
 				{
 					return (a[1] as number) - (b[1] as number);
 				}
@@ -202,7 +205,7 @@ export abstract class TwitchUtils
 
 		const rank = sortedUsers.findIndex( ( [id, _data, _userName] ) => id === user.id ) + 1;
 
-		if ( type === 'follow' )
+		if ( type === 'follow_date' )
 			count = getTimePassed( Date.now() - count * 1000 );
 
 		message = message.replace( '[user]', user.displayName );
@@ -227,7 +230,7 @@ export abstract class TwitchUtils
 		) return;
 
 		this.streamFirstChatter = user.displayName;
-		this.data.updateUserData( user, 'firsts', 1 );
+		this.data.updateUserData( user, 'first_count', 1 );
 		this.data.updateCredits( user, 'firstchatter' );
 
 		this.processEvent({
@@ -248,7 +251,7 @@ export abstract class TwitchUtils
 		const chatscores = [
 			100, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
 		];
-		const count = this.data.getUsersData( user.id! ).messages || 0;
+		const count = this.data.getUserData( user.id! )?.message_count || 0;
 		if ( count && chatscores.includes( count ) )
 		{
 			this.processEvent({

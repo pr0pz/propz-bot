@@ -2,7 +2,7 @@
  * Twitch Event Controller
  * 
  * @author Wellington Estevo
- * @version 1.5.0
+ * @version 1.5.1
  */
 
 import { EventSubWsListener } from '@twurple/eventsub-ws';
@@ -125,7 +125,7 @@ export class TwitchEvents
 		if ( this.twitch.data.isBot( event.userName ) ) return;
 
 		// Don't do anything if user has already followed
-		if ( this.twitch.data.getUsersData( event.userId ).follow ) return;
+		if ( this.twitch.data.getUserData( event.userId )?.follow_date ) return;
 
 		this.twitch.processEvent({
 			eventType: 'follow',
@@ -139,7 +139,7 @@ export class TwitchEvents
 			displayName: event.userDisplayName
 		}
 		const followDateTimestamp = Math.floor( event.followDate.getTime() / 1000 );
-		this.twitch.data.updateUserData( user, 'follow', followDateTimestamp );
+		this.twitch.data.updateUserData( user, 'follow_date', followDateTimestamp );
 	}
 
 	/** Subscribes to events that represents a Channel Points reward being redeemed.

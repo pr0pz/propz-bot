@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 1.5.1
  */
 
 import type { Buffer } from 'node:buffer';
@@ -97,11 +97,11 @@ export interface TwitchReward {
 }
 
 export interface TwitchUserData {
-	name?: string;
-	follow?: number;
-	messages?: number;
-	firsts?: number;
-	[key: string]: string|number|undefined;
+	user_id: number,
+	username: string;
+	follow_date: number;
+	message_count: number;
+	first_count: number;
 }
 
 export type TwitchInsightsBot = [string, number, number];

@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.4.1
+ * @version 1.5.1
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -104,7 +104,7 @@ export class TwitchCommands
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.commandMessage,
-					'messages'
+					'message_count'
 				);
 			},
 			description: 'Anzahl geschriebener Chat-Nachrichten',
@@ -234,6 +234,7 @@ export class TwitchCommands
 			description: 'Design- und Prototyping-Tool'
 		},
 		first: {
+			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return options.commandMessage?.replace( '[user]', this.twitch.streamFirstChatter );
@@ -250,7 +251,7 @@ export class TwitchCommands
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.commandMessage,
-					'firsts'
+					'first_count'
 				);
 			},
 			message: {
@@ -286,7 +287,7 @@ export class TwitchCommands
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.commandMessage,
-					'follow'
+					'follow_date'
 				);
 			},
 			aliases: [ 'follow' ],

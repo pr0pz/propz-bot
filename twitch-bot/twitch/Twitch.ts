@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.5.0
+ * @version 1.5.1
  */
 
 import '@propz/prototypes.ts';
@@ -131,12 +131,12 @@ export class Twitch extends TwitchUtils
 		if ( !this.isStreamActive ) return;
 
 		// First Chat Event
-		this.checkFirstChatterEvent( user );
+		this.setStreamFirstChatter( user );
 
 		// Update message count
 		if ( this.isValidMessageText( chatMessageSanitized, msg ) )
 		{
-			this.data.updateUserData( user, 'messages', 1 );
+			this.data.updateUserData( user, 'message_count', 1 );
 			this.data.updateCredits( user, 'message', 1 );
 		}
 
