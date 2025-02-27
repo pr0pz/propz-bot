@@ -2,10 +2,10 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.1
+ * @version 1.5.2
  */
 
-import { getRandomNumber, getRewardSlug, log, objectToMap, toObject } from '@propz/helpers.ts';
+import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
@@ -38,8 +38,6 @@ import timers from '../config/twitchTimers.json' with { type: 'json' };
 // Data
 import credits from '../data/twitchCredits.json' with { type: 'json' }
 import eventsData from '../data/twitchEventsData.json' with { type: 'json' };
-import quotes from '../data/twitchQuotes.json' with { type: 'json' };
-import twitchUsersData from '../data/twitchUsersData.json' with { type: 'json' };
 
 import { FrankerFaceZ } from '../external/FrankerFaceZ.ts';
 import { SevenTV } from '../external/SevenTV.ts';
@@ -64,8 +62,6 @@ export class BotData
 	public credits: TwitchCredits = credits;
 	public emotes: Map<string,string> = new Map();
 	public eventsData: TwitchEventData[] = eventsData;
-	public quotes: TwitchQuote[] = quotes;
-	public twitchUsersData: Map<string,TwitchUserData>;
 
 	// Dynamic
 	public twitchUser: HelixUser|null = null;
@@ -79,7 +75,6 @@ export class BotData
 		this.timers = objectToMap( timers );
 		this.discordEvents = objectToMap( discordEvents );
 		this.events = objectToMap( events );
-		this.twitchUsersData = objectToMap( twitchUsersData );
 		this.db = new DB( './twitch-bot/bot/BotData.sql' );
 	}
 
@@ -145,7 +140,22 @@ export class BotData
 	/** Get random quote */
 	getQuote( quoteId: number = 0 )
 	{
-		const quotes = this.quotes;
+		const quotes = this.db.queryEntries<TwitchQuote>( `
+			SELECT 
+				q.quote_id,
+				q.date,
+				q.category,
+				q.quote,
+				q.user_id,
+				q.vod_url,
+				u.username  -- Include the username from users table
+			FROM 
+				twitch_quotes q
+			LEFT JOIN 
+				twitch_users u ON q.user_id = u.user_id
+			ORDER BY
+				q.quote_id` );
+
 		if ( quotes.length === 0 ) return '';
 
 		const quoteIndex = quoteId > 0 ? quoteId : getRandomNumber( quotes.length, 1 );
@@ -154,7 +164,7 @@ export class BotData
 		if ( !quote ) return '';
 
 		const date = new Date( Date.parse( quote.date ) );
-		const message = `${ quote.quote } - ${ quote.user } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod } ]`;
+		const message = `${ quote.quote } - ${ quote.username } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod_url } ]`;
 
 		return message;
 	}
@@ -500,9 +510,9 @@ export class BotData
 	/** Add quote to quotes */
 	addQuote( quote: TwitchQuote )
 	{
-		if ( !quote ) return;
-		this.quotes.push( quote );
-		this.saveFile( 'twitchQuotes', this.quotes );
+		if ( !quote ) return '';
+		this.db.query( `INSERT INTO twitch_quotes (date, category, quote, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.quote, quote.user_id, quote.vod_url ] );
+		return this.db.lastInsertRowId.toString();
 	}
 
 	/** Check if an event already exists */
@@ -650,7 +660,6 @@ export class BotData
 	saveUsersAndEventsData()
 	{
 		this.saveFile( 'twitchEventsData', this.eventsData );
-		this.saveFile( 'twitchUsersData', toObject( this.twitchUsersData ) );
 		this.saveFile( 'twitchCredits', this.credits );
 	}
 
@@ -725,10 +734,6 @@ export class BotData
 		// Event operations
 		this.preparedStatements.set( 'add_event', 
 			this.db.prepareQuery( 'INSERT INTO twitch_events (event_type, user_id, timestamp, count, title_alert, title_event) VALUES (?, ?, ?, ?, ?, ?)' ) );
-
-		// Quote operations
-		this.preparedStatements.set( 'add_quote', 
-			this.db.prepareQuery( 'INSERT INTO twitch_quotes (date, category, quote, user_id, vod_url) VALUES (?, ?, ?, ?, ?)' ) );
 	}
 
 	/** Use a prepared statement from the map

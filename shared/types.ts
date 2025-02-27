@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.5.1
+ * @version 1.5.2
  */
 
 import type { Buffer } from 'node:buffer';
@@ -78,8 +78,9 @@ export interface TwitchQuote {
 	date: string;
 	category: string;
 	quote: string;
-	user: string;
-	vod: string;
+	user_id: string;
+	vod_url: string;
+	username?: string;
 }
 
 export interface TwitchReward {

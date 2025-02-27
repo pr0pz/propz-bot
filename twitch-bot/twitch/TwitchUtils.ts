@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.1
+ * @version 1.5.2
  */
 
 import '@propz/prototypes.ts';
@@ -284,7 +284,7 @@ export abstract class TwitchUtils
 		author = await this.data.getUser( author );
 		// Couldnt find user, so assume the author is me
 		if ( author ) chatMessageSplitted.splice( 0, 1 );
-		author = author ? author.name : this.data.userDisplayName;
+		else author = this.data.twitchUser;
 
 		const quoteText = chatMessageSplitted.join( ' ' );
 		const videoId = await Youtube.getCurrentLivestreamVideoId();
@@ -294,13 +294,13 @@ export abstract class TwitchUtils
 			date: new Date().toISOString(),
 			category: this.stream?.gameName || '',
 			quote: quoteText.sanitize(),
-			user: author.sanitize(),
-			vod: Youtube.getYoutubeVideoUrlById( videoId, videoTimestamp )
+			user_id: author?.id || '',
+			vod_url: Youtube.getYoutubeVideoUrlById( videoId, videoTimestamp )
 		};
 
-		this.data.addQuote( quote );
+		const lastId = this.data.addQuote( quote );
 
-		return getMessage( this.commands.commands.get( 'addquote' )?.message, this.streamLanguage ).replace( '[count]', String( this.data.quotes.length - 1 ) );
+		return getMessage( this.commands.commands.get( 'addquote' )?.message, this.streamLanguage ).replace( '[count]', lastId );
 	}
 
 	/** Search and replace emotes with images tags on chat message.
