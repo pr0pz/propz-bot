@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.2
+ * @version 1.5.3
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -37,7 +37,6 @@ import timers from '../config/twitchTimers.json' with { type: 'json' };
 
 // Data
 import credits from '../data/twitchCredits.json' with { type: 'json' }
-import eventsData from '../data/twitchEventsData.json' with { type: 'json' };
 
 import { FrankerFaceZ } from '../external/FrankerFaceZ.ts';
 import { SevenTV } from '../external/SevenTV.ts';
@@ -61,7 +60,6 @@ export class BotData
 	public bots: string[] = [];
 	public credits: TwitchCredits = credits;
 	public emotes: Map<string,string> = new Map();
-	public eventsData: TwitchEventData[] = eventsData;
 
 	// Dynamic
 	public twitchUser: HelixUser|null = null;
@@ -88,7 +86,6 @@ export class BotData
 		this.setRewards();
 		this.setBots();
 		this.initDatabase();
-		this.initPreparedStatements();
 	}
 
 	/** Get own twitch user display name */
@@ -173,14 +170,27 @@ export class BotData
 	getLastEventsData( streamLanguage: string = 'de' )
 	{
 		streamLanguage = streamLanguage || 'de';
-		const eventsData = this.eventsData.slice(-10);
-		for( const [index, event] of eventsData.entries() )
+		const events = this.db.queryEntries( `
+			SELECT 
+				e.event_type,
+				e.user_id,
+				e.timestamp,
+				e.count,
+				u.username  -- Include the username from users table
+			FROM 
+				twitch_events e
+			LEFT JOIN 
+				twitch_users u ON e.user_id = u.user_id
+			ORDER BY e.event_id DESC
+			LIMIT 10;
+		`);
+		for( const [ index, event ] of events.entries() )
 		{
-			const eventSaved = this.getEvent( event.eventType );
-			if ( eventSaved?.extra?.[ streamLanguage ] )
-				eventsData[ index ].extra = eventSaved.extra[ streamLanguage ];
+			const eventConfig = this.getEvent( event.event_type as string );
+			if ( eventConfig?.extra?.[ streamLanguage ] )
+				events[ index ].extra = eventConfig.extra[ streamLanguage ];
 		}
-		return eventsData;
+		return events;
 	}
 
 	/** Gets Twitch schedule
@@ -267,7 +277,6 @@ export class BotData
 	 */
 	getUserData( userId: string )
 	{
-		if ( !userId ) return;
 		const result = this.executeStatement( 'get_user', userId );
 		if ( !result?.[0] ) return;
 		return {
@@ -389,10 +398,9 @@ export class BotData
 				displayName: follower.userDisplayName
 			}
 			const follow: TwitchEventData = {
-				eventType: 'follow',
-				eventUsername: follower.userDisplayName,
-				eventTimestamp: followTimestamp,
-				extra: this.getEvent( 'follow' )!.extra!.de
+				event_type: 'follow',
+				user_id: follower.userId,
+				timestamp: followTimestamp
 			}
 
 			followersData.push( follow );
@@ -491,20 +499,17 @@ export class BotData
 
 	/** Add new event
 	 * 
-	 * @param {HelixUser} user User object
-	 * @param {string} eventType Event name
-	 * @param {int} eventCount Event count value
+	 * @param {TwitchEventData} event
 	 */
 	addEvent( event: TwitchEventData )
 	{
 		if (
 			!event ||
-			event.eventType?.startsWith( 'reward' ) ||
+			event.event_type?.startsWith( 'reward' ) ||
 			this.eventExists( event )
 		) return;
-		if ( event.eventCount === 0 ) delete( event.eventCount );
-		this.eventsData.push( event );
-		this.eventsData.sort( (a, b) => a.eventTimestamp - b.eventTimestamp );
+
+		this.db.query( `INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`, [ event.event_type, event.user_id, event.timestamp, event.count || 0 ] );
 	}
 	
 	/** Add quote to quotes */
@@ -569,24 +574,23 @@ export class BotData
 	 * @param {string} dataName Name of data to update
 	 * @param {string|int|boolean} dataValue New data value
 	 */
-	updateUserData( user: HelixUser|SimpleUser, dataName: string, dataValue: string|number = '' )
+	updateUserData( user: SimpleUser, dataName: string, dataValue: string|number = '' )
 	{
 		if ( !user?.id || !dataName ) return;
 
 		const userData = this.getUserData( user.id );
+		// Add user if not in DB
 		if ( !userData ) this.executeStatement( 'add_user', user.id );
 
-		// Always update username, could change frequently
-		this.executeStatement( 'update_username', [ user.displayName, user.id ] );
-
-		// Types that need count up
-		if ( [ 'message_count', 'first_count' ].includes( dataName ) )
-		{
-			this.executeStatement( dataName, user.id );
-			return;
-		}
-
-		this.executeStatement( dataName, [ dataValue.toString() ?? '', user.id ] );
+		this.executeStatement( 'update_userdata', [
+			user.displayName,
+			user.profilePictureUrl || '',
+			user.color || '#C7C7F1',
+			dataName === 'follow_date' && !userData?.follow_date ? dataValue : ( userData?.follow_date || 0 ),
+			dataName === 'message_count' ? ( userData?.message_count || 0 ) + 1 : ( userData?.message_count || 0 ),
+			dataName === 'first_count' ? ( userData?.first_count || 0 ) + 1 : ( userData?.first_count || 0 ),
+			user.id
+		]);
 	}
 
 	/** Update credits
@@ -659,7 +663,6 @@ export class BotData
 	/** Save users and events data */
 	saveUsersAndEventsData()
 	{
-		this.saveFile( 'twitchEventsData', this.eventsData );
 		this.saveFile( 'twitchCredits', this.credits );
 	}
 
@@ -709,37 +712,84 @@ export class BotData
 		catch (error) { log(error) }
 	}
 
+	/** Init Database */
+	private initDatabase()
+	{
+		if ( !this.db ) return;
+
+		this.db.execute(`
+			-- Twitch Users Table
+			CREATE TABLE IF NOT EXISTS twitch_users (
+				id TEXT PRIMARY KEY,
+				name TEXT UNIQUE DEFAULT '',
+				profile_picture TEXT DEFAULT '',
+				color TEXT DEFAULT '',
+				follow_date INTEGER DEFAULT 0,
+				message_count INTEGER DEFAULT 0,
+				first_count INTEGER DEFAULT 0
+			);
+			CREATE INDEX IF NOT EXISTS idx_users_user_name ON twitch_users(name);
+			CREATE INDEX IF NOT EXISTS idx_users_follow_date ON twitch_users(follow_date);
+
+			-- Twitch Events Table
+			CREATE TABLE IF NOT EXISTS twitch_events (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				type TEXT NOT NULL,
+				user_id TEXT NOT NULL,
+				timestamp INTEGER NOT NULL,
+				count INTEGER DEFAULT 0,
+				FOREIGN KEY (user_id) REFERENCES twitch_users(id)
+			);
+			CREATE INDEX IF NOT EXISTS idx_events_type ON twitch_events(event_type);
+			CREATE INDEX IF NOT EXISTS idx_events_user_id ON twitch_events(user_id);
+			CREATE INDEX IF NOT EXISTS idx_events_timestamp ON twitch_events(timestamp);
+
+			-- Twitch Quotes Table
+			CREATE TABLE IF NOT EXISTS twitch_quotes (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				date TEXT NOT NULL,
+				category TEXT NOT NULL DEFAULT '',
+				text TEXT NOT NULL DEFAULT '',
+				user_id TEXT NOT NULL,
+				vod_url TEXT NOT NULL DEFAULT '',
+				FOREIGN KEY (user_id) REFERENCES twitch_users(id)
+			);
+			CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON twitch_quotes(user_id);
+			CREATE INDEX IF NOT EXISTS idx_quotes_category ON twitch_quotes(category);
+			CREATE INDEX IF NOT EXISTS idx_quotes_date ON twitch_quotes(date);
+
+			CREATE TABLE IF NOT EXISTS stream_stats (
+				user_id TEXT PRIMARY KEY,
+				messages INTEGER DEFAULT 0,
+				cheers INTEGER DEFAULT 0,
+				followed INTEGER DEFAULT 0,
+				raided INTEGER DEFAULT 0,
+				first_chatter INTEGER DEFAULT 0,
+				subs INTEGER DEFAULT 0,
+				subgifts INTEGER DEFAULT 0,
+				FOREIGN KEY (user_id) REFERENCES twitch_users(id)
+			);`);
+
+		this.initPreparedStatements();
+	}
+	
 	/** Initialize commonly used prepared statements */
 	initPreparedStatements()
 	{
-		// User operations
 		this.preparedStatements.set( 'add_user', 
 			this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (user_id) VALUES (?)' ) );
 
 		this.preparedStatements.set( 'get_user', 
 			this.db.prepareQuery( 'SELECT user_id, username, follow_date, message_count, first_count FROM twitch_users WHERE user_id = ?' ) );
 
-		this.preparedStatements.set( 'update_username', 
-			this.db.prepareQuery( 'UPDATE twitch_users SET username = ? WHERE user_id = ?' ) );
-	
-		this.preparedStatements.set( 'follow_date', 
-			this.db.prepareQuery( 'UPDATE twitch_users SET follow_date = ? WHERE user_id = ?' ) );
-
-		this.preparedStatements.set( 'message_count', 
-			this.db.prepareQuery( 'UPDATE twitch_users SET message_count = message_count + 1 WHERE user_id = ?' ) );
-		
-		this.preparedStatements.set( 'first_count', 
-			this.db.prepareQuery( 'UPDATE twitch_users SET first_count = first_count + 1 WHERE user_id = ?' ) );
-		
-		// Event operations
-		this.preparedStatements.set( 'add_event', 
-			this.db.prepareQuery( 'INSERT INTO twitch_events (event_type, user_id, timestamp, count, title_alert, title_event) VALUES (?, ?, ?, ?, ?, ?)' ) );
+		this.preparedStatements.set( 'update_userdata', 
+			this.db.prepareQuery( 'UPDATE twitch_users SET name = ?, profile_picture = ?, color = ?, follow_date = ?, message_count = ?, first_count = ? WHERE user_id = ?;' ) );
 	}
 
 	/** Use a prepared statement from the map
 	 * 
 	 * @param {string} statementName
-	 * @param {string[]} params
+	 * @param {any[]} params
 	*/
 	executeStatement( statementName: string, params: any = '' ): any[]
 	{
@@ -773,76 +823,22 @@ export class BotData
 
 			return Array.isArray( results ) ? results : [ results ];
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
-	public cleanup() {
+	/** Cleanup all Database stuff */
+	public cleanupDatabase()
+	{
 		// Finalize all prepared statements
-		for (const [name, stmt] of this.preparedStatements.entries()) {
-			try {
+		for ( const [_name, stmt] of this.preparedStatements.entries() )
+		{
+			try
+			{
 				stmt.finalize();
-			} catch (error) {
-				log(`Error finalizing statement "${name}": ${error}`);
 			}
+			catch ( error: unknown ) { log( error ) }
 		}
 		this.preparedStatements.clear();
-		
-		// Close the database connection
-		if (this.db) {
-			this.db.close();
-		}
-	}
-
-	// ********************
-
-	/** Init Database */
-	initDatabase()
-	{
-		if ( !this.db ) return;
-
-		this.db.execute(`
-			-- Twitch Users Table
-			CREATE TABLE IF NOT EXISTS twitch_users (
-				user_id TEXT PRIMARY KEY,
-				username TEXT UNIQUE DEFAULT '',
-				follow_date INTEGER DEFAULT 0,
-				message_count INTEGER DEFAULT 0,
-				first_count INTEGER DEFAULT 0
-			);
-			CREATE INDEX IF NOT EXISTS idx_users_username ON twitch_users(username);
-			CREATE INDEX IF NOT EXISTS idx_users_follow_date ON twitch_users(follow_date);
-
-			-- Twitch Events Table
-			CREATE TABLE IF NOT EXISTS twitch_events (
-				event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-				event_type TEXT NOT NULL,
-				user_id TEXT NOT NULL,
-				timestamp INTEGER NOT NULL,
-				count INTEGER,
-				title_alert TEXT,
-				title_event TEXT,
-				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
-			);
-			CREATE INDEX IF NOT EXISTS idx_events_type ON twitch_events(event_type);
-			CREATE INDEX IF NOT EXISTS idx_events_user_id ON twitch_events(user_id);
-			CREATE INDEX IF NOT EXISTS idx_events_timestamp ON twitch_events(timestamp);
-
-			-- Twitch Quotes Table
-			CREATE TABLE IF NOT EXISTS twitch_quotes (
-				quote_id INTEGER PRIMARY KEY AUTOINCREMENT,
-				date TEXT NOT NULL,
-				category TEXT,
-				quote TEXT NOT NULL,
-				user_id TEXT NOT NULL,
-				vod_url TEXT,
-				FOREIGN KEY (user_id) REFERENCES twitch_users(user_id)
-			);
-			CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON twitch_quotes(user_id);
-			CREATE INDEX IF NOT EXISTS idx_quotes_category ON twitch_quotes(category);
-			CREATE INDEX IF NOT EXISTS idx_quotes_date ON twitch_quotes(date);
-		`);
+		if (this.db) this.db.close();
 	}
 }

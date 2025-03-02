@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.2
+ * @version 1.5.3
  */
 
 import '@propz/prototypes.ts';
@@ -33,7 +33,6 @@ import type {
 	SimpleUser,
 	KofiData
 } from '@propz/types.ts';
-import { userMention } from 'discord.js';
 
 export abstract class TwitchUtils
 {
@@ -174,20 +173,17 @@ export abstract class TwitchUtils
 		const user = await this.data.getUser( userName );
 		if ( !user ) return '';
 
-		const userData = this.data.getUsersData();
-		if ( !userData ) return '';
+		const usersData = this.data.getUsersData();
+		if ( !usersData ) return '';
 
-		const u = userData.get( user.id );
-		console.log( type, u );
-
-		let count: string|number = Number( userData.get( user.id )?.[ type ] ) ?? 0;
+		let count: string|number = Number( usersData.get( user.id )?.[ type ] ) ?? 0;
 		if ( !count ) return '';
 
 		// Sort users by type
-		const sortedUsers = userData
+		const sortedUsers = usersData
 			.entries()
-			.filter( ([_userId, user]) => user[type] !== undefined )
-			.map( ([userId,user]) => [userId, user[type] as number, user.name] )
+			.filter( ([_user_id, user]) => user[type] as number > 0 )
+			.map( ([user_id, user]) => [user_id, user[type] as number, user.username] )
 			.toArray()
 			.sort( (a, b) => 
 			{
@@ -230,7 +226,7 @@ export abstract class TwitchUtils
 		) return;
 
 		this.streamFirstChatter = user.displayName;
-		this.data.updateUserData( user, 'first_count', 1 );
+		this.data.updateUserData( user, 'first_count' );
 		this.data.updateCredits( user, 'firstchatter' );
 
 		this.processEvent({

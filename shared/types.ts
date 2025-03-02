@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.5.2
+ * @version 1.5.3
  */
 
 import type { Buffer } from 'node:buffer';
@@ -67,11 +67,12 @@ export interface TwitchTimers {
 }
 
 export interface TwitchEventData {
-	eventType: string;
-	eventUsername: string;
-	eventTimestamp: number;
-	eventCount?: number;
+	event_type: string;
+	user_id: string;
+	timestamp: number;
+	count?: number;
 	extra?: TwitchEventExtra;
+	username?: string;
 }
 
 export interface TwitchQuote {
@@ -98,7 +99,7 @@ export interface TwitchReward {
 }
 
 export interface TwitchUserData {
-	user_id: number,
+	user_id: string,
 	username: string;
 	follow_date: number;
 	message_count: number;

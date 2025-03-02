@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.5.1
+ * @version 1.5.3
  */
 
 import '@propz/prototypes.ts';
@@ -136,7 +136,7 @@ export class Twitch extends TwitchUtils
 		// Update message count
 		if ( this.isValidMessageText( chatMessageSanitized, msg ) )
 		{
-			this.data.updateUserData( user, 'message_count', 1 );
+			this.data.updateUserData( user, 'message_count' );
 			this.data.updateCredits( user, 'message', 1 );
 		}
 
@@ -195,13 +195,13 @@ export class Twitch extends TwitchUtils
 		});
 
 		// Save Event data persistent
-		if ( !isTest && event.saveEvent )
+		if ( !isTest && event.saveEvent && user.id )
 		{
 			this.data.addEvent({
-				eventUsername: user.displayName,
-				eventType: eventType,
-				eventTimestamp: Math.floor( Date.now() / 1000 ),
-				eventCount: eventCount
+				event_type: eventType,
+				user_id: user.id || '',
+				timestamp: Math.floor( Date.now() / 1000 ),
+				count: eventCount
 			});
 
 			this.data.updateCredits( user, eventType, eventCount );
