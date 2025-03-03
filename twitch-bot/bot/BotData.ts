@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.4
+ * @version 1.5.5
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -41,8 +41,8 @@ import { TwitchInsights } from '../external/TwitchInsights.ts';
 export class BotData
 {
 	public twitchApi: ApiClient;
-	public db: DB = new DB();
-	private preparedStatements: Map<string, any> = new Map();
+	public db: DB = new DB( './twitch-bot/bot/BotData.sql' );;
+	private preparedStatements: Map<string, PreparedQuery> = new Map();
 
 	// Config
 	public discordEvents: Map<string,TwitchEvent>;
@@ -69,6 +69,7 @@ export class BotData
 
 	async init()
 	{
+		this.initDatabase();
 		await this.setUser();
 		//this.setBadges();
 		this.setEmotes();
@@ -76,7 +77,6 @@ export class BotData
 		this.setMods();
 		this.setRewards();
 		this.setBots();
-		this.initDatabase();
 	}
 
 	/** Get own twitch user display name */
@@ -98,7 +98,6 @@ export class BotData
 			WHERE first_chatter = 1
 			LIMIT 1;
 		` );
-		console.log( result );
 		return result?.[0]?.name || '';
 	}
 
@@ -167,16 +166,16 @@ export class BotData
 	{
 		const quotes = this.db.queryEntries<TwitchQuote>( `
 			SELECT 
-				q.quote_id,
+				q.id,
 				q.date,
 				q.category,
-				q.quote,
+				q.text,
 				q.user_id,
 				q.vod_url,
 				u.name  -- Include the username from users table
 			FROM twitch_quotes q
 			LEFT JOIN twitch_users u ON q.user_id = u.id
-			ORDER BY q.quote_id` );
+			ORDER BY q.id` );
 
 		if ( quotes.length === 0 ) return '';
 
@@ -186,7 +185,7 @@ export class BotData
 		if ( !quote ) return '';
 
 		const date = new Date( Date.parse( quote.date ) );
-		const message = `${ quote.quote } - ${ quote.name } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod_url } ]`;
+		const message = `${ quote.text } - ${ quote.name } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod_url } ]`;
 
 		return message;
 	}
@@ -300,14 +299,16 @@ export class BotData
 	 */
 	getUserData( userId: string )
 	{
-		const result = this.executeStatement( 'get_user', userId );
-		if ( !result?.[0] ) return;
+		const result = this.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+		if ( !result || result.length === 0 ) return;
 		return {
-			id: result[0][0],
-			name: result[0][1],
-			follow_date: result[0][2],
-			message_count: result[0][3],
-			first_count: result[0][4]
+			id: result[0],
+			name: result[1],
+			profile_picture: result[2],
+			color: result[3],
+			follow_date: result[4],
+			message_count: result[5],
+			first_count: result[6]
 		} as TwitchUserData;
 	}
 
@@ -526,7 +527,7 @@ export class BotData
 		) return;
 
 		// Insert user first if not exists (SQLite foreign key problem)
-		this.executeStatement( 'add_user', event.user_id );
+		this.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
 		this.db.query( `INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`, [ event.type, event.user_id, event.timestamp, event.count || 0 ] );
 	}
 	
@@ -534,7 +535,7 @@ export class BotData
 	addQuote( quote: TwitchQuote )
 	{
 		if ( !quote ) return '';
-		this.db.query( `INSERT INTO twitch_quotes (date, category, quote, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.quote, quote.user_id, quote.vod_url ] );
+		this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.quote, quote.user_id, quote.vod_url ] );
 		return this.db.lastInsertRowId.toString();
 	}
 
@@ -542,7 +543,9 @@ export class BotData
 	eventExists( eventToCheck: TwitchEventData )
 	{
 		if ( !eventToCheck ) return false;
-		const events = this.db.queryEntries( `
+		try
+		{
+			const events = this.db.queryEntries( `
 			SELECT
 				e.type,
 				e.user_id,
@@ -550,34 +553,39 @@ export class BotData
 				e.count,
 				u.name
 			FROM twitch_events e
-			LEFT JOIN twitch_users u ON e.user_id = u.id
-			ORDER BY e.id DESC
-		` );
+				LEFT JOIN twitch_users u ON e.user_id = u.id
+				ORDER BY e.id DESC
+			` );
 
-		return events.some(
-			(event) => {
-				if ( event.type === 'follow' )
-				{
-					return (
-						event.type === eventToCheck.type &&
-						event.name == eventToCheck.username
-					);
+			return events.some(
+				(event) => {
+					if ( event.type === 'follow' )
+					{
+						return (
+							event.type === eventToCheck.type &&
+							event.name == eventToCheck.username
+						);
+					}
+					else
+					{
+						return (
+							event.type === eventToCheck.type &&
+							event.name == eventToCheck.username &&
+							event.count === eventToCheck.count &&
+							(
+								event.timestamp === eventToCheck.timestamp ||
+								event.timestamp === eventToCheck.timestamp + 1 ||
+								event.timestamp === eventToCheck.timestamp - 1
+							)
+						);
+					}
 				}
-				else
-				{
-					return (
-						event.type === eventToCheck.type &&
-						event.name == eventToCheck.username &&
-						event.count === eventToCheck.count &&
-						(
-							event.timestamp === eventToCheck.timestamp ||
-							event.timestamp === eventToCheck.timestamp + 1 ||
-							event.timestamp === eventToCheck.timestamp - 1
-						)
-					);
-				}
-			}
-		);
+			);
+		}
+		catch( error: unknown ) {
+			log( error );
+			return false;
+		}
 	}
 
 	/** Check if user is Bot */
@@ -606,9 +614,9 @@ export class BotData
 
 		const userData = this.getUserData( user.id );
 		// Add user if not in DB
-		if ( !userData ) this.executeStatement( 'add_user', user.id );
+		if ( !userData ) this.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
 
-		this.executeStatement( 'update_userdata', [
+		const newUserData = [
 			user.displayName,
 			user.profilePictureUrl || '',
 			user.color || '#C7C7F1',
@@ -616,7 +624,9 @@ export class BotData
 			dataName === 'message_count' ? ( userData?.message_count || 0 ) + 1 : ( userData?.message_count || 0 ),
 			dataName === 'first_count' ? ( userData?.first_count || 0 ) + 1 : ( userData?.first_count || 0 ),
 			user.id
-		]);
+		];
+
+		this.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
 	}
 
 	/** Update Stream stats
@@ -627,45 +637,51 @@ export class BotData
 	 */
 	updateStreamStats( user: SimpleUser, eventType: string, eventCount: number = 1 )
 	{
-		this.db.query( `INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`, [ user.id ] );
+		if ( !user?.id || !eventType ) return;
 
-		switch ( eventType )
+		try
 		{
-			case 'first_chatter': {
-				const fc = this.db.query( `SELECT * FROM stream_stats WHERE first_chatter = 1` );
-				if ( fc && fc.length > 0 ) return;
-				this.db.query( `UPDATE stream_stats SET first_chatter = 1 WHERE user_id = ?`, [ user.id ] );
-				break;
+			const result = this.db.query( `INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`, [ user.id ] );
+			console.log( result );
+
+			switch ( eventType )
+			{
+				case 'first_chatter': {
+					if ( this.firstChatter ) return;
+					this.db.query( `UPDATE stream_stats SET first_chatter = 1 WHERE user_id = ?`, [ user.id ] );
+					break;
+				}
+
+				case 'follow':
+					this.db.query( `UPDATE stream_stats SET follow = 1 WHERE user_id = ?`, [ user.id ] );
+					break;
+
+				case 'message':
+					this.preparedStatements.get( 'update_stats_message' )?.execute( [ user.id ] );
+					break;
+
+				case 'cheer':
+					this.db.query( `UPDATE stream_stats SET cheer = cheer + ? WHERE user_id = ?`, [ eventCount, user.id ] );
+					break;
+			
+				case 'raid':
+					this.db.query( `UPDATE stream_stats SET raid = raid + ? WHERE user_id = ?`, [ eventCount, user.id ] );
+					break;
+
+				case 'sub':
+				case 'resub-1':
+				case 'resub-2':
+				case 'resub-3':
+					this.db.query( `UPDATE stream_stats SET sub = sub + ? WHERE user_id = ?`, [ eventCount, user.id ] );
+					break;
+
+				case 'subgift':
+				case 'communitysub':
+					this.db.query( `UPDATE stream_stats SET subgift = subgift + ? WHERE user_id = ?`, [ eventCount, user.id ] );
+					break;
 			}
-
-			case 'follow':
-				this.db.query( `UPDATE stream_stats SET follow = 1 WHERE user_id = ?`, [ user.id ] );
-				break;
-
-			case 'message':
-				this.executeStatement( 'update_stats_message', user.id );
-				break;
-
-			case 'cheer':
-				this.db.query( `UPDATE stream_stats SET cheer = cheer + ? WHERE user_id = ?`, [ eventCount, user.id ] );
-				break;
-		
-			case 'raid':
-				this.db.query( `UPDATE stream_stats SET raid = raid + ? WHERE user_id = ?`, [ eventCount, user.id ] );
-				break;
-
-			case 'sub':
-			case 'resub-1':
-			case 'resub-2':
-			case 'resub-3':
-				this.db.query( `UPDATE stream_stats SET sub = sub + ? WHERE user_id = ?`, [ eventCount, user.id ] );
-				break;
-
-			case 'subgift':
-			case 'communitysub':
-				this.db.query( `UPDATE stream_stats SET subgift = subgift + ? WHERE user_id = ?`, [ eventCount, user.id ] );
-				break;
 		}
+		catch( error: unknown ) { log(error) }
 	}
 
 	/** Save data to file
@@ -717,65 +733,37 @@ export class BotData
 	/** Init Database */
 	public initDatabase()
 	{
-		if ( !this.db )
-			this.db = new DB( './twitch-bot/bot/BotData.sql' );
-
-		// Create DB Schema
-		const schema = Deno.readTextFileSync( './twitch-bot/bot/BotDataSchema.sql' );
-		this.db.execute( schema );
-
-		// Init prepared statements
-		this.preparedStatements.set( 'add_user', 
-			this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)' ) );
-
-		this.preparedStatements.set( 'get_user', 
-			this.db.prepareQuery( 'SELECT id, name, follow_date, message_count, first_count FROM twitch_users WHERE id = ?' ) );
-
-		this.preparedStatements.set( 'update_userdata', 
-			this.db.prepareQuery( 'UPDATE twitch_users SET name = ?, profile_picture = ?, color = ?, follow_date = ?, message_count = ?, first_count = ? WHERE id = ?;' ) );
-
-		this.preparedStatements.set( 'update_stats_message',
-			this.db.prepareQuery( 'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?' ) );
-	}
-
-	/** Use a prepared statement from the map
-	 * 
-	 * @param {string} statementName
-	 * @param {any[]} params
-	*/
-	executeStatement( statementName: string, params: any = '' ): any[]
-	{
-		if ( !statementName ) return [];
-		if ( !Array.isArray( params ) ) params = [ params ];
-
-		const stmt = this.preparedStatements.get( statementName ) as PreparedQuery;
-		if ( !stmt ) return [];
-
 		try
 		{
-			const results = stmt.execute( params );
-			// For statements that don't return rows (INSERT, UPDATE, DELETE)
-			// we can provide useful information		
-			if (
-				typeof results === 'undefined' ||
-				( Array.isArray( results ) && results.length === 0 )
-			)
-			{
-				// For operations that might create a new row
-				if ( statementName.toLowerCase().includes('add'))
-					return [ this.db.lastInsertRowId ];
-				
-				// For operations that might modify existing rows
-				if (
-					statementName.toLowerCase().includes('update') ||
-					statementName.toLowerCase().includes('delete')
-				)
-					return [ this.db.changes ];
-			}
+			if ( !this.db )
+				this.db = new DB( './twitch-bot/bot/BotData.sql' );
 
-			return Array.isArray( results ) ? results : [ results ];
+			// Create DB Schema
+			const schema = Deno.readTextFileSync( './twitch-bot/bot/BotDataSchema.sql' );
+			this.db.execute( schema );
+
+			// Init prepared statements
+			this.preparedStatements.set( 'add_user', 
+				this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)' ) );
+
+			this.preparedStatements.set( 'get_user',
+				this.db.prepareQuery( 'SELECT id, name, profile_picture, color, follow_date, message_count, first_count FROM twitch_users WHERE id = ?' ) );
+
+			this.preparedStatements.set( 'update_userdata', 
+				this.db.prepareQuery( `
+					UPDATE twitch_users SET
+						name = ?,
+						profile_picture = ?,
+						color = ?,
+						follow_date = ?,
+						message_count = ?,
+						first_count = ?
+					WHERE id = ?;` ) );
+
+			this.preparedStatements.set( 'update_stats_message',
+				this.db.prepareQuery( 'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?' ) );
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Cleanup all Database stuff */

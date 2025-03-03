@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.4
+ * @version 1.5.5
  */
 
 import '@propz/prototypes.ts';
@@ -217,10 +217,8 @@ export abstract class TwitchUtils
 	 */
 	setStreamFirstChatter( user: SimpleUser )
 	{
-		const firstChatter = Object.keys( this.data?.credits?.firstchatter )?.[0];
-
 		if (
-			firstChatter ||
+			this.data.firstChatter ||
 			user?.name === this.data.userName
 		) return;
 
