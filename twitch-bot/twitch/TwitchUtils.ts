@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.3
+ * @version 1.5.4
  */
 
 import '@propz/prototypes.ts';
@@ -48,7 +48,6 @@ export abstract class TwitchUtils
 	// Runtime vars
 	public isDev: boolean = false;
 	public focus: boolean = false;
-	public streamFirstChatter: string = '';
 	public stream: HelixStream|null = null;
 	private validMessageThreshold: number = 5;
 	public killswitch: boolean = false;
@@ -183,7 +182,7 @@ export abstract class TwitchUtils
 		const sortedUsers = usersData
 			.entries()
 			.filter( ([_user_id, user]) => user[type] as number > 0 )
-			.map( ([user_id, user]) => [user_id, user[type] as number, user.username] )
+			.map( ([user_id, user]) => [user_id, user[type] as number, user.name] )
 			.toArray()
 			.sort( (a, b) => 
 			{
@@ -225,9 +224,8 @@ export abstract class TwitchUtils
 			user?.name === this.data.userName
 		) return;
 
-		this.streamFirstChatter = user.displayName;
 		this.data.updateUserData( user, 'first_count' );
-		this.data.updateCredits( user, 'firstchatter' );
+		this.data.updateStreamStats( user, 'first_chatter' );
 
 		this.processEvent({
 			eventType: 'firstchatter',

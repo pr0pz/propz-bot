@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.5.3
+ * @version 1.5.4
  */
 
 import type { Buffer } from 'node:buffer';
@@ -67,7 +67,7 @@ export interface TwitchTimers {
 }
 
 export interface TwitchEventData {
-	event_type: string;
+	type: string;
 	user_id: string;
 	timestamp: number;
 	count?: number;
@@ -99,8 +99,8 @@ export interface TwitchReward {
 }
 
 export interface TwitchUserData {
-	user_id: string,
-	username: string;
+	id: string,
+	name: string;
 	follow_date: number;
 	message_count: number;
 	first_count: number;
@@ -136,17 +136,14 @@ export interface TwitchBadge {
 		url: string;
 	}
 
-export interface TwitchCredits {
-	[key: string]: {
-		[key: string]: TwitchCreditsData
-	}
-}
+export interface StreamStats {
+	id: string;
+	name: string;
+	profilePictureUrl: string;
+	color: string;
+	message: number;
 
-	export interface TwitchCreditsData {
-		count?: number;
-		profilePictureUrl?: string;
-		color?: string;
-	}
+}
 
 export interface FrankerFaceZResponse {
 	default_sets?: number[];

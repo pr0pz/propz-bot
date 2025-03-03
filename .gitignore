@@ -12,4 +12,4 @@ twitch-bot/data
 ._*
 .Spotlight-V100
 .Trashes
-*.sql*
+*BotData.sql*
