@@ -739,10 +739,10 @@ export abstract class TwitchUtils
 	}
 
 	/** Reload data */
-	async reloadData()
+	async reloadConfig()
 	{
 		// Reload data
-		await this.data.reloadData();
+		await this.data.reloadConfig();
 
 		try
 		{

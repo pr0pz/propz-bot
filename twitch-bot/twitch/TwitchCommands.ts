@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.5.1
+ * @version 1.5.5
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -237,7 +237,7 @@ export class TwitchCommands
 			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage?.replace( '[user]', this.twitch.streamFirstChatter );
+				return options.commandMessage?.replace( '[user]', this.twitch.data.firstChatter );
 			},
 			description: 'First Chatter des Streams',
 			message: {
@@ -545,6 +545,7 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		quote: {
+			aliases: [ 'zitat' ],
 			description: 'Random quote.',
 			handler: (options: TwitchCommandOptions) =>
 			{
@@ -565,7 +566,7 @@ export class TwitchCommands
 		reload: {
 			handler: async () =>
 			{
-				await this.twitch.reloadData();
+				await this.twitch.reloadConfig();
 				return 'Reloaded';
 			},
 			onlyMods: true

@@ -41,7 +41,10 @@ import { TwitchInsights } from '../external/TwitchInsights.ts';
 export class BotData
 {
 	public twitchApi: ApiClient;
-	public db: DB = new DB( './twitch-bot/bot/BotData.sql' );;
+
+	// Database
+	private db!: DB;
+	private dbPath = './twitch-bot/bot/BotData.sql';
 	private preparedStatements: Map<string, PreparedQuery> = new Map();
 
 	// Config
@@ -65,11 +68,11 @@ export class BotData
 		this.timers = objectToMap( timers );
 		this.discordEvents = objectToMap( discordEvents );
 		this.events = objectToMap( events );
+		this.initDatabase();
 	}
 
 	async init()
 	{
-		this.initDatabase();
 		await this.setUser();
 		//this.setBadges();
 		this.setEmotes();
@@ -91,14 +94,8 @@ export class BotData
 	/** Get Stream first chatter */
 	get firstChatter()
 	{
-		const result = this.db.queryEntries( `
-			SELECT s.user_id, u.name
-			FROM stream_stats s
-			LEFT JOIN twitch_users u ON s.user_id = u.id
-			WHERE first_chatter = 1
-			LIMIT 1;
-		` );
-		return result?.[0]?.name || '';
+		const result = this.preparedStatements.get( 'get_first_chatter' )?.first();
+		return result?.[0] || '';
 	}
 
 	/** Get all Stream Stats */
@@ -121,7 +118,7 @@ export class BotData
 			LEFT JOIN twitch_users u ON s.user_id = u.id
 		` );
 
-		return stats || [];
+		return stats;
 	}
 
 	/** Get color for user
@@ -204,7 +201,7 @@ export class BotData
 			FROM twitch_events e
 			LEFT JOIN twitch_users u ON e.user_id = u.id
 			ORDER BY e.id DESC
-			LIMIT 10;`);
+			LIMIT 10;` );
 
 		for( const [ index, event ] of events.entries() )
 		{
@@ -301,6 +298,7 @@ export class BotData
 	{
 		const result = this.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
 		if ( !result || result.length === 0 ) return;
+		// Change here? Don't forget updateUserData
 		return {
 			id: result[0],
 			name: result[1],
@@ -616,6 +614,7 @@ export class BotData
 		// Add user if not in DB
 		if ( !userData ) this.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
 
+		// Change here? Don't forget getUserData
 		const newUserData = [
 			user.displayName,
 			user.profilePictureUrl || '',
@@ -710,7 +709,7 @@ export class BotData
 	}
 
 	/** Reload all JSON data files and update class properties */
-	reloadData()
+	reloadConfig()
 	{
 		try {
 			const discordEvents = JSON.parse( Deno.readTextFileSync( './twitch-bot/config/discordEvents.json' ));
@@ -735,8 +734,7 @@ export class BotData
 	{
 		try
 		{
-			if ( !this.db )
-				this.db = new DB( './twitch-bot/bot/BotData.sql' );
+			if ( !this.db ) this.db = new DB( this.dbPath );
 
 			// Create DB Schema
 			const schema = Deno.readTextFileSync( './twitch-bot/bot/BotDataSchema.sql' );
@@ -747,21 +745,49 @@ export class BotData
 				this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)' ) );
 
 			this.preparedStatements.set( 'get_user',
-				this.db.prepareQuery( 'SELECT id, name, profile_picture, color, follow_date, message_count, first_count FROM twitch_users WHERE id = ?' ) );
+				this.db.prepareQuery( `
+					SELECT
+						id,
+						name,
+						profile_picture,
+						color,
+						follow_date,
+						message_count,
+						first_count
+					FROM twitch_users
+					WHERE
+						id = ?` ) );
+
+			this.preparedStatements.set( 'get_first_chatter',
+				this.db.prepareQuery( `
+					SELECT
+						u.name
+					FROM stream_stats s
+					LEFT JOIN twitch_users u ON s.user_id = u.id
+					WHERE
+						first_chatter = 1
+					LIMIT 1` ) );
 
 			this.preparedStatements.set( 'update_userdata', 
 				this.db.prepareQuery( `
-					UPDATE twitch_users SET
+					UPDATE twitch_users
+					SET
 						name = ?,
 						profile_picture = ?,
 						color = ?,
 						follow_date = ?,
 						message_count = ?,
 						first_count = ?
-					WHERE id = ?;` ) );
+					WHERE
+						id = ?;` ) );
 
 			this.preparedStatements.set( 'update_stats_message',
-				this.db.prepareQuery( 'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?' ) );
+				this.db.prepareQuery( `
+					UPDATE stream_stats
+					SET
+						message = message + 1
+					WHERE
+						user_id = ?` ) );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
