@@ -2,12 +2,12 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.5.6
+ * @version 1.5.7
  */
 
 import '@propz/prototypes.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
-import { getMessage, sanitizeMessage, mapToObject } from '@propz/helpers.ts';
+import { getMessage, sanitizeMessage, mapToObject, log } from '@propz/helpers.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
 
 import type { Discord } from '../discord/Discord.ts';
@@ -38,6 +38,8 @@ export class Twitch extends TwitchUtils
 
 		await this.setStream();
 
+		log( 'Bot init done ✅' );
+
 		Deno.cron( 'Bot minutely', '* * * * *', () =>
 		{
 			if ( !this.isStreamActive ) return;
@@ -46,11 +48,12 @@ export class Twitch extends TwitchUtils
 
 		Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
-			this.data.resetStreamStats();
 			this.data.cleanupDatabase();
 			this.data.init();
 			this.reloadConfig();
 		});
+
+		log( 'Cronjobs set up ✅' );
 	}
 
 	/** Process chat command

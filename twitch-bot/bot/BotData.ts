@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.6
+ * @version 1.5.7
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -334,12 +334,6 @@ export class BotData
 		}
 
 		return users;
-	}
-
-	/** Reset all Credits stats */
-	public resetStreamStats()
-	{
-		this.db.execute( `DELETE FROM stream_stats;` );
 	}
 
 	/** Set all twitch channel badges
@@ -772,6 +766,8 @@ export class BotData
 
 			this.preparedStatements.set( 'update_stats_message',
 				this.db.prepareQuery( 'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?' ) );
+
+			log( 'Database initialized ✅' );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
@@ -779,6 +775,8 @@ export class BotData
 	/** Cleanup all Database stuff */
 	public cleanupDatabase()
 	{
+		this.db.execute( `DELETE FROM stream_stats;` );
+
 		// Finalize all prepared statements
 		for ( const [_name, stmt] of this.preparedStatements.entries() )
 		{
@@ -789,6 +787,9 @@ export class BotData
 			catch ( error: unknown ) { log( error ) }
 		}
 		this.preparedStatements.clear();
+
 		if (this.db) this.db.close();
+
+		log( 'Database cleanup ♻️' );
 	}
 }
