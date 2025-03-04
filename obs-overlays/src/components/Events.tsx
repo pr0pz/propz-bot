@@ -2,7 +2,7 @@
  * Event Manager
  * 
  * @author Wellington Estevo
- * @version 1.4.2
+ * @version 1.5.8
  */
 
 import { useEffect, useState } from 'react';
@@ -44,14 +44,14 @@ const Events = () =>
 			const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
 	
-			data.data.slice(-5).forEach( (event: TwitchEventData) =>
+			data.data.slice(0,5).reverse().forEach( (event: TwitchEventData) =>
 			{
 				const eventDetails: WebSocketData = {
 					'key': crypto.randomUUID(),
-					'type': event.eventType,
-					'user': event.eventUsername,
+					'type': event.type,
+					'user': event.name || '',
 					'text': '',
-					'count': event.eventCount || 0,
+					'count': event.count || 0,
 					'color': '',
 					'extra': event.extra,
 					'saveEvent': true

@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.7
+ * @version 1.5.8
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -529,7 +529,7 @@ export class BotData
 	addQuote( quote: TwitchQuote )
 	{
 		if ( !quote ) return '';
-		this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.quote, quote.user_id, quote.vod_url ] );
+		this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.text, quote.user_id, quote.vod_url ] );
 		return this.db.lastInsertRowId.toString();
 	}
 

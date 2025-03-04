@@ -2,7 +2,7 @@
  * Stream Credits
  * 
  * @author Wellington Estevo
- * @version 1.3.1
+ * @version 1.5.8
  */
 
 import { useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import { useEvent } from '../EventContext.tsx';
 import { log } from '@propz/helpers.ts';
 import Window from './Window.tsx';
 
-import type { TwitchCreditsData, WebSocketData } from '@propz/types.ts';
+import type { UserStreamStats, WebSocketData } from '@propz/types.ts';
 import Button from './Button.tsx';
 
 const Credits = () =>
@@ -20,7 +20,7 @@ const Credits = () =>
 		message: new Map(), // chat counter
 		cheer: new Map(), // bits
 		sub: new Map(), // subs and resubs
-		firstchatter: new Map(),
+		first_chatter: new Map(),
 		follow: new Map(),
 		raid: new Map(),
 		subgift: new Map() // all gifted subs
@@ -41,7 +41,7 @@ const Credits = () =>
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: '{ "request": "getCredits" }'
+			body: '{ "request": "getStreamStats" }'
 		};
 
 		try {
@@ -51,22 +51,34 @@ const Credits = () =>
 
 			const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
 			const data = await response.json();
-	
-			for( const creditCat of Object.keys( data.data ) )
+
+			for( const userStreamData of data.data as UserStreamStats[] )
 			{
-				for ( const userName of Object.keys( data.data[ creditCat ] ) )
+				for ( const dataKey of Object.keys( userStreamData ) )
 				{
+					const validKeys: (keyof UserStreamStats)[] = [
+						'user_id',
+						'name',
+						'profile_picture',
+						'color'
+					];
+					
+					if (
+						validKeys.includes(dataKey as keyof UserStreamStats) ||
+						userStreamData[dataKey as keyof UserStreamStats] === 0
+					) continue;
+
 					const eventDetails: WebSocketData = {
 						key: crypto.randomUUID(),
-						type: creditCat,
-						user: userName,
-						profilePictureUrl: data.data[ creditCat ][ userName ].profilePictureUrl || '',
+						type: dataKey,
+						user: userStreamData.name,
+						profilePictureUrl: userStreamData.profile_picture,
 						text: '',
-						count: data.data[ creditCat ][ userName ].count || 0,
-						color: data.data[ creditCat ][ userName ].color
+						count: userStreamData[dataKey as keyof UserStreamStats] as number,
+						color: userStreamData.color
 					}
 					processEvent( eventDetails );
-				}
+				}	
 			}
 		}
 		catch ( error: unknown ) { log( error ) }
@@ -91,9 +103,9 @@ const Credits = () =>
 			
 			switch ( eventDetails.type )
 			{
-				case 'firstchatter':
-					if ( prevEvents.firstchatter.size > 0 ) break;
-					newEvents.firstchatter = prevEvents.firstchatter.set( eventDetails.user, data );
+				case 'first_chatter':
+					if ( prevEvents.first_chatter.size > 0 ) break;
+					newEvents.first_chatter = prevEvents.first_chatter.set( eventDetails.user, data );
 					break;
 
 				case 'follow':
@@ -151,10 +163,10 @@ const Credits = () =>
 
 	return(
 		<marquee id="credits" direction="up" scrollamount="10">
-			{ events.firstchatter.size > 0 &&
-				<div id="firstchatter" className='credits-wrapper'>
+			{ events.first_chatter.size > 0 &&
+				<div id="first_chatter" className='credits-wrapper'>
 					<Window>First-Chatter</Window>
-					<Window theme="dark">{ getValues( 'firstchatter' ).map( (value) => ( value ) ) }</Window>
+					<Window theme="dark">{ getValues( 'first_chatter' ).map( (value) => ( value ) ) }</Window>
 				</div>
 			}
 			{ events.sub.size > 0 &&
