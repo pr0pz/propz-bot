@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.5
+ * @version 1.5.6
  */
 
 import '@propz/prototypes.ts';
@@ -49,6 +49,7 @@ export abstract class TwitchUtils
 	public isDev: boolean = false;
 	public focus: boolean = false;
 	public stream: HelixStream|null = null;
+	public firstChatter = '';
 	private validMessageThreshold: number = 5;
 	public killswitch: boolean = false;
 
@@ -218,10 +219,11 @@ export abstract class TwitchUtils
 	setStreamFirstChatter( user: SimpleUser )
 	{
 		if (
-			this.data.firstChatter ||
+			this.firstChatter ||
 			user?.name === this.data.userName
 		) return;
 
+		this.firstChatter = user.displayName;
 		this.data.updateUserData( user, 'first_count' );
 		this.data.updateStreamStats( user, 'first_chatter' );
 
@@ -741,8 +743,8 @@ export abstract class TwitchUtils
 	/** Reload data */
 	async reloadConfig()
 	{
-		// Reload data
-		await this.data.reloadConfig();
+		// Reload config
+		this.data.reloadConfig();
 
 		try
 		{

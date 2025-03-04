@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.5.5
+ * @version 1.5.6
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -237,7 +237,7 @@ export class TwitchCommands
 			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage?.replace( '[user]', this.twitch.data.firstChatter );
+				return options.commandMessage?.replace( '[user]', this.twitch.firstChatter );
 			},
 			description: 'First Chatter des Streams',
 			message: {
