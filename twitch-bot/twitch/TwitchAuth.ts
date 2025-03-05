@@ -4,7 +4,7 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  * 
  * @author Wellington Estevo
- * @version 1.5.0
+ * @version 1.5.9
  */
 
 import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
@@ -99,9 +99,15 @@ export class TwitchAuth
 		// Rewrite token data on token refresh
 		this.authProvider.onRefresh( ( _userId: string, newTokenData: AccessToken ) =>
 		{
-			const db = new DB( this.dbPath );
-			db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
-			db.close();
+			try
+			{
+				log( `Start refreshing` );
+				const db = new DB( this.dbPath );
+				db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
+				db.close();
+				log( `Stop refreshing` );
+			}
+			catch( error: unknown ) { log( error ) }
 		});
 	}
 
@@ -180,24 +186,23 @@ export class TwitchAuth
 
 	private initDatabase()
 	{
-		const db = new DB( this.dbPath );
 		try {
+			const db = new DB( this.dbPath );
 			db.execute(`
 				-- Authentication
 				CREATE TABLE IF NOT EXISTS auth (
 					name PRIMARY KEY,
 					data TEXT NOT NULL
 				);
+
+				INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '');
 			`);
-			db.execute(`INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '');`)
+			db.close();
+			log( `Init auth database` );
 		}
 		catch( error: unknown )
 		{
 			log( error );
-		}
-		finally
-		{
-			db.close();
 		}
 	}
 }

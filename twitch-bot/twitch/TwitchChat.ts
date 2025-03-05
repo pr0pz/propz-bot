@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  * 
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.5.9
  */
 
 import '@propz/prototypes.ts';
@@ -22,12 +22,16 @@ export class TwitchChat
 
 	constructor( twitch: TwitchUtils )
 	{
-		this.twitch = twitch;
-		this.chatClient = new ChatClient({
-			authProvider: twitch.data.twitchApi._authProvider,
-			channels: [ this.twitch.data.userName ]
-		});
-		this.handleChatClientEvents();
+		try
+		{
+			this.twitch = twitch;
+			this.chatClient = new ChatClient({
+				authProvider: twitch.data.twitchApi._authProvider,
+				channels: [ this.twitch.data.userName ]
+			});
+			this.handleChatClientEvents();
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Connect to Twitch Chat */
@@ -161,7 +165,7 @@ export class TwitchChat
 	/** Fires when the client successfully connects to the chat server */
 	onConnect = () =>
 	{
-		log( this.twitch.data.userDisplayName );
+		log( `Connected to Twitch Chat as ${this.twitch.data.userDisplayName}` );
 	}
 
 	/** Fires when chat cleint disconnects

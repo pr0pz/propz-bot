@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.8
+ * @version 1.5.9
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -92,36 +92,52 @@ export class BotData
 	/** Get Stream first chatter */
 	get firstChatter()
 	{
-		const result = this.db.query( `
-			SELECT u.name
-			FROM stream_stats s
-			LEFT JOIN twitch_users u ON s.user_id = u.id
-			WHERE first_chatter = 1
-			LIMIT 1;` );
-		return result?.[0]?.[0]?.toString() || '';
+		try
+		{
+			const result = this.db.query( `
+				SELECT u.name
+				FROM stream_stats s
+				LEFT JOIN twitch_users u ON s.user_id = u.id
+				WHERE first_chatter = 1
+				LIMIT 1;` );
+			return result?.[0]?.[0]?.toString() || '';
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return '';
+		}
 	}
 
 	/** Get all Stream Stats */
 	get streamStats()
 	{
-		const stats = this.db.queryEntries( `
-			SELECT
-				s.user_id,
-				u.name,
-				u.profile_picture,
-				u.color,
-				s.message,
-				s.cheer,
-				s.follow,
-				s.raid,
-				s.first_chatter,
-				s.sub,
-				s.subgift
-			FROM stream_stats s
-			LEFT JOIN twitch_users u ON s.user_id = u.id
-		` );
+		try
+		{
+			const stats = this.db.queryEntries( `
+				SELECT
+					s.user_id,
+					u.name,
+					u.profile_picture,
+					u.color,
+					s.message,
+					s.cheer,
+					s.follow,
+					s.raid,
+					s.first_chatter,
+					s.sub,
+					s.subgift
+				FROM stream_stats s
+				LEFT JOIN twitch_users u ON s.user_id = u.id
+			` );
 
-		return stats;
+			return stats;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return [];
+		}
 	}
 
 	/** Get color for user
@@ -132,26 +148,42 @@ export class BotData
 	{
 		const defaultColor = '#C7C7F1';
 		if ( !userId ) return defaultColor;
-		return await this.twitchApi.chat.getColorForUser( userId ) || defaultColor;
+		try
+		{
+			return await this.twitchApi.chat.getColorForUser( userId ) || defaultColor;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return defaultColor;
+		}
 	}
 
 	/** Fetch twitch Emotes */
 	async getEmotesTwitch(): Promise<TwitchEmote>
 	{
-		const [globalEmotes,channelEmotes] = await Promise.all([
-			this.twitchApi.chat.getGlobalEmotes(),
-			this.twitchApi.chat.getChannelEmotes( this.userId )
-		]);
-
 		const emoteMap: TwitchEmote = {};
-		globalEmotes.concat( channelEmotes ).forEach( emote =>
+		try
 		{
-			let url = emote.getAnimatedImageUrl( '3.0' );
-			if ( !url ) url = emote.getFormattedImageUrl( '3.0' );
-			emoteMap[emote.name] = url;
-		});
+			const [globalEmotes,channelEmotes] = await Promise.all([
+				this.twitchApi.chat.getGlobalEmotes(),
+				this.twitchApi.chat.getChannelEmotes( this.userId )
+			]);
 
-		return emoteMap;
+			globalEmotes.concat( channelEmotes ).forEach( emote =>
+			{
+				let url = emote.getAnimatedImageUrl( '3.0' );
+				if ( !url ) url = emote.getFormattedImageUrl( '3.0' );
+				emoteMap[emote.name] = url;
+			});
+
+			return emoteMap;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return emoteMap;
+		}
 	}
 
 	/** Get config for single twitch event */
@@ -164,55 +196,71 @@ export class BotData
 	/** Get random quote */
 	getQuote( quoteId: number = 0 )
 	{
-		const quotes = this.db.queryEntries<TwitchQuote>( `
-			SELECT 
-				q.id,
-				q.date,
-				q.category,
-				q.text,
-				q.user_id,
-				q.vod_url,
-				u.name  -- Include the username from users table
-			FROM twitch_quotes q
-			LEFT JOIN twitch_users u ON q.user_id = u.id
-			ORDER BY q.id` );
+		try
+		{
+			const quotes = this.db.queryEntries<TwitchQuote>( `
+				SELECT 
+					q.id,
+					q.date,
+					q.category,
+					q.text,
+					q.user_id,
+					q.vod_url,
+					u.name  -- Include the username from users table
+				FROM twitch_quotes q
+				LEFT JOIN twitch_users u ON q.user_id = u.id
+				ORDER BY q.id` );
 
-		if ( quotes.length === 0 ) return '';
+			if ( quotes.length === 0 ) return '';
 
-		const quoteIndex = quoteId > 0 ? quoteId : getRandomNumber( quotes.length, 1 );
-		const quote = quotes[ quoteIndex ];
+			const quoteIndex = quoteId > 0 ? quoteId : getRandomNumber( quotes.length, 1 );
+			const quote = quotes[ quoteIndex ];
 
-		if ( !quote ) return '';
+			if ( !quote ) return '';
 
-		const date = new Date( Date.parse( quote.date ) );
-		const message = `${ quote.text } - ${ quote.name } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod_url } ]`;
+			const date = new Date( Date.parse( quote.date ) );
+			const message = `${ quote.text } - ${ quote.name } [ #${ quoteIndex } / ${ date.toLocaleDateString( 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' } ) } / ${ quote.vod_url } ]`;
 
-		return message;
+			return message;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return '';
+		}
 	}
 
 	/** Get last 10 saved events */
 	getLastEventsData( streamLanguage: string = 'de' )
 	{
-		streamLanguage = streamLanguage || 'de';
-		const events = this.db.queryEntries( `
-			SELECT 
-				e.type,
-				e.user_id,
-				e.timestamp,
-				e.count,
-				u.name  -- Include the name from users table
-			FROM twitch_events e
-			LEFT JOIN twitch_users u ON e.user_id = u.id
-			ORDER BY e.id DESC
-			LIMIT 10;`);
-
-		for( const [ index, event ] of events.entries() )
+		try
 		{
-			const eventConfig = this.getEvent( event.type as string );
-			if ( eventConfig?.extra?.[ streamLanguage ] )
-				events[ index ].extra = eventConfig.extra[ streamLanguage ];
+			streamLanguage = streamLanguage || 'de';
+			const events = this.db.queryEntries( `
+				SELECT 
+					e.type,
+					e.user_id,
+					e.timestamp,
+					e.count,
+					u.name  -- Include the name from users table
+				FROM twitch_events e
+				LEFT JOIN twitch_users u ON e.user_id = u.id
+				ORDER BY e.id DESC
+				LIMIT 10;`);
+
+			for( const [ index, event ] of events.entries() )
+			{
+				const eventConfig = this.getEvent( event.type as string );
+				if ( eventConfig?.extra?.[ streamLanguage ] )
+					events[ index ].extra = eventConfig.extra[ streamLanguage ];
+			}
+			return events;
 		}
-		return events;
+		catch( error: unknown )
+		{
+			log( error );
+			return [];
+		}
 	}
 
 	/** Gets Twitch schedule
@@ -299,17 +347,25 @@ export class BotData
 	 */
 	getUserData( userId: string )
 	{
-		const result = this.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
-		if ( !result || result.length === 0 ) return;
-		return {
-			id: result[0],
-			name: result[1],
-			profile_picture: result[2],
-			color: result[3],
-			follow_date: result[4],
-			message_count: result[5],
-			first_count: result[6]
-		} as TwitchUserData;
+		try
+		{
+			const result = this.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+			if ( !result || result.length === 0 ) return;
+			return {
+				id: result[0],
+				name: result[1],
+				profile_picture: result[2],
+				color: result[3],
+				follow_date: result[4],
+				message_count: result[5],
+				first_count: result[6]
+			} as TwitchUserData;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return;
+		}
 	}
 
 	/** Get data for twitch user/s
@@ -319,21 +375,29 @@ export class BotData
 	getUsersData()
 	{
 		const users = new Map<string, TwitchUserData>();
-		const results = this.db.queryEntries<TwitchUserData>( 'SELECT * FROM twitch_users' );
-		if ( !results || results.length === 0 ) return users;
-
-		for( const user of results )
+		try
 		{
-			users.set( user.id, {
-				id: user.id,
-				name: user.name,
-				follow_date: user.follow_date,
-				message_count: user.message_count,
-				first_count: user.first_count
-			});
-		}
+			const results = this.db.queryEntries<TwitchUserData>( 'SELECT * FROM twitch_users' );
+			if ( !results || results.length === 0 ) return users;
 
-		return users;
+			for( const user of results )
+			{
+				users.set( user.id, {
+					id: user.id,
+					name: user.name,
+					follow_date: user.follow_date,
+					message_count: user.message_count,
+					first_count: user.first_count
+				});
+			}
+
+			return users;
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return users;
+		}
 	}
 
 	/** Set all twitch channel badges
@@ -351,33 +415,37 @@ export class BotData
 	 */
 	async setBadges()
 	{
-		const channelBadges = await this.twitchApi.chat.getChannelBadges( this.userId );
-		const globalBadges = await this.twitchApi.chat.getGlobalBadges();
-		if ( !channelBadges && !globalBadges ) return;
-
-		const badges = [];
-		for( const badge of [ ...channelBadges, ...globalBadges ] )
+		try
 		{
-			const versions = [];
-			for( const badgeVersion of badge.versions )
+			const channelBadges = await this.twitchApi.chat.getChannelBadges( this.userId );
+			const globalBadges = await this.twitchApi.chat.getGlobalBadges();
+			if ( !channelBadges && !globalBadges ) return;
+
+			const badges = [];
+			for( const badge of [ ...channelBadges, ...globalBadges ] )
 			{
-				const ev: TwitchBadgeVersion = {
-					id: badgeVersion.id,
-					name: badgeVersion.title,
-					url: badgeVersion.getImageUrl( 2 )
+				const versions = [];
+				for( const badgeVersion of badge.versions )
+				{
+					const ev: TwitchBadgeVersion = {
+						id: badgeVersion.id,
+						name: badgeVersion.title,
+						url: badgeVersion.getImageUrl( 2 )
+					}
+					versions.push( ev );
 				}
-				versions.push( ev );
+
+				const e: TwitchBadge = {
+					id: badge.id,
+					versions: versions
+				}
+		
+				badges.push( e );
 			}
 
-			const e: TwitchBadge = {
-				id: badge.id,
-				versions: versions
-			}
-	
-			badges.push( e );
+			this.badges = badges;
 		}
-
-		this.badges = badges;
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Set all twitch emotes */
@@ -433,66 +501,66 @@ export class BotData
 	/** Set channel mod list */
 	async setMods()
 	{
-		const mods = await this.twitchApi.moderation.getModerators( this.userId );
-		if ( mods.data.length === 0 ) return;
-
-		const modNicks = [];
-		for( const mod of mods.data )
+		try
 		{
-			modNicks.push( mod.userName.toLowerCase() );
-		}
+			const mods = await this.twitchApi.moderation.getModerators( this.userId );
+			if ( mods.data.length === 0 ) return;
 
-		// Add own botnick to list (not default)
-		modNicks.push( this.userName );
-		this.mods = modNicks;
+			const modNicks = [];
+			for( const mod of mods.data )
+			{
+				modNicks.push( mod.userName.toLowerCase() );
+			}
+
+			// Add own botnick to list (not default)
+			modNicks.push( this.userName );
+			this.mods = modNicks;
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Set/Update Channel points rewards */
 	async setRewards()
 	{
-		const rewards = this.rewards;
-		const rewardsCurrent = await this.twitchApi.channelPoints.getCustomRewards( this.userId, true );
-
-		for( const [index,reward] of rewards.entries() )
+		try
 		{
-			if ( reward.id === '' )
+			const rewards = this.rewards;
+			const rewardsCurrent = await this.twitchApi.channelPoints.getCustomRewards( this.userId, true );
+
+			for( const [index,reward] of rewards.entries() )
 			{
-				try
+				if ( reward.id === '' )
 				{
 					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( this.userId, reward );
 					rewards[ index ].id = rewardCreated.id;
 					log( `createCustomReward › ${ getRewardSlug( reward.title ) } › ${rewardCreated.id}` );
 					this.saveFile( 'twitchRewards', rewards, 'config' );
 				}
-				catch( error: unknown ) { log( error ) }
-			}
-			else
-			{
-				const rewardExists = rewardsCurrent.findIndex( item => item.id === reward.id );
-				if ( !rewardExists ) continue;
-
-				const rewardCurrent = rewardsCurrent[ rewardExists ];
-				// Only update reward if differs from the current reward on twitch
-				if (
-					reward.title !== rewardCurrent.title ||
-					reward.cost !== rewardCurrent.cost ||
-					reward.prompt !== rewardCurrent.prompt ||
-					reward.globalCooldown !== rewardCurrent.globalCooldown ||
-					reward.userInputRequired !== rewardCurrent.userInputRequired ||
-					reward.isEnabled !== rewardCurrent.isEnabled ||
-					reward.autoFulfill !== rewardCurrent.autoFulfill
-				)
+				else
 				{
-					try
+					const rewardExists = rewardsCurrent.findIndex( item => item.id === reward.id );
+					if ( !rewardExists ) continue;
+
+					const rewardCurrent = rewardsCurrent[ rewardExists ];
+					// Only update reward if differs from the current reward on twitch
+					if (
+						reward.title !== rewardCurrent.title ||
+						reward.cost !== rewardCurrent.cost ||
+						reward.prompt !== rewardCurrent.prompt ||
+						reward.globalCooldown !== rewardCurrent.globalCooldown ||
+						reward.userInputRequired !== rewardCurrent.userInputRequired ||
+						reward.isEnabled !== rewardCurrent.isEnabled ||
+						reward.autoFulfill !== rewardCurrent.autoFulfill
+					)
 					{
 						this.twitchApi.channelPoints.updateCustomReward( this.userId, reward.id.toString(), reward );
 					}
-					catch( error: unknown ) { log( error ) }
 				}
 			}
-		}
 
-		this.rewards = rewards;
+			this.rewards = rewards;
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Set Global Twitch Bot list */
@@ -520,17 +588,29 @@ export class BotData
 			this.eventExists( event )
 		) return;
 
-		// Insert user first if not exists (SQLite foreign key problem)
-		this.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
-		this.db.query( `INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`, [ event.type, event.user_id, event.timestamp, event.count || 0 ] );
+		try
+		{
+			// Insert user first if not exists (SQLite foreign key problem)
+			this.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
+			this.db.query( `INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`, [ event.type, event.user_id, event.timestamp, event.count || 0 ] );
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 	
 	/** Add quote to quotes */
 	addQuote( quote: TwitchQuote )
 	{
 		if ( !quote ) return '';
-		this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.text, quote.user_id, quote.vod_url ] );
-		return this.db.lastInsertRowId.toString();
+		try
+		{
+			this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.text, quote.user_id, quote.vod_url ] );
+			return this.db.lastInsertRowId.toString();
+		}
+		catch( error: unknown )
+		{
+			log( error );
+			return '';
+		}
 	}
 
 	/** Check if an event already exists */
@@ -606,21 +686,25 @@ export class BotData
 	{
 		if ( !user?.id || !dataName ) return;
 
-		const userData = this.getUserData( user.id );
-		// Add user if not in DB
-		if ( !userData ) this.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
+		try
+		{
+			const userData = this.getUserData( user.id );
+			// Add user if not in DB
+			if ( !userData ) this.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
 
-		const newUserData = [
-			user.displayName,
-			user.profilePictureUrl || '',
-			user.color || '#C7C7F1',
-			dataName === 'follow_date' && !userData?.follow_date ? dataValue : ( userData?.follow_date || 0 ),
-			dataName === 'message_count' ? ( userData?.message_count || 0 ) + 1 : ( userData?.message_count || 0 ),
-			dataName === 'first_count' ? ( userData?.first_count || 0 ) + 1 : ( userData?.first_count || 0 ),
-			user.id
-		];
+			const newUserData = [
+				user.displayName,
+				user.profilePictureUrl || '',
+				user.color || '#C7C7F1',
+				dataName === 'follow_date' && !userData?.follow_date ? dataValue : ( userData?.follow_date || 0 ),
+				dataName === 'message_count' ? ( userData?.message_count || 0 ) + 1 : ( userData?.message_count || 0 ),
+				dataName === 'first_count' ? ( userData?.first_count || 0 ) + 1 : ( userData?.first_count || 0 ),
+				user.id
+			];
 
-		this.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
+			this.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Update Stream stats
@@ -775,21 +859,25 @@ export class BotData
 	/** Cleanup all Database stuff */
 	public cleanupDatabase()
 	{
-		this.db.execute( `DELETE FROM stream_stats;` );
-
-		// Finalize all prepared statements
-		for ( const [_name, stmt] of this.preparedStatements.entries() )
+		try
 		{
-			try
+			this.db.execute( `DELETE FROM stream_stats;` );
+
+			// Finalize all prepared statements
+			for ( const [_name, stmt] of this.preparedStatements.entries() )
 			{
-				stmt.finalize();
+				try
+				{
+					stmt.finalize();
+				}
+				catch ( error: unknown ) { log( error ) }
 			}
-			catch ( error: unknown ) { log( error ) }
+			this.preparedStatements.clear();
+
+			if (this.db) this.db.close();
+
+			log( 'Database cleanup ♻️' );
 		}
-		this.preparedStatements.clear();
-
-		if (this.db) this.db.close();
-
-		log( 'Database cleanup ♻️' );
+		catch( error: unknown ) { log( error ) }
 	}
 }

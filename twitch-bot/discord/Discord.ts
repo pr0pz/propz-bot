@@ -2,7 +2,7 @@
  * Discord Controller
  * 
  * @author Wellington Estevo
- * @version 1.1.10
+ * @version 1.5.9
  */
 
 import '@propz/prototypes.ts';
@@ -325,13 +325,17 @@ export class Discord extends DiscordUtils
 			const guild: Guild|undefined = await this.getGuildById( this.guildid );
 			if ( !guild ) return;
 
-			const members: Collection<Snowflake, GuildMember> = await guild.members.fetch({ query: splittedMessage[1], limit: 1 });
-			if ( !members ) return;
+			try
+			{
+				const members: Collection<Snowflake, GuildMember> = await guild.members.fetch({ query: splittedMessage[1], limit: 1 });
+				if ( !members ) return;
 
-			const member: [string, GuildMember]|undefined = members.entries().next().value;
-			if ( !member?.[1] ) return;
+				const member: [string, GuildMember]|undefined = members.entries().next().value;
+				if ( !member?.[1] ) return;
 
-			this.sendWelcomeImage( member[1] as GuildMember );
+				this.sendWelcomeImage( member[1] as GuildMember );
+			}
+			catch( error: unknown ) { log( error ) }
 		}
 	}
 

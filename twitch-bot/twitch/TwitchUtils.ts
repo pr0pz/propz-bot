@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.6
+ * @version 1.5.9
  */
 
 import '@propz/prototypes.ts';
@@ -91,13 +91,17 @@ export abstract class TwitchUtils
 	async startAds( length: CommercialLength = 180 )
 	{
 		if ( !this.isStreamActive || !length ) return;
-		this.data.twitchApi.channels.startChannelCommercial( this.data.userId, length );
+		try
+		{
+			this.data.twitchApi.channels.startChannelCommercial( this.data.userId, length );
 
-		this.processEvent({
-			eventType: 'adbreak',
-			user: await this.data.getUser() || this.data.userName,
-			eventCount: length
-		});
+			this.processEvent({
+				eventType: 'adbreak',
+				user: await this.data.getUser() || this.data.userName,
+				eventCount: length
+			});
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Start twitch Raid */
@@ -105,16 +109,20 @@ export abstract class TwitchUtils
 	{
 		if ( !this.isStreamActive || !targetUserName ) return;
 
-		const target = await this.data.getUser( targetUserName );
-		if ( !target ) return;
+		try
+		{
+			const target = await this.data.getUser( targetUserName );
+			if ( !target ) return;
 
-		const raid = await this.data.twitchApi.raids.startRaid( this.data.userId, target.id );
-		if ( !raid ) return;
-	
-		this.processEvent({
-			eventType: 'startraid',
-			user: target
-		});
+			const raid = await this.data.twitchApi.raids.startRaid( this.data.userId, target.id );
+			if ( !raid ) return;
+		
+			this.processEvent({
+				eventType: 'startraid',
+				user: target
+			});
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Get the start time as timestamp */
@@ -287,7 +295,7 @@ export abstract class TwitchUtils
 		const quote: TwitchQuote = {
 			date: new Date().toISOString(),
 			category: this.stream?.gameName || '',
-			quote: quoteText.sanitize(),
+			text: quoteText.sanitize(),
 			user_id: author?.id || '',
 			vod_url: Youtube.getYoutubeVideoUrlById( videoId, videoTimestamp )
 		};
@@ -488,18 +496,22 @@ export abstract class TwitchUtils
 	toggleRewardPause( focusStatus: boolean = false )
 	{
 		if ( typeof focusStatus !== 'boolean' ) return;
-		for( const [rewardSlug, reward] of Object.entries( this.data.rewards ))
+		try
 		{
-			if ( !this.data.getEvent( rewardSlug ).disableOnFocus ) continue;
+			for( const [rewardSlug, reward] of Object.entries( this.data.rewards ))
+			{
+				if ( !this.data.getEvent( rewardSlug ).disableOnFocus ) continue;
 
-			const rewardUpdateData = {
-				title: reward.title,
-				cost: reward.cost,
-				isPaused: focusStatus
+				const rewardUpdateData = {
+					title: reward.title,
+					cost: reward.cost,
+					isPaused: focusStatus
+				}
+
+				this.data.twitchApi.channelPoints.updateCustomReward( this.data.userId, reward.id.toString(), rewardUpdateData );
 			}
-
-			this.data.twitchApi.channelPoints.updateCustomReward( this.data.userId, reward.id.toString(), rewardUpdateData );
 		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Send Stream Online Data to discord

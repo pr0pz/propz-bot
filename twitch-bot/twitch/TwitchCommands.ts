@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.5.6
+ * @version 1.5.9
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -467,8 +467,16 @@ export class TwitchCommands
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !this.twitch.isStreamActive ) return;
-				await this.twitch.api.streams.createStreamMarker( this.twitch.data.userId, options.message || 'Marker' );
-				return `Marker created`;
+				try
+				{
+					await this.twitch.api.streams.createStreamMarker( this.twitch.data.userId, options.message || 'Marker' );
+					return `Marker created`;
+				}
+				catch( error: unknown )
+				{
+					log( error );
+					return 'Failed to create marker';
+				}
 			},
 			aliases: [ 'marker' ],
 			onlyMods: true
@@ -745,25 +753,25 @@ export class TwitchCommands
 		setgame: {
 			handler: async (options: TwitchCommandOptions) =>
 			{
-				let game;
-				const param = options.param.toLowerCase();
-				if ( param.includes( 'software' ) )
-				{
-					game = await this.twitch.api.games.getGameByName( 'Software and Game Development' );
-				}
-				else if ( param.includes( 'chat' ) )
-				{
-					game = await this.twitch.api.games.getGameByName( 'Just Chatting' );
-				}
-				else
-				{
-					game = await this.twitch.api.games.getGameByName( options.param );
-				}
-
-				if ( !game ) return `Game not found`;
-
 				try
 				{
+					let game;
+					const param = options.param.toLowerCase();
+					if ( param.includes( 'software' ) )
+					{
+						game = await this.twitch.api.games.getGameByName( 'Software and Game Development' );
+					}
+					else if ( param.includes( 'chat' ) )
+					{
+						game = await this.twitch.api.games.getGameByName( 'Just Chatting' );
+					}
+					else
+					{
+						game = await this.twitch.api.games.getGameByName( options.param );
+					}
+
+					if ( !game ) return `Game not found`;
+
 					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { gameId: game.id } );
 					return `Game set to '${game.name}'`;
 				}

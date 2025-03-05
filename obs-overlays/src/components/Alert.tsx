@@ -2,7 +2,7 @@
  * Single ALert
  * 
  * @author Wellington Estevo
- * @version 1.4.2
+ * @version 1.5.9
  */
 
 import { useEffect, useState } from 'react';
@@ -124,13 +124,17 @@ const Alert = ( propz: { type: string; text?: string; noAudio: boolean; color: s
 		if ( !text ) return;
 
 		const url = `https://api.streamelements.com/kappa/v2/speech?voice=${ voice }&text=${ encodeURIComponent( text.trim() ) }`;
-		const speak = await fetch( url );
-		if ( speak.status !== 200 ) return;
-		
-		const mp3 = await speak.blob();
-		const blobUrl = URL.createObjectURL( mp3 );
+		try
+		{
+			const speak = await fetch( url );
+			if ( speak.status !== 200 ) return;
+			
+			const mp3 = await speak.blob();
+			const blobUrl = URL.createObjectURL( mp3 );
 
-		return new Audio( blobUrl );
+			return new Audio( blobUrl );
+		}
+		catch( error: unknown ) { log( error ) }
 	}
 
 	// Dont do anything if no title given, probably just TTS

@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.5.7
+ * @version 1.5.9
  */
 
 import '@propz/prototypes.ts';
@@ -37,7 +37,7 @@ export class Twitch extends TwitchUtils
 		this.firstChatter = this.data.firstChatter;
 
 		await this.setStream();
-
+		
 		log( 'Bot init done ✅' );
 
 		Deno.cron( 'Bot minutely', '* * * * *', () =>
