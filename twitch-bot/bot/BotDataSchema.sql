@@ -1,5 +1,13 @@
 -- BotData Database Schema
--- Version 1.5.5
+-- Version 1.5.10
+
+-- Authentication
+CREATE TABLE IF NOT EXISTS auth (
+	name PRIMARY KEY,
+	data TEXT NOT NULL
+);
+
+INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '');
 
 -- Twitch Users Table
 CREATE TABLE IF NOT EXISTS twitch_users (

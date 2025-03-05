@@ -7,7 +7,6 @@
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
-import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type {
@@ -24,7 +23,7 @@ import type {
 	TwitchTimers,
 	TwitchUserData
 } from '@propz/types.ts';
-import type { PreparedQuery } from 'https://deno.land/x/sqlite/mod.ts';
+import type { Database } from './Database.ts';
 
 // Config
 import discordEvents from '../config/discordEvents.json' with { type: 'json' };
@@ -41,9 +40,7 @@ import { TwitchInsights } from '../external/TwitchInsights.ts';
 export class BotData
 {
 	public twitchApi: ApiClient;
-	private dbPath = './twitch-bot/bot/BotData.sql';
-	public db: DB = new DB( this.dbPath );
-	private preparedStatements: Map<string, PreparedQuery> = new Map();
+	public db: Database;
 
 	// Config
 	public discordEvents: Map<string,TwitchEvent>;
@@ -60,9 +57,10 @@ export class BotData
 	public emotes: Map<string,string> = new Map();
 	public bots: string[] = [];
 
-	constructor( twitchApi: ApiClient )
+	constructor( twitchApi: ApiClient, db: Database )
 	{
 		this.twitchApi = twitchApi;
+		this.db = db;
 		this.timers = objectToMap( timers );
 		this.discordEvents = objectToMap( discordEvents );
 		this.events = objectToMap( events );
@@ -70,7 +68,6 @@ export class BotData
 
 	async init()
 	{
-		this.initDatabase();
 		await this.setUser();
 		//this.setBadges();
 		this.setEmotes();
@@ -349,7 +346,7 @@ export class BotData
 	{
 		try
 		{
-			const result = this.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+			const result = this.db.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
 			if ( !result || result.length === 0 ) return;
 			return {
 				id: result[0],
@@ -591,7 +588,7 @@ export class BotData
 		try
 		{
 			// Insert user first if not exists (SQLite foreign key problem)
-			this.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
+			this.db.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
 			this.db.query( `INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`, [ event.type, event.user_id, event.timestamp, event.count || 0 ] );
 		}
 		catch( error: unknown ) { log( error ) }
@@ -620,15 +617,15 @@ export class BotData
 		try
 		{
 			const events = this.db.queryEntries( `
-			SELECT
-				e.type,
-				e.user_id,
-				e.timestamp,
-				e.count,
-				u.name
-			FROM twitch_events e
-				LEFT JOIN twitch_users u ON e.user_id = u.id
-				ORDER BY e.id DESC
+				SELECT
+					e.type,
+					e.user_id,
+					e.timestamp,
+					e.count,
+					u.name
+				FROM twitch_events e
+					LEFT JOIN twitch_users u ON e.user_id = u.id
+					ORDER BY e.id DESC
 			` );
 
 			return events.some(
@@ -637,14 +634,14 @@ export class BotData
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.username
+							event.name == eventToCheck.name
 						);
 					}
 					else
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.username &&
+							event.name == eventToCheck.name &&
 							event.count === eventToCheck.count &&
 							(
 								event.timestamp === eventToCheck.timestamp ||
@@ -690,7 +687,7 @@ export class BotData
 		{
 			const userData = this.getUserData( user.id );
 			// Add user if not in DB
-			if ( !userData ) this.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
+			if ( !userData ) this.db.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
 
 			const newUserData = [
 				user.displayName,
@@ -702,7 +699,7 @@ export class BotData
 				user.id
 			];
 
-			this.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
+			this.db.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
@@ -719,8 +716,7 @@ export class BotData
 
 		try
 		{
-			const result = this.db.query( `INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`, [ user.id ] );
-			console.log( result );
+			this.db.query( `INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`, [ user.id ] );
 
 			switch ( eventType )
 			{
@@ -735,7 +731,7 @@ export class BotData
 					break;
 
 				case 'message':
-					this.preparedStatements.get( 'update_stats_message' )?.execute( [ user.id ] );
+					this.db.preparedStatements.get( 'update_stats_message' )?.execute( [ user.id ] );
 					break;
 
 				case 'cheer':
@@ -806,78 +802,5 @@ export class BotData
 			this.setRewards();
 		}
 		catch (error) { log(error) }
-	}
-
-	/** Init Database */
-	public initDatabase()
-	{
-		try
-		{
-			if ( !this.db )
-				this.db = new DB( this.dbPath );
-
-			// Create DB Schema
-			const schema = Deno.readTextFileSync( './twitch-bot/bot/BotDataSchema.sql' );
-			this.db.execute( schema );
-
-			// Init prepared statements
-			this.preparedStatements.set( 'add_user', 
-				this.db.prepareQuery( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)' ) );
-
-			this.preparedStatements.set( 'get_user',
-				this.db.prepareQuery( `
-					SELECT
-						id,
-						name,
-						profile_picture,
-						color,
-						follow_date,
-						message_count,
-						first_count
-					FROM twitch_users
-					WHERE id = ?` ) );
-
-			this.preparedStatements.set( 'update_userdata', 
-				this.db.prepareQuery( `
-					UPDATE twitch_users SET
-						name = ?,
-						profile_picture = ?,
-						color = ?,
-						follow_date = ?,
-						message_count = ?,
-						first_count = ?
-					WHERE id = ?;` ) );
-
-			this.preparedStatements.set( 'update_stats_message',
-				this.db.prepareQuery( 'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?' ) );
-
-			log( 'Database initialized ✅' );
-		}
-		catch( error: unknown ) { log( error ) }
-	}
-
-	/** Cleanup all Database stuff */
-	public cleanupDatabase()
-	{
-		try
-		{
-			this.db.execute( `DELETE FROM stream_stats;` );
-
-			// Finalize all prepared statements
-			for ( const [_name, stmt] of this.preparedStatements.entries() )
-			{
-				try
-				{
-					stmt.finalize();
-				}
-				catch ( error: unknown ) { log( error ) }
-			}
-			this.preparedStatements.clear();
-
-			if (this.db) this.db.close();
-
-			log( 'Database cleanup ♻️' );
-		}
-		catch( error: unknown ) { log( error ) }
 	}
 }

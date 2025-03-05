@@ -2,7 +2,7 @@
  * Main Bot file
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.5.10
  */
 
 import { log } from '@propz/helpers.ts';
@@ -13,8 +13,10 @@ import { TwitchAuth } from './twitch/TwitchAuth.ts';
 import { Twitch } from './twitch/Twitch.ts';
 import { Bot } from './bot/Bot.ts';
 import { BotWebsocket } from './bot/BotWebsocket.ts';
+import { Database } from './bot/Database.ts';
 
-const twitchAuth = new TwitchAuth();
+const db = Database.getInstance();
+const twitchAuth = new TwitchAuth( db );
 const authProvider = await twitchAuth.getAuthProvider();
 if ( !authProvider )
 {
@@ -23,7 +25,7 @@ if ( !authProvider )
 }
 
 const twitchApi = new ApiClient({ authProvider: authProvider });
-const data = new BotData( twitchApi );
+const data = new BotData( twitchApi, db );
 const ws = new BotWebsocket();
 const discord = new Discord( data );
 const twitch = new Twitch( data, discord, ws );

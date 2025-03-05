@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.5.3
+ * @version 1.5.10
  */
 
 import '@propz/prototypes.ts';
@@ -182,7 +182,11 @@ export class Bot
 			if ( this.discord.client )
 				await this.discord.client.destroy();
 
-			this.twitch.data.cleanupDatabase();
+			if ( this.twitch.data.db )
+			{
+				this.twitch.data.db.cleanupDatabase();
+				this.twitch.data.db.close();
+			}
 
 			Deno.exit();
 		});

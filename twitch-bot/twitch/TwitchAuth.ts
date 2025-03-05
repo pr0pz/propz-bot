@@ -4,18 +4,18 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  * 
  * @author Wellington Estevo
- * @version 1.5.9
+ * @version 1.5.10
  */
 
 import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
 import { log } from '@propz/helpers.ts';
-import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 
 import type { AccessToken } from '@twurple/auth';
+import type { Database } from '../bot/Database.ts';
 
 export class TwitchAuth
 {
-	private dbPath = './twitch-bot/bot/BotData.sql';
+	private db: Database;
 	private authProvider: RefreshingAuthProvider|null = null;
 	private scopes = [
 		'bits:read',
@@ -85,9 +85,9 @@ export class TwitchAuth
 	private redirectUri = Deno.env.get( 'TWITCH_REDIRECT_URI' ) || '';
 	private initialOauthCode = Deno.env.get( 'TWITCH_INITIAL_OAUTH_CODE' ) || '';
 
-	constructor()
+	constructor( db: Database )
 	{
-		this.initDatabase();
+		this.db = db;
 
 		this.authProvider = new RefreshingAuthProvider({
 			clientId: this.clientId,
@@ -101,11 +101,7 @@ export class TwitchAuth
 		{
 			try
 			{
-				log( `Start refreshing` );
-				const db = new DB( this.dbPath );
-				db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
-				db.close();
-				log( `Stop refreshing` );
+				this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
 			}
 			catch( error: unknown ) { log( error ) }
 		});
@@ -114,9 +110,8 @@ export class TwitchAuth
 	/** Get tokenData for further auth process */
 	private async getTokenData(): Promise<AccessToken|undefined>
 	{
-		let db = new DB( this.dbPath );
 		try {
-			const results = db.queryEntries( `SELECT data FROM auth WHERE name = 'twitch'` );
+			const results = this.db.queryEntries( `SELECT data FROM auth WHERE name = 'twitch'` );
 			const newTokenData = results?.[0]?.['data'] as string || '';
 						
 			if ( newTokenData )
@@ -127,12 +122,7 @@ export class TwitchAuth
 		}
 		catch ( _error: unknown )
 		{
-			db.close();
 			log( `No tokendata found. Getting new from Twitch.` );
-		}
-		finally
-		{
-			db.close();
 		}
 
 		// DB data exist, so:
@@ -145,18 +135,12 @@ export class TwitchAuth
 				this.redirectUri
 			);
 
-			db = new DB( this.dbPath );
-			db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
-			db.close();
+			this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
 
 			log( `Tokendata ready (from Twitch)` );
 			return newTokenData;
 		}
-		catch ( error: unknown )
-		{
-			db.close();
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Returns authprovider */
@@ -182,27 +166,5 @@ export class TwitchAuth
 		catch( error: unknown ) { log( error ) }
 
 		return this.authProvider;
-	}
-
-	private initDatabase()
-	{
-		try {
-			const db = new DB( this.dbPath );
-			db.execute(`
-				-- Authentication
-				CREATE TABLE IF NOT EXISTS auth (
-					name PRIMARY KEY,
-					data TEXT NOT NULL
-				);
-
-				INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '');
-			`);
-			db.close();
-			log( `Init auth database` );
-		}
-		catch( error: unknown )
-		{
-			log( error );
-		}
 	}
 }
