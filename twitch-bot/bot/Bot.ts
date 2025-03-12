@@ -2,7 +2,7 @@
  * Bot
  * 
  * @author Wellington Estevo
- * @version 1.5.10
+ * @version 1.5.11
  */
 
 import '@propz/prototypes.ts';
@@ -187,6 +187,8 @@ export class Bot
 				this.twitch.data.db.cleanupDatabase();
 				this.twitch.data.db.close();
 			}
+
+			log( 'SIGINT Shutdown 🔻' );
 
 			Deno.exit();
 		});

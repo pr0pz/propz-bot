@@ -2,7 +2,7 @@
  * Websocket Handler
  * 
  * @author Wellington Estevo
- * @version 1.2.9
+ * @version 1.5.11
  */
 
 import '@propz/prototypes.ts';
@@ -27,8 +27,8 @@ export class BotWebsocket
 		user: SimpleUser,
 		text?: string,
 		count?: number,
-		hasSound?: boolean,
-		hasVideo?: boolean,
+		hasSound?: boolean|string,
+		hasVideo?: boolean|string,
 		showAvatar?: boolean,
 		extra?: TwitchEventExtra,
 		obs?: ObsData|ObsData[],

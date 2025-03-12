@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.9
+ * @version 1.5.11
  */
 
 import '@propz/prototypes.ts';
@@ -763,6 +763,7 @@ export abstract class TwitchUtils
 			// Dynamically import the module to bypass the cache
 			const { TwitchCommands } = await import(`./TwitchCommands.ts?cache-bust=${Date.now()}`);
 			this.commands = new TwitchCommands( this );
+			log( 'Config reloaded ♻️' );
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
@@ -776,6 +777,7 @@ export abstract class TwitchUtils
 	async processEvent( options: {
 		eventType: string,
 		user: HelixUser|SimpleUser|ChatUser|string,
+		sender?: string,
 		eventCount?: number,
 		eventText?: string,
 		isTest?: boolean

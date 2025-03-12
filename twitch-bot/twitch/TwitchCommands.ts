@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.5.9
+ * @version 1.5.11
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -40,7 +40,7 @@ export class TwitchCommands
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !this.twitch.isStreamActive ) return;
-				return await OpenAI.handleAiRequest( options.message, options.sender.name );
+				return await OpenAI.handleAiRequest( options.message, options.sender.name || this.twitch.data.userDisplayName );
 			},
 			aliases: [ 'ki' ],
 			description: 'AI-Antwort im Twitch Chat',
@@ -811,7 +811,7 @@ export class TwitchCommands
 			{
 				this.twitch.processEvent({
 					eventType: 'slap',
-					user: options.param || options.sender.displayName,
+					user: options.param.replace( '@', '' ) || options.sender.displayName.replace( '@', '' ),
 					sender: options.param ? options.sender.displayName : this.twitch.data.userDisplayName
 				});
 			},

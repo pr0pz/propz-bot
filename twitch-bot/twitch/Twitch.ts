@@ -2,7 +2,7 @@
  * Main Twitch Controler
  * 
  * @author Wellington Estevo
- * @version 1.5.10
+ * @version 1.5.11
  */
 
 import '@propz/prototypes.ts';
@@ -38,7 +38,7 @@ export class Twitch extends TwitchUtils
 
 		await this.setStream();
 		
-		log( 'Bot init done ✅' );
+		log( 'Bot init ✅' );
 
 		Deno.cron( 'Bot minutely', '* * * * *', () =>
 		{
@@ -48,6 +48,7 @@ export class Twitch extends TwitchUtils
 
 		Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
+			this.firstChatter = '';
 			this.data.db.execute( `DELETE FROM stream_stats;` );
 			this.data.db.cleanupDatabase();
 			this.data.db.initDatabase();
@@ -55,7 +56,7 @@ export class Twitch extends TwitchUtils
 			this.reloadConfig();
 		});
 
-		log( 'Cronjobs set up ✅' );
+		log( 'Cronjobs init ✅' );
 	}
 
 	/** Process chat command

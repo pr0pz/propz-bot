@@ -2,7 +2,7 @@
  * Types
  * 
  * @author Wellington Estevo
- * @version 1.5.8
+ * @version 1.5.11
  */
 
 import type { Buffer } from 'node:buffer';
