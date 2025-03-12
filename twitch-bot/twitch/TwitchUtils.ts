@@ -31,7 +31,8 @@ import type {
 	ApiRequest,
 	ApiResponse,
 	SimpleUser,
-	KofiData
+	KofiData,
+	TwitchEventData
 } from '@propz/types.ts';
 
 export abstract class TwitchUtils
@@ -623,12 +624,13 @@ export abstract class TwitchUtils
 		) return false;
 		
 		// Prevent chatscore events to fire multiple times
-		const lastEvent = this.data.getLastEventsData( this.streamLanguage ).slice(-1);
+		const lastEvent = this.data.getLastEventsData( this.streamLanguage ).slice(0,1)[0] as TwitchEventData;
+		console.log( lastEvent );
 		if (
-			lastEvent?.[0] &&
+			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
-			eventType === lastEvent[0].eventType &&
-			userName.toLowerCase() === lastEvent[0].eventUsername.toLowerCase()
+			eventType === lastEvent.type &&
+			userName.toLowerCase() === ( lastEvent.name?.toLowerCase() || '' )
 		) return false;
 		
 		// Focus Mode

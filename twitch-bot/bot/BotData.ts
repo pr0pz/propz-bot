@@ -251,7 +251,7 @@ export class BotData
 				if ( eventConfig?.extra?.[ streamLanguage ] )
 					events[ index ].extra = eventConfig.extra[ streamLanguage ];
 			}
-			return events;
+			return events as TwitchEventData[];
 		}
 		catch( error: unknown )
 		{
