@@ -2,7 +2,7 @@
  * Twitch Utils
  * 
  * @author Wellington Estevo
- * @version 1.5.11
+ * @version 1.5.13
  */
 
 import '@propz/prototypes.ts';
@@ -31,8 +31,7 @@ import type {
 	ApiRequest,
 	ApiResponse,
 	SimpleUser,
-	KofiData,
-	TwitchEventData
+	KofiData
 } from '@propz/types.ts';
 
 export abstract class TwitchUtils
@@ -401,7 +400,7 @@ export abstract class TwitchUtils
 
 		// Get username from random follower ...
 		const followers = this.data.followers;
-		let userName = followers[ getRandomNumber( followers.length ) ].eventUsername || this.data.userName;
+		let userName = followers[ getRandomNumber( followers.length ) ].name || this.data.userName;
 
 		// ... or pritoritize from command if given
 		if ( splittedMessage[1] )
@@ -624,8 +623,7 @@ export abstract class TwitchUtils
 		) return false;
 		
 		// Prevent chatscore events to fire multiple times
-		const lastEvent = this.data.getLastEventsData( this.streamLanguage ).slice(0,1)[0] as TwitchEventData;
-		console.log( lastEvent );
+		const [lastEvent] = this.data.getLastEventsData( this.streamLanguage ).slice(0,1);
 		if (
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&

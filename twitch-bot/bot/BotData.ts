@@ -2,7 +2,7 @@
  * Static data
  * 
  * @author Wellington Estevo
- * @version 1.5.9
+ * @version 1.5.13
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -329,9 +329,12 @@ export class BotData
 
 		try
 		{
-			return await this.twitchApi.users.getUserByName( user.toLowerCase() );
+			// Replace all non alphanumeric chars and underscore
+			user = user.replaceAll( /(\W)+/gi, '' ).toLowerCase();
+			return await this.twitchApi.users.getUserByName( user );
 		}
-		catch( error: unknown ) {
+		catch( error: unknown )
+		{
 			log( error );
 			return null;
 		}
@@ -601,7 +604,7 @@ export class BotData
 		try
 		{
 			this.db.query( `INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`, [ quote.date, quote.category, quote.text, quote.user_id, quote.vod_url ] );
-			return this.db.lastInsertRowId.toString();
+			return ( this.db.lastInsertRowId - 1 ).toString();
 		}
 		catch( error: unknown )
 		{

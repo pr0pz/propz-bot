@@ -2,7 +2,7 @@
  * Twitch Commands
  * 
  * @author Wellington Estevo
- * @version 1.5.11
+ * @version 1.5.13
  */
 
 import { OpenAI } from '../external/OpenAi.ts';
@@ -99,6 +99,7 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		chatscore: {
+			aliases: [ 'chatranking' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
@@ -246,6 +247,7 @@ export class TwitchCommands
 			},
 		},
 		firstscore: {
+			aliases: [ 'firstranking' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
@@ -502,6 +504,14 @@ export class TwitchCommands
 			cooldown: 120,
 			hasSound: true,
 			disableOnFocus: true
+		},
+		of: {
+			aliases: [ 'onlyfans' ],
+			message: {
+				de: 'Deine schmutzigen Geheimnisse findest du in deiner .env, du kleiner Perverser',
+				en: 'Check your dirty secrets inside your .env you little perv'
+			},
+			description: 'My OF'
 		},
 		ohno: {
 			cooldown: 60,
@@ -811,7 +821,7 @@ export class TwitchCommands
 			{
 				this.twitch.processEvent({
 					eventType: 'slap',
-					user: options.param.replace( '@', '' ) || options.sender.displayName.replace( '@', '' ),
+					user: options.param || options.sender.displayName,
 					sender: options.param ? options.sender.displayName : this.twitch.data.userDisplayName
 				});
 			},
