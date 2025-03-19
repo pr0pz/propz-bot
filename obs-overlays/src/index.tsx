@@ -2,7 +2,7 @@
  * Index
  * 
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.6.0
  */
 
 import { createRoot } from 'react-dom/client';

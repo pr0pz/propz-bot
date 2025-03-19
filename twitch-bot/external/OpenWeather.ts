@@ -1,6 +1,6 @@
 /**
  * OpenWeather
- * 
+ *
  * @author Wellington Estevo
  * @version 1.3.0
  */
@@ -10,7 +10,8 @@ import type { OpenWeatherResponse, WeatherData } from '@propz/types.ts';
 
 export class OpenWeather
 {
-	public static async handleWeatherRequest( cityName: string, countryCode?: string, language:string = 'de' ): Promise<WeatherData|undefined>
+	public static async handleWeatherRequest( cityName: string, countryCode?: string,
+		language: string = 'de' ): Promise<WeatherData | undefined>
 	{
 		const apiKey = Deno.env.get( 'OPENWEATHER_API_KEY' ) || '';
 		if ( !cityName || !apiKey ) return;
@@ -18,17 +19,24 @@ export class OpenWeather
 		let cityData = cityName;
 		if ( countryCode )
 			cityData += `,${countryCode}`;
-		
+
 		let data: OpenWeatherResponse;
 		try
 		{
-			const response = await fetch( `https://api.openweathermap.org/data/2.5/weather?q=${ cityData }&appid=${ apiKey }&units=metric&lang=${language}` );
-			if ( !response.ok ) return;
-
+			const response = await fetch(
+				`https://api.openweathermap.org/data/2.5/weather?q=${cityData}&appid=${apiKey}&units=metric&lang=${language}`
+			);
 			data = await response.json();
+
+			if ( !response.ok )
+			{
+				log( new Error( `${data.cod} › ${data.message}` ) );
+				return;
+			}
+
 			if ( !data?.main || !data?.weather ) return;
 		}
-		catch( error: unknown )
+		catch ( error: unknown )
 		{
 			log( error );
 			return;
@@ -42,7 +50,7 @@ export class OpenWeather
 			humidity: data.main.humidity ? Math.round( data.main.humidity ).toString() : '',
 			temp: data.main.temp ? Math.round( data.main.temp ).toString() : '',
 			icon: data.weather[0].icon || '',
-			iconUrl: data.weather[0].icon ? `https://openweathermap.org/img/wn/${ data.weather[0].icon }@4x.png` : ''
-		}		
+			iconUrl: data.weather[0].icon ? `https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png` : ''
+		};
 	}
 }

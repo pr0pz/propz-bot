@@ -1,38 +1,29 @@
 /**
  * Twitch Utils
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.13
+ * @version 1.6.0
  */
 
 import '@propz/prototypes.ts';
 
+import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { ChatUser, parseChatMessage } from '@twurple/chat';
-import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
-import { Youtube } from '../external/Youtube.ts';
+import cld from 'cld';
 import { StreamElements } from '../external/StreamElements.ts';
+import { Youtube } from '../external/Youtube.ts';
 import { TwitchChat } from './TwitchChat.ts';
-import { TwitchEvents } from './TwitchEvents.ts';
 import { TwitchCommands } from './TwitchCommands.ts';
+import { TwitchEvents } from './TwitchEvents.ts';
 
+import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchQuote, TwitchUserData } from '@propz/types.ts';
 import type { ApiClient, CommercialLength, HelixStream } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
-import type { Discord } from '../discord/Discord.ts';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
-import type {
-	StreamData,
-	StreamDataApi,
-	StreamElementsError,
-	StreamElementsViewerStats,
-	TwitchQuote,
-	TwitchUserData,
-	ApiRequest,
-	ApiResponse,
-	SimpleUser,
-	KofiData
-} from '@propz/types.ts';
+import type { Discord } from '../discord/Discord.ts';
+import { Deepl } from '../external/Deepl.ts';
 
 export abstract class TwitchUtils
 {
@@ -44,11 +35,11 @@ export abstract class TwitchUtils
 	public chat: TwitchChat;
 	public events: TwitchEvents;
 	public commands: TwitchCommands;
-	
+
 	// Runtime vars
 	public isDev: boolean = false;
 	public focus: boolean = false;
-	public stream: HelixStream|null = null;
+	public stream: HelixStream | null = null;
 	public firstChatter = '';
 	private validMessageThreshold: number = 5;
 	public killswitch: boolean = false;
@@ -70,90 +61,115 @@ export abstract class TwitchUtils
 	}
 
 	/** Set the current stream */
-	async setStream( stream?: HelixStream|undefined|null ): Promise<HelixStream | null>
+	async setStream( stream?: HelixStream | undefined | null ): Promise<HelixStream | null>
 	{
-		if ( typeof stream !== 'undefined' ) return this.stream = stream;
+		if ( typeof stream !== 'undefined' )
+			return this.stream = stream;
 		try
 		{
 			this.stream = await this.data.twitchApi.streams.getStreamByUserName( this.data.userName );
 			return this.stream;
 		}
-		catch( error: unknown ) {
+		catch ( error: unknown )
+		{
 			log( error );
 			return null;
 		}
 	}
 
 	/** Start Twitch Ads
-	 * 
+	 *
 	 * @param {number} length Ad length in seconds (30, 60, 90, 120, 150, 180)
 	 */
 	async startAds( length: CommercialLength = 180 )
 	{
-		if ( !this.isStreamActive || !length ) return;
+		if ( !this.isStreamActive || !length )
+			return;
 		try
 		{
 			this.data.twitchApi.channels.startChannelCommercial( this.data.userId, length );
 
-			this.processEvent({
+			this.processEvent( {
 				eventType: 'adbreak',
 				user: await this.data.getUser() || this.data.userName,
 				eventCount: length
-			});
+			} );
 		}
-		catch( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	/** Start twitch Raid */
 	async startRaid( targetUserName: string )
 	{
-		if ( !this.isStreamActive || !targetUserName ) return;
+		if ( !this.isStreamActive || !targetUserName )
+			return;
 
 		try
 		{
 			const target = await this.data.getUser( targetUserName );
-			if ( !target ) return;
+			if ( !target )
+				return;
 
 			const raid = await this.data.twitchApi.raids.startRaid( this.data.userId, target.id );
-			if ( !raid ) return;
-		
-			this.processEvent({
+			if ( !raid )
+				return;
+
+			this.processEvent( {
 				eventType: 'startraid',
 				user: target
-			});
+			} );
 		}
-		catch( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	/** Get the start time as timestamp */
-	get streamStartTime() { return this.stream?.startDate.getTime() ?? 0; }
+	get streamStartTime()
+	{
+		return this.stream?.startDate.getTime() ?? 0;
+	}
 
 	/** Get current Stream language */
-	get streamLanguage() { return this.stream?.language || 'de'; }
-	
+	get streamLanguage()
+	{
+		return this.stream?.language || 'de';
+	}
+
 	/** Returns if stream is active */
-	get isStreamActive() { return this.stream !== null; }
+	get isStreamActive()
+	{
+		return this.stream !== null;
+	}
 
 	/** Get Stream uptime as text */
 	getStreamUptimeText( message: string )
 	{
-		if ( !this.isStreamActive || !message ) return '';
+		if ( !this.isStreamActive || !message )
+			return '';
 		const timeDiff = Date.now() - this.streamStartTime;
 		message = message.replace( '[count]', getTimePassed( timeDiff ) );
 		return message;
 	}
 
 	/** Get watchtime command text
-	 * 
-	 * @param {string} userName 
+	 *
+	 * @param {string} userName
 	 * @param {string} message
 	 */
 	async getUserWatchtimeText( userName: string, message: string )
 	{
-		if ( !userName || !message ) return '';
-		const viewerStats: StreamElementsViewerStats|StreamElementsError|undefined = await StreamElements.getViewerStats( userName );
+		if ( !userName || !message )
+			return '';
+		const viewerStats: StreamElementsViewerStats | undefined = await StreamElements
+			.getViewerStats( userName );
 
-		if ( !viewerStats || !('watchtime' in viewerStats) ) return '';
+		if ( !viewerStats || !( 'watchtime' in viewerStats ) )
+			return '';
 
 		const watchtime = viewerStats.watchtime * 60 * 1000;
 
@@ -166,48 +182,52 @@ export abstract class TwitchUtils
 	}
 
 	/** Get user score: messages, firsts, follow
-	 * 
+	 *
 	 * @param {string} userName User to get score
 	 * @param {string} message Message to search replace values
 	 * @param {keyof TwitchUserData} type Type of score to get
 	 */
-	async getUserScoreText( userName: string, message: string , type: keyof TwitchUserData = 'message_count' )
+	async getUserScoreText( userName: string, message: string, type: keyof TwitchUserData = 'message_count' )
 	{
 		if (
 			!userName || !message || !type ||
 			userName.toLowerCase() === this.data.userName
-		) return '';
+		)
+			return '';
 
 		const user = await this.data.getUser( userName );
-		if ( !user ) return '';
+		if ( !user )
+			return '';
 
 		const usersData = this.data.getUsersData();
-		if ( !usersData ) return '';
+		if ( !usersData )
+			return '';
 
-		let count: string|number = Number( usersData.get( user.id )?.[ type ] ) ?? 0;
-		if ( !count ) return '';
+		let count: string | number = Number( usersData.get( user.id )?.[type] ) ?? 0;
+		if ( !count )
+			return '';
 
 		// Sort users by type
 		const sortedUsers = usersData
 			.entries()
-			.filter( ([_user_id, user]) => user[type] as number > 0 )
-			.map( ([user_id, user]) => [user_id, user[type] as number, user.name] )
+			.filter( ( [ _user_id, user ] ) => user[type] as number > 0 )
+			.map( ( [ user_id, user ] ) => [ user_id, user[type] as number, user.name ] )
 			.toArray()
-			.sort( (a, b) => 
+			.sort( ( a, b ) =>
 			{
 				// Aufsteigende Sortierung für 'follow'
 				if ( type === 'follow_date' )
 				{
-					return (a[1] as number) - (b[1] as number);
+					return ( a[1] as number ) - ( b[1] as number );
 				}
 				// Absteigende Sortierung für andere Typen
 				else
 				{
-					return (b[1] as number) - (a[1] as number);
+					return ( b[1] as number ) - ( a[1] as number );
 				}
-			});
+			} );
 
-		const rank = sortedUsers.findIndex( ( [id, _data, _userName] ) => id === user.id ) + 1;
+		const rank = sortedUsers.findIndex( ( [ id, _data, _userName ] ) => id === user.id ) + 1;
 
 		if ( type === 'follow_date' )
 			count = getTimePassed( Date.now() - count * 1000 );
@@ -221,7 +241,7 @@ export abstract class TwitchUtils
 	}
 
 	/** Check and set firstchatter of each stream
-	 * 
+	 *
 	 * @param {SimpleUser} user user data
 	 */
 	setStreamFirstChatter( user: SimpleUser )
@@ -229,49 +249,62 @@ export abstract class TwitchUtils
 		if (
 			this.firstChatter ||
 			user?.name === this.data.userName
-		) return;
+		)
+			return;
 
 		this.firstChatter = user.displayName;
 		this.data.updateUserData( user, 'first_count' );
 		this.data.updateStreamStats( user, 'first_chatter' );
 
-		this.processEvent({
+		this.processEvent( {
 			eventType: 'firstchatter',
 			user: user.displayName
-		});
+		} );
 	}
 
-
 	/** Check for chat score
-	 * 
+	 *
 	 * @param {HelixUser} user User Object to check for
 	 */
 	checkChatScore( user: SimpleUser )
 	{
-		if ( user?.name === this.data.userName ) return;
+		if ( user?.name === this.data.userName )
+			return;
 
 		const chatscores = [
-			100, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
+			100,
+			500,
+			1000,
+			2000,
+			3000,
+			4000,
+			5000,
+			6000,
+			7000,
+			8000,
+			9000,
+			10000
 		];
 		const count = this.data.getUserData( user.id! )?.message_count || 0;
 		if ( count && chatscores.includes( count ) )
 		{
-			this.processEvent({
+			this.processEvent( {
 				eventType: 'chatscore-' + count,
 				user: user,
 				eventCount: count
-			});
+			} );
 		}
 	}
 
 	/** Add Quote
-	 * 
+	 *
 	 * @param {string} chatMessage Original chat message
 	 * @returns {Promise<string>}
 	 */
 	async addQuote( chatMessage: string ): Promise<string>
 	{
-		if ( !this.isStreamActive || !chatMessage ) return '';
+		if ( !this.isStreamActive || !chatMessage )
+			return '';
 
 		const syntaxError = 'The correct syntax: !addquote USERNAME quote';
 
@@ -279,14 +312,16 @@ export abstract class TwitchUtils
 		if ( chatMessageSplitted.length < 2 )
 			return syntaxError;
 
-		let author: string|HelixUser|null = chatMessageSplitted[0] ?? '';
+		let author: string | HelixUser | null = chatMessageSplitted[0] ?? '';
 		if ( author === 'help' )
 			return syntaxError;
 
 		author = await this.data.getUser( author );
 		// Couldnt find user, so assume the author is me
-		if ( author ) chatMessageSplitted.splice( 0, 1 );
-		else author = this.data.twitchUser;
+		if ( author )
+			chatMessageSplitted.splice( 0, 1 );
+		else
+			author = this.data.twitchUser;
 
 		const quoteText = chatMessageSplitted.join( ' ' );
 		const videoId = await Youtube.getCurrentLivestreamVideoId();
@@ -302,26 +337,29 @@ export abstract class TwitchUtils
 
 		const lastId = this.data.addQuote( quote );
 
-		return getMessage( this.commands.commands.get( 'addquote' )?.message, this.streamLanguage ).replace( '[count]', lastId );
+		return getMessage( this.commands.commands.get( 'addquote' )?.message, this.streamLanguage ).replace( '[count]',
+			lastId );
 	}
 
 	/** Search and replace emotes with images tags on chat message.
-	 * 
+	 *
 	 * @param {string} message Message to search and replace
 	 * @param {ChatMessage} msg message object
 	 * @returns {string} Modlist with all nicknames
 	 */
 	searchReplaceEmotes( message: string, msg: ChatMessage ): string
 	{
-		if ( !message || !msg ) return '';
+		if ( !message || !msg )
+			return '';
 
 		const emotes = this.data.emotes;
-		if ( !emotes ) return '';
+		if ( !emotes )
+			return '';
 
 		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
 		const messageParts = [];
 
-		for( const [_index, messagePart] of parsedMessage.entries() )
+		for ( const [ _index, messagePart ] of parsedMessage.entries() )
 		{
 			if ( messagePart.type === 'text' )
 			{
@@ -332,39 +370,49 @@ export abstract class TwitchUtils
 			// Replace known Emotes
 			if ( emotes.has( messagePart.name ) )
 			{
-				messageParts.push( `<img src='${ emotes.get( messagePart.name ) }' alt='${ messagePart.name }' class='emote emote-known' />` );
+				messageParts.push(
+					`<img src='${
+						emotes.get( messagePart.name )
+					}' alt='${messagePart.name}' class='emote emote-known' />`
+				);
 			}
 			// Replace unknown Emotes
 			else if ( messagePart.type === 'emote' )
 			{
-				messageParts.push( `<img src='https://static-cdn.jtvnw.net/emoticons/v2/${ messagePart.id }/static/dark/3.0' alt='${ messagePart.name }' class='emote emote-unknown' />` );
+				messageParts.push(
+					`<img src='https://static-cdn.jtvnw.net/emoticons/v2/${messagePart.id}/static/dark/3.0' alt='${messagePart.name}' class='emote emote-unknown' />`
+				);
 			}
 		}
 
 		let messageWithEmotes = messageParts.join( ' ' );
 
 		// Replace all External Emotes
-		messageWithEmotes = messageWithEmotes.split(' ').map( word => emotes.has( word ) ? `<img src='${ emotes.get( word ) }' alt='${ word }' class='emote emote-external' />` : word ).join(' ');
-		
+		messageWithEmotes = messageWithEmotes.split( ' ' ).map( ( word ) =>
+			emotes.has( word ) ? `<img src='${emotes.get( word )}' alt='${word}' class='emote emote-external' />` : word
+		).join( ' ' );
+
 		return messageWithEmotes;
 	}
 
 	/** Check if is valid text message for stats.
-	 * 
+	 *
 	 * @param {string} message Message to search and replace
 	 * @param {ChatMessage} msg Message object
 	 */
 	isValidMessageText( message: string, msg: ChatMessage )
 	{
-		if ( !message || !msg ) return false;
+		if ( !message || !msg )
+			return false;
 
 		const emotes = this.data.emotes;
-		if ( !emotes ) return false;
+		if ( !emotes )
+			return false;
 
 		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
 		const messageParts = [];
 
-		for( const messagePart of parsedMessage )
+		for ( const messagePart of parsedMessage )
 		{
 			// Check if its normal text and not external emote
 			if ( messagePart.type === 'text' && messagePart.text !== ' ' )
@@ -375,7 +423,7 @@ export abstract class TwitchUtils
 			return false;
 
 		const messageWithEmotes = [];
-		for( const word of messageParts.join( ' ' ).split( ' ' ) )
+		for ( const word of messageParts.join( ' ' ).split( ' ' ) )
 		{
 			if ( !emotes.has( word ) )
 				messageWithEmotes.push( word );
@@ -383,24 +431,25 @@ export abstract class TwitchUtils
 
 		if ( !messageWithEmotes.length || messageWithEmotes.join( ' ' ).length < this.validMessageThreshold )
 			return false;
-		
+
 		return true;
 	}
 
 	/** Send test event
-	 * 
+	 *
 	 * @param {string} eventMessage Whole chat message to parse
 	 */
 	sendTestEvent( eventMessage: string )
 	{
-		if ( !eventMessage ) return;
+		if ( !eventMessage )
+			return;
 
 		const splittedMessage = eventMessage.split( ' ' );
 		const eventType = splittedMessage[0];
 
 		// Get username from random follower ...
 		const followers = this.data.followers;
-		let userName = followers[ getRandomNumber( followers.length ) ].name || this.data.userName;
+		let userName = followers[getRandomNumber( followers.length )].name || this.data.userName;
 
 		// ... or pritoritize from command if given
 		if ( splittedMessage[1] )
@@ -412,25 +461,29 @@ export abstract class TwitchUtils
 			message = splittedMessage.slice( 2 ).join( ' ' );
 
 		// Send random count number for specific event types
-		const eventTypesWithCount = [ 'cheer', 'chatscore-100', 'chatscore-500', 'chatscore-1000','chatscore-2000', 'chatscore-3000', 'chatscore-4000', 'chatscore-5000','chatscore-6000', 'chatscore-7000', 'chatscore-8000', 'chatscore-9000','chatscore-10000', 'communitysub', 'communitysub-2', 'kofidonation', 'kofishoporder', 'kofisubscription', 'raid', 'resub-1', 'resub-2', 'resub-3', 'subgift' ];
+		const eventTypesWithCount = [ 'cheer', 'chatscore-100', 'chatscore-500', 'chatscore-1000', 'chatscore-2000',
+			'chatscore-3000', 'chatscore-4000', 'chatscore-5000', 'chatscore-6000', 'chatscore-7000', 'chatscore-8000',
+			'chatscore-9000', 'chatscore-10000', 'communitysub', 'communitysub-2', 'kofidonation', 'kofishoporder',
+			'kofisubscription', 'raid', 'resub-1', 'resub-2', 'resub-3', 'subgift' ];
 		let count = parseInt( splittedMessage[2] || '0' );
 		if ( !count && eventTypesWithCount.includes( eventType ) )
 			count = getRandomNumber( 50, 1 );
 
-		this.processEvent({
+		this.processEvent( {
 			eventType: eventType,
 			user: userName,
 			eventCount: count,
 			eventText: message,
 			isTest: true
-		});
+		} );
 	}
 
 	/** Get the current stream for API */
-	getStreamApi(): StreamDataApi|undefined
+	getStreamApi(): StreamDataApi | undefined
 	{
 		const stream = this.stream;
-		if ( !stream ) return;
+		if ( !stream )
+			return;
 
 		const streamData: StreamDataApi = {
 			gameName: stream.gameName,
@@ -438,30 +491,32 @@ export abstract class TwitchUtils
 			thumbnailUrl: stream.thumbnailUrl,
 			title: stream.title,
 			language: stream.language
-		}
+		};
 		return streamData;
 	}
 
 	/** Toggle Killswitch status */
 	toggleKillswitch( killswitchStatus?: boolean )
 	{
-		this.killswitch = typeof killswitchStatus !== 'undefined' ? Boolean( killswitchStatus ) : !this.killswitch;	
+		this.killswitch = typeof killswitchStatus !== 'undefined' ? Boolean( killswitchStatus ) : !this.killswitch;
 	}
 
 	/** Handle Focus Command
-	 * 
+	 *
 	 * @param {string|number} focusStatusOrTime Focus status or focus time
 	 */
-	handleFocus( focusStatusOrTime: string|number = 10 ): number
+	handleFocus( focusStatusOrTime: string | number = 10 ): number
 	{
-		if ( !focusStatusOrTime ) return 0;
+		if ( !focusStatusOrTime )
+			return 0;
 		if ( focusStatusOrTime === 'stop' )
 		{
 			this.toggleFocus( false );
 			return 0;
 		}
 
-		if ( !focusStatusOrTime.isNumeric() ) return 0;
+		if ( !focusStatusOrTime.isNumeric() )
+			return 0;
 		focusStatusOrTime = parseInt( focusStatusOrTime.toString() );
 
 		this.toggleFocus( true, focusStatusOrTime );
@@ -476,75 +531,88 @@ export abstract class TwitchUtils
 		if (
 			typeof focusStatus !== 'boolean' ||
 			typeof focusTimer !== 'number'
-		) return;
+		)
+			return;
 
 		this.focus = focusStatus;
 		this.toggleRewardPause( focusStatus );
 		const eventType = this.focus ? 'focusstart' : 'focusstop';
 
-		this.processEvent({
+		this.processEvent( {
 			eventType: eventType,
 			user: await this.data.getUser() || this.data.userName,
 			eventCount: focusTimer
-		});
+		} );
 	}
 
 	/** Toggle Reward Status for focus blacklist rewards
-	 * 
+	 *
 	 * @param {boolean} focusStatus
 	 */
 	toggleRewardPause( focusStatus: boolean = false )
 	{
-		if ( typeof focusStatus !== 'boolean' ) return;
+		if ( typeof focusStatus !== 'boolean' )
+			return;
 		try
 		{
-			for( const [rewardSlug, reward] of Object.entries( this.data.rewards ))
+			for ( const [ rewardSlug, reward ] of Object.entries( this.data.rewards ) )
 			{
-				if ( !this.data.getEvent( rewardSlug ).disableOnFocus ) continue;
+				if ( !this.data.getEvent( rewardSlug ).disableOnFocus )
+					continue;
 
 				const rewardUpdateData = {
 					title: reward.title,
 					cost: reward.cost,
 					isPaused: focusStatus
-				}
+				};
 
-				this.data.twitchApi.channelPoints.updateCustomReward( this.data.userId, reward.id.toString(), rewardUpdateData );
+				this.data.twitchApi.channelPoints.updateCustomReward( this.data.userId, reward.id.toString(),
+					rewardUpdateData );
 			}
 		}
-		catch( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	/** Send Stream Online Data to discord
-	 * 
+	 *
 	 * @param {HelixStream} stream Current Stream
 	 */
-	async sendStremOnlineDataToDiscord( stream?: HelixStream|undefined|null )
+	async sendStremOnlineDataToDiscord( stream?: HelixStream | undefined | null )
 	{
 		stream = stream ? stream : this.stream;
-		if ( !stream ) return;
+		if ( !stream )
+			return;
 
 		const user = await this.data.getUser();
-		if ( !user ) return;
+		if ( !user )
+			return;
 
-		const streamAnnouncementMessage = getMessage( this.data.getEvent( 'streamonline' ).message, this.streamLanguage ).replace( '[user]', user.displayName ) || `${user.displayName} ist jetzte live!`;
-		
+		const streamAnnouncementMessage =
+			getMessage( this.data.getEvent( 'streamonline' ).message, this.streamLanguage ).replace( '[user]',
+				user.displayName ) || `${user.displayName} ist jetzte live!`;
+
 		const streamData: StreamData = {
 			displayName: user.displayName,
 			profilePictureUrl: user.profilePictureUrl,
-			streamUrl: `https://twitch.tv/${ user.name }/`,
-			streamThumbnailUrl: stream?.thumbnailUrl ? stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` : `${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-propz.jpg`,
+			streamUrl: `https://twitch.tv/${user.name}/`,
+			streamThumbnailUrl: stream?.thumbnailUrl ?
+				stream.getThumbnailUrl( 800, 450 ) + `?id=${stream.id}` :
+				`${Deno.env.get( 'PUBLIC_URL' )?.toString()}/assets/thumbnail-propz.jpg`,
 			streamTitle: stream?.title ? stream.title : streamAnnouncementMessage,
 			streamDescription: stream?.gameName ? stream.gameName : 'Software & Game Development',
 			streamAnnouncementMessage: streamAnnouncementMessage,
 			test: !stream ? true : false
-		}
-		
+		};
+
 		console.table( streamData );
 		this.discord.sendStremOnlineMessage( streamData );
 	}
 
 	/** Get simple user data from ChatUser Object */
-	async convertToSimplerUser( user: ChatUser|HelixUser|SimpleUser )
+	async convertToSimplerUser( user: ChatUser | HelixUser | SimpleUser )
 	{
 		// Check for ChatUser and convert to HelixUser
 		let color = '';
@@ -571,7 +639,7 @@ export abstract class TwitchUtils
 	}
 
 	/** Handle kofi event
-	 * 
+	 *
 	 * @param {KofiData} kofiData Webhook data passed from ko-fi.com
 	 */
 	handleKofiEvent( kofiData: KofiData ): number
@@ -580,31 +648,32 @@ export abstract class TwitchUtils
 			!kofiData?.type ||
 			!kofiData?.amount ||
 			kofiData?.verification_token !== Deno.env.get( 'KOFI_TOKEN' )
-		) return 400;
+		)
+			return 400;
 
-		log( `Webhook: Kofi ${ kofiData.type }` );
+		log( `Webhook: Kofi ${kofiData.type}` );
 
 		const type = 'kofi' + kofiData.type.trim().replace( ' ', '' ).toLowerCase();
 		const name = kofiData.from_name || 'anonymous';
 
-		this.processEvent({
+		this.processEvent( {
 			eventType: type,
 			user: name,
 			eventCount: parseFloat( kofiData.amount ),
 			eventText: kofiData.message || '',
 			isTest: ( name == 'Jo Example' )
-		});
+		} );
 
 		return 200;
 	}
 
 	/** Check if event can be fired
-	 * 
+	 *
 	 * @param {string} eventType Event type name
 	 * @param {string} userName User name
 	 */
-	fireEvent( eventType: string, user: HelixUser|SimpleUser|ChatUser|string )
-	{	
+	fireEvent( eventType: string, user: HelixUser | SimpleUser | ChatUser | string )
+	{
 		if ( !eventType || !user )
 			return false;
 
@@ -620,21 +689,23 @@ export abstract class TwitchUtils
 		if (
 			this.killswitch &&
 			userName !== this.data.userName
-		) return false;
-		
+		)
+			return false;
+
 		// Prevent chatscore events to fire multiple times
-		const [lastEvent] = this.data.getLastEventsData( this.streamLanguage ).slice(0,1);
+		const [ lastEvent ] = this.data.getLastEventsData( this.streamLanguage ).slice( 0, 1 );
 		if (
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
 			eventType === lastEvent.type &&
 			userName.toLowerCase() === ( lastEvent.name?.toLowerCase() || '' )
-		) return false;
-		
+		)
+			return false;
+
 		// Focus Mode
 		if ( this.focus && event.disableOnFocus )
 			return false;
-		
+
 		if ( this.data.isBot( userName ) )
 			return false;
 
@@ -642,13 +713,14 @@ export abstract class TwitchUtils
 	}
 
 	/** Check if commands can be executed */
-	fireCommand( chatMessage: string, user: ChatUser|SimpleUser )
+	fireCommand( chatMessage: ChatMessage )
 	{
-		if ( !chatMessage || !user )
+		if ( !chatMessage )
 			return false;
 
-		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
+		const commandName = this.commands.getCommandNameFromMessage( chatMessage.text );
 		const command = this.commands.commands.get( commandName );
+		const user = chatMessage.userInfo;
 
 		// No data for this command
 		if ( !command )
@@ -659,12 +731,12 @@ export abstract class TwitchUtils
 			return false;
 
 		// Check for mod properties
-		const userName = user instanceof ChatUser ? user.userName : user.name;
 		if (
 			command.onlyMods &&
 			!user.isMod &&
-			userName !== this.data.userName
-		) return false;
+			user.userName !== this.data.userName
+		)
+			return false;
 
 		if ( this.commands.isCommandInCooldown( commandName ) )
 			return false;
@@ -677,7 +749,7 @@ export abstract class TwitchUtils
 	{
 		if ( !channel || !user || !text || !msg )
 			return false;
-		
+
 		// Not home channel
 		if ( channel !== this.data.userName )
 			return false;
@@ -697,10 +769,12 @@ export abstract class TwitchUtils
 	{
 		const minutesPassed = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 / 60 ).toString();
 		const timer = this.data.timers.get( minutesPassed );
-		if ( !timer ) return;
+		if ( !timer )
+			return;
 
 		const message = getMessage( timer.message, this.streamLanguage );
-		if ( !message ) return;
+		if ( !message )
+			return;
 
 		if ( timer.isAnnouncement )
 		{
@@ -711,45 +785,74 @@ export abstract class TwitchUtils
 	}
 
 	/** Process question command/redemption (post to discord)
-	 * 
+	 *
 	 * @param {string} questionType Fragetyp (code, design)
 	 * @param {string} questionText Fragetext
 	 * @param {HelixUser} user Fragende Person
 	 * @param {ChatMessage} msg Message Object
 	 */
-	handleQuestion( questionType: string, questionText: string, user: HelixUser|SimpleUser )
+	handleQuestion( questionType: string, questionText: string, user: HelixUser | SimpleUser )
 	{
-		if ( !questionType || !questionText || !user ) return;
+		if ( !questionType || !questionText || !user )
+			return;
 
 		const command = this.commands.commands.get( questionType );
-		if ( !command?.discord ) return;
+		if ( !command?.discord )
+			return;
 
 		// Setup post data
 		const title = questionText.replace( `${questionType} `, '' );
-		const message = `${title}\n\r\n\rQuestion by **${ user.displayName }** on Twitch.`;
+		const message = `${title}\n\r\n\rQuestion by **${user.displayName}** on Twitch.`;
 
 		// Create Thread
-		const channelId = this.discord.channels[ command.discord ];
+		const channelId = this.discord.channels[command.discord];
 
 		this.discord.createPost( channelId, title, message )
-			.then( threadChannel => {
+			.then( ( threadChannel ) =>
+			{
 				if ( threadChannel )
 					this.chat.sendAction( `Thread wurde zur Diskussion erstellt ▶️ ${threadChannel.url}` );
 
 				return true;
-			});
+			} );
 	}
 
 	/** Get the right username */
-	getUsernameFromObject( user: HelixUser|ChatUser|SimpleUser|string )
+	getUsernameFromObject( user: HelixUser | ChatUser | SimpleUser | string )
 	{
-		if ( !user ) return '';
+		if ( !user )
+			return '';
 		if ( typeof user === 'string' )
 			return user.toLowerCase();
 		if ( user instanceof ChatUser )
 			return user.userName;
-		
+
 		return user.name;
+	}
+
+	/** Auto translate if needed
+	 *
+	 * @param {string} message
+	 * @param {ChatMessage} msg
+	 */
+	async translateIfNeeded( message: string, msg: ChatMessage )
+	{
+		try
+		{
+			const result = await cld.detect( message, {
+				bestEffort: true
+			} );
+
+			if ( result?.languages?.[0]?.code !== 'pt' )
+				return;
+
+			const translation = await Deepl.translate( message, this.streamLanguage );
+			this.chat.sendMessage( translation, msg );
+		}
+		catch ( _error: unknown )
+		{
+			/* meh */
+		}
 	}
 
 	/** Reload data */
@@ -761,27 +864,36 @@ export abstract class TwitchUtils
 		try
 		{
 			// Dynamically import the module to bypass the cache
-			const { TwitchCommands } = await import(`./TwitchCommands.ts?cache-bust=${Date.now()}`);
+			const { TwitchCommands } = await import( `./TwitchCommands.ts?cache-bust=${Date.now()}` );
 			this.commands = new TwitchCommands( this );
 			log( 'Config reloaded ♻️' );
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	// Overrides
 	// deno-lint-ignore no-unused-vars
-	async processChatCommand( chatMessage: string, sender: ChatUser|SimpleUser ){}
+	async processChatCommand( chatMessage: string, msg: ChatMessage )
+	{}
 	// deno-lint-ignore no-unused-vars
-	async processChatMessage( chatMessage: string, msg: ChatMessage ){}
+	async processChatMessage( chatMessage: string, msg: ChatMessage )
+	{}
 	// deno-lint-ignore no-unused-vars
 	async processEvent( options: {
-		eventType: string,
-		user: HelixUser|SimpleUser|ChatUser|string,
-		sender?: string,
-		eventCount?: number,
-		eventText?: string,
-		isTest?: boolean
-	}){}
+		eventType: string;
+		user: HelixUser | SimpleUser | ChatUser | string;
+		sender?: string;
+		eventCount?: number;
+		eventText?: string;
+		isTest?: boolean;
+	} )
+	{}
 	// deno-lint-ignore no-unused-vars
-	async processApiCall( data: ApiRequest ): Promise<ApiResponse> { return await { 'data': false } }
+	async processApiCall( data: ApiRequest ): Promise<ApiResponse>
+	{
+		return await { data: false };
+	}
 }

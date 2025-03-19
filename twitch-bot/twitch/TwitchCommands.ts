@@ -1,17 +1,19 @@
 /**
  * Twitch Commands
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.13
+ * @version 1.6.0
  */
 
+import { log, sanitizeMessage } from '@propz/helpers.ts';
+import { Deepl } from '../external/Deepl.ts';
+import { Gemini } from '../external/Gemini.ts';
 import { OpenAI } from '../external/OpenAi.ts';
-import { Youtube } from '../external/Youtube.ts';
-import { log } from '@propz/helpers.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
+import { Youtube } from '../external/Youtube.ts';
 
-import type { CommercialLength } from '@twurple/api';
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
+import type { CommercialLength } from '@twurple/api';
 import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
@@ -23,7 +25,7 @@ export class TwitchCommands
 				this.twitch.startAds( parseInt( options.param || '180' ) as CommercialLength );
 			},
 			aliases: [ 'adbreak', 'werbung' ],
-			onlyMods: true,
+			onlyMods: true
 		},
 		addquote: {
 			handler: async ( options: TwitchCommandOptions ) =>
@@ -34,16 +36,7 @@ export class TwitchCommands
 			message: {
 				de: 'Zitat erfolgreich gespeichert: #[count]',
 				en: 'Quote successfully saved: #[count]'
-			},
-		},
-		ai: {
-			handler: async ( options: TwitchCommandOptions ) =>
-			{
-				if ( !this.twitch.isStreamActive ) return;
-				return await OpenAI.handleAiRequest( options.message, options.sender.name || this.twitch.data.userDisplayName );
-			},
-			aliases: [ 'ki' ],
-			description: 'AI-Antwort im Twitch Chat',
+			}
 		},
 		airhorn: {
 			aliases: [ 'horn' ],
@@ -104,7 +97,7 @@ export class TwitchCommands
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
-					options.commandMessage,
+					options.returnMessage,
 					'message_count'
 				);
 			},
@@ -112,15 +105,15 @@ export class TwitchCommands
 			message: {
 				de: '@[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
 				en: '@[user] has written [count] chat messages › Rank: [rank]'
-			},
+			}
 		},
 		chatting: {
 			onlyMods: true,
 			obs: [
 				{
-					'requestType': 'SetCurrentProgramScene',
-					'requestData': {
-						'sceneName': '[S] CHATTING'
+					requestType: 'SetCurrentProgramScene',
+					requestData: {
+						sceneName: '[S] CHATTING'
 					}
 				}
 			]
@@ -152,7 +145,15 @@ export class TwitchCommands
 		},
 		delphin: {
 			aliases: [ 'delfin', 'dolphin', 'golfinho' ],
-			hasSound: true
+			hasSound: true,
+			disableOnFocus: true
+		},
+		donate: {
+			aliases: [ 'ko-fi', 'kofi' ],
+			message: {
+				de: 'Unterstütze den kreativen Flow mit einer Runde virtuellen Kaffee! ☕ https://propz.de/donate',
+				en: 'Support the creative flow with a virtual coffee! ☕ https://propz.de/donate'
+			}
 		},
 		discord: {
 			aliases: [ 'dc', 'ds' ],
@@ -182,17 +183,17 @@ export class TwitchCommands
 			{
 				const emotes = this.twitch.data.emotes
 					.entries()
-					.map( ([key, _value]) => key )
+					.map( ( [ key, _value ] ) => key )
 					.toArray()
-					.filter( (value) => value.startsWith( 'propz' ) )
+					.filter( ( value ) => value.startsWith( 'propz' ) )
 					.join( ' ' );
-				return options.commandMessage?.replace( '[emotes]', emotes );
+				return options.returnMessage?.replace( '[emotes]', emotes );
 			},
 			description: 'Alle Emotes',
 			message: {
 				de: 'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading',
 				en: 'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading'
-			},
+			}
 		},
 		emotional: {
 			cooldown: 20,
@@ -203,9 +204,9 @@ export class TwitchCommands
 			onlyMods: true,
 			obs: [
 				{
-					'requestType': 'SetCurrentProgramScene',
-					'requestData': {
-						'sceneName': '[S] ENDE'
+					requestType: 'SetCurrentProgramScene',
+					requestData: {
+						sceneName: '[S] ENDE'
 					}
 				}
 			]
@@ -213,7 +214,7 @@ export class TwitchCommands
 		error: {
 			cooldown: 30,
 			aliases: [ 'fehler' ],
-			hasVideo: true,
+			hasVideo: true
 		},
 		event: {
 			handler: ( options: TwitchCommandOptions ) =>
@@ -238,13 +239,13 @@ export class TwitchCommands
 			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage?.replace( '[user]', this.twitch.firstChatter );
+				return options.returnMessage?.replace( '[user]', this.twitch.firstChatter );
 			},
 			description: 'First Chatter des Streams',
 			message: {
 				de: '@[user] war heute die erste Chatterin 💬',
 				en: '@[user] was the first chatter today 💬'
-			},
+			}
 		},
 		firstscore: {
 			aliases: [ 'firstranking' ],
@@ -252,7 +253,7 @@ export class TwitchCommands
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
-					options.commandMessage,
+					options.returnMessage,
 					'first_count'
 				);
 			},
@@ -273,8 +274,9 @@ export class TwitchCommands
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				const focusTimer = this.twitch.handleFocus( parseInt( options.param || '10' ) );
-				if ( !focusTimer ) return;
-				return options.commandMessage?.replace( '[count]', focusTimer.toString() );
+				if ( !focusTimer )
+					return;
+				return options.returnMessage?.replace( '[count]', focusTimer.toString() );
 			},
 			aliases: [ 'focus' ],
 			message: {
@@ -288,7 +290,7 @@ export class TwitchCommands
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
-					options.commandMessage,
+					options.returnMessage,
 					'follow_date'
 				);
 			},
@@ -297,7 +299,7 @@ export class TwitchCommands
 			message: {
 				de: '@[user] folgt [broadcaster] seit: [count]',
 				en: '@[user] has been following [broadcaster] since: [count]'
-			},
+			}
 		},
 		gameover: {
 			cooldown: 60,
@@ -310,12 +312,24 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
+		gemini: {
+			aliases: [ 'ai', 'ki' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !this.twitch.isStreamActive ) return;
+				return await Gemini.generate(
+					options.message,
+					options.sender.name || this.twitch.data.userDisplayName
+				);
+			},
+			description: 'AI-Antwort im Twitch Chat'
+		},
 		github: {
 			message: {
-				de: "Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻",
-				en: "Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻"
+				de: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
+				en: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻'
 			},
-			description: "Creative Coding Chaos"
+			description: 'Creative Coding Chaos'
 		},
 		hallelujah: {
 			aliases: [ 'halleluja', 'aleluia' ],
@@ -339,7 +353,7 @@ export class TwitchCommands
 		internet: {
 			aliases: [ 'internetz', 'dial' ],
 			disableOnFocus: true,
-			hasSound: true,
+			hasSound: true
 		},
 		jenny: {
 			cooldown: 30,
@@ -379,7 +393,7 @@ export class TwitchCommands
 					'A Web Designer Decided To Use Right Aligned Text. His Boss Yelled At Him For It, Because It Wasn’t Justified.',
 					'What Happens When Comic Sans Walks Into A Bar? The Bartender Says, ‘We Don\'t Serve Your Type Here!’'
 				]
-			},
+			}
 		},
 		junge: {
 			cooldown: 10,
@@ -403,11 +417,14 @@ export class TwitchCommands
 			message: '🍪',
 			description: '🍪'
 		},
-		killswitch:{
+		killswitch: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.toggleKillswitch();
-				return options.commandMessage?.replace( '[text]', this.twitch.killswitch ? 'Activated' : 'Deactivated' );
+				return options.returnMessage?.replace(
+					'[text]',
+					this.twitch.killswitch ? 'Activated' : 'Deactivated'
+				);
 			},
 			message: {
 				de: 'Killswitch [text]',
@@ -417,7 +434,7 @@ export class TwitchCommands
 		},
 		ko: {
 			cooldown: 60,
-			hasVideo: true,
+			hasVideo: true
 		},
 		lachen: {
 			aliases: [ 'laugh', 'laughter' ],
@@ -433,7 +450,7 @@ export class TwitchCommands
 		lurk: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage.replace( '[user]', options.sender.displayName );
+				return options.returnMessage.replace( '[user]', options.sender.displayName );
 			},
 			description: 'Lurkstart',
 			message: {
@@ -457,7 +474,7 @@ export class TwitchCommands
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				const user = options.param || options.sender.displayName;
-				return options.commandMessage.replace( '[user]', user ); 
+				return options.returnMessage.replace( '[user]', user );
 			},
 			message: {
 				de: 'Mahlzeit @[user]! 🍽️',
@@ -468,13 +485,17 @@ export class TwitchCommands
 		mark: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
+				if ( !this.twitch.isStreamActive )
+					return;
 				try
 				{
-					await this.twitch.api.streams.createStreamMarker( this.twitch.data.userId, options.message || 'Marker' );
+					await this.twitch.api.streams.createStreamMarker(
+						this.twitch.data.userId,
+						options.message || 'Marker'
+					);
 					return `Marker created`;
 				}
-				catch( error: unknown )
+				catch ( error: unknown )
 				{
 					log( error );
 					return 'Failed to create marker';
@@ -515,16 +536,28 @@ export class TwitchCommands
 		},
 		ohno: {
 			cooldown: 60,
-			hasVideo: true,
+			hasVideo: true
+		},
+		openai: {
+			aliases: [ 'chatgpt', 'gpt' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !this.twitch.isStreamActive ) return;
+				return await OpenAI.generate(
+					options.message,
+					options.sender.name || this.twitch.data.userDisplayName
+				);
+			},
+			description: 'AI-Antwort im Twitch Chat'
 		},
 		pause: {
 			hasSound: true,
 			onlyMods: true,
 			obs: [
 				{
-					'requestType': 'SetCurrentProgramScene',
-					'requestData': {
-						'sceneName': '[S] PAUSE'
+					requestType: 'SetCurrentProgramScene',
+					requestData: {
+						sceneName: '[S] PAUSE'
 					}
 				}
 			]
@@ -546,10 +579,10 @@ export class TwitchCommands
 		propz: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent({
+				this.twitch.processEvent( {
 					eventType: 'propz',
 					user: options.param || this.twitch.data.userName
-				});
+				} );
 			}
 		},
 		psx: {
@@ -565,13 +598,13 @@ export class TwitchCommands
 		quote: {
 			aliases: [ 'zitat' ],
 			description: 'Random quote.',
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return this.twitch.data.getQuote( parseInt( options.param ) || 0 );
 			}
 		},
 		raid: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.startRaid( options.param );
 			},
@@ -599,156 +632,156 @@ export class TwitchCommands
 		reset: {
 			obs: [
 				{
-					'requestType': 'SetSourceFilterEnabled',
-					'requestData': {
-						'sourceName': '[Video] Colorful',
-						'sourceUuid': '',
-						'filterName': 'reset',
-						'filterEnabled': true
+					requestType: 'SetSourceFilterEnabled',
+					requestData: {
+						sourceName: '[Video] Colorful',
+						sourceUuid: '',
+						filterName: 'reset',
+						filterEnabled: true
 					}
 				},
 				{
-					'requestType': 'SetSourceFilterEnabled',
-					'requestData': {
-						'sourceName': '[Video] Halloween',
-						'sourceUuid': '',
-						'filterName': 'reset',
-						'filterEnabled': true
+					requestType: 'SetSourceFilterEnabled',
+					requestData: {
+						sourceName: '[Video] Halloween',
+						sourceUuid: '',
+						filterName: 'reset',
+						filterEnabled: true
 					}
 				},
 				{
-					'requestType': 'SetSourceFilterEnabled',
-					'requestData': {
-						'sourceName': '[Video] Christmas',
-						'sourceUuid': '',
-						'filterName': 'reset',
-						'filterEnabled': true
+					requestType: 'SetSourceFilterEnabled',
+					requestData: {
+						sourceName: '[Video] Christmas',
+						sourceUuid: '',
+						filterName: 'reset',
+						filterEnabled: true
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 10,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 10,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 5,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 5,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 41,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 41,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 40,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 40,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 6,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 6,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'SetSceneItemEnabled',
-					'requestData': {
-						'sceneName': '[R] VIDEOBOARD',
-						'sceneUuid': '4580d8ec-31a7-40e3-b8a8-4f1399080904',
-						'sceneItemId': 7,
-						'sceneItemEnabled': false
+					requestType: 'SetSceneItemEnabled',
+					requestData: {
+						sceneName: '[R] VIDEOBOARD',
+						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
+						sceneItemId: 7,
+						sceneItemEnabled: false
 					}
 				},
 				{
-					'requestType': 'TriggerMediaInputAction',
-					'requestData': {
-						'inputName': '[Video] Fireworks Rain',
-						'mediaAction': 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					requestType: 'TriggerMediaInputAction',
+					requestData: {
+						inputName: '[Video] Fireworks Rain',
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
 					}
 				},
 				{
-					'requestType': 'TriggerMediaInputAction',
-					'requestData': {
-						'inputName': '[Video] Fireworks Alert',
-						'mediaAction': 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					requestType: 'TriggerMediaInputAction',
+					requestData: {
+						inputName: '[Video] Fireworks Alert',
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
 					}
 				},
 				{
-					'requestType': 'TriggerMediaInputAction',
-					'requestData': {
-						'inputName': '[Video] Bill Ted Guitar',
-						'mediaAction': 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					requestType: 'TriggerMediaInputAction',
+					requestData: {
+						inputName: '[Video] Bill Ted Guitar',
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
 					}
 				},
 				{
-					'requestType': 'PressInputPropertiesButton',
-					'requestData': {
-						'inputName': '[Browser] Chat',
-						'inputUuid': '',
-						'propertyName': 'refreshnocache'
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Chat',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
 					}
 				},
 				{
-					'requestType': 'PressInputPropertiesButton',
-					'requestData': {
-						'inputName': '[Browser] Alerts',
-						'inputUuid': '',
-						'propertyName': 'refreshnocache'
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Alerts',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
 					}
 				},
 				{
-					'requestType': 'PressInputPropertiesButton',
-					'requestData': {
-						'inputName': '[Browser] Mediaboard',
-						'inputUuid': '',
-						'propertyName': 'refreshnocache'
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Mediaboard',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
 					}
 				},
 				{
-					'requestType': 'PressInputPropertiesButton',
-					'requestData': {
-						'inputName': '[Browser] Stream Events',
-						'inputUuid': '',
-						'propertyName': 'refreshnocache'
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Stream Events',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
 					}
 				},
 				{
-					'requestType': 'PressInputPropertiesButton',
-					'requestData': {
-						'inputName': '[Browser] Stream Events Vertical',
-						'inputUuid': '',
-						'propertyName': 'refreshnocache'
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Stream Events Vertical',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
 					}
 				},
 				{
-					'requestType': 'SetSourceFilterEnabled',
-					'requestData': {
-						'sourceName': '[Clone] Webcam (Desktop)',
-						'sourceUuid': '',
-						'filterName': 'reset-zoom',
-						'filterEnabled': true
+					requestType: 'SetSourceFilterEnabled',
+					requestData: {
+						sourceName: '[Clone] Webcam (Desktop)',
+						sourceUuid: '',
+						filterName: 'reset-zoom',
+						filterEnabled: true
 					}
-				},
+				}
 			],
 			onlyMods: true
 		},
@@ -761,78 +794,86 @@ export class TwitchCommands
 			description: 'Roadmaps for Devs'
 		},
 		setgame: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					let game;
 					const param = options.param.toLowerCase();
 					if ( param.includes( 'software' ) )
-					{
 						game = await this.twitch.api.games.getGameByName( 'Software and Game Development' );
-					}
 					else if ( param.includes( 'chat' ) )
-					{
 						game = await this.twitch.api.games.getGameByName( 'Just Chatting' );
-					}
 					else
-					{
 						game = await this.twitch.api.games.getGameByName( options.param );
-					}
 
-					if ( !game ) return `Game not found`;
+					if ( !game )
+						return `Game not found`;
 
 					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { gameId: game.id } );
 					return `Game set to '${game.name}'`;
 				}
-				catch ( error: unknown ) { log( error ) }
+				catch ( error: unknown )
+				{
+					log( error );
+				}
 			},
 			aliases: [ 'game', 'setcat', 'setcategory', 'cat' ],
 			onlyMods: true
 		},
 		setlanguage: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
-					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { language: options.message } );
+					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
+						language: options.message
+					} );
 					return `Language set to '${options.message}'`;
 				}
-				catch ( error: unknown ) { log( error ) }
+				catch ( error: unknown )
+				{
+					log( error );
+				}
 			},
 			aliases: [ 'setlang', 'lang', 'language' ],
 			onlyMods: true
 		},
 		settitle: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
-					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { title: options.message } );
+					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
+						title: options.message
+					} );
 					return `Title set to '${options.message}'`;
 				}
-				catch ( error: unknown ) { log( error ) }
+				catch ( error: unknown )
+				{
+					log( error );
+				}
 			},
 			aliases: [ 'title' ],
 			onlyMods: true
 		},
 		slap: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent({
+				this.twitch.processEvent( {
 					eventType: 'slap',
 					user: options.param || options.sender.displayName,
 					sender: options.param ? options.sender.displayName : this.twitch.data.userDisplayName
-				});
+				} );
 			},
-			description: 'Slap them good',
+			description: 'Slap them good'
 		},
 		snow: {
 			hasVideo: true,
 			cooldown: 30
 		},
 		so: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.chat.sendShoutout( options.param );
 			},
@@ -842,15 +883,15 @@ export class TwitchCommands
 			handler: () =>
 			{
 				const sounds: string[] = [];
-				for( const [index, command] of this.twitch.commands.commands.entries() )
+				for ( const [ index, command ] of this.twitch.commands.commands.entries() )
 				{
 					if ( command.hasSound || command.hasVideo )
 						sounds.push( `!${index}` );
 				}
-				return `▶️ ${sounds.join(', ')}`;
+				return `▶️ ${sounds.join( ', ' )}`;
 			},
 			aliases: [ 'sb' ],
-			description: 'Alle Sounds',
+			description: 'Alle Sounds'
 		},
 		scene: {
 			aliases: [ 'szene' ],
@@ -859,27 +900,28 @@ export class TwitchCommands
 				if (
 					!options?.message ||
 					!options.sender
-				) return '';
+				)
+				{
+					return '';
+				}
 
 				let sceneName = options.message;
 				if ( options.message.toLowerCase().includes( 'desktop' ) )
-				{
 					sceneName = '[S] DESKTOP';
-				}
 
-				this.twitch.ws.maybeSendWebsocketData({
+				this.twitch.ws.maybeSendWebsocketData( {
 					type: 'command',
 					user: options.sender,
 					text: 'scene',
 					obs: [
 						{
-							'requestType': 'SetCurrentProgramScene',
-							'requestData': {
-								'sceneName': sceneName
+							requestType: 'SetCurrentProgramScene',
+							requestData: {
+								sceneName: sceneName
 							}
 						}
 					]
-				});
+				} );
 			},
 			onlyMods: true
 		},
@@ -887,9 +929,9 @@ export class TwitchCommands
 			onlyMods: true,
 			obs: [
 				{
-					'requestType': 'SetCurrentProgramScene',
-					'requestData': {
-						'sceneName': '[S] START'
+					requestType: 'SetCurrentProgramScene',
+					requestData: {
+						sceneName: '[S] START'
 					}
 				}
 			]
@@ -904,7 +946,7 @@ export class TwitchCommands
 		streamstart: {
 			obs: [
 				{
-					'requestType': 'StartStream'
+					requestType: 'StartStream'
 				}
 			],
 			onlyMods: true
@@ -912,7 +954,7 @@ export class TwitchCommands
 		streamstop: {
 			obs: [
 				{
-					'requestType': 'StopStream'
+					requestType: 'StopStream'
 				}
 			],
 			onlyMods: true
@@ -948,10 +990,10 @@ export class TwitchCommands
 		},
 		thinking: {
 			aliases: [ 'think', 'denken', 'denk', 'nachdenk', 'nachdenken' ],
-			hasVideo: true,
+			hasVideo: true
 		},
 		tnt: {
-			hasVideo: true,
+			hasVideo: true
 		},
 		tools: {
 			message: {
@@ -963,6 +1005,26 @@ export class TwitchCommands
 		tornado: {
 			cooldown: 60,
 			description: 'Tornado twister!'
+		},
+		translate: {
+			aliases: [ 't', 'deepl' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !this.twitch.isStreamActive ) return;
+
+				// Check if command as sent as reply
+				if ( options.messageObject.isReply )
+				{
+					const message = sanitizeMessage( options.messageObject.parentMessageText ?? '' );
+					if ( this.twitch.isValidMessageText( message, options.messageObject ) )
+					{
+						const translation = await Deepl.translate( message, this.twitch.streamLanguage );
+						this.twitch.chat.sendMessage( translation, options.messageObject );
+						return '';
+					}
+				}
+				return await Deepl.translate( options.message, this.twitch.streamLanguage );
+			}
 		},
 		twurple: {
 			message: {
@@ -979,9 +1041,9 @@ export class TwitchCommands
 			description: 'Prototype with AI'
 		},
 		unlurk: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage.replace('[user]', options.sender.displayName);
+				return options.returnMessage.replace( '[user]', options.sender.displayName );
 			},
 			description: 'Lurkstop',
 			message: {
@@ -999,44 +1061,43 @@ export class TwitchCommands
 					'@[user] has shed the lurk costume! 👋 Welcome back to the creative spotlight.',
 					'The Lurk mode is over - @[user] returns! 🚀 Glad to have you back in the code cosmos!'
 				]
-			},
-			
+			}
 		},
 		uptime: {
 			description: 'So lange läuft der Stream',
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getStreamUptimeText( options.commandMessage );
+				return this.twitch.getStreamUptimeText( options.returnMessage );
 			},
 			message: {
 				de: 'Streame seit [count]',
 				en: 'Streaming for [count]'
-			},
+			}
 		},
 		vod: {
 			description: 'Zum aktuellen VOD',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return options.commandMessage + await Youtube.getVodLink( this.twitch.isStreamActive );
+				return options.returnMessage + await Youtube.getVodLink( this.twitch.isStreamActive );
 			},
 			message: {
 				de: 'Zum aktuellen VOD ▶️ ',
 				en: 'To the current VOD ▶️ '
-			},
+			}
 		},
 		watchtime: {
 			description: 'Zugeschaute Stunden',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserWatchtimeText(
 					options.param || options.sender.name,
-					options.commandMessage
+					options.returnMessage
 				);
 			},
 			message: {
 				de: '@[user] guckt [broadcaster] fleißig zu: [count] › Rank: [rank]',
 				en: '@[user] is diligently watching [broadcaster]: [count] › Rank: [rank]'
-			},
+			}
 		},
 		wasser: {
 			aliases: [ 'water' ],
@@ -1052,12 +1113,17 @@ export class TwitchCommands
 			{
 				if ( !options.param )
 					options.param = 'Florianopolis';
-	
-				const weatherData = await OpenWeather.handleWeatherRequest( options.param, '', this.twitch.streamLanguage );
 
-				if ( !weatherData?.temp ) return `Nah`;
+				const weatherData = await OpenWeather.handleWeatherRequest(
+					options.param,
+					'',
+					this.twitch.streamLanguage
+				);
 
-				return options.commandMessage
+				if ( !weatherData?.temp )
+					return `Nah`;
+
+				return options.returnMessage
 					.replace( '[cityName]', weatherData.cityName )
 					.replace( '[countryCode]', weatherData.countryCode )
 					.replace( '[humidity]', weatherData.humidity )
@@ -1068,11 +1134,11 @@ export class TwitchCommands
 			message: {
 				de: 'In [cityName] ([countryCode]) ists gerade [temp]° ([feelsLike]°)  ▶️  [description] mit [humidity]% Luftfeuchtigkeit',
 				en: 'The temp in [cityName] ([countryCode]) is [temp]° ([feelsLike]°) ▶️ [description] with [humidity]% humidity'
-			},
+			}
 		},
 		web: {
 			message: {
-				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️', 
+				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️',
 				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️'
 			},
 			description: 'Hier lebt das kreative Chaos'
@@ -1105,22 +1171,29 @@ export class TwitchCommands
 			},
 			description: 'Videos und VOD\'s'
 		}
-	}));
+	} ) );
 
 	private commandHistory: Map<string, number> = new Map();
 	private twitch: TwitchUtils;
-	constructor( twitch: TwitchUtils ) { this.twitch = twitch }
+	constructor( twitch: TwitchUtils )
+	{
+		this.twitch = twitch;
+	}
 
 	/** Extracts the command name form chat message */
 	getCommandNameFromMessage( chatMessage: string )
 	{
-		if ( !chatMessage ) return '';
-		const chatMessageSplitted = chatMessage.trim().split( ' ' );
-		const commandName = chatMessageSplitted[0].toLowerCase().replace( '!', '' );
-		
-		for ( const [cmdName, cmd] of this.commands.entries() )
+		if ( !chatMessage )
+			return '';
+
+		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?\!(\w+)/ig );
+		const commandName = matches?.[0]?.[1] ?? '';
+
+		for ( const [ cmdName, cmd ] of this.commands.entries() )
+		{
 			if ( cmd.aliases?.includes( commandName ) )
 				return cmdName;
+		}
 
 		return commandName;
 	}
@@ -1131,13 +1204,21 @@ export class TwitchCommands
 		if (
 			!commandName ||
 			!this.commands.get( commandName )?.cooldown
-		) return false;
+		)
+		{
+			return false;
+		}
 
 		if ( this.commandHistory.has( commandName ) )
 		{
-			if ( ( Date.now() * 1000 ) - this.commandHistory.get( commandName )! < this.commands.get( commandName )!.cooldown! )
+			if (
+				( Date.now() * 1000 ) - this.commandHistory.get( commandName )! <
+					this.commands.get( commandName )!.cooldown!
+			)
+			{
 				return true;
-		
+			}
+
 			this.commandHistory.delete( commandName );
 		}
 

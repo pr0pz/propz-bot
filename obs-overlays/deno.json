@@ -1,7 +1,7 @@
 {
 	"name": "@propz/overlays",
 	"exports": {
-		".": "./src/main.tsx"
+		".": "./src/index.tsx"
 	},
 	"imports": {
 		"@std/fs": "jsr:@std/fs@^1.0.6",

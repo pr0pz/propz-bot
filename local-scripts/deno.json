@@ -1,7 +1,7 @@
 {
 	"name": "@propz/local-scripts",
 	"exports": {
-		".": "./main.ts"
+		".": "./index.ts"
 	},
 	"imports": {
 		"obs-websocket-js": "npm:obs-websocket-js@^5.0.6",

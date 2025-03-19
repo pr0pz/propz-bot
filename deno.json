@@ -1,16 +1,20 @@
 {
-	"version": "1.5.13",
-	"nodeModulesDir":"auto",
+	"version": "1.6.0",
+	"nodeModulesDir": "auto",
 	"fmt": {
 		"singleQuote": true,
 		"useTabs": true,
 		"exclude": ["*/*.json"]
 	},
 	"lint": {
-		"include": ["./twitch-bot", "./local-scripts", "./obs-overlays", "./shared"],
-		"exclude": ["*/*.json"]
+		"include": [
+			"./twitch-bot",
+			"./local-scripts",
+			"./obs-overlays",
+			"./shared"
+		]
 	},
-	"workspace":[
+	"workspace": [
 		"./twitch-bot",
 		"./local-scripts",
 		"./obs-overlays",
@@ -25,10 +29,10 @@
 		"lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
 	},
 	"tasks": {
-		"bot": "deno run -A --unstable-cron --env-file ./twitch-bot/main.ts dev",
-		"botwatch": "deno run -A --unstable-cron --env-file --watch-exclude='./twitch-bot/*/*.json' --watch ./twitch-bot/main.ts dev",
-		"botdebug": "deno run --inspect-brk -A --unstable-cron --env-file --watch-exclude='./twitch-bot/*/*.json' --watch ./twitch-bot/main.ts dev",
-		"local": "deno run -A --env-file --watch ./local-scripts/main.ts",
+		"bot": "deno run -A --unstable-cron --env-file ./twitch-bot/index.ts dev",
+		"botwatch": "deno run -A --unstable-cron --env-file --watch-exclude='./twitch-bot/*/*.json' --watch ./twitch-bot/index.ts dev",
+		"botdebug": "deno run --inspect-wait -A --unstable-cron --env-file --watch-exclude='./twitch-bot/*/*.json' ./twitch-bot/index.ts dev",
+		"local": "deno run -A --env-file --watch ./local-scripts/index.ts",
 		"dev": "deno run -A --env-file --watch='./obs-overlays/src/' --watch='./shared/' ./obs-overlays/dev.ts",
 		"build": "deno run -A --env-file ./obs-overlays/build.ts"
 	},

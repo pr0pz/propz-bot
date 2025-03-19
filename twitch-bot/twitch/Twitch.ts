@@ -1,30 +1,33 @@
 /**
  * Main Twitch Controler
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.11
+ * @version 1.6.0
  */
 
 import '@propz/prototypes.ts';
-import { TwitchUtils } from './TwitchUtils.ts';
-import { getMessage, sanitizeMessage, mapToObject, log } from '@propz/helpers.ts';
+import { getMessage, log, mapToObject, sanitizeMessage } from '@propz/helpers.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
+import { TwitchUtils } from './TwitchUtils.ts';
 
-import type { Discord } from '../discord/Discord.ts';
+import type { ApiRequest, ApiResponse, SimpleUser, TwitchCommandOptions } from '@propz/types.ts';
 import type { HelixUser } from '@twurple/api';
 import type { ChatMessage, ChatUser } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
-import type { ApiRequest, ApiResponse, SimpleUser, TwitchCommandOptions } from '@propz/types.ts';
+import type { Discord } from '../discord/Discord.ts';
 
 export class Twitch extends TwitchUtils
 {
 	constructor( data: BotData, discord: Discord, ws: BotWebsocket )
 	{
-		if ( !discord ) throw new Error( 'Discord is empty' );
-		if ( !data ) throw new Error( 'Data is empty' );
-		if ( !ws ) throw new Error( 'BotWebsocket is empty' );
-		
+		if ( !discord )
+			throw new Error( 'Discord is empty' );
+		if ( !data )
+			throw new Error( 'Data is empty' );
+		if ( !ws )
+			throw new Error( 'BotWebsocket is empty' );
+
 		super( data, discord, ws );
 	}
 
@@ -37,14 +40,15 @@ export class Twitch extends TwitchUtils
 		this.firstChatter = this.data.firstChatter;
 
 		await this.setStream();
-		
+
 		log( 'Bot init ✅' );
 
 		Deno.cron( 'Bot minutely', '* * * * *', () =>
 		{
-			if ( !this.isStreamActive ) return;
+			if ( !this.isStreamActive )
+				return;
 			this.handleTimers();
-		});
+		} );
 
 		Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
@@ -54,33 +58,34 @@ export class Twitch extends TwitchUtils
 			this.data.db.initDatabase();
 			this.data.init();
 			this.reloadConfig();
-		});
+		} );
 
 		log( 'Cronjobs init ✅' );
 	}
 
 	/** Process chat command
-	 * 
+	 *
 	 * @param {string} chatMessage Message text
 	 * @param {ChatMessage} msg Message object
 	 */
-	override async processChatCommand(chatMessage: string, user: ChatUser|SimpleUser)
+	override async processChatCommand( chatMessage: string, msg: ChatMessage )
 	{
-		if (!this.fireCommand(chatMessage, user)) return;
+		if ( !this.fireCommand( msg ) )
+			return;
 
-		const sender = await this.convertToSimplerUser( user );
+		const sender = await this.convertToSimplerUser( msg.userInfo );
 		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
 		const command = this.commands.commands.get( commandName )!;
 
-		this.ws.maybeSendWebsocketData({
+		this.ws.maybeSendWebsocketData( {
 			type: 'command',
 			user: sender,
 			text: commandName,
 			obs: command.obs,
 			hasSound: command.hasSound,
 			hasVideo: command.hasVideo
-		});
-		
+		} );
+
 		let message = getMessage( command.message, this.streamLanguage );
 
 		if ( command.handler )
@@ -89,8 +94,9 @@ export class Twitch extends TwitchUtils
 			const options: TwitchCommandOptions = {
 				sender: sender,
 				param: chatMessageSplitted[1] || '',
-				message: chatMessage.replace( '!' + commandName, '' ).trim(),
-				commandMessage: message
+				message: chatMessage.replaceAll( /^(?:@\w+\s)?\!\w+/gi, '' ),
+				returnMessage: message,
+				messageObject: msg
 			};
 
 			message = await command.handler( options ) || '';
@@ -101,13 +107,14 @@ export class Twitch extends TwitchUtils
 	}
 
 	/** Process chat command
-	 * 
+	 *
 	 * @param {string} chatMessage Message text
 	 * @param {ChatMessage} msg Message Object
 	 */
 	override async processChatMessage( chatMessage: string, msg: ChatMessage )
 	{
-		if ( !chatMessage || !msg ) return;
+		if ( !chatMessage || !msg )
+			return;
 
 		const user = await this.convertToSimplerUser( msg.userInfo );
 		const chatMessageSanitized = sanitizeMessage( chatMessage );
@@ -118,25 +125,29 @@ export class Twitch extends TwitchUtils
 			type: 'message',
 			user: user,
 			text: chatMessagesWithEmotes
-		});
+		} );
 
 		// Reactions
-		for( const [_index, reaction] of Object.entries( this.data.reactions ) )
+		for ( const [ _index, reaction ] of Object.entries( this.data.reactions ) )
 		{
 			if (
 				!reaction?.trigger ||
 				!reaction?.message ||
 				!chatMessage.match( reaction.trigger.toRegExp() )
-			) continue;
+			)
+			{
+				continue;
+			}
 
 			let message = getMessage( reaction.message );
 			message = message.replace( '[user]', user.displayName );
 			// Reply
-			//this.chat.sendMessage( message, msg );
+			// this.chat.sendMessage( message, msg );
 			this.chat.sendAction( message );
 		}
-		
-		if ( !this.isStreamActive ) return;
+
+		if ( !this.isStreamActive )
+			return;
 
 		// First Chat Event
 		this.setStreamFirstChatter( user );
@@ -146,6 +157,7 @@ export class Twitch extends TwitchUtils
 		{
 			this.data.updateUserData( user, 'message_count' );
 			this.data.updateStreamStats( user, 'message' );
+			this.translateIfNeeded( chatMessageSanitized, msg );
 		}
 
 		// Check for chat score
@@ -153,7 +165,7 @@ export class Twitch extends TwitchUtils
 	}
 
 	/** Process Twitch event.
-	 * 
+	 *
 	 * @param {String} eventType Type of event
 	 * @param {String} userName User name
 	 * @param {int|float} eventCount Event count
@@ -161,17 +173,19 @@ export class Twitch extends TwitchUtils
 	 * @param {boolean} isTest If is test event
 	 */
 	override async processEvent( options: {
-		eventType: string,
-		user: HelixUser|ChatUser|SimpleUser|string,
-		eventCount?: number,
-		eventText?: string,
-		isTest?: boolean,
-		sender?: string
-	})
+		eventType: string;
+		user: HelixUser | ChatUser | SimpleUser | string;
+		eventCount?: number;
+		eventText?: string;
+		isTest?: boolean;
+		sender?: string;
+	} )
 	{
-		let { eventType, user, eventCount = 0, eventText = '', isTest = false, sender = this.data.userDisplayName } = options;
-		
-		if ( !this.fireEvent( eventType, user ) ) return;
+		let { eventType, user, eventCount = 0, eventText = '', isTest = false, sender = this.data.userDisplayName } =
+			options;
+
+		if ( !this.fireEvent( eventType, user ) )
+			return;
 
 		// Get user data for username
 		if ( typeof user === 'string' )
@@ -181,7 +195,8 @@ export class Twitch extends TwitchUtils
 			// Twitch user not found = Probably kofi event
 			if ( typeof user === 'string' )
 			{
-				if ( !eventType.startsWith( 'kofi' ) ) return;
+				if ( !eventType.startsWith( 'kofi' ) )
+					return;
 				user = { name: userName, displayName: userName } as SimpleUser;
 			}
 		}
@@ -189,40 +204,41 @@ export class Twitch extends TwitchUtils
 
 		const event = this.data.getEvent( eventType );
 
-		this.ws.maybeSendWebsocketData({
+		this.ws.maybeSendWebsocketData( {
 			type: eventType,
 			user: user,
 			text: getMessage( event.eventText, this.streamLanguage ) || eventText,
 			count: eventCount,
-			extra: event.extra?.[ this.streamLanguage ],
+			extra: event.extra?.[this.streamLanguage],
 			obs: event.obs,
 			hasSound: event.hasSound,
 			hasVideo: event.hasVideo,
 			showAvatar: event.showAvatar,
 			saveEvent: event.saveEvent
-		});
+		} );
 
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )
 		{
-			this.data.addEvent({
+			this.data.addEvent( {
 				type: eventType,
 				user_id: user.id || '',
 				timestamp: Math.floor( Date.now() / 1000 ),
 				count: eventCount
-			});
+			} );
 
 			this.data.updateStreamStats( user, eventType, eventCount );
 		}
 
 		// Check for event messages and send to chat.
 		let message = getMessage( event.message, this.streamLanguage ) || '';
-		if ( !message ) return;
+		if ( !message )
+			return;
 
 		message = message.replaceAll( '[user]', user.displayName || user.name );
 		message = message.replaceAll( '[count]', eventCount.toString() );
 		message = message.replaceAll( '[sender]', sender );
-		
+
 		// Check for announcement
 		if ( event.isAnnouncement )
 			this.chat.sendAnnouncement( message );
@@ -231,20 +247,22 @@ export class Twitch extends TwitchUtils
 	}
 
 	/** Handle API calls
-	 * 
+	 *
 	 * @param {Object} data Request data
 	 */
 	override async processApiCall( apiRequest: ApiRequest ): Promise<ApiResponse>
 	{
-		const response: ApiResponse = { 'data': false }
-		if ( !apiRequest?.request ) return response;
+		const response: ApiResponse = { data: false };
+		if ( !apiRequest?.request )
+			return response;
 
-		let user: HelixUser|SimpleUser|null = await this.data.getUser();
-		if ( !user ) return response;
+		let user: HelixUser | SimpleUser | null = await this.data.getUser();
+		if ( !user )
+			return response;
 
 		user = await this.convertToSimplerUser( user );
 
-		if ( apiRequest.request.startsWith( 'command-') )
+		if ( apiRequest.request.startsWith( 'command-' ) )
 		{
 			const commandName = apiRequest.request.replace( 'command-', '' );
 			this.processChatCommand( commandName, user );
@@ -252,12 +270,12 @@ export class Twitch extends TwitchUtils
 			return response;
 		}
 
-		switch( apiRequest.request )
+		switch ( apiRequest.request )
 		{
 			case 'chatCommands':
 				response.data = Object.fromEntries( this.commands.commands );
 				break;
-			
+
 			case 'getStreamStats':
 				response.data = this.data.streamStats;
 				break;
@@ -294,7 +312,10 @@ export class Twitch extends TwitchUtils
 				if ( !apiRequest.data?.cityName || !apiRequest.data?.countryCode )
 					return response;
 
-				response.data = await OpenWeather.handleWeatherRequest( apiRequest.data.cityName, apiRequest.data.countryCode );
+				response.data = await OpenWeather.handleWeatherRequest(
+					apiRequest.data.cityName,
+					apiRequest.data.countryCode
+				);
 				break;
 		}
 

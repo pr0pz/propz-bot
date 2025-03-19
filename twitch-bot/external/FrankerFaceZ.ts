@@ -1,53 +1,73 @@
 /**
  * FrankerFaceZ
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.3
+ * @version 1.6.0
  */
 
 import { log } from '@propz/helpers.ts';
-import type { FrankerFaceZEmoteSet, FrankerFaceZResponse, TwitchEmote } from '@propz/types.ts';
+import type { FrankerFaceZEmoteSet, TwitchEmote } from '@propz/types.ts';
 
 export class FrankerFaceZ
 {
 	/** Fetch FFZ Emotes */
-	public static async getEmotes( userId: string ): Promise<TwitchEmote|undefined>
+	public static async getEmotes( userId: string ): Promise<TwitchEmote | undefined>
 	{
 		if ( !userId ) return;
 		let globalEmotes: FrankerFaceZEmoteSet[];
 		let channelEmotes: FrankerFaceZEmoteSet[];
 		try
 		{
-			const [globalResponse, channelResponse] = await Promise.all([
-				fetch('https://api.frankerfacez.com/v1/set/global'),
-				fetch(`https://api.frankerfacez.com/v1/room/id/${ userId }`)
-			]);
+			const [ responseGlobal, responseChannel ] = await Promise.all( [
+				fetch( 'https://api.frankerfacez.com/v1/set/global' ),
+				fetch( `https://api.frankerfacez.com/v1/room/id/${userId}` )
+			] );
 
-			const globalResponseJson = await globalResponse.json() as FrankerFaceZResponse;
-			const channelResponseJson = await channelResponse.json() as FrankerFaceZResponse;
+			const dataGlobal = await responseGlobal.json();
+			if ( !responseGlobal.ok )
+			{
+				log(
+					new Error(
+						`${dataGlobal.error} (${dataGlobal.status}) › ${dataGlobal.message}`
+					)
+				);
+				return;
+			}
 
-			globalEmotes = Object.values( globalResponseJson.sets );
-			channelEmotes = Object.values( channelResponseJson.sets );
+			const dataChannel = await responseChannel.json();
+			if ( !responseChannel.ok )
+			{
+				log(
+					new Error(
+						`${dataChannel.error} (${dataChannel.status}) › ${dataChannel.message}`
+					)
+				);
+				return;
+			}
+
+			globalEmotes = Object.values( dataGlobal.sets );
+			channelEmotes = Object.values( dataChannel.sets );
 
 			if (
 				!Array.isArray( globalEmotes ) ||
 				!Array.isArray( channelEmotes )
 			) return;
 		}
-		catch( error: unknown ) {
+		catch ( error: unknown )
+		{
 			log( error );
 			return;
 		}
 
 		const emoteMap: TwitchEmote = {};
-		for( const set of [ ...globalEmotes, ...channelEmotes ] )
+		for ( const set of [ ...globalEmotes, ...channelEmotes ] )
 		{
-			for( const emote of set.emoticons )
+			for ( const emote of set.emoticons )
 			{
-				emoteMap[ emote.name ] = emote.urls['4'];
+				emoteMap[emote.name] = emote.urls['4'];
 			}
 		}
-	
+
 		return emoteMap;
 	}
 }
