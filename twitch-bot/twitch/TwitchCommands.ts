@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.1
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -108,6 +108,7 @@ export class TwitchCommands
 			}
 		},
 		chatting: {
+			message: 'Scene changed: CHATTING',
 			onlyMods: true,
 			obs: [
 				{
@@ -201,6 +202,8 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		ende: {
+			aliases: [ 'end' ],
+			message: 'Scene changed: END',
 			onlyMods: true,
 			obs: [
 				{
@@ -552,6 +555,7 @@ export class TwitchCommands
 		},
 		pause: {
 			hasSound: true,
+			message: 'Scene changed: PAUSE',
 			onlyMods: true,
 			obs: [
 				{
@@ -908,6 +912,12 @@ export class TwitchCommands
 				let sceneName = options.message;
 				if ( options.message.toLowerCase().includes( 'desktop' ) )
 					sceneName = '[S] DESKTOP';
+				else if ( options.message.toLowerCase().includes( 'chat' ) )
+					sceneName = '[S] CHATTING';
+				else if ( options.message.toLowerCase().includes( 'pause' ) )
+					sceneName = '[S] PAUSE';
+				else if ( options.message.toLowerCase().includes( 'ende' ) )
+					sceneName = '[S] ENDE';
 
 				this.twitch.ws.maybeSendWebsocketData( {
 					type: 'command',
@@ -922,11 +932,14 @@ export class TwitchCommands
 						}
 					]
 				} );
+
+				return options.returnMessage.replace( '[sceneName]', sceneName );
 			},
+			message: 'Scene changed: [sceneName]',
 			onlyMods: true
 		},
 		start: {
-			onlyMods: true,
+			message: 'Scene changed: START',
 			obs: [
 				{
 					requestType: 'SetCurrentProgramScene',
@@ -934,7 +947,8 @@ export class TwitchCommands
 						sceneName: '[S] START'
 					}
 				}
-			]
+			],
+			onlyMods: true
 		},
 		streamonline: {
 			handler: () =>
@@ -944,6 +958,8 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		streamstart: {
+			aliases: [ 'startstream' ],
+			message: 'Starting stream ...',
 			obs: [
 				{
 					requestType: 'StartStream'
@@ -952,6 +968,8 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		streamstop: {
+			aliases: [ 'stopstream', 'endstream', 'streamend' ],
+			message: 'Stopping Stream ...',
 			obs: [
 				{
 					requestType: 'StopStream'

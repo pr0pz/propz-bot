@@ -2,9 +2,10 @@
  * Chat Manager
  * 
  * @author Wellington Estevo
- * @version 1.1.0
+ * @version 1.6.1
  */
 
+import { log } from '@propz/helpers.ts';
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import ChatMessage from "./ChatMessage.tsx";
@@ -31,6 +32,7 @@ const Chat = () =>
 	{
 		const newMessage = <ChatMessage message={ messageData.text } user={ messageData.user } color={ messageData.color } key={ messageData.key } />;
 		setChatMessages( ( prevMessages: typeof ChatMessage[] ) => [ ...prevMessages, newMessage ] );
+		playChatSound();
 
 		// Schedule the removal of the message after 30 seconds
 		setTimeout(() =>
@@ -39,10 +41,21 @@ const Chat = () =>
 		}, 30000 );
 	}
 
+	const playChatSound = () =>
+	{
+		const audio = document.getElementById( 'chatsound' ) as HTMLAudioElement;
+		if ( !audio ) return;
+		audio.volume = 1;
+		audio.play().catch( ( error: unknown ) => log( error ) );
+	}
+
 	return (
-		<ul className="chat-messages radius">
-			{chatMessages.map( (message, _index) => ( message ))}
-		</ul>
+		<>
+			<audio src="/audio/audio-chat.mp3" preload='preload' id="chatsound"></audio>
+			<ul className="chat-messages radius">
+				{chatMessages.map( (message, _index) => ( message ))}
+			</ul>
+		</>
 	);
 }
 

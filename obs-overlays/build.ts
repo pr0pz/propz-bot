@@ -2,7 +2,7 @@
  * This file builds the overlay workspace (react app)
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.1
  */
 
 import { log } from '@propz/helpers.ts';
@@ -32,7 +32,7 @@ try
 
 	// Build JS bundle
 	const jsCtx = await esbuild.context( {
-		entryPoints: [ `${rootDir}/src/main.tsx` ],
+		entryPoints: [ `${rootDir}/src/index.tsx` ],
 		bundle: true,
 		outfile: `${rootDir}/public/build/app.js`,
 		format: 'esm',
@@ -40,12 +40,12 @@ try
 		jsx: 'automatic',
 		sourcemap: true,
 		define: {
-			'process.env.BOT_URL': `"${botUrl}"`,
+			'process.env.BOT_URL': `"${botUrl}"`
 		},
 		minify: true,
 		alias: {
-			'@propz': './shared/',
-		},
+			'@propz': './shared/'
+		}
 	} );
 
 	// Build CSS bundle
@@ -55,19 +55,19 @@ try
 		target: [ 'chrome127' ],
 		outfile: `${rootDir}/public/build/app.css`,
 		loader: { '.css': 'css' },
-		minify: true,
+		minify: true
 	} );
 
 	// Build both bundles
 	await Promise.all( [
 		jsCtx.rebuild(),
-		cssCtx.rebuild(),
+		cssCtx.rebuild()
 	] );
 
 	// Cleanup
 	await Promise.all( [
 		jsCtx.dispose(),
-		cssCtx.dispose(),
+		cssCtx.dispose()
 	] );
 
 	log( '✅ Build completed successfully' );
