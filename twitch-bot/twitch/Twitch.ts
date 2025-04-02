@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.2
  */
 
 import '@propz/prototypes.ts';
@@ -68,12 +68,15 @@ export class Twitch extends TwitchUtils
 	 * @param {string} chatMessage Message text
 	 * @param {ChatMessage} msg Message object
 	 */
-	override async processChatCommand( chatMessage: string, msg: ChatMessage )
+	override async processChatCommand( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
 	{
-		if ( !this.fireCommand( msg ) )
-			return;
+		const userName = msg?.userInfo?.userName ?? user?.name ?? '';
+		console.log( chatMessage, userName );
+		if ( !this.fireCommand( chatMessage, userName ) ) return;
 
-		const sender = await this.convertToSimplerUser( msg.userInfo );
+		const sender = await this.convertToSimplerUser( msg?.userInfo ?? user ?? null );
+		if ( !sender ) return;
+
 		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
 		const command = this.commands.commands.get( commandName )!;
 
@@ -264,8 +267,8 @@ export class Twitch extends TwitchUtils
 
 		if ( apiRequest.request.startsWith( 'command-' ) )
 		{
-			const commandName = apiRequest.request.replace( 'command-', '' );
-			this.processChatCommand( commandName, user );
+			const commandName = apiRequest.request.replace( 'command-', '!' );
+			this.processChatCommand( commandName, null, user );
 			response.data = true;
 			return response;
 		}

@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.2
  */
 
 import '@propz/prototypes.ts';
@@ -612,15 +612,20 @@ export abstract class TwitchUtils
 	}
 
 	/** Get simple user data from ChatUser Object */
-	async convertToSimplerUser( user: ChatUser | HelixUser | SimpleUser )
+	async convertToSimplerUser( user: ChatUser | HelixUser | SimpleUser | string | null )
 	{
-		// Check for ChatUser and convert to HelixUser
+		if ( !user ) return null;
 		let color = '';
+
+		if ( typeof user === 'string' )
+		{
+			user = await this.data.getUser( user );
+		}
+
 		if ( user instanceof ChatUser )
 		{
 			color = user.color || '';
-			const userConverted = await this.data.getUser( user.userName );
-			user = userConverted!;
+			user = await this.data.getUser( user.userName );
 		}
 
 		if ( user instanceof HelixUser )
@@ -713,14 +718,13 @@ export abstract class TwitchUtils
 	}
 
 	/** Check if commands can be executed */
-	fireCommand( chatMessage: ChatMessage )
+	fireCommand( chatMessage: string, userName: string )
 	{
 		if ( !chatMessage )
 			return false;
 
-		const commandName = this.commands.getCommandNameFromMessage( chatMessage.text );
+		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
 		const command = this.commands.commands.get( commandName );
-		const user = chatMessage.userInfo;
 
 		// No data for this command
 		if ( !command )
@@ -733,8 +737,8 @@ export abstract class TwitchUtils
 		// Check for mod properties
 		if (
 			command.onlyMods &&
-			!user.isMod &&
-			user.userName !== this.data.userName
+			!this.data.mods.includes( userName ) &&
+			userName !== this.data.userName
 		)
 			return false;
 

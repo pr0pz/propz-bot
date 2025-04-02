@@ -1,17 +1,17 @@
 /**
  * Bot
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.11
+ * @version 1.6.2
  */
 
 import '@propz/prototypes.ts';
 import { log } from '@propz/helpers.ts';
 
+import type { ApiRequest, ApiResponse, KofiData } from '@propz/types.ts';
 import type { Discord } from '../discord/Discord.ts';
 import type { Twitch } from '../twitch/Twitch.ts';
 import type { BotWebsocket } from './BotWebsocket.ts';
-import type { ApiRequest, ApiResponse, KofiData } from '@propz/types.ts';
 
 export class Bot
 {
@@ -37,7 +37,7 @@ export class Bot
 	}
 
 	/** Handle all incoming server requests
-	 * 
+	 *
 	 * @param {Request} req Incoming request
 	 */
 	handleServerRequests = async ( req: Request ): Promise<Response> =>
@@ -52,7 +52,7 @@ export class Bot
 					'access-control-allow-methods': 'GET, POST, OPTIONS',
 					'access-control-allow-headers': 'Content-Type, Authorization'
 				}
-			});
+			} );
 		}
 
 		const url = new URL( req.url );
@@ -71,40 +71,40 @@ export class Bot
 		}
 
 		return new Response( 'propz', { status: 200 } );
-	}
+	};
 
 	/** Handle Websocket connections
-	 * 
+	 *
 	 * @param {Request} req Incoming request
 	 */
 	private handleWebsocket( req: Request ): Response
 	{
 		if ( req.headers.get( 'upgrade' ) !== 'websocket' )
 			return new Response( null, { status: 400 } );
-		
+
 		const { socket, response } = Deno.upgradeWebSocket( req );
 		const wsId: string = crypto.randomUUID();
 
-		socket.addEventListener( 'error', (event) => log( event ) );
+		socket.addEventListener( 'error', ( event ) => log( event ) );
 		socket.addEventListener( 'message', () => socket.send( '{"type":"pong"}' ) );
 
 		socket.addEventListener( 'open', () =>
 		{
 			log( `WS client connected › ${wsId}` );
 			this.ws.wsConnections.set( wsId, socket );
-		});
+		} );
 
 		socket.addEventListener( 'close', () =>
 		{
 			log( `WS client disconnected › ${wsId}` );
 			this.ws.wsConnections.delete( wsId );
-		});
+		} );
 
 		return response;
 	}
 
 	/** Handle Webhook calls
-	 * 
+	 *
 	 * @param {Request} req Incoming request
 	 */
 	private async handleWebhook( req: Request ): Promise<Response>
@@ -120,30 +120,30 @@ export class Bot
 		if ( req.headers.get( 'user-agent' ) === 'Kofi.Webhooks' )
 		{
 			const body = await req.text();
-			const kofiData: KofiData = JSON.parse( decodeURIComponent( body.replace(/^data=/, '') ) );
+			const kofiData: KofiData = JSON.parse( decodeURIComponent( body.replace( /^data=/, '' ) ) );
 			this.twitch.handleKofiEvent( kofiData );
 		}
 
-		return new Response( null, { status: 204 });
+		return new Response( null, { status: 204 } );
 	}
 
 	/** Handle API calls
-	 * 
+	 *
 	 * @param {Request} req Incoming Request
 	 */
 	private async handleApi( req: Request ): Promise<Response>
 	{
 		let body: ApiRequest;
-		let response: ApiResponse = { data: 'Your JSON sucks' }
+		let response: ApiResponse = { data: 'Your JSON sucks' };
 		try
 		{
 			body = await req.json();
-			//log( `› SERVER: API call` );
-			//log( `    REQUEST HEADERS: ${ JSON.stringify( req.headers ) }` );
-			//log( `    REQUEST BODY: ${ JSON.stringify( body ) }` );
+			// log( `› SERVER: API call` );
+			// log( `    REQUEST HEADERS: ${ JSON.stringify( req.headers ) }` );
+			// log( `    REQUEST BODY: ${ JSON.stringify( body ) }` );
 			log( body.request );
 		}
-		catch( error: unknown )
+		catch ( error: unknown )
 		{
 			log( error );
 			return new Response( JSON.stringify( response ), { status: 400 } );
@@ -170,7 +170,7 @@ export class Bot
 	private handleExit()
 	{
 		Deno.addSignalListener( 'SIGINT', async () =>
-		{			
+		{
 			await this.server.shutdown();
 
 			if ( this.twitch.chat.chatClient )
@@ -191,6 +191,6 @@ export class Bot
 			log( 'SIGINT Shutdown 🔻' );
 
 			Deno.exit();
-		});
+		} );
 	}
 }

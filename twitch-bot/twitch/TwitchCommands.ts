@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.1
+ * @version 1.6.2
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -38,6 +38,18 @@ export class TwitchCommands
 				en: 'Quote successfully saved: #[count]'
 			}
 		},
+		ai: {
+			aliases: [ 'ki' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !this.twitch.isStreamActive ) return;
+				return await Gemini.generate(
+					options.message,
+					options.sender.name || this.twitch.data.userDisplayName
+				);
+			},
+			description: 'AI-Antwort im Twitch Chat'
+		},
 		airhorn: {
 			aliases: [ 'horn' ],
 			hasSound: true,
@@ -54,19 +66,10 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
-		arc: {
-			aliases: [ 'browser' ],
-			message: 'Best Browser → https://arc.net',
-			description: 'Bester Browser'
-		},
 		believe: {
 			cooldown: 20,
 			hasSound: true,
 			disableOnFocus: true
-		},
-		bento: {
-			message: 'Cool Bento Grids ▶️ https://bentogrids.com 🖼️',
-			description: 'Coole Bentro Grids'
 		},
 		br: {
 			aliases: [ 'businessrauschen' ],
@@ -90,6 +93,18 @@ export class TwitchCommands
 			cooldown: 20,
 			hasSound: true,
 			disableOnFocus: true
+		},
+		chatgpt: {
+			aliases: [ 'gpt' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				if ( !this.twitch.isStreamActive ) return;
+				return await OpenAI.generate(
+					options.message,
+					options.sender.name || this.twitch.data.userDisplayName
+				);
+			},
+			description: 'ChatGPT-Antwort im Twitch Chat'
 		},
 		chatscore: {
 			aliases: [ 'chatranking' ],
@@ -165,7 +180,6 @@ export class TwitchCommands
 			description: 'Link zur Discord Community'
 		},
 		doro: {
-			aliases: [ 'coach', 'coaching' ],
 			message: {
 				de: 'Coaching gefällig? Schau mal bei Doro vorbei ▶️ https://www.dorothea-penner.de/',
 				en: 'In need of some coaching? Check out Doro ▶️ https://www.dorothea-penner.de/'
@@ -230,13 +244,6 @@ export class TwitchCommands
 			cooldown: 10,
 			hasSound: true,
 			disableOnFocus: true
-		},
-		figma: {
-			message: {
-				de: 'Figma › kollaboratives Design- und Prototyping-Tool ▶️ https://www.figma.com',
-				en: 'Figma › collaborative design and prototyping tool ▶️ https://www.figma.com'
-			},
-			description: 'Design- und Prototyping-Tool'
 		},
 		first: {
 			aliases: [ 'firstchatter' ],
@@ -316,7 +323,6 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		gemini: {
-			aliases: [ 'ai', 'ki' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !this.twitch.isStreamActive ) return;
@@ -325,7 +331,7 @@ export class TwitchCommands
 					options.sender.name || this.twitch.data.userDisplayName
 				);
 			},
-			description: 'AI-Antwort im Twitch Chat'
+			description: 'Gemini-Antwort im Twitch Chat'
 		},
 		github: {
 			message: {
@@ -488,8 +494,7 @@ export class TwitchCommands
 		mark: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive )
-					return;
+				if ( !this.twitch.isStreamActive ) return;
 				try
 				{
 					await this.twitch.api.streams.createStreamMarker(
@@ -529,29 +534,17 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
-		of: {
-			aliases: [ 'onlyfans' ],
+		ohno: {
+			cooldown: 60,
+			hasVideo: true
+		},
+		onlyfans: {
+			aliases: [ 'of' ],
 			message: {
 				de: 'Deine schmutzigen Geheimnisse findest du in deiner .env, du kleiner Perverser',
 				en: 'Check your dirty secrets inside your .env you little perv'
 			},
 			description: 'My OF'
-		},
-		ohno: {
-			cooldown: 60,
-			hasVideo: true
-		},
-		openai: {
-			aliases: [ 'chatgpt', 'gpt' ],
-			handler: async ( options: TwitchCommandOptions ) =>
-			{
-				if ( !this.twitch.isStreamActive ) return;
-				return await OpenAI.generate(
-					options.message,
-					options.sender.name || this.twitch.data.userDisplayName
-				);
-			},
-			description: 'AI-Antwort im Twitch Chat'
 		},
 		pause: {
 			hasSound: true,
@@ -566,13 +559,6 @@ export class TwitchCommands
 				}
 			]
 		},
-		penpot: {
-			message: {
-				de: 'Penpot › kostenlose Figma alternative ▶️ https://penpot.app',
-				en: 'Penpot › free Figma alternative ▶️ https://penpot.app'
-			},
-			description: 'Figma for free'
-		},
 		projekt: {
 			message: {
 				de: 'Gute Frage was ich hier mache: Ich baue an meiner Website (PHP + WordPress), an meinem Twitch Bot (Node JS), an meinem Stream (OBS), designe dolle Sachen (Figma) und spreche über meine Selbständigkeit.',
@@ -581,6 +567,7 @@ export class TwitchCommands
 			description: 'Was ich mache'
 		},
 		propz: {
+			description: 'Just propz, plain and simple!',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.processEvent( {
@@ -591,11 +578,6 @@ export class TwitchCommands
 		},
 		psx: {
 			cooldown: 120,
-			hasSound: true,
-			disableOnFocus: true
-		},
-		quack: {
-			cooldown: 10,
 			hasSound: true,
 			disableOnFocus: true
 		},
@@ -625,13 +607,6 @@ export class TwitchCommands
 				return 'Reloaded';
 			},
 			onlyMods: true
-		},
-		recraft: {
-			message: {
-				de: 'Bearbeitbare KI Bilder ▶️ https://www.recraft.ai',
-				en: 'Editable AI images ▶️ https://www.recraft.ai'
-			},
-			description: 'Bearbeitbare KI Bilder'
 		},
 		reset: {
 			obs: [
@@ -815,7 +790,7 @@ export class TwitchCommands
 						return `Game not found`;
 
 					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { gameId: game.id } );
-					return `Game set to '${game.name}'`;
+					return options.returnMessage.replace( '[game]', game.name );
 				}
 				catch ( error: unknown )
 				{
@@ -823,9 +798,11 @@ export class TwitchCommands
 				}
 			},
 			aliases: [ 'game', 'setcat', 'setcategory', 'cat' ],
+			message: 'Stream Game set to \'[game]\'',
 			onlyMods: true
 		},
 		setlanguage: {
+			aliases: [ 'setlang', 'lang', 'language' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
@@ -833,15 +810,15 @@ export class TwitchCommands
 					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
 						language: options.message
 					} );
-					return `Language set to '${options.message}'`;
+					return options.returnMessage.replace( '[language]', options.message );
 				}
 				catch ( error: unknown )
 				{
 					log( error );
 				}
 			},
-			aliases: [ 'setlang', 'lang', 'language' ],
-			onlyMods: true
+			onlyMods: true,
+			message: 'Stream Language set to \'[language]\''
 		},
 		settitle: {
 			handler: async ( options: TwitchCommandOptions ) =>
@@ -851,14 +828,15 @@ export class TwitchCommands
 					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
 						title: options.message
 					} );
-					return `Title set to '${options.message}'`;
+					return options.returnMessage.replace( '[title]', options.message );
 				}
 				catch ( error: unknown )
 				{
 					log( error );
 				}
 			},
-			aliases: [ 'title' ],
+			aliases: [ 'title', 'setstreamtitle' ],
+			message: 'Stream Title set to \'[title]\'',
 			onlyMods: true
 		},
 		slap: {
@@ -1050,13 +1028,6 @@ export class TwitchCommands
 				en: 'Twurple for Twitch API ▶️ https://twurple.js.org'
 			},
 			description: 'Twurple für Twitch API'
-		},
-		uizard: {
-			message: {
-				de: 'Prototyp mit KI ▶️ https://uizard.io',
-				en: 'Prototype with AI ▶️ https://uizard.io'
-			},
-			description: 'Prototype with AI'
 		},
 		unlurk: {
 			handler: ( options: TwitchCommandOptions ) =>

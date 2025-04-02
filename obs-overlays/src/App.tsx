@@ -2,7 +2,7 @@
  * App
  * 
  * @author Wellington Estevo
- * @version 1.3.3
+ * @version 1.6.2
  */
 
 import { useEffect } from 'react';
@@ -28,18 +28,16 @@ const App = () =>
 	[]) // eslint-disable-line react-hooks/exhaustive-deps
 
 	return(
-		<EventProvider>
-			<section id="wrapper">
-				<Routes location={ location } key={ location.key }>
-					<Route path="/" element={ <Main /> } />
-					<Route path="/chat" element={ <Chat /> } />
-					<Route path="/events" element={ <Events /> } />
-					<Route path="/focus" element={ <Focus /> } />
-					<Route path="/credits" element={ <Credits /> } />
-					<Route path="/weather" element={ <Weather /> } />
-				</Routes>
-			</section>
-		</EventProvider>
+		<section id="wrapper">
+			<Routes location={ location } key={ location.key }>
+				<Route path="/" element={ <EventProvider><Main /></EventProvider> } />
+				<Route path="/chat" element={ <EventProvider><Chat /></EventProvider> } />
+				<Route path="/events" element={ <EventProvider><Events /></EventProvider> } />
+				<Route path="/focus" element={ <EventProvider><Focus /></EventProvider> } />
+				<Route path="/credits" element={ <EventProvider><Credits /></EventProvider> } />
+				<Route path="/weather" element={ <Weather /> } />
+			</Routes>
+		</section>
 	)
 }
 

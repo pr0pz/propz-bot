@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.2
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -34,7 +34,7 @@ export interface TwitchCommandOptions
 	param: string;
 	message: string;
 	returnMessage: string;
-	messageObject: ChatMessage;
+	messageObject: ChatMessage | null;
 }
 
 export interface TwitchEvent
