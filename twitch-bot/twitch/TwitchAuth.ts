@@ -1,22 +1,21 @@
 /**
  * Twitch Auth Provider Controller
- * 
+ *
  * https://twurple.js.org/docs/auth/providers/refreshing.html
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.10
+ * @version 1.6.3
  */
 
-import { RefreshingAuthProvider, exchangeCode } from '@twurple/auth';
 import { log } from '@propz/helpers.ts';
+import { exchangeCode, RefreshingAuthProvider } from '@twurple/auth';
 
 import type { AccessToken } from '@twurple/auth';
 import type { Database } from '../bot/Database.ts';
 
 export class TwitchAuth
 {
-	private db: Database;
-	private authProvider: RefreshingAuthProvider|null = null;
+	private authProvider: RefreshingAuthProvider | null = null;
 	private scopes = [
 		'bits:read',
 		'channel:bot',
@@ -47,7 +46,7 @@ export class TwitchAuth
 		'chat:edit',
 		'chat:read',
 		'clips:edit',
-		'moderation:read', 
+		'moderation:read',
 		'moderator:manage:announcements',
 		'moderator:manage:automod',
 		'moderator:manage:automod_settings',
@@ -85,35 +84,41 @@ export class TwitchAuth
 	private redirectUri = Deno.env.get( 'TWITCH_REDIRECT_URI' ) || '';
 	private initialOauthCode = Deno.env.get( 'TWITCH_INITIAL_OAUTH_CODE' ) || '';
 
-	constructor( db: Database )
+	constructor( private db: Database )
 	{
 		this.db = db;
 
-		this.authProvider = new RefreshingAuthProvider({
+		this.authProvider = new RefreshingAuthProvider( {
 			clientId: this.clientId,
 			clientSecret: this.clientSecret,
 			redirectUri: this.redirectUri,
 			appImpliedScopes: this.scopes
-		});
+		} );
 
 		// Rewrite token data on token refresh
 		this.authProvider.onRefresh( ( _userId: string, newTokenData: AccessToken ) =>
 		{
 			try
 			{
-				this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
+				this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [
+					JSON.stringify( newTokenData, null, '\t' )
+				] );
 			}
-			catch( error: unknown ) { log( error ) }
-		});
+			catch ( error: unknown )
+			{
+				log( error );
+			}
+		} );
 	}
 
 	/** Get tokenData for further auth process */
-	private async getTokenData(): Promise<AccessToken|undefined>
+	private async getTokenData(): Promise<AccessToken | undefined>
 	{
-		try {
+		try
+		{
 			const results = this.db.queryEntries( `SELECT data FROM auth WHERE name = 'twitch'` );
 			const newTokenData = results?.[0]?.['data'] as string || '';
-						
+
 			if ( newTokenData )
 			{
 				log( `Tokendata ready (from DB)` );
@@ -127,7 +132,8 @@ export class TwitchAuth
 
 		// DB data exist, so:
 		// Get the initial tokenData using the initial OAuth code
-		try {
+		try
+		{
 			const newTokenData = await exchangeCode(
 				this.clientId,
 				this.clientSecret,
@@ -135,16 +141,21 @@ export class TwitchAuth
 				this.redirectUri
 			);
 
-			this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [ JSON.stringify( newTokenData, null, "\t" ) ] );
+			this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [
+				JSON.stringify( newTokenData, null, '\t' )
+			] );
 
 			log( `Tokendata ready (from Twitch)` );
 			return newTokenData;
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	/** Returns authprovider */
-	async getAuthProvider(): Promise<RefreshingAuthProvider|undefined>
+	async getAuthProvider(): Promise<RefreshingAuthProvider | undefined>
 	{
 		if ( !this.authProvider )
 		{
@@ -163,7 +174,10 @@ export class TwitchAuth
 		{
 			this.authProvider.addUser( this.userId, tokenData, [ 'chat' ] );
 		}
-		catch( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 
 		return this.authProvider;
 	}

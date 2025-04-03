@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.6.3
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -19,6 +19,7 @@ export interface TwitchCommand
 	cooldown?: number;
 	description?: string;
 	disableOnFocus?: boolean;
+	disableIfOffline?: boolean;
 	discord?: string;
 	handler?: ( options: TwitchCommandOptions ) => Promise<string | void> | string | void;
 	hasSound?: boolean | string;

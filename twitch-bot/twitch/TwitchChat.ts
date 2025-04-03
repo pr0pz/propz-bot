@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.3
  */
 
 import '@propz/prototypes.ts';
@@ -15,12 +15,11 @@ import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchChat
 {
-	private twitch!: TwitchUtils;
 	public chatClient!: ChatClient;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
 	private communitySubGifts = new Map();
 
-	constructor( twitch: TwitchUtils )
+	constructor( private twitch: TwitchUtils )
 	{
 		try
 		{

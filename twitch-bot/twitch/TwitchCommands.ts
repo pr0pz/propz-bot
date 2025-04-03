@@ -2,10 +2,10 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.6.3
  */
 
-import { log, sanitizeMessage } from '@propz/helpers.ts';
+import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../external/Deepl.ts';
 import { Gemini } from '../external/Gemini.ts';
 import { OpenAI } from '../external/OpenAi.ts';
@@ -13,18 +13,25 @@ import { OpenWeather } from '../external/OpenWeather.ts';
 import { Youtube } from '../external/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
-import type { CommercialLength } from '@twurple/api';
 import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
 {
 	public commands: Map<string, TwitchCommand> = new Map( Object.entries( {
 		ad: {
-			handler: ( options: TwitchCommandOptions ) =>
+			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				this.twitch.startAds( parseInt( options.param || '180' ) as CommercialLength );
+				try
+				{
+					this.twitch.data.twitchApi.channels.startChannelCommercial( this.twitch.data.userId, 180 );
+				}
+				catch ( error: unknown )
+				{
+					log( error );
+				}
 			},
 			aliases: [ 'adbreak', 'werbung' ],
+			disableIfOffline: true,
 			onlyMods: true
 		},
 		addquote: {
@@ -33,6 +40,7 @@ export class TwitchCommands
 				return await this.twitch.addQuote( options.message );
 			},
 			description: 'Zitat hinzufügen: !addquote author quote text',
+			disableIfOffline: true,
 			message: {
 				de: 'Zitat erfolgreich gespeichert: #[count]',
 				en: 'Quote successfully saved: #[count]'
@@ -40,15 +48,15 @@ export class TwitchCommands
 		},
 		ai: {
 			aliases: [ 'ki' ],
+			description: 'AI-Antwort im Twitch Chat',
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
 				return await Gemini.generate(
 					options.message,
 					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
-			description: 'AI-Antwort im Twitch Chat'
+			}
 		},
 		airhorn: {
 			aliases: [ 'horn' ],
@@ -96,18 +104,19 @@ export class TwitchCommands
 		},
 		chatgpt: {
 			aliases: [ 'gpt' ],
+			description: 'ChatGPT-Antwort im Twitch Chat',
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
 				return await OpenAI.generate(
 					options.message,
 					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
-			description: 'ChatGPT-Antwort im Twitch Chat'
+			}
 		},
 		chatscore: {
 			aliases: [ 'chatranking' ],
+			description: 'Anzahl geschriebener Chat-Nachrichten',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
@@ -116,7 +125,6 @@ export class TwitchCommands
 					'message_count'
 				);
 			},
-			description: 'Anzahl geschriebener Chat-Nachrichten',
 			message: {
 				de: '@[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
 				en: '@[user] has written [count] chat messages › Rank: [rank]'
@@ -146,7 +154,7 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		commands: {
-			aliases: [ 'help' ],
+			aliases: [ 'help', 'comandos' ],
 			message: {
 				de: 'Chat-Befehle? Schau mal hier ▶️ https://propz.de/twitch-commands',
 				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-commands'
@@ -323,15 +331,15 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		gemini: {
+			description: 'Gemini-Antwort im Twitch Chat',
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
 				return await Gemini.generate(
 					options.message,
 					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
-			description: 'Gemini-Antwort im Twitch Chat'
+			}
 		},
 		github: {
 			message: {
@@ -492,9 +500,10 @@ export class TwitchCommands
 			description: 'Selber Mahlzeit!'
 		},
 		mark: {
+			aliases: [ 'marker' ],
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
 				try
 				{
 					await this.twitch.api.streams.createStreamMarker(
@@ -509,7 +518,6 @@ export class TwitchCommands
 					return 'Failed to create marker';
 				}
 			},
-			aliases: [ 'marker' ],
 			onlyMods: true
 		},
 		mission: {
@@ -590,9 +598,26 @@ export class TwitchCommands
 			}
 		},
 		raid: {
-			handler: ( options: TwitchCommandOptions ) =>
+			disableIfOffline: true,
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.startRaid( options.param );
+				try
+				{
+					const target = await this.twitch.data.getUser( options.param );
+					if ( !target ) return;
+
+					const raid = await this.twitch.data.twitchApi.raids.startRaid( this.twitch.data.userId, target.id );
+					if ( !raid ) return;
+
+					this.twitch.processEvent( {
+						eventType: 'startraid',
+						user: target
+					} );
+				}
+				catch ( error: unknown )
+				{
+					log( error );
+				}
 			},
 			onlyMods: true
 		},
@@ -984,6 +1009,13 @@ export class TwitchCommands
 			},
 			description: 'Trends für Kreative'
 		},
+		time: {
+			aliases: [ 'zeit', 'uhrzeit' ],
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return new Date().toLocaleTimeString( 'de-DE', { timeZone: 'America/Sao_Paulo' } );
+			}
+		},
 		thinking: {
 			aliases: [ 'think', 'denken', 'denk', 'nachdenk', 'nachdenken' ],
 			hasVideo: true
@@ -1004,10 +1036,10 @@ export class TwitchCommands
 		},
 		translate: {
 			aliases: [ 't', 'deepl' ],
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !this.twitch.isStreamActive ) return;
-
+				if ( !options.messageObject ) return;
 				// Check if command as sent as reply
 				if ( options.messageObject.isReply )
 				{
@@ -1054,13 +1086,10 @@ export class TwitchCommands
 		},
 		uptime: {
 			description: 'So lange läuft der Stream',
-			handler: ( options: TwitchCommandOptions ) =>
+			disableIfOffline: true,
+			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getStreamUptimeText( options.returnMessage );
-			},
-			message: {
-				de: 'Streame seit [count]',
-				en: 'Streaming for [count]'
+				return getTimePassed( Date.now() - this.twitch.streamStartTime );
 			}
 		},
 		vod: {
@@ -1098,6 +1127,7 @@ export class TwitchCommands
 		},
 		weather: {
 			aliases: [ 'wetter', 'tempo' ],
+			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.param )

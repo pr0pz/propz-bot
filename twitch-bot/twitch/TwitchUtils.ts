@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.6.3
  */
 
 import '@propz/prototypes.ts';
@@ -18,7 +18,7 @@ import { TwitchCommands } from './TwitchCommands.ts';
 import { TwitchEvents } from './TwitchEvents.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchQuote, TwitchUserData } from '@propz/types.ts';
-import type { ApiClient, CommercialLength, HelixStream } from '@twurple/api';
+import type { ApiClient, HelixStream } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
@@ -29,9 +29,6 @@ export abstract class TwitchUtils
 {
 	// Controllers
 	public api: ApiClient;
-	public data: BotData;
-	public discord: Discord;
-	public ws: BotWebsocket;
 	public chat: TwitchChat;
 	public events: TwitchEvents;
 	public commands: TwitchCommands;
@@ -44,7 +41,11 @@ export abstract class TwitchUtils
 	private validMessageThreshold: number = 5;
 	public killswitch: boolean = false;
 
-	constructor( data: BotData, discord: Discord, ws: BotWebsocket )
+	constructor(
+		public data: BotData,
+		public discord: Discord,
+		public ws: BotWebsocket
+	)
 	{
 		this.data = data;
 		this.discord = discord;
@@ -77,57 +78,6 @@ export abstract class TwitchUtils
 		}
 	}
 
-	/** Start Twitch Ads
-	 *
-	 * @param {number} length Ad length in seconds (30, 60, 90, 120, 150, 180)
-	 */
-	async startAds( length: CommercialLength = 180 )
-	{
-		if ( !this.isStreamActive || !length )
-			return;
-		try
-		{
-			this.data.twitchApi.channels.startChannelCommercial( this.data.userId, length );
-
-			this.processEvent( {
-				eventType: 'adbreak',
-				user: await this.data.getUser() || this.data.userName,
-				eventCount: length
-			} );
-		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
-	}
-
-	/** Start twitch Raid */
-	async startRaid( targetUserName: string )
-	{
-		if ( !this.isStreamActive || !targetUserName )
-			return;
-
-		try
-		{
-			const target = await this.data.getUser( targetUserName );
-			if ( !target )
-				return;
-
-			const raid = await this.data.twitchApi.raids.startRaid( this.data.userId, target.id );
-			if ( !raid )
-				return;
-
-			this.processEvent( {
-				eventType: 'startraid',
-				user: target
-			} );
-		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
-	}
-
 	/** Get the start time as timestamp */
 	get streamStartTime()
 	{
@@ -144,16 +94,6 @@ export abstract class TwitchUtils
 	get isStreamActive()
 	{
 		return this.stream !== null;
-	}
-
-	/** Get Stream uptime as text */
-	getStreamUptimeText( message: string )
-	{
-		if ( !this.isStreamActive || !message )
-			return '';
-		const timeDiff = Date.now() - this.streamStartTime;
-		message = message.replace( '[count]', getTimePassed( timeDiff ) );
-		return message;
 	}
 
 	/** Get watchtime command text
@@ -732,6 +672,10 @@ export abstract class TwitchUtils
 
 		// Focus Mode
 		if ( this.focus && command.disableOnFocus )
+			return false;
+
+		// Disable if Stream is offline
+		if ( !this.isStreamActive && command.disableIfOffline )
 			return false;
 
 		// Check for mod properties

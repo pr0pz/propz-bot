@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.6.3
  */
 
 import '@propz/prototypes.ts';
@@ -71,7 +71,6 @@ export class Twitch extends TwitchUtils
 	override async processChatCommand( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
 	{
 		const userName = msg?.userInfo?.userName ?? user?.name ?? '';
-		console.log( chatMessage, userName );
 		if ( !this.fireCommand( chatMessage, userName ) ) return;
 
 		const sender = await this.convertToSimplerUser( msg?.userInfo ?? user ?? null );
