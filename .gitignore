@@ -5,9 +5,9 @@
 .DS_Store
 .env
 .vscode/
+.idea/
 deno.lock
 obs-overlays/public/build
-twitch-bot/data
 
 ._*
 .Spotlight-V100

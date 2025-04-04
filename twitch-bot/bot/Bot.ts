@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.6.4
  */
 
 import '@propz/prototypes.ts';
@@ -16,15 +16,13 @@ import type { BotWebsocket } from './BotWebsocket.ts';
 export class Bot
 {
 	private server!: Deno.HttpServer;
-	private discord: Discord;
-	private twitch: Twitch;
-	private ws: BotWebsocket;
 
-	constructor( discord: Discord, twitch: Twitch, ws: BotWebsocket )
+	constructor(
+		private discord: Discord,
+		private twitch: Twitch,
+		private ws: BotWebsocket
+	)
 	{
-		this.discord = discord;
-		this.twitch = twitch;
-		this.ws = ws;
 		this.handleExit();
 	}
 

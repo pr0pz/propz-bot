@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.4
  */
 
 import '@propz/prototypes.ts';
@@ -176,7 +176,7 @@ export class Twitch extends TwitchUtils
 	 */
 	override async processEvent( options: {
 		eventType: string;
-		user: HelixUser | ChatUser | SimpleUser | string;
+		user: HelixUser | ChatUser | SimpleUser | string | null;
 		eventCount?: number;
 		eventText?: string;
 		isTest?: boolean;
@@ -203,6 +203,7 @@ export class Twitch extends TwitchUtils
 			}
 		}
 		user = await this.convertToSimplerUser( user );
+		if ( !user ) return;
 
 		const event = this.data.getEvent( eventType );
 

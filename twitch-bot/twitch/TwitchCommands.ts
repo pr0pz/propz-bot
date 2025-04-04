@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.4
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -506,7 +506,7 @@ export class TwitchCommands
 			{
 				try
 				{
-					await this.twitch.api.streams.createStreamMarker(
+					await this.twitch.data.twitchApi.streams.createStreamMarker(
 						this.twitch.data.userId,
 						options.message || 'Marker'
 					);
@@ -805,16 +805,18 @@ export class TwitchCommands
 					let game;
 					const param = options.param.toLowerCase();
 					if ( param.includes( 'software' ) )
-						game = await this.twitch.api.games.getGameByName( 'Software and Game Development' );
+						game = await this.twitch.data.twitchApi.games.getGameByName( 'Software and Game Development' );
 					else if ( param.includes( 'chat' ) )
-						game = await this.twitch.api.games.getGameByName( 'Just Chatting' );
+						game = await this.twitch.data.twitchApi.games.getGameByName( 'Just Chatting' );
 					else
-						game = await this.twitch.api.games.getGameByName( options.param );
+						game = await this.twitch.data.twitchApi.games.getGameByName( options.param );
 
 					if ( !game )
 						return `Game not found`;
 
-					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, { gameId: game.id } );
+					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
+						gameId: game.id
+					} );
 					return options.returnMessage.replace( '[game]', game.name );
 				}
 				catch ( error: unknown )
@@ -832,7 +834,7 @@ export class TwitchCommands
 			{
 				try
 				{
-					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
+					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
 						language: options.message
 					} );
 					return options.returnMessage.replace( '[language]', options.message );
@@ -850,7 +852,7 @@ export class TwitchCommands
 			{
 				try
 				{
-					await this.twitch.api.channels.updateChannelInfo( this.twitch.data.userId, {
+					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
 						title: options.message
 					} );
 					return options.returnMessage.replace( '[title]', options.message );

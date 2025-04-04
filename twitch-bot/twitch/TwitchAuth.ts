@@ -4,7 +4,7 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.4
  */
 
 import { log } from '@propz/helpers.ts';
@@ -86,8 +86,6 @@ export class TwitchAuth
 
 	constructor( private db: Database )
 	{
-		this.db = db;
-
 		this.authProvider = new RefreshingAuthProvider( {
 			clientId: this.clientId,
 			clientSecret: this.clientSecret,

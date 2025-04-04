@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.4
  */
 
 import '@propz/prototypes.ts';
@@ -18,7 +18,7 @@ import { TwitchCommands } from './TwitchCommands.ts';
 import { TwitchEvents } from './TwitchEvents.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchQuote, TwitchUserData } from '@propz/types.ts';
-import type { ApiClient, HelixStream } from '@twurple/api';
+import type { HelixStream } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
@@ -28,7 +28,6 @@ import { Deepl } from '../external/Deepl.ts';
 export abstract class TwitchUtils
 {
 	// Controllers
-	public api: ApiClient;
 	public chat: TwitchChat;
 	public events: TwitchEvents;
 	public commands: TwitchCommands;
@@ -47,11 +46,6 @@ export abstract class TwitchUtils
 		public ws: BotWebsocket
 	)
 	{
-		this.data = data;
-		this.discord = discord;
-		this.ws = ws;
-		this.api = data.twitchApi;
-
 		this.chat = new TwitchChat( this );
 		this.events = new TwitchEvents( this );
 		this.commands = new TwitchCommands( this );
@@ -522,6 +516,9 @@ export abstract class TwitchUtils
 	 */
 	async sendStremOnlineDataToDiscord( stream?: HelixStream | undefined | null )
 	{
+		if ( !this.discord.client.isReady() )
+			return;
+
 		stream = stream ? stream : this.stream;
 		if ( !stream )
 			return;
@@ -617,7 +614,7 @@ export abstract class TwitchUtils
 	 * @param {string} eventType Event type name
 	 * @param {string} userName User name
 	 */
-	fireEvent( eventType: string, user: HelixUser | SimpleUser | ChatUser | string )
+	fireEvent( eventType: string, user: HelixUser | SimpleUser | ChatUser | string | null )
 	{
 		if ( !eventType || !user )
 			return false;
@@ -741,7 +738,7 @@ export abstract class TwitchUtils
 	 */
 	handleQuestion( questionType: string, questionText: string, user: HelixUser | SimpleUser )
 	{
-		if ( !questionType || !questionText || !user )
+		if ( !questionType || !questionText || !user || !this.discord.client.isReady() )
 			return;
 
 		const command = this.commands.commands.get( questionType );

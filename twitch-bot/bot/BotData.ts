@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.4
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -559,6 +559,8 @@ export class BotData
 		try
 		{
 			const rewards = this.rewards;
+			if ( !rewards ) return;
+
 			const rewardsCurrent = await this.twitchApi.channelPoints
 				.getCustomRewards( this.userId, true );
 

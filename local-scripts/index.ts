@@ -2,7 +2,7 @@
  * The local workspace just controls my own printer for special events
  *
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.6.4
  */
 
 import WebsocketController from '@propz/websocket.ts';
@@ -19,10 +19,17 @@ const init = () =>
 	const obs = new ObsController();
 	obs.connect();
 
-	const spotify = new SpotifyAdMuter();
-	spotify.start();
+	// Only works for mac
+	if ( Deno.build.os === 'darwin' )
+	{
+		const spotify = new SpotifyAdMuter();
+		spotify.start();
+	}
 
-	const printController = new PrintController();
+	// Only works for propz
+	let printController = null;
+	if ( botUrl.includes( 'propz.tv' ) )
+		printController = new PrintController();
 
 	ws.websocketEvents.on( 'message', async ( event: CustomEvent ) =>
 	{
@@ -31,7 +38,8 @@ const init = () =>
 		if ( event?.detail?.obs )
 			obs.sendCommands( event.detail.obs );
 
-		await printController.print( event.detail );
+		if ( printController )
+			await printController.print( event.detail );
 	} );
 };
 

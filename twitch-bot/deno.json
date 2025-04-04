@@ -13,6 +13,6 @@
 		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.2.1",
 		"cld": "npm:cld@^2.10.1",
 		"discord.js": "npm:discord.js@^14.18.0",
-		"puppeteer": "npm:puppeteer@^24.4.0"
+		"puppeteer": "npm:puppeteer@^24.6.0"
 	}
 }
