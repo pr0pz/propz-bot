@@ -2,7 +2,7 @@
  * Prototype stuff
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 1.6.5
  */
 
 declare global
@@ -24,8 +24,6 @@ declare global
 /** Convert string to RegExp object.
  *
  * https://stackoverflow.com/a/55258958/4371770
- *
- * @param {string} str String to convert to RegExp.
  */
 String.prototype.toRegExp = function()
 {
@@ -51,7 +49,6 @@ String.prototype.toRegExp = function()
  * https://masteringjs.io/tutorials/fundamentals/trim
  *
  * @param {string} char Character to trim, defaults to whitespace
- * @param {string} str String to trim
  */
 String.prototype.trim = function( char: string = ' ' )
 {
@@ -62,35 +59,26 @@ String.prototype.trim = function( char: string = ' ' )
 /** Check if object is numeric.
  *
  * No check for dots or commas, so only works with positive int.
- *
- * @param {Object} obj Object to check
  */
 Object.prototype.isNumeric = function()
 {
 	const val = this.valueOf();
 	if ( typeof val === 'string' )
 		return !isNaN( parseInt( val ) );
-	if ( typeof val === 'number' && val > 0 )
-		return true;
-	return false;
+	return typeof val === 'number' && val > 0;
 };
 
-/** Check if string is a command.
- *
- * @param {string} str String to check
- */
+/** Check if string is a command. */
 String.prototype.isCommand = function()
 {
 	const str = this.valueOf();
-	const matches = str.match( /^(@\w+\s)?\!/ig );
+	const matches = str.match( /^(@\w+\s)?!/ig );
 	return Boolean( matches?.length && matches.length > 0 );
 };
 
 /** Sanitize string
  *
  * https://www.w3docs.com/snippets/javascript/how-to-html-encode-a-string.html
- *
- * @param {string} str String to check.
  */
 String.prototype.sanitize = function()
 {

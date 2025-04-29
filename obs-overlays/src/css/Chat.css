@@ -1,69 +1,70 @@
 /**
  * Chat list
- * 
+ *
  * @author Wellington Estevo
  * @version 1.0.0
  */
 
 .chat-messages {
-	display: flex;
-	flex-direction: column;
-	align-self: flex-end;
-	width: 100%;
-	opacity: .9;
-	padding: 0 .5rem .5rem;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    width: 100%;
+    opacity: .9;
+    padding: 0 .5rem .5rem;
 }
 
-	.chat-message-wrapper {
-		color: #fff;
-		margin-bottom: 1.5rem;
-		font-family: var(--font-family-chat);
-		line-height: 1.2;
-		width: 100%;
+.chat-message-wrapper {
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-family-chat);
+    line-height: 1.2;
+    width: 100%;
 
-		opacity: 0;
-		transform: translateY( 5rem );
-		
-		animation: slideInUp 20s ease-in-out;
-		background: var(--color-primary);
-	}
+    opacity: 0;
+    transform: translateY(5rem);
 
-	.chat-message-wrapper .chat-user {
-		font-family: var(--font-family-headline);
-		color: #aaa;
-		font-weight: 900;
-		line-height: 1;
-		background: var(--color-primary);
-		border: 0;
-	}
+    animation: slideInUp 20s ease-in-out;
+    background: var(--color-primary);
+}
 
-	.chat-message-wrapper .chat-message {
-		background: var(--color-secondary);
+.chat-message-wrapper .chat-user {
+    font-family: var(--font-family-headline);
+    color: #aaa;
+    font-weight: 900;
+    line-height: 1;
+    background: var(--color-primary);
+    border: 0;
+}
 
-		.emote {
-			max-width: 3rem;
-		}
+.chat-message-wrapper .chat-message {
+    background: var(--color-secondary);
+    word-break: break-word;
 
-		img {
-			max-width: 100%;
-		}
-	}
+    .emote {
+        max-width: 3rem;
+    }
 
-	@keyframes slideInUp {
-		0% {
-			opacity: 0;
-			transform: translateY( 5rem );
-		}
-		5% {
-			opacity: 1;
-			transform: translateY( 0 );
-		}
-		95% {
-			opacity: 1;
-			transform: translateY( 0 );
-		}
-		100% {
-			opacity: 0;
-			transform: translateY( -1rem );
-		}
-	}
+    img {
+        max-width: 100%;
+    }
+}
+
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(5rem);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    95% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-1rem);
+    }
+}

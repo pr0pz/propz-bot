@@ -1,10 +1,12 @@
 {
-	"version": "1.6.4",
+	"version": "1.6.5",
 	"nodeModulesDir": "auto",
 	"fmt": {
 		"singleQuote": true,
 		"useTabs": true,
-		"exclude": ["*/*.json"]
+		"exclude": [
+			"*/*.json"
+		]
 	},
 	"lint": {
 		"include": [
@@ -26,7 +28,12 @@
 		"jsxFragmentFactory": "React.Fragment",
 		"jsxImportSource": "npm:react",
 		"jsxImportSourceTypes": "npm:@types/react",
-		"lib": ["dom", "dom.iterable", "esnext", "deno.ns"]
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"esnext",
+			"deno.ns"
+		]
 	},
 	"tasks": {
 		"bot": "deno run -A --unstable-cron --env-file ./twitch-bot/index.ts dev",

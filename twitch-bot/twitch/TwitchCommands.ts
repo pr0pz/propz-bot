@@ -17,13 +17,18 @@ import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
 {
+	private commandHistory: Map<string, number> = new Map();
+	private twitch: TwitchUtils;
 	public commands: Map<string, TwitchCommand> = new Map( Object.entries( {
 		ad: {
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
 				try
 				{
-					this.twitch.data.twitchApi.channels.startChannelCommercial( this.twitch.data.userId, 180 );
+					this.twitch.data.twitchApi.channels.startChannelCommercial(
+						this.twitch.data.userId,
+						180
+					);
 				}
 				catch ( error: unknown )
 				{
@@ -42,8 +47,8 @@ export class TwitchCommands
 			description: 'Zitat hinzufügen: !addquote author quote text',
 			disableIfOffline: true,
 			message: {
-				de: 'Zitat erfolgreich gespeichert: #[count]',
-				en: 'Quote successfully saved: #[count]'
+				de: 'Zitat gespeichert: #[count]',
+				en: 'Quote saved: #[count]'
 			}
 		},
 		ai: {
@@ -257,7 +262,10 @@ export class TwitchCommands
 			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.returnMessage?.replace( '[user]', this.twitch.firstChatter );
+				return options.returnMessage?.replace(
+					'[user]',
+					this.twitch.firstChatter
+				);
 			},
 			description: 'First Chatter des Streams',
 			message: {
@@ -291,9 +299,13 @@ export class TwitchCommands
 		fokus: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				const focusTimer = this.twitch.handleFocus( parseInt( options.param || '10' ) );
+				const focusTimer = this.twitch.handleFocus(
+					parseInt( options.param || '10' )
+				);
 				if ( !focusTimer )
+				{
 					return;
+				}
 				return options.returnMessage?.replace( '[count]', focusTimer.toString() );
 			},
 			aliases: [ 'focus' ],
@@ -467,7 +479,10 @@ export class TwitchCommands
 		lurk: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.returnMessage.replace( '[user]', options.sender.displayName );
+				return options.returnMessage.replace(
+					'[user]',
+					options.sender.displayName
+				);
 			},
 			description: 'Lurkstart',
 			message: {
@@ -606,7 +621,10 @@ export class TwitchCommands
 					const target = await this.twitch.data.getUser( options.param );
 					if ( !target ) return;
 
-					const raid = await this.twitch.data.twitchApi.raids.startRaid( this.twitch.data.userId, target.id );
+					const raid = await this.twitch.data.twitchApi.raids.startRaid(
+						this.twitch.data.userId,
+						target.id
+					);
 					if ( !raid ) return;
 
 					this.twitch.processEvent( {
@@ -805,18 +823,35 @@ export class TwitchCommands
 					let game;
 					const param = options.param.toLowerCase();
 					if ( param.includes( 'software' ) )
-						game = await this.twitch.data.twitchApi.games.getGameByName( 'Software and Game Development' );
+					{
+						game = await this.twitch.data.twitchApi.games.getGameByName(
+							'Software and Game Development'
+						);
+					}
 					else if ( param.includes( 'chat' ) )
-						game = await this.twitch.data.twitchApi.games.getGameByName( 'Just Chatting' );
+					{
+						game = await this.twitch.data.twitchApi.games.getGameByName(
+							'Just Chatting'
+						);
+					}
 					else
-						game = await this.twitch.data.twitchApi.games.getGameByName( options.param );
+					{
+						game = await this.twitch.data.twitchApi.games.getGameByName(
+							options.param
+						);
+					}
 
 					if ( !game )
+					{
 						return `Game not found`;
+					}
 
-					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
-						gameId: game.id
-					} );
+					await this.twitch.data.twitchApi.channels.updateChannelInfo(
+						this.twitch.data.userId,
+						{
+							gameId: game.id
+						}
+					);
 					return options.returnMessage.replace( '[game]', game.name );
 				}
 				catch ( error: unknown )
@@ -834,9 +869,12 @@ export class TwitchCommands
 			{
 				try
 				{
-					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
-						language: options.message
-					} );
+					await this.twitch.data.twitchApi.channels.updateChannelInfo(
+						this.twitch.data.userId,
+						{
+							language: options.message
+						}
+					);
 					return options.returnMessage.replace( '[language]', options.message );
 				}
 				catch ( error: unknown )
@@ -852,9 +890,12 @@ export class TwitchCommands
 			{
 				try
 				{
-					await this.twitch.data.twitchApi.channels.updateChannelInfo( this.twitch.data.userId, {
-						title: options.message
-					} );
+					await this.twitch.data.twitchApi.channels.updateChannelInfo(
+						this.twitch.data.userId,
+						{
+							title: options.message
+						}
+					);
 					return options.returnMessage.replace( '[title]', options.message );
 				}
 				catch ( error: unknown )
@@ -872,7 +913,9 @@ export class TwitchCommands
 				this.twitch.processEvent( {
 					eventType: 'slap',
 					user: options.param || options.sender.displayName,
-					sender: options.param ? options.sender.displayName : this.twitch.data.userDisplayName
+					sender: options.param ?
+						options.sender.displayName :
+						this.twitch.data.userDisplayName
 				} );
 			},
 			description: 'Slap them good'
@@ -892,10 +935,14 @@ export class TwitchCommands
 			handler: () =>
 			{
 				const sounds: string[] = [];
-				for ( const [ index, command ] of this.twitch.commands.commands.entries() )
+				for (
+					const [ index, command ] of this.twitch.commands.commands.entries()
+				)
 				{
 					if ( command.hasSound || command.hasVideo )
+					{
 						sounds.push( `!${index}` );
+					}
 				}
 				return `▶️ ${sounds.join( ', ' )}`;
 			},
@@ -916,13 +963,21 @@ export class TwitchCommands
 
 				let sceneName = options.message;
 				if ( options.message.toLowerCase().includes( 'desktop' ) )
+				{
 					sceneName = '[S] DESKTOP';
+				}
 				else if ( options.message.toLowerCase().includes( 'chat' ) )
+				{
 					sceneName = '[S] CHATTING';
+				}
 				else if ( options.message.toLowerCase().includes( 'pause' ) )
+				{
 					sceneName = '[S] PAUSE';
+				}
 				else if ( options.message.toLowerCase().includes( 'ende' ) )
+				{
 					sceneName = '[S] ENDE';
+				}
 
 				this.twitch.ws.maybeSendWebsocketData( {
 					type: 'command',
@@ -1015,7 +1070,9 @@ export class TwitchCommands
 			aliases: [ 'zeit', 'uhrzeit' ],
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return new Date().toLocaleTimeString( 'de-DE', { timeZone: 'America/Sao_Paulo' } );
+				return new Date().toLocaleTimeString( 'de-DE', {
+					timeZone: 'America/Sao_Paulo'
+				} );
 			}
 		},
 		thinking: {
@@ -1045,15 +1102,23 @@ export class TwitchCommands
 				// Check if command as sent as reply
 				if ( options.messageObject.isReply )
 				{
-					const message = sanitizeMessage( options.messageObject.parentMessageText ?? '' );
+					const message = sanitizeMessage(
+						options.messageObject.parentMessageText ?? ''
+					);
 					if ( this.twitch.isValidMessageText( message, options.messageObject ) )
 					{
-						const translation = await Deepl.translate( message, this.twitch.streamLanguage );
+						const translation = await Deepl.translate(
+							message,
+							this.twitch.streamLanguage
+						);
 						this.twitch.chat.sendMessage( translation, options.messageObject );
 						return '';
 					}
 				}
-				return await Deepl.translate( options.message, this.twitch.streamLanguage );
+				return await Deepl.translate(
+					options.message,
+					this.twitch.streamLanguage
+				);
 			}
 		},
 		twurple: {
@@ -1066,7 +1131,10 @@ export class TwitchCommands
 		unlurk: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return options.returnMessage.replace( '[user]', options.sender.displayName );
+				return options.returnMessage.replace(
+					'[user]',
+					options.sender.displayName
+				);
 			},
 			description: 'Lurkstop',
 			message: {
@@ -1098,7 +1166,8 @@ export class TwitchCommands
 			description: 'Zum aktuellen VOD',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return options.returnMessage + await Youtube.getVodLink( this.twitch.isStreamActive );
+				return options.returnMessage +
+					await Youtube.getVodLink( this.twitch.isStreamActive );
 			},
 			message: {
 				de: 'Zum aktuellen VOD ▶️ ',
@@ -1133,7 +1202,9 @@ export class TwitchCommands
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.param )
+				{
 					options.param = 'Florianopolis';
+				}
 
 				const weatherData = await OpenWeather.handleWeatherRequest(
 					options.param,
@@ -1142,7 +1213,9 @@ export class TwitchCommands
 				);
 
 				if ( !weatherData?.temp )
+				{
 					return `Nah`;
+				}
 
 				return options.returnMessage
 					.replace( '[cityName]', weatherData.cityName )
@@ -1194,8 +1267,6 @@ export class TwitchCommands
 		}
 	} ) );
 
-	private commandHistory: Map<string, number> = new Map();
-	private twitch: TwitchUtils;
 	constructor( twitch: TwitchUtils )
 	{
 		this.twitch = twitch;
@@ -1205,7 +1276,9 @@ export class TwitchCommands
 	getCommandNameFromMessage( chatMessage: string )
 	{
 		if ( !chatMessage )
+		{
 			return '';
+		}
 
 		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?\!(\w+)/ig );
 		const commandName = matches?.[0]?.[1] ?? '';
@@ -1213,7 +1286,9 @@ export class TwitchCommands
 		for ( const [ cmdName, cmd ] of this.commands.entries() )
 		{
 			if ( cmd.aliases?.includes( commandName ) )
+			{
 				return cmdName;
+			}
 		}
 
 		return commandName;

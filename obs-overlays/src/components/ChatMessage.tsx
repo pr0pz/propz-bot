@@ -2,7 +2,7 @@
  * Single Chat message
  * 
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.6.5
  */
 
 import parse from 'html-react-parser';
@@ -14,7 +14,7 @@ const ChatMessage = ( propz: { message: string; user: string; color?: string; ke
 	const event = useEvent();
 	const [chatMessage, setMessage] = useState<string>( propz.message );
 	const [chatUser, setUser] = useState<string>( propz.user );
-
+	
 	useEffect( () =>
 	{
 		if ( event?.detail?.text !== 'clear' ) return;
@@ -28,7 +28,9 @@ const ChatMessage = ( propz: { message: string; user: string; color?: string; ke
 			<div className='chat-user browser-header' style={{ color:propz.color }}>
 				{ chatUser }:
 			</div>
-			<div className='chat-message browser-body'>{ parse( chatMessage ) }</div>
+			<div className='chat-message browser-body'>{
+				parse( chatMessage.replaceAll( '\\', '' ) )
+			}</div>
 		</li>
 	);
 }
