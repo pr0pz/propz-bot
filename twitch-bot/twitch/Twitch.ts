@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.6.6
  */
 
 import '@propz/prototypes.ts';
@@ -316,8 +316,10 @@ export class Twitch extends TwitchUtils
 					return response;
 
 				response.data = await OpenWeather.handleWeatherRequest(
-					apiRequest.data.cityName,
-					apiRequest.data.countryCode
+					apiRequest.data.cityName || '',
+					apiRequest.data.countryCode || '',
+					apiRequest.data.lat || '',
+					apiRequest.data.lon || ''
 				);
 				break;
 		}

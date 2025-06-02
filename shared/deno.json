@@ -4,7 +4,7 @@
 		".": "./helper.ts"
 	},
 	"imports": {
-		"@twurple/chat": "npm:@twurple/chat@^7.2.1",
+		"@twurple/chat": "npm:@twurple/chat@^7.3.0",
 		"events": "npm:events@^3.3.0"
 	}
 }
