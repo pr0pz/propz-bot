@@ -5,7 +5,6 @@
 	},
 	"imports": {
 		"@std/fs": "jsr:@std/fs@^1.0.18",
-		"@std/node": "jsr:@std/node@^1.0.6",
 		"@twurple/auth": "npm:@twurple/auth@^7.3.0",
 		"@twurple/api": "npm:@twurple/api@^7.3.0",
 		"@twurple/chat": "npm:@twurple/chat@^7.3.0",

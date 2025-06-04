@@ -1,76 +1,90 @@
 /**
  * Weather
- * 
+ *
  * @author Wellington Estevo
- * @version 1.2.5
+ * @version 1.6.7
  */
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { log } from '@propz/helpers.ts';
+import {log} from '@propz/helpers.ts';
+import {useEffect, useState} from 'react';
+import {useSearchParams} from 'react-router-dom';
 
 const Weather = () =>
 {
 	const [searchParams] = useSearchParams();
-	const [worked, setWorked] = useState( false );
-	const [temp, setTemp] = useState( '' );
-	const [icon, setIcon] = useState( '' );
-	const [classes, setClasses] = useState( '' );
+	const [worked, setWorked] = useState(false);
+	const [temp, setTemp] = useState('');
+	const [icon, setIcon] = useState('');
+	const [classes, setClasses] = useState('');
 
-	useEffect( () =>
+	useEffect(() =>
 	{
 		const city = searchParams.get('cityName') || '';
 		const country = searchParams.get('countryCode') || '';
+		const lat = searchParams.get('lat') || '';
+		const lon = searchParams.get('lon') || '';
 
-		checkTheWeather( city, country );
-		const weatherInterval = setInterval( () => checkTheWeather( city, country ), 600 * 1000 );
+		checkTheWeather(city, country, lat, lon);
+		const weatherInterval = setInterval(() => checkTheWeather(city, country, lat, lon), 600 * 1000);
 
-		return () => clearInterval( weatherInterval );
-	}, [ searchParams ]);
+		return () => clearInterval(weatherInterval);
+	}, [searchParams]);
 
-	async function checkTheWeather( cityName: string, countryCode: string )
+	async function checkTheWeather(cityName: string, countryCode: string, lat: string, lon: string)
 	{
-		if ( !cityName || !countryCode ) return;
-
 		const fetchOptions = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ 
-				request: "getWeather", 
-				data: { 
-					cityName, 
-					countryCode 
-				} 
+			body: JSON.stringify({
+				request: 'getWeather',
+				data: {
+					cityName,
+					countryCode,
+					lat,
+					lon
+				}
 			})
 		};
 
-		try {
-			const response = await fetch( `https://${ process.env.BOT_URL }/api`, fetchOptions );
+		try
+		{
+			let urlPrefix = 'https';
+			if (process.env.BOT_URL.includes('localhost') || process.env.BOT_URL.includes('127.0.0.1'))
+				urlPrefix = 'http';
+
+			console.table(fetchOptions);
+
+			const response = await fetch(`${urlPrefix}://${process.env.BOT_URL}/api`, fetchOptions);
 			const data = await response.json();
 
-			if ( !data?.data?.temp ) return;
+			if (!data?.data?.temp) return;
 
-			setWorked( true );
-			//setTemp( Math.round(data.data.temp * 2) / 2 );
-			setTemp( Math.round(data.data.temp) );
-			setClasses( 'w-' + data.data.icon );
-			setIcon( data.data.iconUrl );
+			setWorked(true);
+			// setTemp( Math.round(data.data.temp * 2) / 2 );
+			setTemp(Math.round(data.data.temp));
+			setClasses('w-' + data.data.icon);
+			setIcon(data.data.iconUrl);
 
-			//if ( data.data.iconUrl !== image )
+			// if ( data.data.iconUrl !== image )
+		} catch (error: unknown)
+		{
+			log(error);
 		}
-		catch ( error: unknown ) { log( error ) }
 	}
-	
-	if ( !worked ) return;
 
-	return(
-		<div id="weather">
-			<div id="weather-image"><img src={ icon } /></div>
-			<div id="weather-temp" className={ classes }>{ temp }</div>
+	if (!worked) return;
+
+	return (
+		<div id='weather'>
+			<div id='weather-image'>
+				<img src={icon}/>
+			</div>
+			<div id='weather-temp'
+				className={classes}>{temp}</div>
 		</div>
 	);
-}
+};
 
 export default Weather;
