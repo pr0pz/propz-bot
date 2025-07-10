@@ -4,14 +4,14 @@
 		".": "./index.ts"
 	},
 	"imports": {
-		"@std/fs": "jsr:@std/fs@^1.0.18",
+		"@std/fs": "jsr:@std/fs@^1.0.19",
 		"@twurple/auth": "npm:@twurple/auth@^7.3.0",
 		"@twurple/api": "npm:@twurple/api@^7.3.0",
 		"@twurple/chat": "npm:@twurple/chat@^7.3.0",
-		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.2.1",
+		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.3.0",
 		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.3.0",
 		"cld": "npm:cld@^2.10.1",
-		"discord.js": "npm:discord.js@^14.19.3",
-		"puppeteer": "npm:puppeteer@^24.10.0"
+		"discord.js": "npm:discord.js@^14.21.0",
+		"puppeteer": "npm:puppeteer@^24.12.1"
 	}
 }

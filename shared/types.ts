@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.8
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -94,6 +94,12 @@ export interface TwitchQuote
 	user_id: string;
 	vod_url: string;
 	name?: string;
+}
+
+export interface TwitchQuoteRow extends TwitchQuote
+{
+	id: string | number;
+	[key: string]: any;
 }
 
 export interface TwitchReward

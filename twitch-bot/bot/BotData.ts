@@ -2,13 +2,13 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.6.8
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
-import type { SimpleUser, TwitchBadge, TwitchBadgeVersion, TwitchEmote, TwitchEvent, TwitchEventData, TwitchQuote, TwitchReaction, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { SimpleUser, TwitchBadge, TwitchBadgeVersion, TwitchEmote, TwitchEvent, TwitchEventData, TwitchQuote, TwitchQuoteRow, TwitchReaction, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
 import type { ApiClient } from '@twurple/api';
 import type { Database } from './Database.ts';
 
@@ -192,7 +192,18 @@ export class BotData
 	{
 		try
 		{
-			const quotes = this.db.queryEntries<TwitchQuote>( `
+			let quoteIndex = quoteId;
+			if ( quoteIndex < 1 )
+			{
+				const totalQuotes = this.db.queryEntries( `SELECT COUNT(*) as count FROM twitch_quotes` );
+
+				if ( !totalQuotes?.[0]?.count )
+					return '';
+
+				quoteIndex = getRandomNumber( Number( totalQuotes[0].count ), 1 );
+			}
+
+			const quote = this.db.queryEntries<TwitchQuoteRow>( `
 				SELECT 
 					q.id,
 					q.date,
@@ -203,29 +214,25 @@ export class BotData
 					u.name  -- Include the username from users table
 				FROM twitch_quotes q
 				LEFT JOIN twitch_users u ON q.user_id = u.id
-				ORDER BY q.id` );
+				WHERE q.id = ?
+				ORDER BY q.id`, [ quoteIndex ] );
 
-			if ( quotes.length === 0 )
+			if ( quote.length === 0 )
 				return '';
 
-			const quoteIndex = quoteId > 0 ?
-				quoteId :
-				getRandomNumber( quotes.length, 1 );
-			const quote = quotes[quoteIndex];
-
-			if ( !quote )
-				return '';
-
-			const date = new Date( Date.parse( quote.date ) );
-			const message = `${quote.text} - ${quote.name} [ #${quoteIndex} / ${
+			const date = new Date( Date.parse( quote[0].date ) );
+			let message = `${quote[0].text} - ${quote[0].name} [ #${quoteIndex} / ${
 				date.toLocaleDateString( 'de-DE', {
 					day: '2-digit',
 					month: '2-digit',
 					year: 'numeric'
 				} )
-			} / ${quote.vod_url} ]`;
+			}`;
 
-			return message;
+			if ( quote[0].vod_url )
+				message += ` / ${quote[0].vod_url}`;
+
+			return message + ' ]';
 		}
 		catch ( error: unknown )
 		{
@@ -312,20 +319,6 @@ export class BotData
 		}
 
 		return dates;
-	}
-
-	/** Returns twitch schedule ical */
-	async getScheduleIcal()
-	{
-		try
-		{
-			return await this.twitchApi.schedule.getScheduleAsIcal( this.userId );
-		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
 	}
 
 	/** Get User Data from Twitch
@@ -660,8 +653,8 @@ export class BotData
 	/** Add quote to quotes */
 	addQuote( quote: TwitchQuote )
 	{
-		if ( !quote )
-			return '';
+		if ( !quote ) return '';
+
 		try
 		{
 			this.db.query(

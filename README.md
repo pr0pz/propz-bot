@@ -97,6 +97,10 @@ Every Folder of the Bot has a separate purpose:
 
 
 ### __Misc Instructions__
+- #### Updated All packages
+	Run this on every folder:
+	deno outdated --update --latest
+
 - #### Updated Twurple packages order
 	deno i npm:@twurple/auth@latest npm:@twurple/api@latest npm:@twurple/chat@latest npm:@twurple/eventsub-ws@latest
 

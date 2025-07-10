@@ -2,7 +2,7 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.6.8
  */
 
 import '@propz/prototypes.ts';
@@ -24,7 +24,6 @@ export class Discord extends DiscordUtils
 	public channels: Record<string, string> = {
 		channelAnnouncements: '931501580996444160',
 		channelGithub: '1135575392258899978',
-		channelMemberCount: '913444406944759818',
 		channelStream: '1181683702430978048',
 		channelTest: '1111209160521023520',
 		channelWelcome: '960223627079454760',
@@ -290,18 +289,6 @@ export class Discord extends DiscordUtils
 		}
 	}
 
-	/** Update Member count */
-	private async updateMemberCount()
-	{
-		const guild = await this.getGuildById( this.guildid );
-		if ( !guild ) return;
-
-		const channelMemberCount = await this.getChannelById( this.channels.channelMemberCount );
-		if ( !channelMemberCount || !( 'setName' in channelMemberCount ) ) return;
-
-		channelMemberCount.setName( `Member Count: ${guild.memberCount}` );
-	}
-
 	/** Send welcome image
 	 *
 	 * @param {GuildMember} member Member who needs a welcome message
@@ -336,7 +323,6 @@ export class Discord extends DiscordUtils
 	onReady = ( client: Client ) =>
 	{
 		log( client?.user?.tag || 'x' );
-		this.updateMemberCount();
 	};
 
 	/** When someone writes a message */
@@ -400,7 +386,6 @@ export class Discord extends DiscordUtils
 		const eventType = 'guildmemberadd';
 		log( `<${eventType}> ${member.displayName}` );
 
-		this.updateMemberCount();
 		this.sendWelcomeImage( member );
 	};
 }
