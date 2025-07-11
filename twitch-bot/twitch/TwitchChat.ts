@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.6.9
  */
 
 import '@propz/prototypes.ts';
@@ -17,7 +17,8 @@ export class TwitchChat
 {
 	public chatClient!: ChatClient;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
-	private communitySubGifts = new Map();
+	private communitySubGifts = new Map<string | undefined, number>();
+	private pendingCommunityGifts = new Map<string, number>();
 
 	constructor( private twitch: TwitchUtils )
 	{
@@ -290,6 +291,13 @@ export class TwitchChat
 		const previousGiftCount = this.communitySubGifts.get( user ) || 0;
 		this.communitySubGifts.set( user, previousGiftCount + count );
 
+		// Cancel pending single gift processing
+		if ( this.pendingCommunityGifts.has( user ) )
+		{
+			clearTimeout( this.pendingCommunityGifts.get( user )! );
+			this.pendingCommunityGifts.delete( user );
+		}
+
 		log( `${user}: Gifts ${count} subs` );
 
 		this.twitch.processEvent( {
@@ -461,12 +469,24 @@ export class TwitchChat
 			return;
 		}
 
-		this.twitch.processEvent( {
-			eventType: 'subgift',
-			user: msg.userInfo,
-			eventCount: subInfo.months || 1,
-			eventText: subInfo.message || ''
-		} );
+		// Check if Community Gift Timer is running and wait for Community Sub Event
+		if ( this.pendingCommunityGifts.has( gifterName ) )
+			return;
+
+		// Set timer for Community Sub to trigger first
+		const timer = setTimeout( () =>
+		{
+			// No Community Sub, so just fire the subgift event
+			this.twitch.processEvent( {
+				eventType: 'subgift',
+				user: msg.userInfo,
+				eventCount: subInfo.months || 1,
+				eventText: subInfo.message || ''
+			} );
+			this.pendingCommunityGifts.delete( gifterName );
+		}, 100 );
+
+		this.pendingCommunityGifts.set( gifterName, timer );
 	};
 
 	/** Fires when a user is permanently banned from a channel.
