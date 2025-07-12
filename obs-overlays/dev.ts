@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  *
  * @author Wellington Estevo
- * @version 1.6.1
+ * @version 1.6.10
  */
 
 import { log } from '@propz/helpers.ts';
@@ -10,6 +10,7 @@ import { serveDir } from '@std/http/file-server';
 import * as esbuild from 'esbuild';
 
 const botUrl = Deno.env.get( 'BOT_URL' ) || '';
+const obsPassword = Deno.env.get( 'OBS_WEBSOCKET_PASSWORD' ) || '';
 const rootDir = 'obs-overlays';
 const tmpDir = await Deno.makeTempDir();
 const clients = new Set<WebSocket>();
@@ -95,7 +96,8 @@ try
 		jsx: 'automatic',
 		sourcemap: true,
 		define: {
-			'process.env.BOT_URL': `"${botUrl}"`
+			'process.env.BOT_URL': `"${botUrl}"`,
+			'process.env.OBS_WEBSOCKET_PASSWORD': `"${obsPassword}"`
 		},
 		plugins: [ {
 			name: 'reload',

@@ -1,25 +1,23 @@
 /**
  * OBS Websocket Controller
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.6.10
  */
 
-import OBSWebSocket from 'obs-websocket-js';
 import { log } from '@propz/helpers.ts';
 import type { ObsData } from '@propz/types.ts';
+import OBSWebSocket from 'obs-websocket-js';
 
 export default class ObsController
 {
 	public obs: OBSWebSocket;
-	private obsUrl = 'ws://localhost:4455'
-	private obsPassword = '';
+	private obsUrl = 'ws://localhost:4455';
 
-	constructor()
+	constructor( private obsPassword: string )
 	{
 		this.obs = new OBSWebSocket();
 		this.obs.on( 'ConnectionClosed', this.onConnectionClosed );
-		this.obsPassword = Deno.env.get( 'OBS_WEBSOCKET_PASSWORD' ) || '';
 	}
 
 	async connect()
@@ -29,10 +27,26 @@ export default class ObsController
 			await this.obs.connect( this.obsUrl, this.obsPassword );
 			log( 'OBS connected' );
 		}
-		catch ( _error: unknown ) { /* Don't do anything here, onConnectionClosed gets triggered */ }
+		catch ( _error: unknown )
+		{
+			/* Don't do anything here, onConnectionClosed gets triggered */
+		}
 	}
 
-	async sendCommands( commands: ObsData|ObsData[] )
+	async disconnect()
+	{
+		try
+		{
+			await this.obs.disconnect();
+			log( 'OBS disconnected' );
+		}
+		catch ( _error: unknown )
+		{
+			/* Don't do anything here, onConnectionClosed gets triggered */
+		}
+	}
+
+	async sendCommands( commands: ObsData | ObsData[] )
 	{
 		if ( !commands ) return;
 		if ( !Array.isArray( commands ) )
@@ -46,14 +60,17 @@ export default class ObsController
 		try
 		{
 			await this.obs.callBatch( commands );
-			log( `<${ requestsToSend.join( ', ') }>` );
+			log( `<${requestsToSend.join( ', ' )}>` );
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 
 	onConnectionClosed = ( _error: unknown ) =>
 	{
 		log( new Error( 'No OBS connection. Reconnecting in 30s' ) );
 		setTimeout( () => this.connect(), 30000 );
-	}
+	};
 }

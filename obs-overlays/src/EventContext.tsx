@@ -1,31 +1,31 @@
 /**
  * Global event context
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.6.10
  */
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import ObsController from '@propz/obs.ts';
 import WebsocketController from '@propz/websocket.ts';
-// import ObsController from '@propz/ObsController.ts';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const EventContext = createContext();
 
 export const useEvent = () =>
 {
 	return useContext( EventContext );
-}
+};
 
-export const EventProvider = ({ children }) =>
+export const EventProvider = ( { children } ) =>
 {
-	const [event, setEvent] = useState( null );
+	const [ event, setEvent ] = useState( null );
 	const websocketController = new WebsocketController( process.env.BOT_URL || '' );
-	// const obsController = new ObsController();
+	const obsController = new ObsController( process.env.OBS_WEBSOCKET_PASSWORD || '' );
 
 	useEffect( () =>
 	{
 		websocketController.connect();
-		//obsController.connect();
+		obsController.connect();
 
 		const eventHandler = ( event: CustomEvent ) =>
 		{
@@ -33,21 +33,27 @@ export const EventProvider = ({ children }) =>
 				!event?.detail?.type ||
 				event?.detail?.type === 'pong'
 			) return;
-			
+
 			console.table( event.detail );
 
-			// if ( event?.detail?.obs )
-			// 	obsController.sendCommands( event.detail.obs );
+			if ( event?.detail?.obs )
+				obsController.sendCommands( event.detail.obs );
 
 			setEvent( event );
-		}
+		};
 		websocketController.websocketEvents.on( 'message', eventHandler );
-	},
-	[]);
+
+		return () =>
+		{
+			websocketController.websocketEvents.off( 'message', eventHandler );
+			websocketController.disconnect();
+			obsController.disconnect();
+		};
+	}, [] );
 
 	return (
-		<EventContext.Provider value={ event }>
-			{ children }
+		<EventContext.Provider value={event}>
+			{children}
 		</EventContext.Provider>
 	);
 };

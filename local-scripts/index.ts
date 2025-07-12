@@ -2,11 +2,11 @@
  * The local workspace just controls my own printer for special events
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.6.10
  */
 
+// import ObsController from '@propz/obs.ts';
 import WebsocketController from '@propz/websocket.ts';
-import ObsController from './ObsController.ts';
 import PrintController from './PrintController.ts';
 import SpotifyAdMuter from './SpotifyAdMuter.ts';
 
@@ -16,8 +16,8 @@ const init = () =>
 	const ws = new WebsocketController( botUrl );
 	ws.connect();
 
-	const obs = new ObsController();
-	obs.connect();
+	// const obs = new ObsController();
+	// obs.connect();
 
 	// Only works for mac
 	if ( Deno.build.os === 'darwin' )
@@ -35,8 +35,8 @@ const init = () =>
 	{
 		if ( !event?.detail?.type ) return;
 
-		if ( event?.detail?.obs )
-			obs.sendCommands( event.detail.obs );
+		// if ( event?.detail?.obs )
+		// 	obs.sendCommands( event.detail.obs );
 
 		if ( printController )
 			await printController.print( event.detail );
