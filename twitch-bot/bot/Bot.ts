@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.6.11
  */
 
 import '@propz/prototypes.ts';
@@ -148,7 +148,7 @@ export class Bot
 		}
 
 		response = await this.twitch.processApiCall( body );
-		const statusCode = response.data ? 200 : 400;
+		const statusCode = typeof response.data !== 'undefined' ? 200 : 400;
 
 		return new Response(
 			JSON.stringify( response ),
