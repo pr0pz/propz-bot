@@ -1,28 +1,29 @@
 /**
  * Media Manager
- * 
+ *
  * @author Wellington Estevo
- * @version 1.4.3
+ * @version 1.6.12
  */
 
-import { useEffect, useState } from 'react';
-import { useEvent } from '../EventContext.tsx';
 import { log } from '@propz/helpers.ts';
 import type { TwitchCommand, TwitchEvent, WebSocketData } from '@propz/types.ts';
+import { useEffect, useState } from 'react';
+import { useEvent } from '../EventContext.tsx';
 
 const Mediaboard = () =>
 {
 	const event: CustomEvent = useEvent();
-	const [mediaQueue, setMediaQueue] = useState<WebSocketData[]>([]);
-	const [isPlaying, setIsPlaying] = useState(false);
-	const [avatar, setAvatar] = useState(<></>);
+	const [ mediaQueue, setMediaQueue ] = useState<WebSocketData[]>( [] );
+	const [ isPlaying, setIsPlaying ] = useState( false );
+	const [ avatar, setAvatar ] = useState( <></> );
+	const botUrl = process.env.BOT_URL ?? '';
 
 	useEffect( () =>
 	{
 		const setInitialMedia = async () =>
 		{
 			let urlPrefix = 'https';
-			if ( process.env.BOT_URL.includes( 'localhost' ) || process.env.BOT_URL.includes( '127.0.0.1' ) )
+			if ( botUrl.includes( 'localhost' ) || botUrl.includes( '127.0.0.1' ) )
 				urlPrefix = 'http';
 
 			const fetchOptions = {
@@ -32,47 +33,56 @@ const Mediaboard = () =>
 				},
 				body: '{ "request": "chatCommands" }'
 			};
-	
-			try {
-				const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
+
+			try
+			{
+				const response = await fetch( `${urlPrefix}://${botUrl}/api`, fetchOptions );
 				const data = await response.json();
-	
+
 				if ( !data ) return;
-		
-				for( const commandName of Object.keys( data.data ) )
+
+				for ( const commandName of Object.keys( data.data ) )
 				{
-					const command = data.data[ commandName ];
+					const command = data.data[commandName];
 					const mediaName = getMediaNameFromApiData( command, commandName );
-	
+
 					if ( command.hasSound ) addMedia( 'audio', mediaName );
 					if ( command.hasVideo ) addMedia( 'video', mediaName );
+					if ( command.hasImage ) addMedia( 'image', mediaName );
 				}
 			}
-			catch ( error: unknown ) { log( error ) }
-	
-			fetchOptions.body = '{ "request": "getEvents" }'
-	
-			try {
-				const response = await fetch( `${urlPrefix}://${ process.env.BOT_URL }/api`, fetchOptions );
+			catch ( error: unknown )
+			{
+				log( error );
+			}
+
+			fetchOptions.body = '{ "request": "getEvents" }';
+
+			try
+			{
+				const response = await fetch( `${urlPrefix}://${botUrl}/api`, fetchOptions );
 				const data = await response.json();
-	
+
 				if ( !data ) return;
-		
-				for( const eventName of Object.keys( data.data ) )
+
+				for ( const eventName of Object.keys( data.data ) )
 				{
-					const event = data.data[ eventName ];
+					const event = data.data[eventName];
 					const mediaName = getMediaNameFromApiData( event, eventName );
-	
+
 					if ( event.hasSound ) addMedia( 'audio', mediaName );
 					if ( event.hasVideo ) addMedia( 'video', mediaName );
+					if ( event.hasImage ) addMedia( 'image', mediaName );
 				}
 			}
-			catch ( error: unknown ) { log( error ) }
-		}
+			catch ( error: unknown )
+			{
+				log( error );
+			}
+		};
 
 		setInitialMedia();
-
-	},[] );
+	}, [] );
 
 	useEffect( () =>
 	{
@@ -82,18 +92,18 @@ const Mediaboard = () =>
 		if ( detail.text === 'clear' )
 		{
 			setMediaQueue();
-			setIsPlaying(false);
+			setIsPlaying( false );
 			return;
 		}
 
 		if (
 			!detail.hasSound &&
-			!detail.hasVideo
+			!detail.hasVideo &&
+			!detail.hasImage
 		) return;
 
-		setMediaQueue( ( prevEvents: WebSocketData[] ) => [...prevEvents, detail] );
-	},
-	[event]);
+		setMediaQueue( ( prevEvents: WebSocketData[] ) => [ ...prevEvents, detail ] );
+	}, [ event ] );
 
 	useEffect( () => processMediaQueue(), [ mediaQueue, isPlaying ] );
 
@@ -106,9 +116,8 @@ const Mediaboard = () =>
 		addAvatar( mediaQueue[0] );
 	};
 
-	
 	/** Play actual audio/video
-	 * 
+	 *
 	 * @param {WebSocketData} media
 	 */
 	const playMedia = ( media: WebSocketData ) =>
@@ -126,8 +135,8 @@ const Mediaboard = () =>
 				{
 					log( error );
 					resetMedia();
-				})
-				.then( () => log( `playing ▶️ ${ mediaName }` ) );
+				} )
+					.then( () => log( `playing ▶️ ${mediaName}` ) );
 			}
 		}
 		if ( media.hasVideo )
@@ -140,19 +149,32 @@ const Mediaboard = () =>
 				{
 					log( error );
 					resetMedia();
-				})
-				.then( () => log( `playing ▶️ ${ mediaName }` ) );
+				} )
+					.then( () => log( `playing ▶️ ${mediaName}` ) );
 			}
 		}
-	}
+		if ( media.hasImage )
+		{
+			const image = document.getElementById( `image-${mediaName}` ) as HTMLImageElement;
+			if ( image )
+			{
+				image.style.visibility = 'visible';
+				setTimeout( () =>
+				{
+					setIsPlaying( false );
+					image.style.visibility = 'hidden';
+				}, 10000 );
+			}
+		}
+	};
 
 	/** Reset Single Media play state
-	 * 
+	 *
 	 * @param {HTMLAudioElement|HTMLVideoElement} mediaElement
 	 */
 	const resetMedia = ( event?: Event ) =>
 	{
-		const target = event?.target ? event.target as HTMLAudioElement|HTMLVideoElement : false;
+		const target = event?.target ? event.target as HTMLAudioElement | HTMLVideoElement : false;
 		if ( target )
 		{
 			target.style.visibility = 'hidden';
@@ -160,36 +182,44 @@ const Mediaboard = () =>
 		}
 		setAvatar( <></> );
 		setIsPlaying( false );
-		setMediaQueue( (mediaQueue: WebSocketData[]) => mediaQueue.slice(1) );
-	}
+		setMediaQueue( ( mediaQueue: WebSocketData[] ) => mediaQueue.slice( 1 ) );
+	};
 
 	/** Add Avatar to DOM for animation
-	 * 
+	 *
 	 * @param {WebSocketData} media
-	*/
+	 */
 	const addAvatar = ( media: WebSocketData ) =>
 	{
 		if ( !media.showAvatar ) return;
-		setAvatar( <img id="avatar" className={ 'event-' + media.type } src={ media.profilePictureUrl } /> );
-	}
+		setAvatar( <img id='avatar' className={'event-' + media.type} src={media.profilePictureUrl} /> );
+	};
 
 	/** Add Element to DOM
-	 * 
+	 *
 	 * @param {string} type
 	 * @param {string} mediaName
 	 */
 	const addMedia = ( type: string, mediaName: string ) =>
 	{
 		if ( !type || !mediaName ) return;
-		
+
 		// Actual media element
-		const media = document.createElement( type ) as HTMLAudioElement|HTMLVideoElement;
+		const media = type === 'image' ?
+			document.createElement( type ) as HTMLImageElement :
+			document.createElement( type ) as HTMLAudioElement | HTMLVideoElement;
 		media.id = `${type}-${mediaName}`;
-		media.src = `/${type}/${media.id}.${ ( type === 'audio' ? 'mp3' : 'webm' ) }`;
-		media.volume = 1;
-		media.loop = false;
+		media.src = `/${type}/${media.id}.${( type === 'audio' ? 'mp3' : 'webm' )}`;
 		media.style.visibility = 'hidden';
-		media.addEventListener( 'ended', ( event: Event ) => { resetMedia( event ) } );
+		if ( !( media instanceof HTMLImageElement ) )
+		{
+			media.volume = 1;
+			media.loop = false;
+			media.addEventListener( 'ended', ( event: Event ) =>
+			{
+				resetMedia( event );
+			} );
+		}
 
 		// Link element for preload reasons
 		const link = document.createElement( 'link' ) as HTMLLinkElement;
@@ -199,14 +229,14 @@ const Mediaboard = () =>
 
 		document.getElementById( 'mediaboard' )?.appendChild( media );
 		document.head.appendChild( link );
-	}
+	};
 
 	/** Get the right Video/Audio file name
-	 * 
+	 *
 	 * text = command to lower case
 	 * type = rewards -> alle sound/video rewards haben keinen text
 	 */
-	const getMediaNameFromApiData = ( data: TwitchCommand|TwitchEvent, dataName: string = '' ) =>
+	const getMediaNameFromApiData = ( data: TwitchCommand | TwitchEvent, dataName: string = '' ) =>
 	{
 		if ( !data || !dataName ) return '';
 
@@ -216,11 +246,14 @@ const Mediaboard = () =>
 		if ( typeof data?.hasVideo === 'string' )
 			return data.hasVideo;
 
+		if ( typeof data?.hasImage === 'string' )
+			return data.hasImage;
+
 		return dataName;
-	}
+	};
 
 	/** Get the right Video/Audio file name
-	 * 
+	 *
 	 * text = command to lower case
 	 * type = rewards -> alle sound/video rewards haben keinen text
 	 */
@@ -228,16 +261,19 @@ const Mediaboard = () =>
 	{
 		if ( !media ) return '';
 
-		if ( typeof media.hasSound === 'string' )
+		if ( typeof media?.hasSound === 'string' )
 			return media.hasSound;
 
-		if ( typeof media.hasVideo === 'string' )
+		if ( typeof media?.hasVideo === 'string' )
 			return media.hasVideo;
 
-		return media.type?.startsWith( 'reward' ) ? media.type : ( media.text || media.type );
-	}
+		if ( typeof media?.hasImage === 'string' )
+			return media.hasImage;
 
-	return( <div id="mediaboard">{ avatar }</div> );
-}
+		return media.type?.startsWith( 'reward' ) ? media.type : ( media.text || media.type );
+	};
+
+	return <div id='mediaboard'>{avatar}</div>;
+};
 
 export default Mediaboard;

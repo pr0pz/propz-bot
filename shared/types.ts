@@ -24,6 +24,7 @@ export interface TwitchCommand
 	handler?: ( options: TwitchCommandOptions ) => Promise<string | void> | string | void;
 	hasSound?: boolean | string;
 	hasVideo?: boolean | string;
+	hasImage?: boolean | string;
 	message?: string | string[] | BotReactionMessage;
 	obs?: ObsData | ObsData[];
 	onlyMods?: boolean;
@@ -48,6 +49,7 @@ export interface TwitchEvent
 	obs?: ObsData | ObsData[];
 	hasSound?: boolean | string;
 	hasVideo?: boolean | string;
+	hasImage?: boolean | string;
 	showAvatar?: boolean;
 	extra?: {
 		[key: string]: TwitchEventExtra;
@@ -354,6 +356,7 @@ export interface WebSocketData
 	color: string;
 	hasSound?: boolean | string;
 	hasVideo?: boolean | string;
+	hasImage?: boolean | string;
 	showAvatar?: boolean;
 	badges?: string;
 	extra?: TwitchEventExtra | null;

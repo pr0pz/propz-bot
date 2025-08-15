@@ -2,139 +2,143 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.7
+ * @version 1.6.12
  */
 
-import {getTimePassed, log, sanitizeMessage} from '@propz/helpers.ts';
-import {Deepl} from '../external/Deepl.ts';
-import {Gemini} from '../external/Gemini.ts';
-import {OpenAI} from '../external/OpenAi.ts';
-import {OpenWeather} from '../external/OpenWeather.ts';
-import {Youtube} from '../external/Youtube.ts';
+import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
+import { Deepl } from '../external/Deepl.ts';
+import { Gemini } from '../external/Gemini.ts';
+import { OpenAI } from '../external/OpenAi.ts';
+import { OpenWeather } from '../external/OpenWeather.ts';
+import { Youtube } from '../external/Youtube.ts';
 
-import type {TwitchCommand, TwitchCommandOptions} from '@propz/types.ts';
-import type {TwitchUtils} from './TwitchUtils.ts';
+import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
+import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
 {
 	private commandHistory: Map<string, number> = new Map();
 	private twitch: TwitchUtils;
-	public commands: Map<string, TwitchCommand> = new Map(Object.entries({
+	public commands: Map<string, TwitchCommand> = new Map( Object.entries( {
 		ad: {
-			handler: (_options: TwitchCommandOptions) =>
+			handler: ( _options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					this.twitch.data.twitchApi.channels.startChannelCommercial(
 						this.twitch.data.userId,
-						180,
+						180
 					);
-				} catch (error: unknown)
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 				}
 			},
-			aliases: ['adbreak', 'werbung'],
+			aliases: [ 'adbreak', 'werbung' ],
 			disableIfOffline: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		addquote: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.addQuote(options.message);
+				return await this.twitch.addQuote( options.message );
 			},
 			description: 'Zitat hinzufügen: !addquote USERNAME quote',
 			disableIfOffline: false,
 			message: {
 				de: 'Zitat gespeichert: #[count]',
-				en: 'Quote saved: #[count]',
-			},
+				en: 'Quote saved: #[count]'
+			}
 		},
 		ai: {
-			aliases: ['ki'],
+			aliases: [ 'ki' ],
 			description: 'AI-Antwort im Twitch Chat',
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await Gemini.generate(
 					options.message,
-					options.sender.name || this.twitch.data.userDisplayName,
+					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
+			}
+		},
+		aimeme: {
+			cooldown: 60,
+			disableOnFocus: true,
+			hasVideo: true
 		},
 		airhorn: {
-			aliases: ['horn'],
+			aliases: [ 'horn' ],
 			hasSound: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		alarm: {
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		applaus: {
-			aliases: ['applause'],
+			aliases: [ 'applause' ],
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		believe: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		br: {
-			aliases: ['businessrauschen'],
+			aliases: [ 'businessrauschen' ],
 			message: {
-				de:
-					'Business Rauschen › Der Businesstalk mit @dorothea_coaching ▶️ https://business-rauschen.de 🖼️',
-				en:
-					'Business Noise › The Businesstalk with @dorothea_coaching ▶️ https://business-rauschen.de 🖼️',
+				de: 'Business Rauschen › Der Businesstalk mit @dorothea_coaching ▶️ https://business-rauschen.de 🖼️',
+				en: 'Business Noise › The Businesstalk with @dorothea_coaching ▶️ https://business-rauschen.de 🖼️'
 			},
-			description: 'Business Rauschen Website',
+			description: 'Business Rauschen Website'
 		},
 		bruh: {
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		buh: {
-			aliases: ['booh'],
+			aliases: [ 'booh' ],
 			hasSound: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		calmdown: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		chatgpt: {
-			aliases: ['gpt'],
+			aliases: [ 'gpt' ],
 			description: 'ChatGPT-Antwort im Twitch Chat',
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await OpenAI.generate(
 					options.message,
-					options.sender.name || this.twitch.data.userDisplayName,
+					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
+			}
 		},
 		chatscore: {
-			aliases: ['chatranking'],
+			aliases: [ 'chatranking' ],
 			description: 'Anzahl geschriebener Chat-Nachrichten',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'message_count',
+					'message_count'
 				);
 			},
 			message: {
 				de: '@[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
-				en: '@[user] has written [count] chat messages › Rank: [rank]',
-			},
+				en: '@[user] has written [count] chat messages › Rank: [rank]'
+			}
 		},
 		chatting: {
 			message: 'Scene changed: CHATTING',
@@ -143,265 +147,260 @@ export class TwitchCommands
 				{
 					requestType: 'SetCurrentProgramScene',
 					requestData: {
-						sceneName: '[S] CHATTING',
-					},
-				},
-			],
+						sceneName: '[S] CHATTING'
+					}
+				}
+			]
 		},
 		christmas: {
 			cooldown: 30,
-			aliases: ['xmas'],
+			aliases: [ 'xmas' ],
 			hasSound: true,
 			hasVideo: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		clear: {
 			message: 'Stream interface cleared',
-			onlyMods: true,
+			onlyMods: true
 		},
 		commands: {
-			aliases: ['help', 'comandos'],
+			aliases: [ 'help', 'comandos' ],
 			message: {
 				de: 'Chat-Befehle? Schau mal hier ▶️ https://propz.de/twitch-commands',
-				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-commands',
+				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-commands'
 			},
-			description: '',
+			description: ''
 		},
 		dailydev: {
 			message: {
 				de: 'Die besten DEV News ▶️ https://propz.de/dailydev',
-				en: 'Check out the best dev news ▶️ https://propz.de/dailydev',
-			},
+				en: 'Check out the best dev news ▶️ https://propz.de/dailydev'
+			}
 		},
 		delphin: {
-			aliases: ['delfin', 'dolphin', 'golfinho'],
+			aliases: [ 'delfin', 'dolphin', 'golfinho' ],
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		donate: {
-			aliases: ['ko-fi', 'kofi'],
+			aliases: [ 'ko-fi', 'kofi' ],
 			message: {
-				de:
-					'Unterstütze den kreativen Flow mit einer Runde virtuellen Kaffee! ☕ https://propz.de/donate',
-				en:
-					'Support the creative flow with a virtual coffee! ☕ https://propz.de/donate',
-			},
+				de: 'Unterstütze den kreativen Flow mit einer Runde virtuellen Kaffee! ☕ https://propz.de/donate',
+				en: 'Support the creative flow with a virtual coffee! ☕ https://propz.de/donate'
+			}
 		},
 		discord: {
-			aliases: ['dc', 'ds'],
+			aliases: [ 'dc', 'ds' ],
 			message: {
-				de:
-					'Ab in die kreative Discord-Community ▶️ https://propz.de/discord/ 🚀',
-				en:
-					'Join the creative Discord community ▶️ https://propz.de/discord/ 🚀',
+				de: 'Ab in die kreative Discord-Community ▶️ https://propz.de/discord/ 🚀',
+				en: 'Join the creative Discord community ▶️ https://propz.de/discord/ 🚀'
 			},
-			description: 'Link zur Discord Community',
+			description: 'Link zur Discord Community'
 		},
 		doro: {
 			message: {
-				de:
-					'Coaching gefällig? Schau mal bei Doro vorbei ▶️ https://www.dorothea-penner.de/',
-				en:
-					'In need of some coaching? Check out Doro ▶️ https://www.dorothea-penner.de/',
+				de: 'Coaching gefällig? Schau mal bei Doro vorbei ▶️ https://www.dorothea-penner.de/',
+				en: 'In need of some coaching? Check out Doro ▶️ https://www.dorothea-penner.de/'
 			},
-			description: 'Link zu Doros Website',
+			description: 'Link zu Doros Website'
+		},
+		drumroll: {
+			cooldown: 60,
+			disableOnFocus: true,
+			hasAudio: true
 		},
 		dummtopf: {
 			message: {
 				de: 'Da klingelt die Kasse › Das macht 1€ bitte',
-				en: "The cash register rings › That'll be 1€ please",
+				en: 'The cash register rings › That\'ll be 1€ please'
 			},
-			description: '1€ Spende für jeden dummen Fehler',
+			description: '1€ Spende für jeden dummen Fehler'
 		},
 		emotes: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				const emotes = this.twitch.data.emotes
-				.entries()
-				.map(([key, _value]) => key)
-				.toArray()
-				.filter((value) => value.startsWith('propz'))
-				.join(' ');
-				return options.returnMessage?.replace('[emotes]', emotes);
+					.entries()
+					.map( ( [ key, _value ] ) => key )
+					.toArray()
+					.filter( ( value ) => value.startsWith( 'propz' ) )
+					.join( ' ' );
+				return options.returnMessage?.replace( '[emotes]', emotes );
 			},
 			description: 'Alle Emotes',
 			message: {
-				de:
-					'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading',
-				en:
-					'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading',
-			},
+				de: 'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading',
+				en: 'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading'
+			}
 		},
 		emotional: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		ende: {
-			aliases: ['end'],
+			aliases: [ 'end' ],
 			message: 'Scene changed: END',
 			onlyMods: true,
 			obs: [
 				{
 					requestType: 'SetCurrentProgramScene',
 					requestData: {
-						sceneName: '[S] ENDE',
-					},
-				},
-			],
+						sceneName: '[S] ENDE'
+					}
+				}
+			]
 		},
 		error: {
 			cooldown: 30,
-			aliases: ['fehler'],
-			hasVideo: true,
+			aliases: [ 'fehler' ],
+			hasVideo: true
 		},
 		event: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.sendTestEvent(options.message);
+				this.twitch.sendTestEvent( options.message );
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		falsch: {
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		first: {
-			aliases: ['firstchatter'],
-			handler: (options: TwitchCommandOptions) =>
+			aliases: [ 'firstchatter' ],
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return options.returnMessage?.replace(
 					'[user]',
-					this.twitch.firstChatter,
+					this.twitch.firstChatter
 				);
 			},
 			description: 'First Chatter des Streams',
 			message: {
 				de: '@[user] war heute die erste Chatterin 💬',
-				en: '@[user] was the first chatter today 💬',
-			},
+				en: '@[user] was the first chatter today 💬'
+			}
 		},
 		firstscore: {
-			aliases: ['firstranking'],
-			handler: async (options: TwitchCommandOptions) =>
+			aliases: [ 'firstranking' ],
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'first_count',
+					'first_count'
 				);
 			},
 			message: {
 				de: '@[user] war [count]x erste Chatterin › Rank: [rank]',
-				en: '@[user] was [count]x first chatter › Rank: [rank]',
+				en: '@[user] was [count]x first chatter › Rank: [rank]'
 			},
-			description: 'First-Chat score',
+			description: 'First-Chat score'
 		},
 		floripa: {
-			aliases: ['florianopolis', 'fpolis'],
+			aliases: [ 'florianopolis', 'fpolis' ],
 			message: {
 				de: 'Bin hier › https://maps.app.goo.gl/nh8erwbu112ytM3V7',
-				en: "I'm here › https://maps.app.goo.gl/nh8erwbu112ytM3V7",
-			},
+				en: 'I\'m here › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
+			}
 		},
 		fokus: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				const focusTimer = this.twitch.handleFocus(
-					parseInt(options.param || '10'),
+					parseInt( options.param || '10' )
 				);
-				if (!focusTimer)
+				if ( !focusTimer )
 				{
 					return;
 				}
-				return options.returnMessage?.replace('[count]', focusTimer.toString());
+				return options.returnMessage?.replace( '[count]', focusTimer.toString() );
 			},
-			aliases: ['focus'],
+			aliases: [ 'focus' ],
 			message: {
 				de: 'Fokus-Modus für [count]M gestartet',
-				en: 'Focus mode activated for [count]M',
+				en: 'Focus mode activated for [count]M'
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		followage: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'follow_date',
+					'follow_date'
 				);
 			},
-			aliases: ['follow'],
+			aliases: [ 'follow' ],
 			description: 'Wie lange du mir folgst',
 			message: {
 				de: '@[user] folgt [broadcaster] seit: [count]',
-				en: '@[user] has been following [broadcaster] since: [count]',
-			},
+				en: '@[user] has been following [broadcaster] since: [count]'
+			}
 		},
 		gameover: {
 			cooldown: 60,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		garnix: {
 			cooldown: 20,
-			aliases: ['ganiks'],
+			aliases: [ 'ganiks' ],
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		gemini: {
 			description: 'Gemini-Antwort im Twitch Chat',
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await Gemini.generate(
 					options.message,
-					options.sender.name || this.twitch.data.userDisplayName,
+					options.sender.name || this.twitch.data.userDisplayName
 				);
-			},
+			}
 		},
 		github: {
 			message: {
-				de:
-					'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
-				en:
-					'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
+				de: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
+				en: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻'
 			},
-			description: 'Creative Coding Chaos',
+			description: 'Creative Coding Chaos'
 		},
 		hallelujah: {
-			aliases: ['halleluja', 'aleluia'],
+			aliases: [ 'halleluja', 'aleluia' ],
 			hasSound: true,
 			hasVideo: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		icq: {
-			aliases: ['chat'],
+			aliases: [ 'chat' ],
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		instagram: {
-			aliases: ['insta'],
+			aliases: [ 'insta' ],
 			message: {
 				de: 'Influencer für arme ▶️ https://propz.de/instagram/ 🌄',
-				en: 'Influencer for the poor ▶️ https://propz.de/instagram/ 🌄',
+				en: 'Influencer for the poor ▶️ https://propz.de/instagram/ 🌄'
 			},
-			description: 'Influencer für arme',
+			description: 'Influencer für arme'
 		},
 		internet: {
-			aliases: ['internetz', 'dial'],
+			aliases: [ 'internetz', 'dial' ],
 			disableOnFocus: true,
-			hasSound: true,
+			hasSound: true
 		},
 		jenny: {
 			cooldown: 30,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		joke: {
-			aliases: ['witz'],
+			aliases: [ 'witz' ],
 			description: 'Da kommt nen Witz!',
 			message: {
 				de: [
@@ -417,82 +416,82 @@ export class TwitchCommands
 					'Der kürzeste IT-Witz? Es ist gleich fertig!',
 					'Der zweitkürzeste IT-Witz? Es müsste jetzt funktionieren',
 					'Der drittkürzeste IT-Witz? Bei mir läufts!',
-					'Wieviele Softwareentwickler brauch man um eine Glühbirne auszutauschen? Keinen, ist ein Hardwareproblem.',
+					'Wieviele Softwareentwickler brauch man um eine Glühbirne auszutauschen? Keinen, ist ein Hardwareproblem.'
 				],
 				en: [
 					'There’s a new band called “1023 Megabytes”. They haven’t had a gig yet.',
-					"Life isn't #000 or #fff.",
+					'Life isn\'t #000 or #fff.',
 					'I’ve sent you the logo in word format, is that ok?',
-					"I've had a life full of unhandled rejections.",
+					'I\'ve had a life full of unhandled rejections.',
 					'What does the R in Recursion stand for? -> Recursion.',
 					'What is the difference between C++ and C? -> Just 1.',
 					'What do Jamaicans do with their vectors? Rastarize them.',
-					"I'm not going to pay you, but it'll be good experience and you can put it in your portfolio!",
+					'I\'m not going to pay you, but it\'ll be good experience and you can put it in your portfolio!',
 					'Can you replace the Lorem Ipsum with sample text?',
 					'Three SQL Database Admins walked into a NoSQL bar. A little while later they walked out because they couldn’t find a table.',
 					'A Web Designer Decided To Use Right Aligned Text. His Boss Yelled At Him For It, Because It Wasn’t Justified.',
-					"What Happens When Comic Sans Walks Into A Bar? The Bartender Says, ‘We Don't Serve Your Type Here!’",
-				],
-			},
+					'What Happens When Comic Sans Walks Into A Bar? The Bartender Says, ‘We Don\'t Serve Your Type Here!’'
+				]
+			}
 		},
 		junge: {
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		kaching: {
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		kaffee: {
-			aliases: ['coffee'],
+			aliases: [ 'coffee' ],
 			message: {
 				de: '☕️☕️☕️ Gönnt euch erstmal nen Kaffee! ☕️☕️☕️',
-				en: '☕️☕️☕️ Treat yourself to a coffee! ☕️☕️☕️',
+				en: '☕️☕️☕️ Treat yourself to a coffee! ☕️☕️☕️'
 			},
-			description: '☕️',
+			description: '☕️'
 		},
 		keks: {
-			aliases: ['cookie'],
+			aliases: [ 'cookie' ],
 			message: '🍪',
-			description: '🍪',
+			description: '🍪'
 		},
 		killswitch: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.toggleKillswitch();
 				return options.returnMessage?.replace(
 					'[text]',
-					this.twitch.killswitch ? 'Activated' : 'Deactivated',
+					this.twitch.killswitch ? 'Activated' : 'Deactivated'
 				);
 			},
 			message: {
 				de: 'Killswitch [text]',
-				en: 'Killswitch [text]',
+				en: 'Killswitch [text]'
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		ko: {
 			cooldown: 60,
-			hasVideo: true,
+			hasVideo: true
 		},
 		lachen: {
-			aliases: ['laugh', 'laughter'],
+			aliases: [ 'laugh', 'laughter' ],
 			hasSound: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		letsgo: {
-			aliases: ['okletsgo'],
+			aliases: [ 'okletsgo' ],
 			cooldown: 10,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		lurk: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return options.returnMessage.replace(
 					'[user]',
-					options.sender.displayName,
+					options.sender.displayName
 				);
 			},
 			description: 'Lurkstart',
@@ -502,83 +501,83 @@ export class TwitchCommands
 					'@[user] hat den Lurk-Modus aktiviert 🌙 genieße die kreative Stille und tauch auf, wenn du bereit bist! 🚀',
 					'@[user] schleicht sich in die Kreativitätsnacht! 🌌 Wir sind bereit, wenn du wieder auftauchst!',
 					'Lurk-Level für @[user] aktiviert! 👁️ Tauch auf, wenn die Kreativität ruft!',
-					'@[user] ist im Lurk-Train! 🚂 Komm zurück, wenn du bereit für kreative Action bist!',
+					'@[user] ist im Lurk-Train! 🚂 Komm zurück, wenn du bereit für kreative Action bist!'
 				],
 				en: [
 					'@[user] has activated the Creativity Ninja Mode! 🕵️‍♂️ Enjoy lurking!',
-					"@[user] has activated Lurk Mode 🌙 enjoy the creative silence and pop up when you're ready! 🚀",
-					"@[user] sneaks into the night of creativity! 🌌 We're ready when you pop back up!",
+					'@[user] has activated Lurk Mode 🌙 enjoy the creative silence and pop up when you\'re ready! 🚀',
+					'@[user] sneaks into the night of creativity! 🌌 We\'re ready when you pop back up!',
 					'Lurk level activated for @[user]! 👁️ Pop up when creativity calls!',
-					"@[user] is on the Lurk Train! 🚂 Come back when you're ready for creative action!",
-				],
-			},
+					'@[user] is on the Lurk Train! 🚂 Come back when you\'re ready for creative action!'
+				]
+			}
 		},
 		mahlzeit: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				const user = options.param || options.sender.displayName;
-				return options.returnMessage.replace('[user]', user);
+				return options.returnMessage.replace( '[user]', user );
 			},
 			message: {
 				de: 'Mahlzeit @[user]! 🍽️',
-				en: 'Mahlzeit @[user]! 🍽️',
+				en: 'Mahlzeit @[user]! 🍽️'
 			},
-			description: 'Selber Mahlzeit!',
+			description: 'Selber Mahlzeit!'
 		},
 		mark: {
-			aliases: ['marker'],
+			aliases: [ 'marker' ],
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					await this.twitch.data.twitchApi.streams.createStreamMarker(
 						this.twitch.data.userId,
-						options.message || 'Marker',
+						options.message || 'Marker'
 					);
 					return `Marker created`;
-				} catch (error: unknown)
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 					return 'Failed to create marker';
 				}
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		mission: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		money: {
 			hasVideo: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		neubrutalism: {
-			aliases: ['nb', 'neobrutalism'],
+			aliases: [ 'nb', 'neobrutalism' ],
 			message: {
 				de: 'Neu Brutalism ▶️ https://dribbble.com/search/neo-brutalism',
-				en: 'Neo Brutalism ▶️ https://dribbble.com/search/neo-brutalism',
+				en: 'Neo Brutalism ▶️ https://dribbble.com/search/neo-brutalism'
 			},
-			description: 'NB Beispiele',
+			description: 'NB Beispiele'
 		},
 		nice: {
 			cooldown: 120,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		ohno: {
 			cooldown: 60,
-			hasVideo: true,
+			hasVideo: true
 		},
 		onlyfans: {
-			aliases: ['of'],
+			aliases: [ 'of' ],
 			message: {
-				de:
-					'Deine schmutzigen Geheimnisse findest du in deiner .env, du kleiner Perverser',
-				en: 'Check your dirty secrets inside your .env you little perv',
+				de: 'Deine schmutzigen Geheimnisse findest du in deiner .env, du kleiner Perverser',
+				en: 'Check your dirty secrets inside your .env you little perv'
 			},
-			description: 'My OF',
+			description: 'My OF'
 		},
 		pause: {
 			hasSound: true,
@@ -588,72 +587,78 @@ export class TwitchCommands
 				{
 					requestType: 'SetCurrentProgramScene',
 					requestData: {
-						sceneName: '[S] PAUSE',
-					},
-				},
-			],
+						sceneName: '[S] PAUSE'
+					}
+				}
+			]
+		},
+		peitsch: {},
+		prime: {
+			message: {
+				de: 'Wenn du ein Amazon Prime Konto hast, kannst du dieses mit Twitch verbinden. Jeden Monat hast du die Möglichkeit einen Streamer deiner Wahl KOSTENLOS zu Subscriben! @propz_tv würde sich über DEINEN Prime-Sub sehr freuen! › twitch.tv/subs/propz_tv',
+				en: 'If you have an Amazon Prime account, you can connect it to Twitch. Every month, you have the opportunity to subscribe to a streamer of your choice for FREE! @propz_tv would be very happy to receive YOUR Prime subscription! › twitch.tv/subs/propz_tv'
+			}
 		},
 		projekt: {
 			message: {
-				de:
-					'Gute Frage was ich hier mache: Ich baue an meiner Website (PHP + WordPress), an meinem Twitch Bot (Node JS), an meinem Stream (OBS), designe dolle Sachen (Figma) und spreche über meine Selbständigkeit.',
-				en:
-					"Good question what I'm doing here: I'm working on my website (PHP + WordPress), my Twitch bot (Node JS), my stream (OBS), designing cool stuff (Figma), and talking about my self-employment.",
+				de: 'Gute Frage was ich hier mache: Ich baue an meiner Website (PHP + WordPress), an meinem Twitch Bot (Node JS), an meinem Stream (OBS), designe dolle Sachen (Figma) und spreche über meine Selbständigkeit.',
+				en: 'Good question what I\'m doing here: I\'m working on my website (PHP + WordPress), my Twitch bot (Node JS), my stream (OBS), designing cool stuff (Figma), and talking about my self-employment.'
 			},
-			description: 'Was ich mache',
+			description: 'Was ich mache'
 		},
 		propz: {
 			description: 'Just propz, plain and simple!',
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent({
+				this.twitch.processEvent( {
 					eventType: 'propz',
-					user: options.param || this.twitch.data.userName,
-				});
-			},
+					user: options.param || this.twitch.data.userName
+				} );
+			}
 		},
 		psx: {
 			cooldown: 120,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		quote: {
-			aliases: ['zitat'],
+			aliases: [ 'zitat' ],
 			description: 'Random quote.',
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.data.getQuote(parseInt(options.param) || 0);
-			},
+				return this.twitch.data.getQuote( parseInt( options.param ) || 0 );
+			}
 		},
 		raid: {
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
-					const target = await this.twitch.data.getUser(options.param);
-					if (!target) return;
+					const target = await this.twitch.data.getUser( options.param );
+					if ( !target ) return;
 
 					const raid = await this.twitch.data.twitchApi.raids.startRaid(
 						this.twitch.data.userId,
-						target.id,
+						target.id
 					);
-					if (!raid) return;
+					if ( !raid ) return;
 
-					this.twitch.processEvent({
+					this.twitch.processEvent( {
 						eventType: 'startraid',
-						user: target,
-					});
-				} catch (error: unknown)
+						user: target
+					} );
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 				}
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		rain: {
 			cooldown: 60,
-			description: 'Let it rain',
+			description: 'Let it rain'
 		},
 		reload: {
 			handler: async () =>
@@ -661,7 +666,7 @@ export class TwitchCommands
 				await this.twitch.reloadConfig();
 				return 'Reloaded';
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		reset: {
 			obs: [
@@ -671,8 +676,8 @@ export class TwitchCommands
 						sourceName: '[Video] Colorful',
 						sourceUuid: '',
 						filterName: 'reset',
-						filterEnabled: true,
-					},
+						filterEnabled: true
+					}
 				},
 				{
 					requestType: 'SetSourceFilterEnabled',
@@ -680,8 +685,8 @@ export class TwitchCommands
 						sourceName: '[Video] Halloween',
 						sourceUuid: '',
 						filterName: 'reset',
-						filterEnabled: true,
-					},
+						filterEnabled: true
+					}
 				},
 				{
 					requestType: 'SetSourceFilterEnabled',
@@ -689,8 +694,8 @@ export class TwitchCommands
 						sourceName: '[Video] Christmas',
 						sourceUuid: '',
 						filterName: 'reset',
-						filterEnabled: true,
-					},
+						filterEnabled: true
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -698,8 +703,8 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 10,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -707,8 +712,8 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 5,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -716,8 +721,8 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 41,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -725,8 +730,8 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 40,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -734,8 +739,8 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 6,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'SetSceneItemEnabled',
@@ -743,69 +748,69 @@ export class TwitchCommands
 						sceneName: '[R] VIDEOBOARD',
 						sceneUuid: '4580d8ec-31a7-40e3-b8a8-4f1399080904',
 						sceneItemId: 7,
-						sceneItemEnabled: false,
-					},
+						sceneItemEnabled: false
+					}
 				},
 				{
 					requestType: 'TriggerMediaInputAction',
 					requestData: {
 						inputName: '[Video] Fireworks Rain',
-						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
-					},
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					}
 				},
 				{
 					requestType: 'TriggerMediaInputAction',
 					requestData: {
 						inputName: '[Video] Fireworks Alert',
-						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
-					},
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					}
 				},
 				{
 					requestType: 'TriggerMediaInputAction',
 					requestData: {
 						inputName: '[Video] Bill Ted Guitar',
-						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
-					},
+						mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP'
+					}
 				},
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
 						inputName: '[Browser] Chat',
 						inputUuid: '',
-						propertyName: 'refreshnocache',
-					},
+						propertyName: 'refreshnocache'
+					}
 				},
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
 						inputName: '[Browser] Alerts',
 						inputUuid: '',
-						propertyName: 'refreshnocache',
-					},
+						propertyName: 'refreshnocache'
+					}
 				},
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
 						inputName: '[Browser] Mediaboard',
 						inputUuid: '',
-						propertyName: 'refreshnocache',
-					},
+						propertyName: 'refreshnocache'
+					}
 				},
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
 						inputName: '[Browser] Stream Events',
 						inputUuid: '',
-						propertyName: 'refreshnocache',
-					},
+						propertyName: 'refreshnocache'
+					}
 				},
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
 						inputName: '[Browser] Stream Events Vertical',
 						inputUuid: '',
-						propertyName: 'refreshnocache',
-					},
+						propertyName: 'refreshnocache'
+					}
 				},
 				{
 					requestType: 'SetSourceFilterEnabled',
@@ -813,49 +818,47 @@ export class TwitchCommands
 						sourceName: '[Clone] Webcam (Desktop)',
 						sourceUuid: '',
 						filterName: 'reset-zoom',
-						filterEnabled: true,
-					},
-				},
+						filterEnabled: true
+					}
+				}
 			],
-			onlyMods: true,
+			onlyMods: true
 		},
 		roadmap: {
-			aliases: ['roadmaps'],
+			aliases: [ 'roadmaps' ],
 			message: {
-				de:
-					'Roadmaps für alle DEVs und die es werden wollen ▶️ https://roadmap.sh',
-				en:
-					'Roadmaps for all DEVs and aspiring developers ▶️ https://roadmap.sh',
+				de: 'Roadmaps für alle DEVs und die es werden wollen ▶️ https://roadmap.sh',
+				en: 'Roadmaps for all DEVs and aspiring developers ▶️ https://roadmap.sh'
 			},
-			description: 'Roadmaps for Devs',
+			description: 'Roadmaps for Devs'
 		},
 		setgame: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					let game;
 					const param = options.param.toLowerCase();
-					if (param.includes('software'))
+					if ( param.includes( 'software' ) )
 					{
 						game = await this.twitch.data.twitchApi.games.getGameByName(
-							'Software and Game Development',
+							'Software and Game Development'
 						);
 					}
-					else if (param.includes('chat'))
+					else if ( param.includes( 'chat' ) )
 					{
 						game = await this.twitch.data.twitchApi.games.getGameByName(
-							'Just Chatting',
+							'Just Chatting'
 						);
 					}
 					else
 					{
 						game = await this.twitch.data.twitchApi.games.getGameByName(
-							options.param,
+							options.param
 						);
 					}
 
-					if (!game)
+					if ( !game )
 					{
 						return `Game not found`;
 					}
@@ -863,106 +866,109 @@ export class TwitchCommands
 					await this.twitch.data.twitchApi.channels.updateChannelInfo(
 						this.twitch.data.userId,
 						{
-							gameId: game.id,
-						},
+							gameId: game.id
+						}
 					);
-					return options.returnMessage.replace('[game]', game.name);
-				} catch (error: unknown)
+					return options.returnMessage.replace( '[game]', game.name );
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 				}
 			},
-			aliases: ['game', 'setcat', 'setcategory', 'cat'],
-			message: "Stream Game set to '[game]'",
-			onlyMods: true,
+			aliases: [ 'game', 'setcat', 'setcategory', 'cat' ],
+			message: 'Stream Game set to \'[game]\'',
+			onlyMods: true
 		},
 		setlanguage: {
-			aliases: ['setlang', 'lang', 'language'],
-			handler: async (options: TwitchCommandOptions) =>
+			aliases: [ 'setlang', 'lang', 'language' ],
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					await this.twitch.data.twitchApi.channels.updateChannelInfo(
 						this.twitch.data.userId,
 						{
-							language: options.message,
-						},
+							language: options.message
+						}
 					);
-					return options.returnMessage.replace('[language]', options.message);
-				} catch (error: unknown)
+					return options.returnMessage.replace( '[language]', options.message );
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 				}
 			},
 			onlyMods: true,
-			message: "Stream Language set to '[language]'",
+			message: 'Stream Language set to \'[language]\''
 		},
 		settitle: {
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				try
 				{
 					await this.twitch.data.twitchApi.channels.updateChannelInfo(
 						this.twitch.data.userId,
 						{
-							title: options.message,
-						},
+							title: options.message
+						}
 					);
-					return options.returnMessage.replace('[title]', options.message);
-				} catch (error: unknown)
+					return options.returnMessage.replace( '[title]', options.message );
+				}
+				catch ( error: unknown )
 				{
-					log(error);
+					log( error );
 				}
 			},
-			aliases: ['title', 'setstreamtitle'],
-			message: "Stream Title set to '[title]'",
-			onlyMods: true,
+			aliases: [ 'title', 'setstreamtitle' ],
+			message: 'Stream Title set to \'[title]\'',
+			onlyMods: true
 		},
 		slap: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent({
+				this.twitch.processEvent( {
 					eventType: 'slap',
 					user: options.param || options.sender.displayName,
-					sender: options.param
-						? options.sender.displayName
-						: this.twitch.data.userDisplayName,
-				});
+					sender: options.param ?
+						options.sender.displayName :
+						this.twitch.data.userDisplayName
+				} );
 			},
-			description: 'Slap them good',
+			description: 'Slap them good'
 		},
 		snow: {
 			hasVideo: true,
-			cooldown: 30,
+			cooldown: 30
 		},
 		so: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.chat.sendShoutout(options.param);
+				this.twitch.chat.sendShoutout( options.param );
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		soundboard: {
 			handler: () =>
 			{
 				const sounds: string[] = [];
 				for (
-					const [index, command] of this.twitch.commands.commands.entries()
-					)
+					const [ index, command ] of this.twitch.commands.commands.entries()
+				)
 				{
-					if (command.hasSound || command.hasVideo)
+					if ( command.hasSound || command.hasVideo )
 					{
-						sounds.push(`!${index}`);
+						sounds.push( `!${index}` );
 					}
 				}
-				return `▶️ ${sounds.join(', ')}`;
+				return `▶️ ${sounds.join( ', ' )}`;
 			},
-			aliases: ['sb'],
-			description: 'Alle Sounds',
+			aliases: [ 'sb' ],
+			description: 'Alle Sounds'
 		},
 		scene: {
-			aliases: ['szene'],
-			handler: (options: TwitchCommandOptions) =>
+			aliases: [ 'szene' ],
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				if (
 					!options?.message ||
@@ -973,24 +979,24 @@ export class TwitchCommands
 				}
 
 				let sceneName = options.message;
-				if (options.message.toLowerCase().includes('desktop'))
+				if ( options.message.toLowerCase().includes( 'desktop' ) )
 				{
 					sceneName = '[S] DESKTOP';
 				}
-				else if (options.message.toLowerCase().includes('chat'))
+				else if ( options.message.toLowerCase().includes( 'chat' ) )
 				{
 					sceneName = '[S] CHATTING';
 				}
-				else if (options.message.toLowerCase().includes('pause'))
+				else if ( options.message.toLowerCase().includes( 'pause' ) )
 				{
 					sceneName = '[S] PAUSE';
 				}
-				else if (options.message.toLowerCase().includes('ende'))
+				else if ( options.message.toLowerCase().includes( 'ende' ) )
 				{
 					sceneName = '[S] ENDE';
 				}
 
-				this.twitch.ws.maybeSendWebsocketData({
+				this.twitch.ws.maybeSendWebsocketData( {
 					type: 'command',
 					user: options.sender,
 					text: 'scene',
@@ -998,16 +1004,16 @@ export class TwitchCommands
 						{
 							requestType: 'SetCurrentProgramScene',
 							requestData: {
-								sceneName: sceneName,
-							},
-						},
-					],
-				});
+								sceneName: sceneName
+							}
+						}
+					]
+				} );
 
-				return options.returnMessage.replace('[sceneName]', sceneName);
+				return options.returnMessage.replace( '[sceneName]', sceneName );
 			},
 			message: 'Scene changed: [sceneName]',
-			onlyMods: true,
+			onlyMods: true
 		},
 		start: {
 			message: 'Scene changed: START',
@@ -1015,139 +1021,136 @@ export class TwitchCommands
 				{
 					requestType: 'SetCurrentProgramScene',
 					requestData: {
-						sceneName: '[S] START',
-					},
-				},
+						sceneName: '[S] START'
+					}
+				}
 			],
-			onlyMods: true,
+			onlyMods: true
 		},
 		streamonline: {
 			handler: () =>
 			{
 				this.twitch.sendStremOnlineDataToDiscord();
 			},
-			onlyMods: true,
+			onlyMods: true
 		},
 		streamstart: {
-			aliases: ['startstream'],
+			aliases: [ 'startstream' ],
 			message: 'Starting stream ...',
 			obs: [
 				{
-					requestType: 'StartStream',
-				},
+					requestType: 'StartStream'
+				}
 			],
-			onlyMods: true,
+			onlyMods: true
 		},
 		streamstop: {
-			aliases: ['stopstream', 'endstream', 'streamend'],
+			aliases: [ 'stopstream', 'endstream', 'streamend' ],
 			message: 'Stopping Stream ...',
 			obs: [
 				{
-					requestType: 'StopStream',
-				},
+					requestType: 'StopStream'
+				}
 			],
-			onlyMods: true,
+			onlyMods: true
 		},
 		tee: {
-			aliases: ['tea'],
+			aliases: [ 'tea' ],
 			message: {
 				de: '🫖🫖🫖 Wie wärs mit nem Tee?! 🫖🫖🫖',
-				en: '🫖🫖🫖 How about a tea?! 🫖🫖🫖',
+				en: '🫖🫖🫖 How about a tea?! 🫖🫖🫖'
 			},
-			description: '🫖',
+			description: '🫖'
 		},
 		test: {
 			message: {
 				de: 'Test bestanden ▶️ Scheint zu funzen 🔥',
-				en: 'Test passed ▶️ Seems to work 🔥',
+				en: 'Test passed ▶️ Seems to work 🔥'
 			},
-			description: 'Läuft alles?',
+			description: 'Läuft alles?'
 		},
 		testconf: {
 			message: {
 				de: 'TECH STREAM CONFERENCE 🚀 Alle Infos hier ▶️ https://test-conf.de',
-				en:
-					'TECH STREAM CONFERENCE 🚀 All Informations here ▶️ https://test-conf.de',
+				en: 'TECH STREAM CONFERENCE 🚀 All Informations here ▶️ https://test-conf.de'
 			},
-			description: 'Beste Konferenz',
+			description: 'Beste Konferenz'
 		},
 		tiktok: {
 			message: {
 				de: 'Tiktok Trends für Kreative ▶️ https://propz.de/tiktok/ 📺',
-				en: 'Tiktok Trends for Creatives ▶️ https://propz.de/tiktok/ 📺',
+				en: 'Tiktok Trends for Creatives ▶️ https://propz.de/tiktok/ 📺'
 			},
-			description: 'Trends für Kreative',
+			description: 'Trends für Kreative'
 		},
 		time: {
-			aliases: ['zeit', 'uhrzeit'],
-			handler: (_options: TwitchCommandOptions) =>
+			aliases: [ 'zeit', 'uhrzeit' ],
+			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return new Date().toLocaleTimeString('de-DE', {
-					timeZone: 'America/Sao_Paulo',
-				});
-			},
+				return new Date().toLocaleTimeString( 'de-DE', {
+					timeZone: 'America/Sao_Paulo'
+				} );
+			}
 		},
 		thinking: {
-			aliases: ['think', 'denken', 'denk', 'nachdenk', 'nachdenken'],
-			hasVideo: true,
+			aliases: [ 'think', 'denken', 'denk', 'nachdenk', 'nachdenken' ],
+			hasVideo: true
 		},
 		tnt: {
-			hasVideo: true,
+			hasVideo: true
 		},
 		tools: {
 			message: {
-				de:
-					'Browser: https://arc.net / Design: https://www.figma.com / Coding: https://code.visualstudio.com / Orga: https://excalidraw.com https://www.notion.so / Stream: https://obsproject.com https://www.touch-portal.com https://restream.io / Twitch Bot: https://twurple.js.org / FTP: https://panic.com/transmit / CMS: https://wordpress.org',
-				en:
-					'Browser: https://arc.net / Design: https://www.figma.com / Coding: https://code.visualstudio.com / Orga: https://excalidraw.com https://www.notion.so / Stream: https://obsproject.com https://www.touch-portal.com https://restream.io / Twitch: https://twurple.js.org / FTP: https://panic.com/transmit / CMS: https://wordpress.org',
+				de: 'Browser: https://arc.net / Design: https://www.figma.com / Coding: https://code.visualstudio.com / Orga: https://excalidraw.com https://www.notion.so / Stream: https://obsproject.com https://www.touch-portal.com https://restream.io / Twitch Bot: https://twurple.js.org / FTP: https://panic.com/transmit / CMS: https://wordpress.org',
+				en: 'Browser: https://arc.net / Design: https://www.figma.com / Coding: https://code.visualstudio.com / Orga: https://excalidraw.com https://www.notion.so / Stream: https://obsproject.com https://www.touch-portal.com https://restream.io / Twitch: https://twurple.js.org / FTP: https://panic.com/transmit / CMS: https://wordpress.org'
 			},
-			description: 'Alle benutzen Tools',
+			description: 'Alle benutzen Tools'
 		},
 		tornado: {
 			cooldown: 60,
-			description: 'Tornado twister!',
+			description: 'Tornado twister!'
 		},
 		translate: {
-			aliases: ['t', 'deepl'],
+			aliases: [ 't', 'deepl' ],
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if (!options.messageObject) return;
+				if ( !options.messageObject ) return;
 				// Check if command as sent as reply
-				if (options.messageObject.isReply)
+				if ( options.messageObject.isReply )
 				{
 					const message = sanitizeMessage(
-						options.messageObject.parentMessageText ?? '',
+						options.messageObject.parentMessageText ?? ''
 					);
-					if (this.twitch.isValidMessageText(message, options.messageObject))
+					if ( this.twitch.isValidMessageText( message, options.messageObject ) )
 					{
 						const translation = await Deepl.translate(
 							message,
-							this.twitch.streamLanguage,
+							this.twitch.streamLanguage
 						);
-						this.twitch.chat.sendMessage(translation, options.messageObject);
+						this.twitch.chat.sendMessage( translation, options.messageObject );
 						return '';
 					}
 				}
 				return await Deepl.translate(
 					options.message,
-					this.twitch.streamLanguage,
+					this.twitch.streamLanguage
 				);
-			},
+			}
 		},
 		twurple: {
 			message: {
 				de: 'Twurple für Twitch API ▶️ https://twurple.js.org',
-				en: 'Twurple for Twitch API ▶️ https://twurple.js.org',
+				en: 'Twurple for Twitch API ▶️ https://twurple.js.org'
 			},
-			description: 'Twurple für Twitch API',
+			description: 'Twurple für Twitch API'
 		},
 		unlurk: {
-			handler: (options: TwitchCommandOptions) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return options.returnMessage.replace(
 					'[user]',
-					options.sender.displayName,
+					options.sender.displayName
 				);
 			},
 			description: 'Lurkstop',
@@ -1157,66 +1160,71 @@ export class TwitchCommands
 					'Der Lurk-Meister ist zurück! 💡 @[user], bereit für neue Design-Abenteuer?',
 					'Die Kreativitäts-Ninja ist wieder aufgetaucht! 🌌 Willkommen zurück, @[user].',
 					'@[user] hat das Lurk-Kostüm ausgezogen! 👋 Willkommen zurück im kreativen Rampenlicht.',
-					'Der Lurk-Modus ist vorbei - @[user] kehrt zurück! 🚀 Freuen uns, dich wieder im Code-Kosmos zu haben!',
+					'Der Lurk-Modus ist vorbei - @[user] kehrt zurück! 🚀 Freuen uns, dich wieder im Code-Kosmos zu haben!'
 				],
 				en: [
 					'Welcome back from the creative shadows, @[user]! 🌟 Your return brings fresh air to the stream! ✨',
 					'The Lurk Master is back! 💡 @[user], ready for new design adventures?',
 					'The Creativity Ninja has resurfaced! 🌌 Welcome back, @[user].',
 					'@[user] has shed the lurk costume! 👋 Welcome back to the creative spotlight.',
-					'The Lurk mode is over - @[user] returns! 🚀 Glad to have you back in the code cosmos!',
-				],
-			},
+					'The Lurk mode is over - @[user] returns! 🚀 Glad to have you back in the code cosmos!'
+				]
+			}
 		},
 		uptime: {
 			description: 'So lange läuft der Stream',
 			disableIfOffline: true,
-			handler: (_options: TwitchCommandOptions) =>
+			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return getTimePassed(Date.now() - this.twitch.streamStartTime);
-			},
+				return getTimePassed( Date.now() - this.twitch.streamStartTime );
+			}
+		},
+		uwu: {
+			description: 'UwU',
+			cooldown: 30,
+			hasVideo: true,
+			disableOnFocus: true
 		},
 		vod: {
 			description: 'Zum aktuellen VOD',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return options.returnMessage +
-					await Youtube.getVodLink(this.twitch.isStreamActive);
+					await Youtube.getVodLink( this.twitch.isStreamActive );
 			},
 			message: {
 				de: 'Zum aktuellen VOD ▶️ ',
-				en: 'To the current VOD ▶️ ',
-			},
+				en: 'To the current VOD ▶️ '
+			}
 		},
 		watchtime: {
 			description: 'Zugeschaute Stunden',
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserWatchtimeText(
 					options.param || options.sender.name,
-					options.returnMessage,
+					options.returnMessage
 				);
 			},
 			message: {
 				de: '@[user] guckt [broadcaster] fleißig zu: [count] › Rank: [rank]',
-				en:
-					'@[user] is diligently watching [broadcaster]: [count] › Rank: [rank]',
-			},
+				en: '@[user] is diligently watching [broadcaster]: [count] › Rank: [rank]'
+			}
 		},
 		wasser: {
-			aliases: ['water'],
+			aliases: [ 'water' ],
 			message: {
 				de: 'Zeit für nen Schluck H20 ▶️ 💦',
-				en: 'Time for a sip of H2O ▶️ 💦',
+				en: 'Time for a sip of H2O ▶️ 💦'
 			},
-			description: '💦',
+			description: '💦'
 		},
 		weather: {
-			aliases: ['wetter', 'tempo'],
+			aliases: [ 'wetter', 'tempo' ],
 			disableIfOffline: true,
-			handler: async (options: TwitchCommandOptions) =>
+			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if (!options.param)
+				if ( !options.param )
 				{
 					options.param = 'Florianopolis';
 				}
@@ -1224,85 +1232,83 @@ export class TwitchCommands
 				const weatherData = await OpenWeather.handleWeatherRequest(
 					options.param,
 					'',
-					this.twitch.streamLanguage,
+					this.twitch.streamLanguage
 				);
 
-				if (!weatherData?.temp)
+				if ( !weatherData?.temp )
 				{
 					return `Nah`;
 				}
 
 				return options.returnMessage
-				.replace('[cityName]', weatherData.cityName)
-				.replace('[countryCode]', weatherData.countryCode)
-				.replace('[humidity]', weatherData.humidity)
-				.replace('[temp]', weatherData.temp)
-				.replace('[feelsLike]', weatherData.feelsLike)
-				.replace('[description]', weatherData.description);
+					.replace( '[cityName]', weatherData.cityName )
+					.replace( '[countryCode]', weatherData.countryCode )
+					.replace( '[humidity]', weatherData.humidity )
+					.replace( '[temp]', weatherData.temp )
+					.replace( '[feelsLike]', weatherData.feelsLike )
+					.replace( '[description]', weatherData.description );
 			},
 			message: {
-				de:
-					'In [cityName] ([countryCode]) ists gerade [temp]° ([feelsLike]°)  ▶️  [description] mit [humidity]% Luftfeuchtigkeit',
-				en:
-					'The temp in [cityName] ([countryCode]) is [temp]° ([feelsLike]°) ▶️ [description] with [humidity]% humidity',
-			},
+				de: 'In [cityName] ([countryCode]) ists gerade [temp]° ([feelsLike]°)  ▶️  [description] mit [humidity]% Luftfeuchtigkeit',
+				en: 'The temp in [cityName] ([countryCode]) is [temp]° ([feelsLike]°) ▶️ [description] with [humidity]% humidity'
+			}
 		},
 		web: {
 			message: {
 				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️',
-				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️',
+				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️'
 			},
-			description: 'Hier lebt das kreative Chaos',
+			description: 'Hier lebt das kreative Chaos'
 		},
 		wild: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		wololo: {
 			cooldown: 20,
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		wtfisgoingon: {
 			hasSound: true,
-			onlyMods: true,
+			onlyMods: true
 		},
 		yeah: {
 			cooldown: 20,
-			aliases: ['yeahboi', 'yeahboy'],
+			aliases: [ 'yeahboi', 'yeahboy' ],
 			hasSound: true,
-			disableOnFocus: true,
+			disableOnFocus: true
 		},
 		youtube: {
-			aliases: ['yt'],
+			aliases: [ 'yt' ],
 			message: {
 				de: 'Da gibt es so Videos ▶️ https://propz.de/youtube/ 📺',
-				en: 'There are some videos ▶️ https://propz.de/youtube/ 📺',
+				en: 'There are some videos ▶️ https://propz.de/youtube/ 📺'
 			},
-			description: "Videos und VOD's",
-		},
-	}));
+			description: 'Videos und VOD\'s'
+		}
+	} ) );
 
-	constructor(twitch: TwitchUtils)
+	constructor( twitch: TwitchUtils )
 	{
 		this.twitch = twitch;
 	}
 
 	/** Extracts the command name form chat message */
-	getCommandNameFromMessage(chatMessage: string)
+	getCommandNameFromMessage( chatMessage: string )
 	{
-		if (!chatMessage)
+		if ( !chatMessage )
 		{
 			return '';
 		}
 
-		const [...matches] = chatMessage.matchAll(/^(?:@\w+\s)?\!(\w+)/ig);
+		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?\!(\w+)/ig );
 		const commandName = matches?.[0]?.[1] ?? '';
 
-		for (const [cmdName, cmd] of this.commands.entries())
+		for ( const [ cmdName, cmd ] of this.commands.entries() )
 		{
-			if (cmd.aliases?.includes(commandName))
+			if ( cmd.aliases?.includes( commandName ) )
 			{
 				return cmdName;
 			}
@@ -1312,30 +1318,30 @@ export class TwitchCommands
 	}
 
 	/** Check if command is in cooldown */
-	isCommandInCooldown(commandName: string)
+	isCommandInCooldown( commandName: string )
 	{
 		if (
 			!commandName ||
-			!this.commands.get(commandName)?.cooldown
+			!this.commands.get( commandName )?.cooldown
 		)
 		{
 			return false;
 		}
 
-		if (this.commandHistory.has(commandName))
+		if ( this.commandHistory.has( commandName ) )
 		{
 			if (
-				(Date.now() * 1000) - this.commandHistory.get(commandName)! <
-				this.commands.get(commandName)!.cooldown!
+				( Date.now() * 1000 ) - this.commandHistory.get( commandName )! <
+					this.commands.get( commandName )!.cooldown!
 			)
 			{
 				return true;
 			}
 
-			this.commandHistory.delete(commandName);
+			this.commandHistory.delete( commandName );
 		}
 
-		this.commandHistory.set(commandName, Date.now() * 1000);
+		this.commandHistory.set( commandName, Date.now() * 1000 );
 		return false;
 	}
 }
