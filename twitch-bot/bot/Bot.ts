@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.6.11
+ * @version 1.6.13
  */
 
 import '@propz/prototypes.ts';
@@ -41,13 +41,17 @@ export class Bot
 	handleServerRequests = async ( req: Request ): Promise<Response> =>
 	{
 		// CORS Preflight-Request (OPTIONS)
-		if ( !req || req.method === 'OPTIONS' )
+		if (
+			!req ||
+			req.method === 'OPTIONS' ||
+			req.method === 'HEAD'
+		)
 		{
 			return new Response( null, {
 				status: 204,
 				headers: {
 					'access-control-allow-origin': '*',
-					'access-control-allow-methods': 'GET, POST, OPTIONS',
+					'access-control-allow-methods': 'GET, POST, OPTIONS, HEAD',
 					'access-control-allow-headers': 'Content-Type, Authorization'
 				}
 			} );
@@ -139,7 +143,8 @@ export class Bot
 			// log( `› SERVER: API call` );
 			// log( `    REQUEST HEADERS: ${ JSON.stringify( req.headers ) }` );
 			// log( `    REQUEST BODY: ${ JSON.stringify( body ) }` );
-			log( body.request );
+			if ( body.request !== 'isStreamActive' )
+				log( body.request );
 		}
 		catch ( error: unknown )
 		{

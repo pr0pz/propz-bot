@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.12
+ * @version 1.6.14
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -207,7 +207,7 @@ export class TwitchCommands
 		drumroll: {
 			cooldown: 60,
 			disableOnFocus: true,
-			hasAudio: true
+			hasSound: true
 		},
 		dummtopf: {
 			message: {
@@ -620,6 +620,11 @@ export class TwitchCommands
 			cooldown: 120,
 			hasSound: true,
 			disableOnFocus: true
+		},
+		pun: {
+			cooldown: 20,
+			disableOnFocus: true,
+			hasSound: true
 		},
 		quote: {
 			aliases: [ 'zitat' ],
@@ -1180,7 +1185,6 @@ export class TwitchCommands
 			}
 		},
 		uwu: {
-			description: 'UwU',
 			cooldown: 30,
 			hasVideo: true,
 			disableOnFocus: true
@@ -1262,8 +1266,8 @@ export class TwitchCommands
 		},
 		wild: {
 			cooldown: 20,
-			hasSound: true,
-			disableOnFocus: true
+			disableOnFocus: true,
+			hasSound: true
 		},
 		wololo: {
 			cooldown: 20,
