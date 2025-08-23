@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.6.8
+ * @version 1.7.0
  */
 
 import '@propz/prototypes.ts';
@@ -19,7 +19,7 @@ import { TwitchChat } from './TwitchChat.ts';
 import { TwitchCommands } from './TwitchCommands.ts';
 import { TwitchEvents } from './TwitchEvents.ts';
 
-import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchQuote, TwitchUserData } from '@propz/types.ts';
+import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchJoke, TwitchQuote, TwitchUserData } from '@propz/types.ts';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
 import type { Discord } from '../discord/Discord.ts';
@@ -236,6 +236,55 @@ export abstract class TwitchUtils
 				eventCount: count
 			} );
 		}
+	}
+
+	/** Add Quote
+	 *
+	 * @param {string} chatMessage Original chat message
+	 * @returns {Promise<string>}
+	 */
+	async addJoke( chatMessage: string ): Promise<string>
+	{
+		if ( !chatMessage ) return '';
+
+		const syntaxError = 'The correct syntax: !addjoke USERNAME joke';
+
+		const chatMessageSplitted = chatMessage.split( ' ' );
+		if ( chatMessageSplitted.length < 2 )
+			return syntaxError;
+
+		let author: string | HelixUser | null = chatMessageSplitted[0] ?? '';
+		if ( author.toLowerCase() === 'help' )
+			return syntaxError;
+
+		author = await this.data.getUser( author.replace( '@', '' ) );
+		// Couldn't find user, so assume the author is me
+		if ( author )
+		{
+			chatMessageSplitted.splice( 0, 1 );
+		}
+		else
+		{
+			author = this.data.twitchUser;
+		}
+
+		const jokeText = chatMessageSplitted.join( ' ' );
+
+		const joke: TwitchJoke = {
+			text: jokeText.sanitize(),
+			user_id: author?.id || ''
+		};
+
+		const logText = `t: ${joke.text} / u: ${joke.user_id}`;
+		log( logText );
+		// return log;
+
+		const lastId = this.data.addJoke( joke );
+
+		return getMessage(
+			this.commands.commands.get( 'addjoke' )?.message,
+			this.streamLanguage
+		).replace( '[count]', lastId );
 	}
 
 	/** Add Quote

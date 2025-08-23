@@ -1,5 +1,5 @@
 -- BotData Database Schema
--- Version 1.5.10
+-- Version 1.7.0
 
 -- Authentication
 CREATE TABLE IF NOT EXISTS auth (
@@ -48,6 +48,15 @@ CREATE TABLE IF NOT EXISTS twitch_quotes (
 CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON twitch_quotes(user_id);
 CREATE INDEX IF NOT EXISTS idx_quotes_category ON twitch_quotes(category);
 CREATE INDEX IF NOT EXISTS idx_quotes_date ON twitch_quotes(date);
+
+-- Twitch Jokes Table
+CREATE TABLE IF NOT EXISTS twitch_jokes (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	text TEXT NOT NULL DEFAULT '',
+	user_id TEXT NOT NULL,
+	FOREIGN KEY (user_id) REFERENCES twitch_users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_jokes_user_id ON twitch_jokes(user_id);
 
 -- Stream Stats
 CREATE TABLE IF NOT EXISTS stream_stats (

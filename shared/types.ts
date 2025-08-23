@@ -104,6 +104,19 @@ export interface TwitchQuoteRow extends TwitchQuote
 	[key: string]: any;
 }
 
+export interface TwitchJoke
+{
+	user_id: string;
+	text: string;
+	name?: string;
+}
+
+export interface TwitchJokeRow extends TwitchJoke
+{
+	id: string | number;
+	[key: string]: any;
+}
+
 export interface TwitchReward
 {
 	id: string;

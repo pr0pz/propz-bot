@@ -2,13 +2,12 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.6.14
+ * @version 1.7.0
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../external/Deepl.ts';
 import { Gemini } from '../external/Gemini.ts';
-import { OpenAI } from '../external/OpenAi.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
 import { Youtube } from '../external/Youtube.ts';
 
@@ -38,6 +37,18 @@ export class TwitchCommands
 			aliases: [ 'adbreak', 'werbung' ],
 			disableIfOffline: true,
 			onlyMods: true
+		},
+		addjoke: {
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				return await this.twitch.addJoke( options.message );
+			},
+			description: 'Witz hinzufügen: !addjoke USERNAME joke',
+			disableIfOffline: false,
+			message: {
+				de: 'Joke gespeichert: #[count]',
+				en: 'Joke saved: #[count]'
+			}
 		},
 		addquote: {
 			handler: async ( options: TwitchCommandOptions ) =>
@@ -84,6 +95,18 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
+		ban: {
+			cooldown: 60,
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				this.twitch.processEvent( {
+					eventType: 'ban',
+					user: options.param,
+					isTest: true
+				} );
+			},
+			disableOnFocus: true
+		},
 		believe: {
 			cooldown: 20,
 			hasSound: true,
@@ -111,18 +134,6 @@ export class TwitchCommands
 			cooldown: 20,
 			hasSound: true,
 			disableOnFocus: true
-		},
-		chatgpt: {
-			aliases: [ 'gpt' ],
-			description: 'ChatGPT-Antwort im Twitch Chat',
-			disableIfOffline: true,
-			handler: async ( options: TwitchCommandOptions ) =>
-			{
-				return await OpenAI.generate(
-					options.message,
-					options.sender.name || this.twitch.data.userDisplayName
-				);
-			}
 		},
 		chatscore: {
 			aliases: [ 'chatranking' ],
@@ -352,17 +363,6 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
-		gemini: {
-			description: 'Gemini-Antwort im Twitch Chat',
-			disableIfOffline: true,
-			handler: async ( options: TwitchCommandOptions ) =>
-			{
-				return await Gemini.generate(
-					options.message,
-					options.sender.name || this.twitch.data.userDisplayName
-				);
-			}
-		},
 		github: {
 			message: {
 				de: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
@@ -401,37 +401,10 @@ export class TwitchCommands
 		},
 		joke: {
 			aliases: [ 'witz' ],
-			description: 'Da kommt nen Witz!',
-			message: {
-				de: [
-					'Es gibt eine neue Band, die „1023 Megabytes“. Bisher hatten sie noch keinen Gig.',
-					'Das Leben ist nicht #000 oder #fff',
-					'Hab das Logo als Word Datei geschickt, ist das ok?',
-					'Ich hatte ein Leben voller unbehandelter Fehler.',
-					'Wofür steht das R in Rekursion? -> Rekursion.',
-					'Was ist der Unterschied zwischen C++ und C? -> Nur 1.',
-					'Was machen Jamaikaner mit ihren Vektoren? Sie rastern sie.',
-					'Ich werde dich nicht bezahlen, aber es wird eine gute Erfahrung sein und du kannst es in dein Portfolio aufnehmen!',
-					'Können Sie das Lorem Ipsum durch Beispieltext ersetzen?',
-					'Der kürzeste IT-Witz? Es ist gleich fertig!',
-					'Der zweitkürzeste IT-Witz? Es müsste jetzt funktionieren',
-					'Der drittkürzeste IT-Witz? Bei mir läufts!',
-					'Wieviele Softwareentwickler brauch man um eine Glühbirne auszutauschen? Keinen, ist ein Hardwareproblem.'
-				],
-				en: [
-					'There’s a new band called “1023 Megabytes”. They haven’t had a gig yet.',
-					'Life isn\'t #000 or #fff.',
-					'I’ve sent you the logo in word format, is that ok?',
-					'I\'ve had a life full of unhandled rejections.',
-					'What does the R in Recursion stand for? -> Recursion.',
-					'What is the difference between C++ and C? -> Just 1.',
-					'What do Jamaicans do with their vectors? Rastarize them.',
-					'I\'m not going to pay you, but it\'ll be good experience and you can put it in your portfolio!',
-					'Can you replace the Lorem Ipsum with sample text?',
-					'Three SQL Database Admins walked into a NoSQL bar. A little while later they walked out because they couldn’t find a table.',
-					'A Web Designer Decided To Use Right Aligned Text. His Boss Yelled At Him For It, Because It Wasn’t Justified.',
-					'What Happens When Comic Sans Walks Into A Bar? The Bartender Says, ‘We Don\'t Serve Your Type Here!’'
-				]
+			description: 'Random joke!',
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.data.getJoke( parseInt( options.param ) || 0 );
 			}
 		},
 		junge: {

@@ -8,7 +8,7 @@
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
-import type { SimpleUser, TwitchBadge, TwitchBadgeVersion, TwitchEmote, TwitchEvent, TwitchEventData, TwitchQuote, TwitchQuoteRow, TwitchReaction, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { SimpleUser, TwitchBadge, TwitchBadgeVersion, TwitchEmote, TwitchEvent, TwitchEventData, TwitchJoke, TwitchJokeRow, TwitchQuote, TwitchQuoteRow, TwitchReaction, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
 import type { ApiClient } from '@twurple/api';
 import type { Database } from './Database.ts';
 
@@ -233,6 +233,42 @@ export class BotData
 				message += ` / ${quote[0].vod_url}`;
 
 			return message + ' ]';
+		}
+		catch ( error: unknown )
+		{
+			log( error );
+			return '';
+		}
+	}
+
+	/** Get random joke */
+	getJoke( jokeId: number = 0 )
+	{
+		try
+		{
+			let jokeIndex = jokeId;
+			if ( jokeIndex < 1 )
+			{
+				const totalJokes = this.db.queryEntries( `SELECT COUNT(*) as count FROM twitch_jokes` );
+
+				if ( !totalJokes?.[0]?.count )
+					return '';
+
+				jokeIndex = getRandomNumber( Number( totalJokes[0].count ), 1 );
+			}
+
+			const joke = this.db.queryEntries<TwitchJokeRow>( `
+				SELECT 
+					q.id,
+					q.text,
+					q.user_id,
+					u.name  -- Include the username from users table
+				FROM twitch_jokes q
+				LEFT JOIN twitch_users u ON q.user_id = u.id
+				WHERE q.id = ?
+				ORDER BY q.id`, [ jokeIndex ] );
+
+			return joke.length === 0 ? '' : `${joke[0].text} - ${joke[0].name} [ #${jokeIndex} ]`;
 		}
 		catch ( error: unknown )
 		{
@@ -660,6 +696,26 @@ export class BotData
 			this.db.query(
 				`INSERT INTO twitch_quotes (date, category, text, user_id, vod_url) VALUES (?, ?, ?, ?, ?)`,
 				[ quote.date, quote.category, quote.text, quote.user_id, quote.vod_url ]
+			);
+			return ( this.db.lastInsertRowId - 1 ).toString();
+		}
+		catch ( error: unknown )
+		{
+			log( error );
+			return '';
+		}
+	}
+
+	/** Add joke to jokes */
+	addJoke( joke: TwitchJoke )
+	{
+		if ( !joke ) return '';
+
+		try
+		{
+			this.db.query(
+				`INSERT INTO twitch_jokes (text, user_id) VALUES (?, ?)`,
+				[ joke.text, joke.user_id ]
 			);
 			return ( this.db.lastInsertRowId - 1 ).toString();
 		}
