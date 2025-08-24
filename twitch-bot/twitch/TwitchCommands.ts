@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.0
+ * @version 1.7.2
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -519,11 +519,6 @@ export class TwitchCommands
 			},
 			onlyMods: true
 		},
-		mission: {
-			cooldown: 20,
-			hasSound: true,
-			disableOnFocus: true
-		},
 		money: {
 			hasVideo: true,
 			disableOnFocus: true
@@ -567,6 +562,13 @@ export class TwitchCommands
 			]
 		},
 		peitsch: {},
+		playlist: {
+			handler: async ( _options: TwitchCommandOptions ) =>
+			{
+				const s = new Spotify( this.twitch.data.db );
+				return await s.getCurrentPlaylist();
+			}
+		},
 		prime: {
 			message: {
 				de: 'Wenn du ein Amazon Prime Konto hast, kannst du dieses mit Twitch verbinden. Jeden Monat hast du die Möglichkeit einen Streamer deiner Wahl KOSTENLOS zu Subscriben! @propz_tv würde sich über DEINEN Prime-Sub sehr freuen! › twitch.tv/subs/propz_tv',
@@ -928,7 +930,7 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		song: {
-			handler: async ( options: TwitchCommandOptions ) =>
+			handler: async ( _options: TwitchCommandOptions ) =>
 			{
 				const s = new Spotify( this.twitch.data.db );
 				return await s.getCurrentSong();
