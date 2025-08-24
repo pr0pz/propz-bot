@@ -2,7 +2,7 @@
  * Prototype stuff
  *
  * @author Wellington Estevo
- * @version 1.6.5
+ * @version 1.7.1
  */
 
 declare global
@@ -18,6 +18,11 @@ declare global
 		trim( char?: string ): string;
 		isCommand(): boolean;
 		sanitize(): string;
+	}
+
+	interface Date
+	{
+		timestamp(): number;
 	}
 }
 
@@ -89,4 +94,10 @@ String.prototype.sanitize = function()
 		.replace( /"/g, '&quot' )
 		.replace( /</g, '&lt;' )
 		.replace( />/g, '&gt;' );
+};
+
+/** Get current timestamp */
+Date.prototype.timestamp = function(): number
+{
+	return Math.floor( Date.now() / 1000 );
 };

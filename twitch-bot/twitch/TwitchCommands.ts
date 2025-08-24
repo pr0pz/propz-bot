@@ -12,6 +12,7 @@ import { OpenWeather } from '../external/OpenWeather.ts';
 import { Youtube } from '../external/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
+import { Spotify } from '../external/Spotify.ts';
 import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
@@ -925,6 +926,13 @@ export class TwitchCommands
 				this.twitch.chat.sendShoutout( options.param );
 			},
 			onlyMods: true
+		},
+		song: {
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				const s = new Spotify( this.twitch.data.db );
+				return await s.getCurrentSong();
+			}
 		},
 		soundboard: {
 			handler: () =>

@@ -577,3 +577,17 @@ export interface WeatherData
 	icon: string;
 	iconUrl: string;
 }
+
+export interface SpotifyTokenData
+{
+	access_token: string;
+	token_type: string;
+	scope: string;
+	expires_in: number;
+	expires_at: number;
+	refresh_token: string;
+	error?: {
+		message: string;
+		status: number;
+	};
+}
