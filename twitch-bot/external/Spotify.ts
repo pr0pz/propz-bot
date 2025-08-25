@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 1.7.2
+ * @version 1.7.3
  */
 
 import { log } from '@propz/helpers.ts';
@@ -19,12 +19,14 @@ export class Spotify
 	private spotifyClientId;
 	private spotifyClientSecret;
 	private spotifyInitialOauthCode;
+	private playlistBanger = '7zVD6GFNSJQv7aenpcKIrr';
 
 	constructor( private db: Database )
 	{
 		this.spotifyClientId = Deno.env.get( 'SPOTIFY_CLIENT_ID' ) || '';
 		this.spotifyClientSecret = Deno.env.get( 'SPOTIFY_CLIENT_SECRET' ) || '';
 		this.spotifyInitialOauthCode = Deno.env.get( 'SPOTIFY_INITIAL_OAUTH_CODE' ) || '';
+		db.query( `INSERT OR IGNORE INTO auth (name, data) VALUES ('spotify', '')` );
 	}
 
 	/**
@@ -101,6 +103,7 @@ export class Spotify
 		{
 			const response = await fetch( this.authUrl, {
 				headers: new Headers( {
+					Authorization: `Basic ${btoa( this.spotifyClientId + ':' + this.spotifyClientSecret )}`,
 					'Content-Type': 'application/x-www-form-urlencoded'
 				} ),
 				method: 'post',
@@ -126,6 +129,7 @@ export class Spotify
 			}
 
 			// Get exact expire time
+			newTokenData.refresh_token = tokenData.refresh_token;
 			newTokenData.expires_at = Date.prototype.timestamp() + newTokenData.expires_in;
 			this.saveTokenData( newTokenData );
 			return newTokenData;
@@ -179,14 +183,8 @@ export class Spotify
 		try
 		{
 			this.db.query(
-				`INSERT INTO auth (name, data) 
-				VALUES ('spotify', ?)
-				ON CONFLICT(name) DO
-					UPDATE SET data = ?
-					WHERE name = 'spotify'`,
-				[
-					JSON.stringify( tokenData, null, '\t' )
-				]
+				`UPDATE auth SET data = ? WHERE name = 'spotify'`,
+				[ JSON.stringify( tokenData, null, '\t' ) ]
 			);
 		}
 		catch ( error: unknown )
@@ -268,11 +266,47 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Add Track to Playlist
-	 */
-	public addToPlaylist( trackId: string, playlistId: string )
+	public async addBangerToPlaylist()
 	{
+		const headers = await this.getAuthHeaders();
+		if ( !headers ) return '';
+
+		try
+		{
+			// Current Track info
+			const currentPlaying = await fetch( `${this.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
+
+			if ( !currentPlayingResponse?.item ) return '';
+			const track = currentPlayingResponse.item as SpotifyApi.TrackObjectFull;
+			const artist = this.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
+
+			// Add to Playlist
+			const addToBanger = await fetch(
+				`${this.apiUrl}/playlists/${this.playlistBanger}/tracks`,
+				{
+					headers: headers,
+					body: JSON.stringify( {
+						position: 0,
+						uris: [ track.uri ]
+					} ),
+					method: 'post'
+				}
+			);
+			const addToBangerResponse = await addToBanger.json();
+			if ( !addToBanger.ok && addToBangerResponse.error )
+			{
+				log( new Error( `Error: ${addToBangerResponse.error.message} (${addToBangerResponse.error.status})` ) );
+				return `Error › Couldn't add Track to Bangers`;
+			}
+
+			return `${artist} - ${track.name}`;
+		}
+		catch ( error: unknown )
+		{
+			log( error );
+			return '';
+		}
 	}
 
 	/**
@@ -281,7 +315,7 @@ export class Spotify
 	 * @param trackUrl
 	 * @returns
 	 */
-	public async addSongToQueue( trackUrl: string )
+	public async addToQueue( trackUrl: string )
 	{
 		const headers = await this.getAuthHeaders();
 		if ( !headers ) return '';

@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.2
+ * @version 1.7.3
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -107,6 +107,23 @@ export class TwitchCommands
 				} );
 			},
 			disableOnFocus: true
+		},
+		banger: {
+			disableIfOffline: true,
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				const s = new Spotify( this.twitch.data.db );
+				const song = await s.addBangerToPlaylist();
+				if ( song.includes( 'Error' ) ) return song;
+				return options.returnMessage?.replace(
+					'[song]',
+					song
+				);
+			},
+			message: {
+				de: `'[song]' ist jetzt ein absoluter Banger!`,
+				en: `'[song]' is now an absolute Banger!`
+			}
 		},
 		believe: {
 			cooldown: 20,
@@ -1241,6 +1258,7 @@ export class TwitchCommands
 			}
 		},
 		web: {
+			aliases: [ 'website' ],
 			message: {
 				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️',
 				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️'

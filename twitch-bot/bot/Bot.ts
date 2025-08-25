@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.6.13
+ * @version 1.7.3
  */
 
 import '@propz/prototypes.ts';
@@ -59,20 +59,20 @@ export class Bot
 
 		const url = new URL( req.url );
 
-		if ( url.pathname.startsWith( '/websocket' ) )
+		switch ( true )
 		{
-			return this.handleWebsocket( req );
-		}
-		else if ( url.pathname.startsWith( '/api' ) )
-		{
-			return await this.handleApi( req );
-		}
-		else if ( url.pathname.startsWith( '/webhook' ) )
-		{
-			return await this.handleWebhook( req );
-		}
+			case url.pathname.startsWith( '/websocket' ):
+				return this.handleWebsocket( req );
 
-		return new Response( 'propz', { status: 200 } );
+			case url.pathname.startsWith( '/api' ):
+				return await this.handleApi( req );
+
+			case url.pathname.startsWith( '/webhook' ):
+				return await this.handleWebhook( req );
+
+			default:
+				return new Response( null, { status: 204 } );
+		}
 	};
 
 	/** Handle Websocket connections
