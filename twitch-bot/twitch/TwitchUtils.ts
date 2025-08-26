@@ -2,17 +2,16 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.0
+ * @version 1.7.5
  */
 
 import '@propz/prototypes.ts';
 
 import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
-import type { HelixStream } from '@twurple/api';
 import { HelixUser } from '@twurple/api';
-import type { ChatMessage } from '@twurple/chat';
 import { ChatUser, parseChatMessage } from '@twurple/chat';
 import cld from 'cld';
+import { Deepl } from '../external/Deepl.ts';
 import { StreamElements } from '../external/StreamElements.ts';
 import { Youtube } from '../external/Youtube.ts';
 import { TwitchChat } from './TwitchChat.ts';
@@ -20,10 +19,11 @@ import { TwitchCommands } from './TwitchCommands.ts';
 import { TwitchEvents } from './TwitchEvents.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchJoke, TwitchQuote, TwitchUserData } from '@propz/types.ts';
+import type { HelixStream } from '@twurple/api';
+import type { ChatMessage } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
 import type { Discord } from '../discord/Discord.ts';
-import { Deepl } from '../external/Deepl.ts';
 
 export abstract class TwitchUtils
 {
@@ -240,44 +240,28 @@ export abstract class TwitchUtils
 
 	/** Add Quote
 	 *
-	 * @param {string} chatMessage Original chat message
-	 * @returns {Promise<string>}
+	 * @param {string} chatMessage Original chat message object
+	 * @returns {string}
 	 */
-	async addJoke( chatMessage: string ): Promise<string>
+	addJoke( chatMessage: ChatMessage ): string
 	{
-		if ( !chatMessage ) return '';
+		if ( !chatMessage.isReply )
+			return 'Error › Use !addjoke only as message reply';
 
-		const syntaxError = 'The correct syntax: !addjoke USERNAME joke';
+		if ( !chatMessage.parentMessageText )
+			return 'Error › Quote text is empty';
 
-		const chatMessageSplitted = chatMessage.split( ' ' );
-		if ( chatMessageSplitted.length < 2 )
-			return syntaxError;
-
-		let author: string | HelixUser | null = chatMessageSplitted[0] ?? '';
-		if ( author.toLowerCase() === 'help' )
-			return syntaxError;
-
-		author = await this.data.getUser( author.replace( '@', '' ) );
-		// Couldn't find user, so assume the author is me
-		if ( author )
-		{
-			chatMessageSplitted.splice( 0, 1 );
-		}
-		else
-		{
-			author = this.data.twitchUser;
-		}
-
-		const jokeText = chatMessageSplitted.join( ' ' );
+		if ( !chatMessage.parentMessageUserId )
+			return 'Error › Invalid Author';
 
 		const joke: TwitchJoke = {
-			text: jokeText.sanitize(),
-			user_id: author?.id || ''
+			text: chatMessage.parentMessageText.sanitize(),
+			user_id: chatMessage.parentMessageUserId.sanitize()
 		};
 
 		const logText = `t: ${joke.text} / u: ${joke.user_id}`;
 		log( logText );
-		// return log;
+		// return logText;
 
 		const lastId = this.data.addJoke( joke );
 
@@ -289,50 +273,35 @@ export abstract class TwitchUtils
 
 	/** Add Quote
 	 *
-	 * @param {string} chatMessage Original chat message
+	 * @param {string} chatMessage Original chat message object
 	 * @returns {Promise<string>}
 	 */
-	async addQuote( chatMessage: string ): Promise<string>
+	async addQuote( chatMessage: ChatMessage ): Promise<string>
 	{
-		if ( !chatMessage ) return '';
+		if ( !chatMessage.isReply )
+			return 'Error › Use !addquote only as message reply';
 
-		const syntaxError = 'The correct syntax: !addquote USERNAME quote';
+		if ( !chatMessage.parentMessageText )
+			return 'Error › Quote text is empty';
 
-		const chatMessageSplitted = chatMessage.split( ' ' );
-		if ( chatMessageSplitted.length < 2 )
-			return syntaxError;
+		if ( !chatMessage.parentMessageUserId )
+			return 'Error › Invalid Author';
 
-		let author: string | HelixUser | null = chatMessageSplitted[0] ?? '';
-		if ( author.toLowerCase() === 'help' )
-			return syntaxError;
-
-		author = await this.data.getUser( author.replace( '@', '' ) );
-		// Couldn't find user, so assume the author is me
-		if ( author )
-		{
-			chatMessageSplitted.splice( 0, 1 );
-		}
-		else
-		{
-			author = this.data.twitchUser;
-		}
-
-		const quoteText = chatMessageSplitted.join( ' ' );
 		const videoId = await Youtube.getCurrentLivestreamVideoId();
 		const videoTimestamp = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 ) - 20;
 
 		const quote: TwitchQuote = {
 			date: new Date().toISOString(),
 			category: this.stream?.gameName || '',
-			text: quoteText.sanitize(),
-			user_id: author?.id || '',
+			text: chatMessage.parentMessageText.sanitize(),
+			user_id: chatMessage.parentMessageUserId.sanitize(),
 			vod_url: Youtube.getYoutubeVideoUrlById( videoId, videoTimestamp )
 		};
 
 		const logText =
 			`cat: ${quote.category} / t: ${quote.text} / u: ${quote.user_id} / vidid: ${videoId} / vidt: ${videoTimestamp} / vod: ${quote.vod_url}`;
 		log( logText );
-		// return log;
+		// return logText;
 
 		const lastId = this.data.addQuote( quote );
 

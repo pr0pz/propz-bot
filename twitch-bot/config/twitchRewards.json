@@ -247,7 +247,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "e8c702c7-cc06-482f-8e4e-333803ce39aa",
 		"title": "OH NO?!",
 		"cost": 600,
 		"backgroundColor": "#6AB695",
@@ -260,7 +260,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "574fcad5-ea72-46ef-8047-bc57243a2529",
 		"title": "PS1",
 		"cost": 1000,
 		"backgroundColor": "#ffffff",
@@ -273,7 +273,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "44e3c9ce-5038-4d29-b9db-a2002076d764",
 		"title": "Song Request",
 		"cost": 100,
 		"backgroundColor": "#FBCDE1",

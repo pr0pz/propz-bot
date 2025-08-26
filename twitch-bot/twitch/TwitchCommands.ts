@@ -2,17 +2,17 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.4
+ * @version 1.7.5
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../external/Deepl.ts';
 import { Gemini } from '../external/Gemini.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
+import { Spotify } from '../external/Spotify.ts';
 import { Youtube } from '../external/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
-import { Spotify } from '../external/Spotify.ts';
 import type { TwitchUtils } from './TwitchUtils.ts';
 
 export class TwitchCommands
@@ -40,9 +40,10 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		addjoke: {
-			handler: async ( options: TwitchCommandOptions ) =>
+			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.addJoke( options.message );
+				if ( !options.messageObject ) return '';
+				return this.twitch.addJoke( options.messageObject );
 			},
 			description: 'Witz hinzufügen: !addjoke USERNAME joke',
 			disableIfOffline: false,
@@ -54,7 +55,8 @@ export class TwitchCommands
 		addquote: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.addQuote( options.message );
+				if ( !options.messageObject ) return '';
+				return await this.twitch.addQuote( options.messageObject );
 			},
 			description: 'Zitat hinzufügen: !addquote USERNAME quote',
 			disableIfOffline: false,
