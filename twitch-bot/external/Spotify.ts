@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 1.7.3
+ * @version 1.7.4
  */
 
 import { log } from '@propz/helpers.ts';
@@ -266,6 +266,11 @@ export class Spotify
 		}
 	}
 
+	/**
+	 * Add Song to banger playlist
+	 *
+	 * @returns
+	 */
 	public async addBangerToPlaylist()
 	{
 		const headers = await this.getAuthHeaders();
@@ -277,7 +282,7 @@ export class Spotify
 			const currentPlaying = await fetch( `${this.apiUrl}/me/player/currently-playing`, { headers: headers } );
 			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
 
-			if ( !currentPlayingResponse?.item ) return '';
+			if ( !currentPlayingResponse?.item ) return 'Error › No Song is playing or what';
 			const track = currentPlayingResponse.item as SpotifyApi.TrackObjectFull;
 			const artist = this.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
 

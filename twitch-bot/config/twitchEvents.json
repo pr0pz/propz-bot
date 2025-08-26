@@ -176,6 +176,10 @@
 			}
 		}
 	},
+	"rewardohno": {
+		"hasVideo": true,
+		"disableOnFocus": true
+	},
 	"rewardonfire": {
 		"_comment": "[Video] On Fire",
 		"obs": {
@@ -207,6 +211,10 @@
 		"hasVideo": "propz",
 		"showAvatar": true
 	},
+	"rewardps1": {
+		"hasSound": true,
+		"disableOnFocus": true
+	},
 	"rewardrip": {
 		"disableOnFocus": true,
 		"hasVideo": true
@@ -235,7 +243,7 @@
 		"disableOnFocus": true,
 		"hasVideo": true
 	},
-	
+
 	"streamonline": {
 		"isAnnouncement": true,
 		"message": {
@@ -313,7 +321,7 @@
 	},
 	"chatscore-100": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🤓 @[user] ist nun Chat-Newbie",
 			"en": "[count]x 🤓 @[user] is now a Chat-Newbie"
 		},
@@ -330,7 +338,7 @@
 	},
 	"chatscore-500": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😎 @[user] ist ein Chat-Enthusiast",
 			"en": "[count]x 😎 @[user] is a Chat-Enthusiast"
 		},
@@ -347,7 +355,7 @@
 	},
 	"chatscore-1000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😮 @[user] ist ein Chat-Veteran",
 			"en": "[count]x 😮 @[user] is a Chat-Veteran"
 		},
@@ -364,7 +372,7 @@
 	},
 	"chatscore-2000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😲 @[user] ist der Chat-Guru",
 			"en": "[count]x 😲 @[user] is the Chat-Guru"
 		},
@@ -381,7 +389,7 @@
 	},
 	"chatscore-3000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🫠 @[user] ist die Chat-Meisterin",
 			"en": "[count]x 🫠 @[user] is the Chat-Master"
 		},
@@ -398,7 +406,7 @@
 	},
 	"chatscore-4000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🥳 @[user] ist die absolute Chat-Expertin",
 			"en": "[count]x 🥳 @[user] is the ultimate Chat-Expert"
 		},
@@ -415,7 +423,7 @@
 	},
 	"chatscore-5000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🤩 @[user] ist ein heftiger Chat-Champion",
 			"en": "[count]x 🤩 @[user] is an intense Chat-Champion"
 		},
@@ -432,7 +440,7 @@
 	},
 	"chatscore-6000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🥵 @[user] ist eine absolute Chat-Legende",
 			"en": "[count]x 🥵 @[user] is an absolute Chat-Legend"
 		},
@@ -449,7 +457,7 @@
 	},
 	"chatscore-7000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😵‍💫 @[user] ist ein absoluter Chat-Hero",
 			"en": "[count]x 😵‍💫 @[user] is an absolute Chat-Hero"
 		},
@@ -466,7 +474,7 @@
 	},
 	"chatscore-8000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😵 @[user] ist die heftigste Chat-Koryphäe",
 			"en": "[count]x 😵 @[user] is the most intense Chat-Coryphée"
 		},
@@ -483,7 +491,7 @@
 	},
 	"chatscore-9000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 😱 @[user] ist der oberste Chat-Meistergeist",
 			"en": "[count]x 😱 @[user] is the supreme Chat-Mastermind"
 		},
@@ -500,7 +508,7 @@
 	},
 	"chatscore-10000": {
 		"saveEvent": true,
-		"message": { 
+		"message": {
 			"de": "[count]x 🤯 @[user] ist die heftigste Chat-Göttlichkeit",
 			"en": "[count]x 🤯 @[user] is the most intense Chat-Divinity"
 		},

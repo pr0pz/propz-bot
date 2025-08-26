@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.3
+ * @version 1.7.4
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -109,6 +109,7 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		banger: {
+			description: 'Fügt den aktuellen Song zur "Absolute Banger" Playlist',
 			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
@@ -121,8 +122,8 @@ export class TwitchCommands
 				);
 			},
 			message: {
-				de: `'[song]' ist jetzt ein absoluter Banger!`,
-				en: `'[song]' is now an absolute Banger!`
+				de: `'[song]' ist jetzt ein absoluter Banger! › https://propz.de/absolute-banger`,
+				en: `'[song]' is now an absolute Banger! › https://propz.de/absolute-banger`
 			}
 		},
 		believe: {
@@ -329,11 +330,8 @@ export class TwitchCommands
 			description: 'First-Chat score'
 		},
 		floripa: {
-			aliases: [ 'florianopolis', 'fpolis' ],
-			message: {
-				de: 'Bin hier › https://maps.app.goo.gl/nh8erwbu112ytM3V7',
-				en: 'I\'m here › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
-			}
+			aliases: [ 'florianopolis' ],
+			message: 'Floripa › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
 		},
 		fokus: {
 			handler: ( options: TwitchCommandOptions ) =>
@@ -369,11 +367,6 @@ export class TwitchCommands
 				de: '@[user] folgt [broadcaster] seit: [count]',
 				en: '@[user] has been following [broadcaster] since: [count]'
 			}
-		},
-		gameover: {
-			cooldown: 60,
-			hasSound: true,
-			disableOnFocus: true
 		},
 		garnix: {
 			cooldown: 20,
@@ -553,10 +546,6 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
-		ohno: {
-			cooldown: 60,
-			hasVideo: true
-		},
 		onlyfans: {
 			aliases: [ 'of' ],
 			message: {
@@ -580,6 +569,7 @@ export class TwitchCommands
 		},
 		peitsch: {},
 		playlist: {
+			description: 'Link zur aktuellen Playlist',
 			handler: async ( _options: TwitchCommandOptions ) =>
 			{
 				const s = new Spotify( this.twitch.data.db );
@@ -608,11 +598,6 @@ export class TwitchCommands
 					user: options.param || this.twitch.data.userName
 				} );
 			}
-		},
-		psx: {
-			cooldown: 120,
-			hasSound: true,
-			disableOnFocus: true
 		},
 		pun: {
 			cooldown: 20,
@@ -947,6 +932,7 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		song: {
+			description: 'Der aktuelle Song',
 			handler: async ( _options: TwitchCommandOptions ) =>
 			{
 				const s = new Spotify( this.twitch.data.db );

@@ -114,7 +114,7 @@ export class Twitch extends TwitchUtils
 	 */
 	override async processChatMessage( chatMessage: string, msg: ChatMessage )
 	{
-		if ( !chatMessage || !msg )
+		if ( !chatMessage || !msg || !msg.userInfo )
 			return;
 
 		const user = await this.convertToSimplerUser( msg.userInfo );

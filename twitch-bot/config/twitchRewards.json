@@ -33,7 +33,7 @@
 		"prompt": "Celebrate with me!",
 		"globalCooldown": null,
 		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
+		"maxRedemptionsPerUserPerStream": 5,
 		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": true
@@ -215,7 +215,7 @@
 		"prompt": "Max. 160 Zeichen -> Deine Nachricht wird laut vorgelesen (Deutsch).",
 		"globalCooldown": null,
 		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
+		"maxRedemptionsPerUserPerStream": 3,
 		"userInputRequired": true,
 		"isEnabled": true,
 		"autoFulfill": false
@@ -228,7 +228,7 @@
 		"prompt": "",
 		"globalCooldown": 60,
 		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
+		"maxRedemptionsPerUserPerStream": 3,
 		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": true
@@ -244,6 +244,45 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
+		"id": "",
+		"title": "OH NO?!",
+		"cost": 600,
+		"backgroundColor": "#6AB695",
+		"prompt": "",
+		"globalCooldown": 300,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
+		"id": "",
+		"title": "PS1",
+		"cost": 1000,
+		"backgroundColor": "#ffffff",
+		"prompt": "",
+		"globalCooldown": 300,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
+		"id": "",
+		"title": "Song Request",
+		"cost": 100,
+		"backgroundColor": "#FBCDE1",
+		"prompt": "Request a Song to play on Stream. Just send a Spotify Link.",
+		"globalCooldown": 10,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": true,
+		"isEnabled": false,
 		"autoFulfill": true
 	}
 ]
