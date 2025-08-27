@@ -164,18 +164,6 @@
 			"en": "Cheers @[user]! I'm already drinking... ☕️💧"
 		}
 	},
-	"rewardletstrip": {
-		"_comment": "[Video] Dragon Trip",
-		"obs": {
-			"requestType": "SetSceneItemEnabled",
-			"requestData": {
-				"sceneName": "[R] MEDIABOARD",
-				"sceneUuid": "4580d8ec-31a7-40e3-b8a8-4f1399080904",
-				"sceneItemId": 6,
-				"sceneItemEnabled": true
-			}
-		}
-	},
 	"rewardohno": {
 		"hasVideo": true,
 		"disableOnFocus": true
@@ -229,6 +217,9 @@
 			}
 		}
 	},
+	"rewardsongrequest": {
+		"isCommand": true
+	},
 	"rewardsus": {
 		"disableOnFocus": true,
 		"hasVideo": true
@@ -242,6 +233,22 @@
 	"rewardwtf": {
 		"disableOnFocus": true,
 		"hasVideo": true
+	},
+	"rewardzoomin": {
+		"eventText": {
+			"de": "Zoom In",
+			"en": "Zoom In"
+		},
+		"obs": {
+		}
+	},
+	"rewardzoomout": {
+		"eventText": {
+			"de": "Zoom Out",
+			"en": "Zoom Out"
+		},
+		"obs": {
+		}
 	},
 
 	"streamonline": {

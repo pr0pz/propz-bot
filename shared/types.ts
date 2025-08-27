@@ -51,6 +51,7 @@ export interface TwitchEvent
 	hasVideo?: boolean | string;
 	hasImage?: boolean | string;
 	showAvatar?: boolean;
+	isCommand?: boolean;
 	extra?: {
 		[key: string]: TwitchEventExtra;
 	};

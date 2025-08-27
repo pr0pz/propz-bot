@@ -117,17 +117,17 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "e7ac0d99-2325-4c33-9a5b-6c18f6712a83",
-		"title": "Let's Trip",
-		"cost": 400,
-		"backgroundColor": "#EDB354",
+		"id": "e8c702c7-cc06-482f-8e4e-333803ce39aa",
+		"title": "OH NO?!",
+		"cost": 600,
+		"backgroundColor": "#6AB695",
 		"prompt": "",
-		"globalCooldown": 120,
+		"globalCooldown": 300,
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
-		"autoFulfill": false
+		"autoFulfill": true
 	},
 	{
 		"id": "3f3d0e7c-1557-4640-9f55-ffb010cd964f",
@@ -154,6 +154,19 @@
 		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": false
+	},
+	{
+		"id": "574fcad5-ea72-46ef-8047-bc57243a2529",
+		"title": "PS1",
+		"cost": 1000,
+		"backgroundColor": "#ffffff",
+		"prompt": "",
+		"globalCooldown": 300,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
 	},
 	{
 		"id": "0437b7ac-fd50-4fe3-8674-1e4542636da7",
@@ -193,6 +206,19 @@
 		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": false
+	},
+	{
+		"id": "44e3c9ce-5038-4d29-b9db-a2002076d764",
+		"title": "Song Request",
+		"cost": 100,
+		"backgroundColor": "#FBCDE1",
+		"prompt": "Request a Song to play on Stream. Just send a Spotify Link.",
+		"globalCooldown": 0,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": true,
+		"isEnabled": true,
+		"autoFulfill": true
 	},
 	{
 		"id": "e8a4be54-cf7d-4384-bbb2-205eb8051c49",
@@ -247,41 +273,28 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "e8c702c7-cc06-482f-8e4e-333803ce39aa",
-		"title": "OH NO?!",
-		"cost": 600,
-		"backgroundColor": "#6AB695",
-		"prompt": "",
-		"globalCooldown": 300,
-		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
-		"userInputRequired": false,
-		"isEnabled": true,
-		"autoFulfill": true
-	},
-	{
-		"id": "574fcad5-ea72-46ef-8047-bc57243a2529",
-		"title": "PS1",
-		"cost": 1000,
-		"backgroundColor": "#ffffff",
-		"prompt": "",
-		"globalCooldown": 300,
-		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
-		"userInputRequired": false,
-		"isEnabled": true,
-		"autoFulfill": true
-	},
-	{
-		"id": "44e3c9ce-5038-4d29-b9db-a2002076d764",
-		"title": "Song Request",
+		"id": "a7749b78-9b26-49cb-b0c7-dc6666c118b9",
+		"title": "Zoom In",
 		"cost": 100,
-		"backgroundColor": "#FBCDE1",
-		"prompt": "Request a Song to play on Stream. Just send a Spotify Link.",
-		"globalCooldown": 10,
+		"backgroundColor": "#FFBCFF",
+		"prompt": "",
+		"globalCooldown": 5,
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": null,
-		"userInputRequired": true,
+		"userInputRequired": false,
+		"isEnabled": false,
+		"autoFulfill": true
+	},
+	{
+		"id": "478cd9cd-e3dc-4f84-b97c-3f0d98015bd2",
+		"title": "Zoom Out",
+		"cost": 100,
+		"backgroundColor": "#FFBCFF",
+		"prompt": "",
+		"globalCooldown": 5,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
 		"isEnabled": false,
 		"autoFulfill": true
 	}

@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.6.13
+ * @version 1.7.6
  */
 
 import '@propz/prototypes.ts';
@@ -218,6 +218,10 @@ export class Twitch extends TwitchUtils
 			showAvatar: event.showAvatar,
 			saveEvent: event.saveEvent
 		} );
+
+		// Exec command
+		if ( event.isCommand )
+			this.processChatCommand( `!${eventType} ${eventText}`, null, user );
 
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )

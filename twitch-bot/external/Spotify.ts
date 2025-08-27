@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 1.7.4
+ * @version 1.7.6
  */
 
 import { log } from '@propz/helpers.ts';
@@ -326,29 +326,26 @@ export class Spotify
 		if ( !headers ) return '';
 		const trackUrlInfo = trackUrl.match( /track\/(\w+)\??/i );
 		if ( !trackUrlInfo?.[1] ) return '';
-		const trackId = trackUrlInfo[1];
+		const trackUri = encodeURIComponent( `spotify:track:${trackUrlInfo[1]}` );
 
 		try
 		{
-			const addToQueue = await fetch( `${this.apiUrl}/me/player/queue`, {
+			const addToQueue = await fetch( `${this.apiUrl}/me/player/queue?uri=${trackUri}`, {
 				headers: headers,
-				method: 'post',
-				body: new URLSearchParams( {
-					uri: `spotify:track:${trackId}`
-				} )
+				method: 'post'
 			} );
 
-			const addToQueueResponse = await addToQueue.json();
-			if ( !addToQueue.ok && addToQueueResponse.error )
+			if ( !addToQueue.ok )
 			{
+				const addToQueueResponse = await addToQueue.json();
 				const errorMessage = addToQueueResponse.error.message ?
 					`${addToQueueResponse.error.message} (${addToQueueResponse.error.status})` :
 					addToQueueResponse.error;
 				log( new Error( `Error: ${errorMessage}` ) );
-				return '';
+				return 'Error › Couldn\'t add song to queue';
 			}
 
-			return this.getTrack( trackId );
+			return this.getTrack( trackUrlInfo[1] );
 		}
 		catch ( error: unknown )
 		{

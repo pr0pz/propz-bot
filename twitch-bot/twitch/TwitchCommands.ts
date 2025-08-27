@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.5
+ * @version 1.7.6
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -808,6 +808,22 @@ export class TwitchCommands
 				}
 			],
 			onlyMods: true
+		},
+		rewardsongrequest: {
+			aliases: [ 'sr' ],
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				const s = new Spotify( this.twitch.data.db );
+				const track = await s.addToQueue( options.param );
+				if ( track.includes( 'Error' ) )
+					return track;
+
+				return options.returnMessage.replace( '[song]', track );
+			},
+			message: {
+				de: '[song] zur Warteschlange hinzugefügt',
+				en: '[song] added to queue'
+			}
 		},
 		roadmap: {
 			aliases: [ 'roadmaps' ],
