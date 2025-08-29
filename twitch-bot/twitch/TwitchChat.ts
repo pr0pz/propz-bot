@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.6.9
+ * @version 1.7.7
  */
 
 import '@propz/prototypes.ts';
@@ -240,7 +240,7 @@ export class TwitchChat
 		if ( text.isCommand() )
 			this.twitch.processChatCommand( text, msg );
 		// ... or message
-		else
+		else if ( !msg.isRedemption )
 			this.twitch.processChatMessage( text, msg );
 
 		// First chatter event
