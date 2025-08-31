@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.6
+ * @version 1.7.8
  */
 
 import '@propz/prototypes.ts';
@@ -259,12 +259,10 @@ export class Twitch extends TwitchUtils
 	override async processApiCall( apiRequest: ApiRequest ): Promise<ApiResponse>
 	{
 		const response: ApiResponse = { data: false };
-		if ( !apiRequest?.request )
-			return response;
+		if ( !apiRequest?.request ) return response;
 
 		let user: HelixUser | SimpleUser | null = await this.data.getUser();
-		if ( !user )
-			return response;
+		if ( !user ) return response;
 
 		user = await this.convertToSimplerUser( user );
 
@@ -311,7 +309,6 @@ export class Twitch extends TwitchUtils
 				break;
 
 			case 'getWeather':
-				console.log( apiRequest.data );
 				if (
 					!apiRequest.data?.cityName &&
 					(
@@ -326,6 +323,13 @@ export class Twitch extends TwitchUtils
 					apiRequest.data.lat || '',
 					apiRequest.data.lon || ''
 				);
+				break;
+
+			case 'newShopOrder':
+				this.processEvent( {
+					user: user,
+					eventType: 'shoporder'
+				} );
 				break;
 		}
 

@@ -978,5 +978,17 @@
 				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
 			}
 		}
+	},
+
+	"shoporder": {
+		"hasSound": "kaching",
+		"hasVideo": "money",
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
 	}
 }
