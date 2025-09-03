@@ -1,5 +1,18 @@
 [
 	{
+		"id": "7ea28715-cdf3-4893-86b4-130182f3dcaa",
+		"title": "Arbeitszeugbetrug",
+		"cost": 1000,
+		"backgroundColor": "#FFBCFF",
+		"prompt": "Ich kriege nie genug",
+		"globalCooldown": 600,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
 		"id": "8d9352dd-25da-4188-a12f-9cebb8462c4a",
 		"title": "Boom",
 		"cost": 300,
@@ -165,7 +178,7 @@
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
-		"isEnabled": true,
+		"isEnabled": false,
 		"autoFulfill": true
 	},
 	{

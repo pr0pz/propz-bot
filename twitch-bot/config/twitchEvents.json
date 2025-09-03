@@ -61,6 +61,10 @@
 			}
 		}
 	},
+	"rewardarbeitszeitbetrug": {
+		"disableOnFocus": true,
+		"hasVideo": true
+	},
 	"rewardboom": {
 		"disableOnFocus": true,
 		"hasVideo": true,
