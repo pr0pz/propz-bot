@@ -1,8 +1,8 @@
 /**
  * Websocket Handler
- * 
+ *
  * @author Wellington Estevo
- * @version 1.5.11
+ * @version 1.7.10
  */
 
 import '@propz/prototypes.ts';
@@ -11,10 +11,10 @@ import type { ObsData, SimpleUser, TwitchEventExtra, WebSocketData } from '@prop
 
 export class BotWebsocket
 {
-	public wsConnections: Map<string,WebSocket> = new Map();
+	public wsConnections: Map<string, WebSocket> = new Map();
 
 	/** Setup and send data to websocket connection.
-	 * 
+	 *
 	 * @param {string} type Event type
 	 * @param {SimpleUser} user User
 	 * @param {string} text Message text (only for message events)
@@ -23,22 +23,23 @@ export class BotWebsocket
 	 * @param {ObsData|ObsData[]} obs Data to send to obs
 	 */
 	public maybeSendWebsocketData( options: {
-		type: string,
-		user: SimpleUser,
-		text?: string,
-		count?: number,
-		hasSound?: boolean|string,
-		hasVideo?: boolean|string,
-		showAvatar?: boolean,
-		extra?: TwitchEventExtra,
-		obs?: ObsData|ObsData[],
-		saveEvent?: boolean
-	})
+		type: string;
+		user: SimpleUser;
+		text?: string;
+		count?: number;
+		hasSound?: boolean | string;
+		hasVideo?: boolean | string;
+		hasImage?: boolean | string;
+		showAvatar?: boolean;
+		extra?: TwitchEventExtra;
+		obs?: ObsData | ObsData[];
+		saveEvent?: boolean;
+	} )
 	{
-		const { type, user, text, count, extra, obs, hasSound, hasVideo, showAvatar, saveEvent } = options;
+		const { type, user, text, count, extra, obs, hasSound, hasVideo, hasImage, showAvatar, saveEvent } = options;
 
 		if ( !this.wsConnections || !user || !type ) return;
-		
+
 		const wsData: WebSocketData = {
 			key: crypto.randomUUID(),
 			type: type,
@@ -49,6 +50,7 @@ export class BotWebsocket
 			profilePictureUrl: user.profilePictureUrl || '',
 			hasSound: hasSound || false,
 			hasVideo: hasVideo || false,
+			hasImage: hasImage || false,
 			showAvatar: showAvatar || false,
 			extra: extra || null,
 			obs: obs || null,
@@ -62,8 +64,11 @@ export class BotWebsocket
 				if ( !ws?.readyState || ws.readyState !== WebSocket.OPEN ) return;
 				ws.send( JSON.stringify( wsData ) );
 			}
-			log( wsData.type )
+			log( wsData.type );
 		}
-		catch ( error: unknown ) { log( error ); }
+		catch ( error: unknown )
+		{
+			log( error );
+		}
 	}
 }

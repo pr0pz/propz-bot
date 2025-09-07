@@ -140,8 +140,7 @@ export class BotData
 	async getColorForUser( userId: string )
 	{
 		const defaultColor = '#C7C7F1';
-		if ( !userId )
-			return defaultColor;
+		if ( !userId ) return defaultColor;
 		try
 		{
 			return await this.twitchApi.chat.getColorForUser( userId ) || defaultColor;
@@ -781,16 +780,14 @@ export class BotData
 	/** Check if user is Bot */
 	isBot( userName: string )
 	{
-		if ( !userName )
-			return false;
+		if ( !userName ) return false;
 		return this.bots.includes( userName.toLowerCase() );
 	}
 
 	/** Check if user is a mod */
 	isMod( userName: string )
 	{
-		if ( !userName )
-			return false;
+		if ( !userName ) return false;
 		return this.mods.includes( userName.toLowerCase() );
 	}
 
