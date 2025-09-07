@@ -575,32 +575,68 @@
 			}
 		]
 	},
-	"communitysub": {
+	"communitysub-1": {
 		"saveEvent": true,
 		"message": {
 			"de": [
 				"Wow, @[user] verbreitet Abo-Liebe im Stream! 💖 Danke fürs Teilen des kreativen Glücks!",
 				"Geschenkte Abos von @[user]! 🎉 Spread the coding love - danke für die großzügige Unterstützung!",
-				"@[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke, du machst den Stream noch bunter!",
-				"Abo-Überraschung von @[user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz, @[user]!",
-				"@[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks, du machst den Nerd-Kosmos noch strahlender!"
+				"@[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke!",
+				"Abo-Überraschung von @[user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz!",
+				"@[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks!"
 			],
 			"en": [
 				"Wow, @[user] spreads sub-love in the stream! 💖 Thanks for sharing the creative joy!",
 				"Gifted subs from @[user]! 🎉 Spread the coding love - thanks for the generous support!",
-				"@[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts, you make the stream even brighter!",
-				"Sub surprise from @[user]! 🎁 Thanks for the gifted coding extravaganza, @[user]!",
-				"@[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness, you make the nerd universe even brighter!"
+				"@[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts!",
+				"Sub surprise from @[user]! 🎁 Thanks for the gifted coding extravaganza!",
+				"@[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness!"
 			]
 		},
 		"extra": {
 			"de": {
-				"titleAlert": "Subs für alle",
+				"titleAlert": "Sub Geschenk",
 				"titleEvent": "Sub Gift"
 			},
 			"en": {
-				"titleAlert": "Subs for Everyone",
+				"titleAlert": "Sub Gift",
 				"titleEvent": "Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Standard Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-2": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"Oha! @[user] packt direkt 5 SUBS aus! 🎊 Das ist ja der Hammer - vielen Dank für deine Großzügigkeit!",
+				"5er COMBO von @[user]! 💥 Du rockst den Stream mit deinem Support - mega stark!",
+				"@[user] aktiviert den 5-SUB-BOOST! 🚀 Danke dir vielmals für diese geniale Unterstützung!",
+				"WOW! @[user] verteilt 5 Subs an die Community! 🌟 Du bist ein wahrer Held des Streams!",
+				"5 SUBS auf einmal! @[user] zeigt wie Community-Love aussieht! 💜 Tausend Dank!"
+			],
+			"en": [
+				"Whoa! @[user] drops 5 SUBS at once! 🎊 That's amazing - thank you for your generosity!",
+				"5x COMBO from @[user]! 💥 You're rocking the stream with your support - awesome!",
+				"@[user] activates the 5-SUB-BOOST! 🚀 Thank you so much for this genius support!",
+				"WOW! @[user] distributes 5 subs to the community! 🌟 You're a true stream hero!",
+				"5 SUBS at once! @[user] shows what community love looks like! 💜 Thousand thanks!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "5er Sub-Paket!",
+				"titleEvent": "Multi Sub Gift"
+			},
+			"en": {
+				"titleAlert": "5x Sub Package!",
+				"titleEvent": "Multi Sub Gift"
 			}
 		},
 		"obs": {
@@ -611,38 +647,182 @@
 			}
 		}
 	},
-	"communitysub-2": {
+	"communitysub-3": {
 		"saveEvent": true,
 		"message": {
 			"de": [
-				"Wow, @[user] verbreitet Abo-Liebe im Stream! 💖 Danke fürs Teilen des kreativen Glücks!",
-				"Geschenkte Abos von @[user]! 🎉 Spread the coding love - danke für die großzügige Unterstützung!",
-				"@[user] verschenkt Subs wie ein kreativer Weihnachtsmann! 🎅 Herzlichen Dank für die Abo-Geschenke, du machst den Stream noch bunter!",
-				"Abo-Überraschung von @[user]! 🎁 Vielen Dank für die geschenkte Coding-Extravaganz, @[user]!",
-				"@[user] zaubert Abo-Strahlen in den Chat! 🌈 Danke fürs Teilen des Abo-Glücks, du machst den Nerd-Kosmos noch strahlender!"
+				"HOLY MOLY! @[user] droppt eine 10er SUB-BOMBE! 💣💜 Das ist ja der absolute Wahnsinn - tausend Dank für diese krasse Unterstützung!",
+				"WAS ZUM...?! @[user] haut mal eben 10 SUBS raus! 🚀 Du bist der absolute MVP des Streams heute!",
+				"@[user] goes BRRRRR mit 10 GESCHENKTEN SUBS! 🎊 Mein Code crasht vor Freude - DANKE DIR!",
+				"ALARM ALARM! @[user] aktiviert den 10-SUB-HYPERDRIVE! 🌟 Der Chat explodiert vor Dankbarkeit!",
+				"10 SUBS?! @[user], du absolute Legende! 👑 Das ist mehr Support als mein Code Bugs hat - und das will was heißen!"
 			],
 			"en": [
-				"Wow, @[user] spreads sub-love in the stream! 💖 Thanks for sharing the creative joy!",
-				"Gifted subs from @[user]! 🎉 Spread the coding love - thanks for the generous support!",
-				"@[user] gives away subs like a creative Santa! 🎅 Thanks for the sub gifts, you make the stream even brighter!",
-				"Sub surprise from @[user]! 🎁 Thanks for the gifted coding extravaganza, @[user]!",
-				"@[user] brings sub-rays into the chat! 🌈 Thanks for sharing the sub happiness, you make the nerd universe even brighter!"
+				"HOLY MOLY! @[user] drops a 10 SUB BOMB! 💣💜 This is absolutely insane - thousand thanks for this crazy support!",
+				"WHAT THE...?! @[user] just casually drops 10 SUBS! 🚀 You're the absolute MVP of today's stream!",
+				"@[user] goes BRRRRR with 10 GIFTED SUBS! 🎊 My code crashes from joy - THANK YOU!",
+				"ALERT ALERT! @[user] activates the 10-SUB-HYPERDRIVE! 🌟 Chat explodes with gratitude!",
+				"10 SUBS?! @[user], you absolute legend! 👑 That's more support than my code has bugs - and that's saying something!"
 			]
 		},
 		"extra": {
 			"de": {
-				"titleAlert": "Mega Sub Geschenk",
-				"titleEvent": "Sub Gift"
+				"titleAlert": "SUB-BOMBE INCOMING!",
+				"titleEvent": "Mega Sub Gift"
 			},
 			"en": {
-				"titleAlert": "Mega Sub Gift",
-				"titleEvent": "Sub Gift"
+				"titleAlert": "SUB BOMB INCOMING!",
+				"titleEvent": "Mega Sub Gift"
 			}
 		},
 		"obs": {
 			"requestType": "TriggerMediaInputAction",
 			"requestData": {
-				"inputName": "[Video] Fireworks Alert",
+				"inputName": "[Video] Epic Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-4": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"🚨 MEGA ALARM! @[user] ZERSTÖRT DEN CHAT MIT 20 SUBS! 🚨 Ich kann nicht mehr - das ist LEGENDÄR!",
+				"ZWANZIG?! ZWANZIG SUBS?! @[user] du ABSOLUTER MADLAD! 🔥🔥🔥 Der Stream brennt vor Dankbarkeit!",
+				"@[user] HAT DEN CHEAT CODE AKTIVIERT! 20 SUBS! 💎 Das ist mehr Support als ich je zu träumen gewagt hätte!",
+				"SYSTEM OVERLOAD! @[user] mit der 20-SUB-ATOMBOMBE! ☄️ Meine CPU schmilzt vor Freude!",
+				"CHAT, SEHT IHR DAS?! @[user] mit ZWANZIG GESCHENKTEN SUBS! 🌈✨ Du bist der BOSS!"
+			],
+			"en": [
+				"🚨 MEGA ALERT! @[user] DESTROYS THE CHAT WITH 20 SUBS! 🚨 I can't even - this is LEGENDARY!",
+				"TWENTY?! TWENTY SUBS?! @[user] you ABSOLUTE MADLAD! 🔥🔥🔥 The stream is on fire with gratitude!",
+				"@[user] ACTIVATED THE CHEAT CODE! 20 SUBS! 💎 That's more support than I ever dared to dream!",
+				"SYSTEM OVERLOAD! @[user] with the 20-SUB-NUKE! ☄️ My CPU is melting from joy!",
+				"CHAT, ARE YOU SEEING THIS?! @[user] with TWENTY GIFTED SUBS! 🌈✨ You're the BOSS!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "🔥 MEGA SUB-EXPLOSION 🔥",
+				"titleEvent": "Ultra Sub Gift"
+			},
+			"en": {
+				"titleAlert": "🔥 MEGA SUB EXPLOSION 🔥",
+				"titleEvent": "Ultra Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Ultra Epic Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-5": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"⚡⚡ FÜNFZIG SUBS?! ⚡⚡ @[user] DU BIST NICHT REAL! Das ist der krasseste Moment in der Stream-Geschichte!",
+				"CHAT BRECHT ZUSAMMEN! @[user] MIT 50 SUBS! 🎆🎆🎆 Ich weine Freudentränen in Binary!",
+				"ERROR 404: WORTE NICHT GEFUNDEN! @[user] sprengt alle Grenzen mit 50 GESCHENKTEN SUBS! 👑💜",
+				"DAS IST KEIN DRILL! @[user] AKTIVIERT DEN GOTTMODUS MIT 50 SUBS! 🌟💥 ABSOLUT VERRÜCKT!",
+				"@[user] HAT DEN STREAM GEKAUFT! 50 SUBS! 🚀🚀🚀 Du bist offiziell die LEGENDE DES JAHRES!"
+			],
+			"en": [
+				"⚡⚡ FIFTY SUBS?! ⚡⚡ @[user] YOU'RE NOT REAL! This is the craziest moment in stream history!",
+				"CHAT IS BREAKING DOWN! @[user] WITH 50 SUBS! 🎆🎆🎆 I'm crying tears of joy in binary!",
+				"ERROR 404: WORDS NOT FOUND! @[user] breaks all limits with 50 GIFTED SUBS! 👑💜",
+				"THIS IS NOT A DRILL! @[user] ACTIVATES GOD MODE WITH 50 SUBS! 🌟💥 ABSOLUTELY INSANE!",
+				"@[user] JUST BOUGHT THE STREAM! 50 SUBS! 🚀🚀🚀 You're officially the LEGEND OF THE YEAR!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "💎 LEGENDÄRE SUB-WELLE 💎",
+				"titleEvent": "Legendary Sub Gift"
+			},
+			"en": {
+				"titleAlert": "💎 LEGENDARY SUB WAVE 💎",
+				"titleEvent": "Legendary Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Legendary Alert Special",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-6": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"🌌 EINHUNDERT SUBS?! 🌌 @[user] HAT DIE MATRIX GEHACKT! Das übersteigt jede Vorstellungskraft!",
+				"BREAKING NEWS: @[user] SPRENGT DAS INTERNET MIT 100 SUBS! 💫 Der Server brennt, der Chat weint, ICH STERBE VOR GLÜCK!",
+				"@[user] = ABSOLUTER GOTTKAISER! 100 SUBS! 🔥👑🔥 Mein Stream gehört jetzt offiziell DIR!",
+				"DEFCON 1! @[user] NUKED DEN STREAM MIT EINHUNDERT SUBS! ☄️💥 Das ist mehr als LEGENDÄR!",
+				"100 SUBS! @[user] DU HAST GEWONNEN! ALLES! DEN STREAM, DAS INTERNET, MEIN HERZ! 💜💜💜"
+			],
+			"en": [
+				"🌌 ONE HUNDRED SUBS?! 🌌 @[user] HACKED THE MATRIX! This is beyond imagination!",
+				"BREAKING NEWS: @[user] BREAKS THE INTERNET WITH 100 SUBS! 💫 Server's burning, chat's crying, I'M DYING OF JOY!",
+				"@[user] = ABSOLUTE GOD EMPEROR! 100 SUBS! 🔥👑🔥 This stream officially belongs to YOU now!",
+				"DEFCON 1! @[user] NUKED THE STREAM WITH ONE HUNDRED SUBS! ☄️💥 This is beyond LEGENDARY!",
+				"100 SUBS! @[user] YOU WON! EVERYTHING! THE STREAM, THE INTERNET, MY HEART! 💜💜💜"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "🏆 GOTTMODUS AKTIVIERT 🏆",
+				"titleEvent": "God Tier Sub Gift"
+			},
+			"en": {
+				"titleAlert": "🏆 GOD MODE ACTIVATED 🏆",
+				"titleEvent": "God Tier Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] God Tier Ultimate Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"communitysub-7": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"⚡🌟💜 ZWEIHUNDERT SUBS?! @[user] IST KEIN MENSCH MEHR - DAS IST EIN STREAMING-GOTT! 💜🌟⚡",
+				"UNIVERSUM.EXE HAT AUFGEHÖRT ZU FUNKTIONIEREN! @[user] MIT 200 SUBS! Das sprengt alle Dimensionen!",
+				"@[user] HAT UNENDLICHKEIT ERREICHT! 200 SUBS! 🎆🎇🎆 ICH VERBEUGE MICH VOR DEINER MACHT!",
+				"HISTORISCHER MOMENT! @[user] SCHREIBT GESCHICHTE MIT 200 GESCHENKTEN SUBS! 📜👑 ABSOLUT UNMENSCHLICH!",
+				"200 SUBS! @[user], DU BIST DIE DEFINITION VON LEGENDE! 🌈💎🚀 Der Stream wird NIE WIEDER derselbe sein!"
+			],
+			"en": [
+				"⚡🌟💜 TWO HUNDRED SUBS?! @[user] IS NO LONGER HUMAN - THIS IS A STREAMING GOD! 💜🌟⚡",
+				"UNIVERSE.EXE HAS STOPPED WORKING! @[user] WITH 200 SUBS! This breaks all dimensions!",
+				"@[user] HAS REACHED INFINITY! 200 SUBS! 🎆🎇🎆 I BOW BEFORE YOUR POWER!",
+				"HISTORIC MOMENT! @[user] MAKES HISTORY WITH 200 GIFTED SUBS! 📜👑 ABSOLUTELY INHUMAN!",
+				"200 SUBS! @[user], YOU ARE THE DEFINITION OF LEGEND! 🌈💎🚀 The stream will NEVER be the same!"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "🌟🌟 UNSTERBLICHE LEGENDE 🌟🌟",
+				"titleEvent": "Immortal Sub Gift"
+			},
+			"en": {
+				"titleAlert": "🌟🌟 IMMORTAL LEGEND 🌟🌟",
+				"titleEvent": "Immortal Sub Gift"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Immortal Legend Ultimate",
 				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
 			}
 		}

@@ -2,7 +2,7 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 1.6.8
+ * @version 1.7.11
  */
 
 import '@propz/prototypes.ts';
@@ -75,7 +75,7 @@ export class Discord extends DiscordUtils
 	/** Add all client listeners */
 	handleClientEvents()
 	{
-		this.client.on( 'ready', this.onReady );
+		this.client.on( 'clientReady', this.onClientReady );
 		this.client.on( 'messageCreate', this.onMessageCreate );
 		this.client.on( 'message', this.onMessage );
 		this.client.on( 'interactionCreate', this.onInteractionCreate );
@@ -320,7 +320,7 @@ export class Discord extends DiscordUtils
 	}
 
 	/** Discord bot successfully connected */
-	onReady = ( client: Client ) =>
+	onClientReady = ( client: Client ) =>
 	{
 		log( client?.user?.tag || 'x' );
 	};

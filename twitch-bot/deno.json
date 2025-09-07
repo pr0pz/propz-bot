@@ -5,14 +5,14 @@
 	},
 	"imports": {
 		"@std/fs": "jsr:@std/fs@^1.0.19",
-		"@twurple/auth": "npm:@twurple/auth@^7.3.0",
-		"@twurple/api": "npm:@twurple/api@^7.3.0",
-		"@twurple/chat": "npm:@twurple/chat@^7.3.0",
-		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.3.0",
-		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.3.0",
+		"@twurple/auth": "npm:@twurple/auth@^7.4.0",
+		"@twurple/api": "npm:@twurple/api@^7.4.0",
+		"@twurple/chat": "npm:@twurple/chat@^7.4.0",
+		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^7.4.0",
+		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.4.0",
 		"@types/spotify-api": "npm:@types/spotify-api@^0.0.25",
 		"cld": "npm:cld@^2.10.1",
-		"discord.js": "npm:discord.js@^14.21.0",
-		"puppeteer": "npm:puppeteer@^24.12.1"
+		"discord.js": "npm:discord.js@^14.22.1",
+		"puppeteer": "npm:puppeteer@^24.19.0"
 	}
 }

@@ -4,13 +4,13 @@
 		".": "./src/index.tsx"
 	},
 	"imports": {
-		"@std/fs": "jsr:@std/fs@^1.0.18",
-		"@std/http": "jsr:@std/http@^1.0.17",
-		"esbuild": "npm:esbuild@^0.25.6",
-		"html-react-parser": "npm:html-react-parser@^5.2.5",
-		"react": "npm:react@^19.1.0",
-		"react-dom": "npm:react-dom@^19.1.0",
-		"react-dom/client": "npm:react-dom@^19.1.0/client",
-		"react-router-dom": "npm:react-router-dom@^7.6.3"
+		"@std/fs": "jsr:@std/fs@^1.0.19",
+		"@std/http": "jsr:@std/http@^1.0.20",
+		"esbuild": "npm:esbuild@^0.25.9",
+		"html-react-parser": "npm:html-react-parser@^5.2.6",
+		"react": "npm:react@^19.1.1",
+		"react-dom": "npm:react-dom@^19.1.1",
+		"react-dom/client": "npm:react-dom@^19.1.1/client",
+		"react-router-dom": "npm:react-router-dom@^7.8.2"
 	}
 }

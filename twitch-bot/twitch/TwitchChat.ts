@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.7.7
+ * @version 1.7.11
  */
 
 import '@propz/prototypes.ts';
@@ -42,7 +42,7 @@ export class TwitchChat
 	{
 		try
 		{
-			if ( !this.chatClient.isConnecting )
+			if ( !this.chatClient.isConnected && !this.chatClient.isConnecting )
 				this.chatClient.connect();
 		}
 		catch ( error: unknown )
@@ -277,14 +277,37 @@ export class TwitchChat
 		if ( !user || !subInfo )
 			return;
 
-		// Get right event based on number of months subscribed
+		// Get right event based on number of subs gifted
 		let eventType = 'communitysub';
 		const count = subInfo.count || 1;
 		switch ( true )
 		{
-			case ( count > 5 ):
+			case ( count >= 5 && count < 10 ):
 				eventType += '-2';
 				break;
+
+			case ( count >= 10 && count < 20 ):
+				eventType += '-3';
+				break;
+
+			case ( count >= 20 && count < 50 ):
+				eventType += '-4';
+				break;
+
+			case ( count >= 50 && count < 100 ):
+				eventType += '-5';
+				break;
+
+			case ( count >= 100 && count < 200 ):
+				eventType += '-6';
+				break;
+
+			case ( count >= 200 ):
+				eventType += '-7';
+				break;
+
+			default:
+				eventType += '-1';
 		}
 
 		// Prevent sub spam
@@ -411,6 +434,14 @@ export class TwitchChat
 			case ( count > 11 ):
 				eventType += '-3';
 				break;
+
+			case ( count > 23 ):
+				eventType += '-4';
+				break;
+
+			case ( count > 35 ):
+				eventType += '-5';
+				break;
 		}
 		log( `${msg.userInfo.displayName}: ${count}x` );
 
@@ -497,8 +528,7 @@ export class TwitchChat
 	 */
 	onBan = ( _channel: string, user: string, _msg: ClearChat ) =>
 	{
-		if ( !user )
-			return;
+		if ( !user ) return;
 		log( user );
 
 		this.twitch.processEvent( {
