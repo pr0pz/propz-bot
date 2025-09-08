@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.6
+ * @version 1.7.12
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -341,10 +341,7 @@ export class TwitchCommands
 				const focusTimer = this.twitch.handleFocus(
 					parseInt( options.param || '10' )
 				);
-				if ( !focusTimer )
-				{
-					return;
-				}
+				if ( !focusTimer ) return;
 				return options.returnMessage?.replace( '[count]', focusTimer.toString() );
 			},
 			aliases: [ 'focus' ],
@@ -1337,10 +1334,11 @@ export class TwitchCommands
 			return false;
 		}
 
+		const timestamp = Date.timestamp();
 		if ( this.commandHistory.has( commandName ) )
 		{
 			if (
-				( Date.now() * 1000 ) - this.commandHistory.get( commandName )! <
+				timestamp - this.commandHistory.get( commandName )! <
 					this.commands.get( commandName )!.cooldown!
 			)
 			{
@@ -1350,7 +1348,7 @@ export class TwitchCommands
 			this.commandHistory.delete( commandName );
 		}
 
-		this.commandHistory.set( commandName, Date.now() * 1000 );
+		this.commandHistory.set( commandName, timestamp );
 		return false;
 	}
 }

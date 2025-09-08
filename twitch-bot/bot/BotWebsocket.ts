@@ -2,7 +2,7 @@
  * Websocket Handler
  *
  * @author Wellington Estevo
- * @version 1.7.10
+ * @version 1.7.12
  */
 
 import '@propz/prototypes.ts';
@@ -59,12 +59,25 @@ export class BotWebsocket
 
 		try
 		{
-			for ( const ws of this.wsConnections.values() )
+			this.wsConnections.forEach( ( ws: WebSocket, wsId: string ) =>
 			{
-				if ( !ws?.readyState || ws.readyState !== WebSocket.OPEN ) return;
-				ws.send( JSON.stringify( wsData ) );
-			}
-			log( wsData.type );
+				if ( !ws?.readyState || ws.readyState !== WebSocket.OPEN )
+				{
+					this.wsConnections.delete( wsId );
+					return;
+				}
+
+				try
+				{
+					ws.send( JSON.stringify( wsData ) );
+					log( wsData.type );
+				}
+				catch ( error: unknown )
+				{
+					this.wsConnections.delete( wsId );
+					log( error );
+				}
+			} );
 		}
 		catch ( error: unknown )
 		{

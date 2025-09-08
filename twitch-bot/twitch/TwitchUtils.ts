@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.5
+ * @version 1.7.12
  */
 
 import '@propz/prototypes.ts';
@@ -34,7 +34,7 @@ export abstract class TwitchUtils
 
 	// Runtime vars
 	public isDev: boolean = false;
-	public focus: boolean = false;
+	private focusTimer: number = 0;
 	public stream: HelixStream | null = null;
 	public firstChatter = '';
 	public killswitch: boolean = false;
@@ -513,20 +513,17 @@ export abstract class TwitchUtils
 	 */
 	handleFocus( focusStatusOrTime: string | number = 10 ): number
 	{
-		if ( !focusStatusOrTime ) return 0;
-
-		if ( focusStatusOrTime === 'stop' )
+		if ( !focusStatusOrTime || !focusStatusOrTime.isNumeric() ) return 0;
+		if ( this.focusTimer )
 		{
-			this.toggleFocus( false );
-			return 0;
+			clearTimeout( this.focusTimer );
+			this.focusTimer = 0;
 		}
-
-		if ( !focusStatusOrTime.isNumeric() ) return 0;
 
 		focusStatusOrTime = parseInt( focusStatusOrTime.toString() );
 
+		this.focusTimer = setTimeout( () => this.toggleFocus( false ), focusStatusOrTime * 60 * 1000 );
 		this.toggleFocus( true, focusStatusOrTime );
-		setTimeout( () => this.toggleFocus( false ), focusStatusOrTime * 60 * 1000 );
 
 		return focusStatusOrTime;
 	}
@@ -539,9 +536,8 @@ export abstract class TwitchUtils
 			typeof focusTimer !== 'number'
 		) return;
 
-		this.focus = focusStatus;
 		this.toggleRewardPause( focusStatus );
-		const eventType = this.focus ? 'focusstart' : 'focusstop';
+		const eventType = focusStatus ? 'focusstart' : 'focusstop';
 
 		this.processEvent( {
 			eventType: eventType,

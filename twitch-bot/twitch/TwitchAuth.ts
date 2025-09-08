@@ -4,7 +4,7 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.7.12
  */
 
 import { log } from '@propz/helpers.ts';
@@ -101,6 +101,7 @@ export class TwitchAuth
 				this.db.query( `UPDATE auth SET data = ? WHERE name = 'twitch'`, [
 					JSON.stringify( newTokenData, null, '\t' )
 				] );
+				log( `Refreshed Twitch Token` );
 			}
 			catch ( error: unknown )
 			{
