@@ -3,7 +3,7 @@
 		"name": "propzbot",
 		"script": "./twitch-bot/index.ts",
 		"interpreter": "deno",
-		"interpreter_args": "run --allow-env --allow-read --allow-write --allow-net --allow-sys --allow-run --unstable-cron --env-file",
+		"interpreter_args": "run -A --unstable-cron --unstable-detect-cjs --env-file",
 		"max_memory_restart": "350M",
 		"instances": 1,
 		"autorestart": true,
