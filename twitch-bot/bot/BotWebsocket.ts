@@ -2,7 +2,7 @@
  * Websocket Handler
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.7.13
  */
 
 import '@propz/prototypes.ts';
@@ -70,7 +70,6 @@ export class BotWebsocket
 				try
 				{
 					ws.send( JSON.stringify( wsData ) );
-					log( wsData.type );
 				}
 				catch ( error: unknown )
 				{
@@ -78,6 +77,7 @@ export class BotWebsocket
 					log( error );
 				}
 			} );
+			log( wsData.type );
 		}
 		catch ( error: unknown )
 		{

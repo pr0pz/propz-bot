@@ -137,6 +137,8 @@ export interface TwitchUserData
 {
 	id: string;
 	name: string;
+	profile_picture: string;
+	color: string;
 	follow_date: number;
 	message_count: number;
 	first_count: number;

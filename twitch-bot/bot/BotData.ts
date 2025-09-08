@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.6.8
+ * @version 1.7.13
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -390,19 +390,31 @@ export class BotData
 	{
 		try
 		{
-			const result = this.db.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+			const result = this.db.queryEntries(
+				`SELECT
+					id,
+					name,
+					profile_picture,
+					color,
+					follow_date,
+					message_count,
+					first_count
+				FROM twitch_users
+				WHERE id = ?`,
+				[ userId ]
+			);
 
 			if ( !result || result.length === 0 )
 				return;
 
 			return {
-				id: result[0],
-				name: result[1],
-				profile_picture: result[2],
-				color: result[3],
-				follow_date: result[4],
-				message_count: result[5],
-				first_count: result[6]
+				id: result[0]['id'],
+				name: result[0]['name'],
+				profile_picture: result[0]['profile_picture'],
+				color: result[0]['color'],
+				follow_date: result[0]['follow_date'],
+				message_count: result[0]['message_count'],
+				first_count: result[0]['first_count']
 			} as TwitchUserData;
 		}
 		catch ( error: unknown )
@@ -673,7 +685,7 @@ export class BotData
 		try
 		{
 			// Insert user first if not exists (SQLite foreign key problem)
-			this.db.preparedStatements.get( 'add_user' )?.execute( [ event.user_id ] );
+			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)', [ event.user_id ] );
 			this.db.query(
 				`INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`,
 				[ event.type, event.user_id, event.timestamp, event.count || 0 ]
@@ -811,7 +823,7 @@ export class BotData
 			const userData = this.getUserData( user.id );
 			// Add user if not in DB
 			if ( !userData )
-				this.db.preparedStatements.get( 'add_user' )?.execute( [ user.id ] );
+				this.db.query( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)', [ user.id ] );
 
 			const newUserData = [
 				user.displayName,
@@ -829,7 +841,15 @@ export class BotData
 				user.id
 			];
 
-			this.db.preparedStatements.get( 'update_userdata' )?.execute( newUserData );
+			this.db.query( `
+				UPDATE twitch_users SET
+					name = ?,
+					profile_picture = ?,
+					color = ?,
+					follow_date = ?,
+					message_count = ?,
+					first_count = ?
+				WHERE id = ?;`, newUserData );
 		}
 		catch ( error: unknown )
 		{
@@ -879,9 +899,10 @@ export class BotData
 					break;
 
 				case 'message':
-					this.db.preparedStatements.get( 'update_stats_message' )?.execute( [
-						user.id
-					] );
+					this.db.query(
+						'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?',
+						[ user.id ]
+					);
 					break;
 
 				case 'cheer':

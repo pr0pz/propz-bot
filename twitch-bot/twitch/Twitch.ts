@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.8
+ * @version 1.7.13
  */
 
 import '@propz/prototypes.ts';
@@ -53,8 +53,6 @@ export class Twitch extends TwitchUtils
 		{
 			this.firstChatter = '';
 			this.data.db.execute( `DELETE FROM stream_stats;` );
-			this.data.db.cleanupDatabase();
-			this.data.db.initDatabase();
 			this.data.init();
 			this.reloadConfig();
 		} );
@@ -218,6 +216,8 @@ export class Twitch extends TwitchUtils
 			showAvatar: event.showAvatar,
 			saveEvent: event.saveEvent
 		} );
+
+		log( `${eventType} › ${user.displayName}` );
 
 		// Exec command
 		if ( event.isCommand )
