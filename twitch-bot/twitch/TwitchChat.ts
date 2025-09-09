@@ -2,11 +2,11 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.7.1
+ * @version 1.7.17
  */
 
 import '@propz/prototypes.ts';
-import { getRandomNumber, log } from '@propz/helpers.ts';
+import { clearTimer, getRandomNumber, log } from '@propz/helpers.ts';
 import { ChatClient } from '@twurple/chat';
 
 import type { HelixChatAnnouncementColor } from '@twurple/api';
@@ -40,11 +40,7 @@ export class TwitchChat
 	/** Connect to Twitch Chat */
 	connect()
 	{
-		if ( this.connectTimer )
-		{
-			clearTimeout( this.connectTimer );
-			this.connectTimer = 0;
-		}
+		this.connectTimer = clearTimer( this.connectTimer );
 
 		try
 		{

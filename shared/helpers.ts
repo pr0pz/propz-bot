@@ -266,3 +266,9 @@ export function toObject(
 {
 	return Object.fromEntries( data );
 }
+
+export function clearTimer( timer: number ): number
+{
+	if ( timer ) clearTimeout( timer );
+	return 0;
+}

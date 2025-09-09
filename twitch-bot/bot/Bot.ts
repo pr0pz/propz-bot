@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.7.16
+ * @version 1.7.17
  */
 
 import '@propz/prototypes.ts';
@@ -57,17 +57,17 @@ export class Bot
 			} );
 		}
 
-		const url = new URL( req.url );
+		const path = new URL( req.url ).pathname;
 
-		switch ( true )
+		switch ( path )
 		{
-			case url.pathname.startsWith( '/websocket' ):
+			case '/websocket':
 				return this.handleWebsocket( req );
 
-			case url.pathname.startsWith( '/api' ):
+			case '/api':
 				return await this.handleApi( req );
 
-			case url.pathname.startsWith( '/webhook' ):
+			case '/webhook':
 				return await this.handleWebhook( req );
 
 			default:
@@ -91,6 +91,11 @@ export class Bot
 		{
 			log( event );
 			this.ws.wsConnections.delete( wsId );
+
+			socket.removeEventListener( 'error', errorHandler );
+			socket.removeEventListener( 'message', messageHandler );
+			socket.removeEventListener( 'open', openHandler );
+			socket.removeEventListener( 'close', closeHandler );
 		};
 		const messageHandler = () => socket.send( '{"type":"pong"}' );
 		const openHandler = () =>

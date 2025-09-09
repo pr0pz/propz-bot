@@ -2,10 +2,10 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.7.16
+ * @version 1.7.17
  */
 
-import { getRewardSlug, log, sleep } from '@propz/helpers.ts';
+import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 
 import type { SimpleUser } from '@propz/types.ts';
@@ -44,11 +44,7 @@ export class TwitchEvents
 	/** Start listener */
 	startListener()
 	{
-		if ( this.listenerTimer )
-		{
-			clearTimeout( this.listenerTimer );
-			this.listenerTimer = 0;
-		}
+		this.listenerTimer = clearTimer( this.listenerTimer );
 		if ( !this.listener ) return;
 		try
 		{

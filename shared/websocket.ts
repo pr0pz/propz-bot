@@ -2,11 +2,11 @@
  * Websocket Controller
  *
  * @author Wellington Estevo
- * @version 1.7.16
+ * @version 1.7.17
  */
 
 import EventEmitter from 'events';
-import { log } from './helpers.ts';
+import { clearTimer, log } from './helpers.ts';
 
 export default class WebsocketController
 {
@@ -45,6 +45,9 @@ export default class WebsocketController
 	{
 		if ( !this.ws ) return;
 		if ( this.pingInterval ) clearInterval( this.pingInterval );
+		this.connectTimer = clearTimer( this.connectTimer );
+		this.websocketEvents.removeAllListeners();
+
 		this.ws.removeEventListener( 'open', this.onOpen );
 		this.ws.removeEventListener( 'close', this.onClose );
 		this.ws.removeEventListener( 'error', this.onError );
@@ -65,12 +68,7 @@ export default class WebsocketController
 
 	onClose = ( event: CloseEvent ) =>
 	{
-		if ( this.connectTimer )
-		{
-			clearTimeout( this.connectTimer );
-			this.connectTimer = 0;
-		}
-
+		this.connectTimer = clearTimer( this.connectTimer );
 		log( event.reason );
 		this.disconnect();
 		this.connectTimer = setTimeout( () => this.connect(), 5000 );
@@ -78,12 +76,7 @@ export default class WebsocketController
 
 	onError = ( event: Event ) =>
 	{
-		if ( this.connectTimer )
-		{
-			clearTimeout( this.connectTimer );
-			this.connectTimer = 0;
-		}
-
+		this.connectTimer = clearTimer( this.connectTimer );
 		log( new Error( event.message ) );
 		this.disconnect();
 		this.connectTimer = setTimeout( () => this.connect(), 5000 );

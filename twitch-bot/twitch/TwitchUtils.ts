@@ -2,12 +2,12 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.16
+ * @version 1.7.17
  */
 
 import '@propz/prototypes.ts';
 
-import { getMessage, getRandomNumber, getRewardSlug, getTimePassed, log } from '@propz/helpers.ts';
+import { clearTimer, getMessage, getRandomNumber, getRewardSlug, getTimePassed, log } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { ChatUser, parseChatMessage } from '@twurple/chat';
 import cld from 'cld';
@@ -514,14 +514,8 @@ export abstract class TwitchUtils
 	handleFocus( focusStatusOrTime: string | number = 10 ): number
 	{
 		if ( !focusStatusOrTime || !focusStatusOrTime.isNumeric() ) return 0;
-		if ( this.focusTimer )
-		{
-			clearTimeout( this.focusTimer );
-			this.focusTimer = 0;
-		}
-
+		this.focusTimer = clearTimer( this.focusTimer );
 		focusStatusOrTime = parseInt( focusStatusOrTime.toString() );
-
 		this.focusTimer = setTimeout( () => this.toggleFocus( false ), focusStatusOrTime * 60 * 1000 );
 		this.toggleFocus( true, focusStatusOrTime );
 
@@ -547,10 +541,7 @@ export abstract class TwitchUtils
 
 		// Clear timeout
 		if ( !focusStatus && this.focusTimer )
-		{
-			clearTimeout( this.focusTimer );
-			this.focusTimer = 0;
-		}
+			this.focusTimer = clearTimer( this.focusTimer );
 	}
 
 	/** Toggle Reward Status for focus blacklist rewards
