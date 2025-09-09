@@ -2,7 +2,7 @@
  * Websocket Controller
  *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 1.7.16
  */
 
 import EventEmitter from 'events';
@@ -14,6 +14,7 @@ export default class WebsocketController
 	public ws: WebSocket | null = null;
 	public websocketUrl: string;
 	public websocketEvents: EventEmitter = new EventEmitter();
+	private connectTimer: number = 0;
 
 	constructor( botUrl: string )
 	{
@@ -64,16 +65,28 @@ export default class WebsocketController
 
 	onClose = ( event: CloseEvent ) =>
 	{
+		if ( this.connectTimer )
+		{
+			clearTimeout( this.connectTimer );
+			this.connectTimer = 0;
+		}
+
 		log( event.reason );
 		this.disconnect();
-		setTimeout( () => this.connect(), 5000 );
+		this.connectTimer = setTimeout( () => this.connect(), 5000 );
 	};
 
 	onError = ( event: Event ) =>
 	{
+		if ( this.connectTimer )
+		{
+			clearTimeout( this.connectTimer );
+			this.connectTimer = 0;
+		}
+
 		log( new Error( event.message ) );
 		this.disconnect();
-		setTimeout( () => this.connect(), 5000 );
+		this.connectTimer = setTimeout( () => this.connect(), 5000 );
 	};
 
 	onMessage = ( event: MessageEvent ) =>

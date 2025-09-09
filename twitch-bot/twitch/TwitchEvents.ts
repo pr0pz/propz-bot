@@ -2,7 +2,7 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.6.3
+ * @version 1.7.16
  */
 
 import { getRewardSlug, log, sleep } from '@propz/helpers.ts';
@@ -15,6 +15,7 @@ import type { TwitchUtils } from './TwitchUtils.ts';
 export class TwitchEvents
 {
 	public listener: EventSubWsListener;
+	private listenerTimer: number = 0;
 
 	constructor( private twitch: TwitchUtils )
 	{
@@ -43,6 +44,11 @@ export class TwitchEvents
 	/** Start listener */
 	startListener()
 	{
+		if ( this.listenerTimer )
+		{
+			clearTimeout( this.listenerTimer );
+			this.listenerTimer = 0;
+		}
 		if ( !this.listener ) return;
 		try
 		{
@@ -52,7 +58,7 @@ export class TwitchEvents
 		catch ( error: unknown )
 		{
 			log( error );
-			setTimeout( () => this.startListener(), 5000 );
+			this.listenerTimer = setTimeout( () => this.startListener(), 5000 );
 		}
 	}
 

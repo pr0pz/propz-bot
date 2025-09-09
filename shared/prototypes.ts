@@ -2,7 +2,7 @@
  * Prototype stuff
  *
  * @author Wellington Estevo
- * @version 1.7.1
+ * @version 1.7.16
  */
 
 declare global
@@ -21,6 +21,11 @@ declare global
 	}
 
 	interface Date
+	{
+		timestamp(): number;
+	}
+
+	interface DateConstructor
 	{
 		timestamp(): number;
 	}
@@ -98,6 +103,12 @@ String.prototype.sanitize = function()
 
 /** Get current timestamp */
 Date.prototype.timestamp = function(): number
+{
+	return Math.floor( Date.now() / 1000 );
+};
+
+/** Get current timestamp (static) */
+Date.timestamp = function(): number
 {
 	return Math.floor( Date.now() / 1000 );
 };

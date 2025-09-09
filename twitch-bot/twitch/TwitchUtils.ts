@@ -2,12 +2,12 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.7.16
  */
 
 import '@propz/prototypes.ts';
 
-import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
+import { getMessage, getRandomNumber, getRewardSlug, getTimePassed, log } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { ChatUser, parseChatMessage } from '@twurple/chat';
 import cld from 'cld';
@@ -544,6 +544,13 @@ export abstract class TwitchUtils
 			user: await this.data.getUser() || this.data.userName,
 			eventCount: focusTimer
 		} );
+
+		// Clear timeout
+		if ( !focusStatus && this.focusTimer )
+		{
+			clearTimeout( this.focusTimer );
+			this.focusTimer = 0;
+		}
 	}
 
 	/** Toggle Reward Status for focus blacklist rewards
@@ -556,12 +563,10 @@ export abstract class TwitchUtils
 
 		try
 		{
-			for ( const [ rewardSlug, reward ] of Object.entries( this.data.rewards ) )
+			for ( const [ _index, reward ] of this.data.rewards.entries() )
 			{
-				if ( !this.data.getEvent( rewardSlug ).disableOnFocus )
-				{
-					continue;
-				}
+				const rewardSlug = getRewardSlug( reward.title );
+				if ( !this.data.getEvent( rewardSlug ).disableOnFocus ) continue;
 
 				const rewardUpdateData = {
 					title: reward.title,
@@ -721,7 +726,7 @@ export abstract class TwitchUtils
 		) return false;
 
 		// Focus Mode
-		if ( this.focus && event.disableOnFocus )
+		if ( this.focusTimer && event.disableOnFocus )
 			return false;
 
 		if ( this.data.isBot( userName ) )
@@ -742,7 +747,7 @@ export abstract class TwitchUtils
 		if ( !command ) return false;
 
 		// Focus Mode
-		if ( this.focus && command.disableOnFocus )
+		if ( this.focusTimer && command.disableOnFocus )
 			return false;
 
 		// Disable if Stream is offline

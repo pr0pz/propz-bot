@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.7.1
  */
 
 import '@propz/prototypes.ts';
@@ -18,6 +18,7 @@ export class TwitchChat
 	public chatClient!: ChatClient;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
 	private communitySubGifts = new Map<string | undefined, number>();
+	private connectTimer: number = 0;
 
 	constructor( private twitch: TwitchUtils )
 	{
@@ -39,6 +40,12 @@ export class TwitchChat
 	/** Connect to Twitch Chat */
 	connect()
 	{
+		if ( this.connectTimer )
+		{
+			clearTimeout( this.connectTimer );
+			this.connectTimer = 0;
+		}
+
 		try
 		{
 			if ( !this.chatClient.isConnected && !this.chatClient.isConnecting )
@@ -53,7 +60,7 @@ export class TwitchChat
 			)
 			{
 				log( `Error connecting to Twitter Chat › retry in 30s` );
-				setTimeout( () => this.connect(), 30000 );
+				this.connectTimer = setTimeout( () => this.connect(), 30000 );
 			}
 		}
 	}

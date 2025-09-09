@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.7.16
  */
 
 import '@propz/prototypes.ts';
@@ -198,10 +198,7 @@ export class Bot
 				await this.discord.client.destroy();
 
 			if ( this.twitch.data.db )
-			{
-				this.twitch.data.db.cleanupDatabase();
 				this.twitch.data.db.close();
-			}
 
 			log( 'SIGINT Shutdown 🔻' );
 

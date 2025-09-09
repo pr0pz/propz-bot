@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.13
+ * @version 1.7.15
  */
 
 import '@propz/prototypes.ts';
