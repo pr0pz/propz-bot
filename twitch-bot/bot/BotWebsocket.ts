@@ -2,7 +2,7 @@
  * Websocket Handler
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
@@ -15,12 +15,7 @@ export class BotWebsocket
 
 	/** Setup and send data to websocket connection.
 	 *
-	 * @param {string} type Event type
-	 * @param {SimpleUser} user User
-	 * @param {string} text Message text (only for message events)
-	 * @param {number} count Event count
-	 * @param {TwitchEventExtra} extra Whatever extra data
-	 * @param {ObsData|ObsData[]} obs Data to send to obs
+	 * @param options
 	 */
 	public maybeSendWebsocketData( options: {
 		type: string;
@@ -81,9 +76,6 @@ export class BotWebsocket
 			}
 			log( wsData.type );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 }

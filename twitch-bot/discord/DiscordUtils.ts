@@ -1,8 +1,8 @@
 /**
  * Discord Helper
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.9
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
@@ -17,7 +17,7 @@ import type { GithubData, StreamData } from '@propz/types.ts';
 export class DiscordUtils
 {
 	/** Generates welcome attachment
-	 * 
+	 *
 	 * @returns {Promise<AttachmentBuilder|null>}
 	*/
 	async generateWelcomeImageAttachment( member: GuildMember, message: string ): Promise<AttachmentBuilder|undefined>
@@ -35,23 +35,21 @@ export class DiscordUtils
 			htmlContent = htmlContent.replace( '[[text-2]]', splittedText[1] );
 			htmlContent = htmlContent.replace( '[[avatar]]', avatarUrl );
 			htmlContent = htmlContent.replace( '[[number]]', '#' + member.guild.memberCount );
-			
+
 			// Create Discord attachment
 			log( 'generateWelcomeImage' );
 			const attachmentImageBuffer = await this.generateWelcomeImage( htmlContent );
 			if ( !attachmentImageBuffer ) return;
-			
+
 			log( 'AttachmentBuilder' );
-			const attachmentImage = new AttachmentBuilder( attachmentImageBuffer, { name: `welcome-${member.displayName}.png` } );
-			
-			return attachmentImage;
+			return new AttachmentBuilder( attachmentImageBuffer, { name: `welcome-${member.displayName}.png` } );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Creates html puppeteer stuff and generates screenshot
-	 * 
-	 * @param {string} htmlContent 
+	 *
+	 * @param {string} htmlContent
 	 * @returns {Promise<Buffer | null>}
 	 */
 	private async generateWelcomeImage( htmlContent: string ): Promise<Buffer | undefined>
@@ -67,26 +65,26 @@ export class DiscordUtils
 				'--single-process',
 				'--disable-gpu'
 			];
-	
+
 			const browser = await puppeteer.launch( { args: puppeteerArgs } );
 			const page = await browser.newPage();
-	
+
 			await page.setViewport({ width: 1920, height: 1080 });
 			await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
 			const screenshotBuffer = await page.screenshot({ fullPage: true });
-	
+
 			await page.close();
 			await browser.close();
-	
+
 			return Buffer.from( screenshotBuffer );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
 
 	/** Generate Github event embed
-	 * 
-	 * @param {string} eventName 
-	 * @param {any} githubData 
+	 *
+	 * @param {string} eventName
+	 * @param {any} githubData
 	 * @returns {EmbedBuilder|undefined}
 	 */
 	generateGithubEmbed( eventName: string, githubData: any ): EmbedBuilder|undefined
@@ -101,7 +99,7 @@ export class DiscordUtils
 		let eventTitle = '';
 		let eventDescription = '';
 		const allowedActions: string[] = [];
-		
+
 		const data: GithubData = {
 			title: '',
 			description: '',
@@ -129,7 +127,7 @@ export class DiscordUtils
 
 			case 'issues':
 				allowedActions.push( 'opened' );
-				eventTitle = 'New issue'; 
+				eventTitle = 'New issue';
 				/*if ( githubData['action'] === 'closed' )
 					eventTitle = 'Issue closed';
 				else if ( githubData['action'] === 'reopened' )
@@ -182,7 +180,7 @@ export class DiscordUtils
 
 				if ( !data.repoPrivate )
 					data.url = eventData.url;
-				
+
 				break;
 
 			case 'star':
@@ -223,7 +221,7 @@ export class DiscordUtils
 			})
 			//.setThumbnail( data.repoImage )
 			.setTimestamp()
-			.setFooter({ 
+			.setFooter({
 				text: `Repo: [${data.repoFullname}]`,
 				iconURL: data.repoImage
 			});
@@ -250,7 +248,7 @@ export class DiscordUtils
 	}
 
 	/** Generates the embed for streamOnline message
-	 * 
+	 *
 	 * @param {any} streamData Current Stream data
 	 */
 	generateStreamOnlineMessageEmbed( streamData: StreamData )
@@ -267,7 +265,7 @@ export class DiscordUtils
 			.setImage( streamData.streamThumbnailUrl )
 			.setThumbnail( streamData.profilePictureUrl )
 			.setTimestamp()
-			.setFooter({ 
+			.setFooter({
 				text: `Stream gestartet`,
 				iconURL: streamData.profilePictureUrl
 			});

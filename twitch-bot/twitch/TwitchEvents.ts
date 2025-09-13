@@ -90,7 +90,7 @@ export class TwitchEvents
 			user: event.broadcasterName
 		} );
 
-		this.twitch.sendStremOnlineDataToDiscord( stream );
+		this.twitch.sendStreamOnlineDataToDiscord( stream );
 	};
 
 	/** Subscribes to events representing a stream going offline.

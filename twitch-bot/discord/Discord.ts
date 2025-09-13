@@ -2,7 +2,7 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 1.7.11
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
@@ -62,14 +62,12 @@ export class Discord extends DiscordUtils
 			log( 'No Discord token found' );
 			return;
 		}
+
 		try
 		{
 			await this.client.login( token );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Add all client listeners */
@@ -98,10 +96,7 @@ export class Discord extends DiscordUtils
 
 			return guild;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Get channel by id
@@ -122,10 +117,7 @@ export class Discord extends DiscordUtils
 
 			return channel;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Send Discord message
@@ -147,16 +139,13 @@ export class Discord extends DiscordUtils
 			const channelName = 'name' in channel ? channel.name : channel.type;
 			log( `<${channelName}> ${messageText}` );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Send Discord Embed
 	 *
 	 * @param {String} channelId Send to this channel
-	 * @param {Embed} embed to send
+	 * @param {EmbedBuilder} embed to send
 	 * @param {String} messageText Optional text message
 	 */
 	private async sendEmbed( channelId: string, embed: EmbedBuilder, messageText: string = '' )
@@ -176,10 +165,7 @@ export class Discord extends DiscordUtils
 			const channelName = 'name' in channel ? channel.name : channel.type;
 			log( `<${channelName}> ${messageText}` );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Send Discord Attachment
@@ -206,10 +192,7 @@ export class Discord extends DiscordUtils
 			const channelName = 'name' in channel ? channel.name : channel.type;
 			log( `<${channelName}> ${messageText}` );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Create post in Forum
@@ -242,29 +225,23 @@ export class Discord extends DiscordUtils
 			log( `<${channel.name}> ${title}: ${message}` );
 			return threadChannel;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Send Stream online message
 	 *
 	 * @param {StreamData} streamData Stream data
 	 */
-	sendStremOnlineMessage( streamData: StreamData )
+	sendStreamOnlineMessage( streamData: StreamData )
 	{
 		if ( !streamData ) return;
 		try
 		{
 			const embedData = this.generateStreamOnlineMessageEmbed( streamData );
 			const channelToSend = streamData.test ? this.channels.channelTest : this.channels.channelAnnouncements;
-			this.sendEmbed( channelToSend, embedData, streamData.streamAnnouncementMessage );
+			void this.sendEmbed( channelToSend, embedData, streamData.streamAnnouncementMessage );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Process Github Event
@@ -281,12 +258,9 @@ export class Discord extends DiscordUtils
 
 		try
 		{
-			this.sendEmbed( this.channels.channelGithub, embedData );
+			void this.sendEmbed( this.channels.channelGithub, embedData );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Send welcome image
@@ -313,10 +287,10 @@ export class Discord extends DiscordUtils
 
 		if ( test )
 		{
-			this.sendAttachment( this.channels.channelTest, attachmentImage, message );
+			void this.sendAttachment( this.channels.channelTest, attachmentImage, message );
 			return;
 		}
-		this.sendAttachment( this.channels.channelWelcome, attachmentImage, message );
+		void this.sendAttachment( this.channels.channelWelcome, attachmentImage, message );
 	}
 
 	/** Discord bot successfully connected */
@@ -351,12 +325,9 @@ export class Discord extends DiscordUtils
 				const member: [ string, GuildMember ] | undefined = members.entries().next().value;
 				if ( !member?.[1] ) return;
 
-				this.sendWelcomeImage( member[1] as GuildMember );
+				void this.sendWelcomeImage( member[1] as GuildMember );
 			}
-			catch ( error: unknown )
-			{
-				log( error );
-			}
+			catch ( error: unknown ) { log( error ) }
 		}
 	};
 
@@ -386,6 +357,6 @@ export class Discord extends DiscordUtils
 		const eventType = 'guildmemberadd';
 		log( `<${eventType}> ${member.displayName}` );
 
-		this.sendWelcomeImage( member );
+		void this.sendWelcomeImage( member );
 	};
 }

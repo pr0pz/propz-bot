@@ -99,7 +99,7 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		ban: {
-			cooldown: 60,
+			cooldown: 120,
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				this.twitch.processEvent( {
@@ -1036,7 +1036,7 @@ export class TwitchCommands
 		streamonline: {
 			handler: () =>
 			{
-				this.twitch.sendStremOnlineDataToDiscord();
+				this.twitch.sendStreamOnlineDataToDiscord();
 			},
 			onlyMods: true
 		},

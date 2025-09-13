@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.15
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
@@ -165,11 +165,7 @@ export class Twitch extends TwitchUtils
 
 	/** Process Twitch event.
 	 *
-	 * @param {String} eventType Type of event
-	 * @param {String} userName User name
-	 * @param {int|float} eventCount Event count
-	 * @param {String} eventText Type with event (TTS)
-	 * @param {boolean} isTest If is test event
+	 * @param options
 	 */
 	override async processEvent( options: {
 		eventType: string;

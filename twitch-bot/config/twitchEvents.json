@@ -62,8 +62,14 @@
 		}
 	},
 	"rewardarbeitszeitbetrug": {
-		"disableOnFocus": true,
-		"hasVideo": true
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Arbeitszeitbetrug",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		},
+		"disableOnFocus": true
 	},
 	"rewardboom": {
 		"disableOnFocus": true,
@@ -1094,7 +1100,7 @@
 	},
 
 	"kofidonation": {
-		"hasVideo": true,
+		"hasVideo": "money",
 		"saveEvent": true,
 		"message": {
 			"de": [

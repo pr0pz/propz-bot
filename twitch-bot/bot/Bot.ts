@@ -2,7 +2,7 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
@@ -29,9 +29,12 @@ export class Bot
 	/** Main function */
 	run()
 	{
-		this.server = Deno.serve( { port: 1337, hostname: '127.0.0.1' }, this.handleServerRequests );
-		this.discord.connect();
-		this.twitch.init();
+		this.server = Deno.serve(
+			{ port: 1337, hostname: '127.0.0.1' },
+			this.handleServerRequests
+		);
+		void this.discord.connect();
+		void this.twitch.init();
 	}
 
 	/** Handle all incoming server requests
@@ -57,8 +60,7 @@ export class Bot
 			} );
 		}
 
-		const path = new URL( req.url ).pathname;
-
+		const path = req.url.match( /(\/\w+)$/i )?.[ 0 ];
 		switch ( path )
 		{
 			case '/websocket':
@@ -96,22 +98,24 @@ export class Bot
 			socket.removeEventListener( 'message', messageHandler );
 			socket.removeEventListener( 'open', openHandler );
 			socket.removeEventListener( 'close', closeHandler );
+			socket.close();
 		};
 		const messageHandler = () => socket.send( '{"type":"pong"}' );
 		const openHandler = () =>
 		{
-			log( `WS client connected › ${wsId}` );
+			log( `WS client connected › ${ wsId }` );
 			this.ws.wsConnections.set( wsId, socket );
 		};
 		const closeHandler = () =>
 		{
-			log( `WS client disconnected › ${wsId}` );
+			log( `WS client disconnected › ${ wsId }` );
 			this.ws.wsConnections.delete( wsId );
 
 			socket.removeEventListener( 'error', errorHandler );
 			socket.removeEventListener( 'message', messageHandler );
 			socket.removeEventListener( 'open', openHandler );
 			socket.removeEventListener( 'close', closeHandler );
+			socket.close();
 		};
 
 		socket.addEventListener( 'error', errorHandler );
@@ -128,19 +132,38 @@ export class Bot
 	 */
 	private async handleWebhook( req: Request ): Promise<Response>
 	{
-		if ( req.headers.get( 'x-github-event' ) )
+		try
 		{
-			const body = await req.json();
-			const eventName = req.headers.get( 'x-github-event' ) || 'github';
-			this.discord.handleGithubEvent( eventName, body );
-		}
+			if ( req.headers.get( 'x-github-event' ) )
+			{
+				const body = await req.json();
+				const eventName = req.headers.get( 'x-github-event' ) || 'github';
+				this.discord.handleGithubEvent( eventName, body );
+			}
 
-		// body = x-www-form-urlencoded
-		if ( req.headers.get( 'user-agent' ) === 'Kofi.Webhooks' )
+			if ( req.headers.get( 'x-propz-event' ) )
+			{
+				const body = await req.json();
+				void this.twitch.processEvent({
+					eventType: body.eventType.toString().toLowerCase() || 'propz.de',
+					user: await this.twitch.data.getUser(),
+				})
+			}
+
+			// body = x-www-form-urlencoded
+			if ( req.headers.get( 'user-agent' ) === 'Kofi.Webhooks' )
+			{
+				const body = await req.text();
+				const kofiData: KofiData = JSON.parse(
+					decodeURIComponent( body.replace( /^data=/, '' ) )
+				);
+				this.twitch.handleKofiEvent( kofiData );
+			}
+		}
+		catch ( error: unknown )
 		{
-			const body = await req.text();
-			const kofiData: KofiData = JSON.parse( decodeURIComponent( body.replace( /^data=/, '' ) ) );
-			this.twitch.handleKofiEvent( kofiData );
+			log( error );
+			return new Response( null, { status: 400 } );
 		}
 
 		return new Response( null, { status: 204 } );
@@ -157,9 +180,6 @@ export class Bot
 		try
 		{
 			body = await req.json();
-			// log( `› SERVER: API call` );
-			// log( `    REQUEST HEADERS: ${ JSON.stringify( req.headers ) }` );
-			// log( `    REQUEST BODY: ${ JSON.stringify( body ) }` );
 			if ( body.request !== 'isStreamActive' )
 				log( body.request );
 		}

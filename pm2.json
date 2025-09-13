@@ -1,19 +1,18 @@
 {
-	"apps": [{
-		"name": "propzbot",
-		"script": "./twitch-bot/index.ts",
-		"interpreter": "deno",
-		"interpreter_args": "run -A --unstable-cron --unstable-detect-cjs --env-file",
-		"max_memory_restart": "350M",
-		"instances": 1,
-		"autorestart": true,
-		"watch": false,
-		"env": {
-			"NODE_ENV": "production"
-		},
-		"log_date_format": "YYYY-MM-DD HH:mm:ss Z",
-		"merge_logs": true,
-		"out_file": "./logs/propzbot-out.log",
-		"error_file": "./logs/propzbot-error.log"
-	}]
+	"apps": [
+		{
+			"name": "propzbot",
+			"script": "./twitch-bot/index.ts",
+			"interpreter": "deno",
+			"interpreter_args": "run -A --unstable-cron --unstable-detect-cjs --env-file",
+			"max_memory_restart": "250M",
+			"instances": 1,
+			"autorestart": true,
+			"watch": false,
+			"log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+			"merge_logs": true,
+			"out_file": "./logs/propzbot-out.log",
+			"error_file": "./logs/propzbot-error.log"
+		}
+	]
 }

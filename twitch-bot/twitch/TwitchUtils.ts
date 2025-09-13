@@ -1,29 +1,41 @@
+// deno-lint-ignore-file require-await
 /**
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.7.18
  */
 
 import '@propz/prototypes.ts';
 
-import { clearTimer, getMessage, getRandomNumber, getRewardSlug, getTimePassed, log } from '@propz/helpers.ts';
-import { HelixUser } from '@twurple/api';
-import { ChatUser, parseChatMessage } from '@twurple/chat';
+import {clearTimer, getMessage, getRandomNumber, getRewardSlug, getTimePassed, log} from '@propz/helpers.ts';
+import type {HelixStream} from '@twurple/api';
+import {HelixUser} from '@twurple/api';
+import type {ChatMessage} from '@twurple/chat';
+import {ChatUser, parseChatMessage} from '@twurple/chat';
 import cld from 'cld';
-import { Deepl } from '../external/Deepl.ts';
-import { StreamElements } from '../external/StreamElements.ts';
-import { Youtube } from '../external/Youtube.ts';
-import { TwitchChat } from './TwitchChat.ts';
-import { TwitchCommands } from './TwitchCommands.ts';
-import { TwitchEvents } from './TwitchEvents.ts';
+import {Deepl} from '../external/Deepl.ts';
+import {StreamElements} from '../external/StreamElements.ts';
+import {Youtube} from '../external/Youtube.ts';
+import {TwitchChat} from './TwitchChat.ts';
+import {TwitchCommands} from './TwitchCommands.ts';
+import {TwitchEvents} from './TwitchEvents.ts';
 
-import type { ApiRequest, ApiResponse, KofiData, SimpleUser, StreamData, StreamDataApi, StreamElementsViewerStats, TwitchJoke, TwitchQuote, TwitchUserData } from '@propz/types.ts';
-import type { HelixStream } from '@twurple/api';
-import type { ChatMessage } from '@twurple/chat';
-import type { BotData } from '../bot/BotData.ts';
-import type { BotWebsocket } from '../bot/BotWebsocket.ts';
-import type { Discord } from '../discord/Discord.ts';
+import type {
+	ApiRequest,
+	ApiResponse,
+	KofiData,
+	SimpleUser,
+	StreamData,
+	StreamDataApi,
+	StreamElementsViewerStats,
+	TwitchJoke,
+	TwitchQuote,
+	TwitchUserData
+} from '@propz/types.ts';
+import type {BotData} from '../bot/BotData.ts';
+import type {BotWebsocket} from '../bot/BotWebsocket.ts';
+import type {Discord} from '../discord/Discord.ts';
 
 export abstract class TwitchUtils
 {
@@ -34,10 +46,10 @@ export abstract class TwitchUtils
 
 	// Runtime vars
 	public isDev: boolean = false;
-	private focusTimer: number = 0;
 	public stream: HelixStream | null = null;
 	public firstChatter = '';
 	public killswitch: boolean = false;
+	private focusTimer: number = 0;
 	private validMessageThreshold: number = 5;
 
 	protected constructor(
@@ -198,7 +210,7 @@ export abstract class TwitchUtils
 		this.data.updateUserData( user, 'first_count' );
 		this.data.updateStreamStats( user, 'first_chatter' );
 
-		this.processEvent( {
+		void this.processEvent( {
 			eventType: 'firstchatter',
 			user: user.displayName
 		} );
@@ -230,7 +242,7 @@ export abstract class TwitchUtils
 		const count = this.data.getUserData( user.id! )?.message_count || 0;
 		if ( count && chatscores.includes( count ) )
 		{
-			this.processEvent( {
+			void this.processEvent( {
 				eventType: 'chatscore-' + count,
 				user: user,
 				eventCount: count
@@ -429,7 +441,7 @@ export abstract class TwitchUtils
 		let userName = followers[getRandomNumber( followers.length )].name ||
 			this.data.userName;
 
-		// ... or pritoritize from command if given
+		// ... or prioritize from command if given
 		if ( splittedMessage[1] )
 		{
 			userName = splittedMessage[1];
@@ -474,7 +486,7 @@ export abstract class TwitchUtils
 			count = getRandomNumber( 50, 1 );
 		}
 
-		this.processEvent( {
+		void this.processEvent( {
 			eventType: eventType,
 			user: userName,
 			eventCount: count,
@@ -489,14 +501,13 @@ export abstract class TwitchUtils
 		const stream = this.stream;
 		if ( !stream ) return;
 
-		const streamData: StreamDataApi = {
+		return {
 			gameName: stream.gameName,
 			startDate: stream.startDate.getTime() / 1000,
 			thumbnailUrl: stream.thumbnailUrl,
 			title: stream.title,
 			language: stream.language
-		};
-		return streamData;
+		} as StreamDataApi;
 	}
 
 	/** Toggle Killswitch status */
@@ -517,7 +528,7 @@ export abstract class TwitchUtils
 		this.focusTimer = clearTimer( this.focusTimer );
 		focusStatusOrTime = parseInt( focusStatusOrTime.toString() );
 		this.focusTimer = setTimeout( () => this.toggleFocus( false ), focusStatusOrTime * 60 * 1000 );
-		this.toggleFocus( true, focusStatusOrTime );
+		void this.toggleFocus( true, focusStatusOrTime );
 
 		return focusStatusOrTime;
 	}
@@ -533,7 +544,7 @@ export abstract class TwitchUtils
 		this.toggleRewardPause( focusStatus );
 		const eventType = focusStatus ? 'focusstart' : 'focusstop';
 
-		this.processEvent( {
+		void this.processEvent( {
 			eventType: eventType,
 			user: await this.data.getUser() || this.data.userName,
 			eventCount: focusTimer
@@ -582,7 +593,7 @@ export abstract class TwitchUtils
 	 *
 	 * @param {HelixStream} stream Current Stream
 	 */
-	async sendStremOnlineDataToDiscord( stream?: HelixStream | undefined | null )
+	async sendStreamOnlineDataToDiscord( stream?: HelixStream | undefined | null )
 	{
 		if ( !this.discord.client.isReady() ) return;
 
@@ -596,7 +607,7 @@ export abstract class TwitchUtils
 			this.data.getEvent( 'streamonline' ).message,
 			this.streamLanguage
 		).replace( '[user]', user.displayName ) ||
-			`${user.displayName} ist jetzte live!`;
+			`${user.displayName} ist jetzt live!`;
 
 		const streamData: StreamData = {
 			displayName: user.displayName,
@@ -610,7 +621,7 @@ export abstract class TwitchUtils
 				stream.gameName :
 				'Software & Game Development',
 			streamAnnouncementMessage: streamAnnouncementMessage,
-			test: !stream ? true : false
+			test: !stream
 		};
 
 		console.table( streamData );
@@ -668,7 +679,7 @@ export abstract class TwitchUtils
 		const type = 'kofi' + kofiData.type.trim().replace( ' ', '' ).toLowerCase();
 		const name = kofiData.from_name || 'anonymous';
 
-		this.processEvent( {
+		void this.processEvent( {
 			eventType: type,
 			user: name,
 			eventCount: parseFloat( kofiData.amount ),
@@ -682,7 +693,7 @@ export abstract class TwitchUtils
 	/** Check if event can be fired
 	 *
 	 * @param {string} eventType Event type name
-	 * @param {string} userName User name
+	 * @param {HelixUser|SimpleUser|ChatUser|string|null} user
 	 */
 	fireEvent(
 		eventType: string,
@@ -792,10 +803,10 @@ export abstract class TwitchUtils
 
 		if ( timer.isAnnouncement )
 		{
-			this.chat.sendAnnouncement( message );
+			void this.chat.sendAnnouncement( message );
 			return;
 		}
-		this.chat.sendAction( message );
+		void this.chat.sendAction( message );
 	}
 
 	/** Process question command/redemption (post to discord)
@@ -805,39 +816,39 @@ export abstract class TwitchUtils
 	 * @param {HelixUser} user Fragende Person
 	 * @param {ChatMessage} msg Message Object
 	 */
-	handleQuestion(
-		questionType: string,
-		questionText: string,
-		user: HelixUser | SimpleUser
-	)
-	{
-		if (
-			!questionType || !questionText || !user || !this.discord.client.isReady()
-		) return;
-
-		const command = this.commands.commands.get( questionType );
-		if ( !command?.discord ) return;
-
-		// Setup post data
-		const title = questionText.replace( `${questionType} `, '' );
-		const message = `${title}\n\r\n\rQuestion by **${user.displayName}** on Twitch.`;
-
-		// Create Thread
-		const channelId = this.discord.channels[command.discord];
-
-		this.discord.createPost( channelId, title, message )
-			.then( ( threadChannel ) =>
-			{
-				if ( threadChannel )
-				{
-					this.chat.sendAction(
-						`Thread wurde zur Diskussion erstellt ▶️ ${threadChannel.url}`
-					);
-				}
-
-				return true;
-			} );
-	}
+	// handleQuestion(
+	// 	questionType: string,
+	// 	questionText: string,
+	// 	user: HelixUser | SimpleUser
+	// )
+	// {
+	// 	if (
+	// 		!questionType || !questionText || !user || !this.discord.client.isReady()
+	// 	) return;
+	//
+	// 	const command = this.commands.commands.get( questionType );
+	// 	if ( !command?.discord ) return;
+	//
+	// 	// Setup post data
+	// 	const title = questionText.replace( `${questionType} `, '' );
+	// 	const message = `${title}\n\r\n\rQuestion by **${user.displayName}** on Twitch.`;
+	//
+	// 	// Create Thread
+	// 	const channelId = this.discord.channels[command.discord];
+	//
+	// 	this.discord.createPost( channelId, title, message )
+	// 		.then( ( threadChannel ) =>
+	// 		{
+	// 			if ( threadChannel )
+	// 			{
+	// 				void this.chat.sendAction(
+	// 					`Thread wurde zur Diskussion erstellt ▶️ ${threadChannel.url}`
+	// 				);
+	// 			}
+	//
+	// 			return true;
+	// 		} );
+	// }
 
 	/** Get the right username */
 	getUsernameFromObject( user: HelixUser | ChatUser | SimpleUser | string )
@@ -867,7 +878,7 @@ export abstract class TwitchUtils
 			}
 
 			const translation = await Deepl.translate( message, this.streamLanguage );
-			this.chat.sendMessage( translation, msg );
+			void this.chat.sendMessage( translation, msg );
 		}
 		catch ( _error: unknown )
 		{
@@ -919,6 +930,6 @@ export abstract class TwitchUtils
 	// deno-lint-ignore no-unused-vars
 	async processApiCall( data: ApiRequest ): Promise<ApiResponse>
 	{
-		return await { data: false };
+		return { data: false };
 	}
 }
