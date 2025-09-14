@@ -2,7 +2,7 @@
  * Media Manager
  *
  * @author Wellington Estevo
- * @version 1.6.12
+ * @version 1.7.20
  */
 
 import { log } from '@propz/helpers.ts';
@@ -44,17 +44,13 @@ const Mediaboard = () =>
 				for ( const commandName of Object.keys( data.data ) )
 				{
 					const command = data.data[commandName];
-					const mediaName = getMediaNameFromApiData( command, commandName );
 
-					if ( command.hasSound ) addMedia( 'audio', mediaName );
-					if ( command.hasVideo ) addMedia( 'video', mediaName );
-					if ( command.hasImage ) addMedia( 'image', mediaName );
+					if ( command.hasSound ) addMedia( 'audio', getMediaNameFromApiData( command, commandName, 'audio' ) );
+					if ( command.hasVideo ) addMedia( 'video', getMediaNameFromApiData( command, commandName, 'video' ) );
+					if ( command.hasImage ) addMedia( 'image', getMediaNameFromApiData( command, commandName, 'image' ) );
 				}
 			}
-			catch ( error: unknown )
-			{
-				log( error );
-			}
+			catch ( error: unknown ) { log( error ) }
 
 			fetchOptions.body = '{ "request": "getEvents" }';
 
@@ -68,17 +64,13 @@ const Mediaboard = () =>
 				for ( const eventName of Object.keys( data.data ) )
 				{
 					const event = data.data[eventName];
-					const mediaName = getMediaNameFromApiData( event, eventName );
 
-					if ( event.hasSound ) addMedia( 'audio', mediaName );
-					if ( event.hasVideo ) addMedia( 'video', mediaName );
-					if ( event.hasImage ) addMedia( 'image', mediaName );
+					if ( event.hasSound ) addMedia( 'audio', getMediaNameFromApiData( event, eventName, 'audio' ) );
+					if ( event.hasVideo ) addMedia( 'video', getMediaNameFromApiData( event, eventName, 'video' ) );
+					if ( event.hasImage ) addMedia( 'image', getMediaNameFromApiData( event, eventName, 'image' ) );
 				}
 			}
-			catch ( error: unknown )
-			{
-				log( error );
-			}
+			catch ( error: unknown ) { log( error ) }
 		};
 
 		setInitialMedia();
@@ -122,10 +114,10 @@ const Mediaboard = () =>
 	 */
 	const playMedia = ( media: WebSocketData ) =>
 	{
-		const mediaName = getMediaNameFromLiveEvent( media );
-
+		let mediaName = '';
 		if ( media.hasSound )
 		{
+			mediaName = getMediaNameFromLiveEvent( media, 'audio' );
 			const audio = document.getElementById( `audio-${mediaName}` ) as HTMLAudioElement;
 			console.log( audio, audio.src, audio.id );
 			if ( audio )
@@ -141,6 +133,7 @@ const Mediaboard = () =>
 		}
 		if ( media.hasVideo )
 		{
+			mediaName = getMediaNameFromLiveEvent( media, 'video' );
 			const video = document.getElementById( `video-${mediaName}` ) as HTMLVideoElement;
 			if ( video )
 			{
@@ -155,6 +148,7 @@ const Mediaboard = () =>
 		}
 		if ( media.hasImage )
 		{
+			mediaName = getMediaNameFromLiveEvent( media, 'image' );
 			const image = document.getElementById( `image-${mediaName}` ) as HTMLImageElement;
 			if ( image )
 			{
@@ -208,6 +202,9 @@ const Mediaboard = () =>
 		const media = type === 'image' ?
 			document.createElement( type ) as HTMLImageElement :
 			document.createElement( type ) as HTMLAudioElement | HTMLVideoElement;
+
+		console.log( type, mediaName, media );
+
 		media.id = `${type}-${mediaName}`;
 		media.src = `/${type}/${media.id}.${( type === 'audio' ? 'mp3' : 'webm' )}`;
 		media.style.visibility = 'hidden';
@@ -236,17 +233,17 @@ const Mediaboard = () =>
 	 * text = command to lower case
 	 * type = rewards -> alle sound/video rewards haben keinen text
 	 */
-	const getMediaNameFromApiData = ( data: TwitchCommand | TwitchEvent, dataName: string = '' ) =>
+	const getMediaNameFromApiData = ( data: TwitchCommand | TwitchEvent, dataName: string = '', type: string ) =>
 	{
-		if ( !data || !dataName ) return '';
+		if ( !data || !dataName || !type ) return '';
 
-		if ( typeof data?.hasSound === 'string' )
+		if ( typeof data?.hasSound === 'string' && type === 'audio' )
 			return data.hasSound;
 
-		if ( typeof data?.hasVideo === 'string' )
+		if ( typeof data?.hasVideo === 'string' && type === 'video' )
 			return data.hasVideo;
 
-		if ( typeof data?.hasImage === 'string' )
+		if ( typeof data?.hasImage === 'string' && type === 'image' )
 			return data.hasImage;
 
 		return dataName;
@@ -257,17 +254,17 @@ const Mediaboard = () =>
 	 * text = command to lower case
 	 * type = rewards -> alle sound/video rewards haben keinen text
 	 */
-	const getMediaNameFromLiveEvent = ( media: WebSocketData ) =>
+	const getMediaNameFromLiveEvent = ( media: WebSocketData, type: string ) =>
 	{
-		if ( !media ) return '';
+		if ( !media || !type ) return '';
 
-		if ( typeof media?.hasSound === 'string' )
+		if ( typeof media?.hasSound === 'string' && type === 'audio' )
 			return media.hasSound;
 
-		if ( typeof media?.hasVideo === 'string' )
+		if ( typeof media?.hasVideo === 'string' && type === 'video' )
 			return media.hasVideo;
 
-		if ( typeof media?.hasImage === 'string' )
+		if ( typeof media?.hasImage === 'string' && type === 'image' )
 			return media.hasImage;
 
 		return media.type?.startsWith( 'reward' ) ? media.type : ( media.text || media.type );
