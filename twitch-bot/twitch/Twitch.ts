@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 1.7.19
  */
 
 import '@propz/prototypes.ts';
@@ -34,7 +34,7 @@ export class Twitch extends TwitchUtils
 	/** Init Main Twitch Controller */
 	async init()
 	{
-		this.data.init();
+		void this.data.init();
 		this.chat.connect();
 		this.events.startListener();
 		this.firstChatter = this.data.firstChatter;
@@ -64,6 +64,7 @@ export class Twitch extends TwitchUtils
 	 *
 	 * @param {string} chatMessage Message text
 	 * @param {ChatMessage} msg Message object
+	 * @param {SimpleUser|null} user
 	 */
 	override async processChatCommand( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
 	{
@@ -102,7 +103,7 @@ export class Twitch extends TwitchUtils
 		}
 
 		if ( message )
-			this.chat.sendAction( message );
+			void this.chat.sendAction( message );
 	}
 
 	/** Process chat command
@@ -116,6 +117,8 @@ export class Twitch extends TwitchUtils
 			return;
 
 		const user = await this.convertToSimplerUser( msg.userInfo );
+		if ( !user ) return;
+
 		const chatMessageSanitized = sanitizeMessage( chatMessage );
 		const chatMessagesWithEmotes = this.searchReplaceEmotes( chatMessageSanitized, msg );
 
@@ -142,7 +145,7 @@ export class Twitch extends TwitchUtils
 			message = message.replace( '[user]', user.displayName );
 			// Reply
 			// this.chat.sendMessage( message, msg );
-			this.chat.sendAction( message );
+			void this.chat.sendAction( message );
 		}
 
 		if ( !this.isStreamActive )
@@ -156,7 +159,7 @@ export class Twitch extends TwitchUtils
 		{
 			this.data.updateUserData( user, 'message_count' );
 			this.data.updateStreamStats( user, 'message' );
-			this.translateIfNeeded( chatMessageSanitized, msg );
+			void this.translateIfNeeded( chatMessageSanitized, msg );
 		}
 
 		// Check for chat score
@@ -217,7 +220,7 @@ export class Twitch extends TwitchUtils
 
 		// Exec command
 		if ( event.isCommand )
-			this.processChatCommand( `!${eventType} ${eventText}`, null, user );
+			void this.processChatCommand( `!${eventType} ${eventText}`, null, user );
 
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )
@@ -243,14 +246,14 @@ export class Twitch extends TwitchUtils
 
 		// Check for announcement
 		if ( event.isAnnouncement )
-			this.chat.sendAnnouncement( message );
+			void this.chat.sendAnnouncement( message );
 		else
-			this.chat.sendAction( message );
+			void this.chat.sendAction( message );
 	}
 
 	/** Handle API calls
 	 *
-	 * @param {Object} data Request data
+	 * @param {ApiRequest} apiRequest
 	 */
 	override async processApiCall( apiRequest: ApiRequest ): Promise<ApiResponse>
 	{
@@ -265,7 +268,7 @@ export class Twitch extends TwitchUtils
 		if ( apiRequest.request.startsWith( 'command-' ) )
 		{
 			const commandName = apiRequest.request.replace( 'command-', '!' );
-			this.processChatCommand( commandName, null, user );
+			void this.processChatCommand( commandName, null, user );
 			response.data = true;
 			return response;
 		}
@@ -318,14 +321,7 @@ export class Twitch extends TwitchUtils
 					apiRequest.data.countryCode || '',
 					apiRequest.data.lat || '',
 					apiRequest.data.lon || ''
-				);
-				break;
-
-			case 'newShopOrder':
-				this.processEvent( {
-					user: user,
-					eventType: 'shoporder'
-				} );
+				) ?? false;
 				break;
 		}
 

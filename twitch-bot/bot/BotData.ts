@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.7.13
+ * @version 1.7.19
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -40,7 +40,6 @@ export class BotData
 	public twitchUser: HelixUser | null = null;
 	public mods: string[] = [];
 	public badges: TwitchBadge[] = [];
-	public followers: TwitchEventData[] = [];
 	public emotes: Map<string, string> = new Map();
 	public bots: string[] = [];
 
@@ -57,11 +56,11 @@ export class BotData
 	{
 		await this.setUser();
 		// this.setBadges();
-		this.setEmotes();
-		this.setFollowers();
-		this.setMods();
-		this.setRewards();
-		this.setBots();
+		void this.setEmotes();
+		void this.setFollowers();
+		void this.setMods();
+		void this.setRewards();
+		void this.setBots();
 	}
 
 	/** Get own twitch user display name */
@@ -107,7 +106,7 @@ export class BotData
 	{
 		try
 		{
-			const stats = this.db.queryEntries( `
+			return this.db.queryEntries( `
 				SELECT
 					s.user_id,
 					u.name,
@@ -123,14 +122,9 @@ export class BotData
 				FROM stream_stats s
 				LEFT JOIN twitch_users u ON s.user_id = u.id
 			` );
-
-			return stats;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return [];
-		}
+		catch ( error: unknown ) { log( error ) }
+		return [];
 	}
 
 	/** Get color for user
@@ -145,11 +139,8 @@ export class BotData
 		{
 			return await this.twitchApi.chat.getColorForUser( userId ) || defaultColor;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return defaultColor;
-		}
+		catch ( error: unknown ) { log( error ) }
+		return defaultColor;
 	}
 
 	/** Fetch twitch Emotes */
@@ -172,11 +163,8 @@ export class BotData
 
 			return emoteMap;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return emoteMap;
-		}
+		catch ( error: unknown ) { log( error ) }
+		return emoteMap;
 	}
 
 	/** Get config for single twitch event */
@@ -233,11 +221,8 @@ export class BotData
 
 			return message + ' ]';
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
+		catch ( error: unknown ) { log( error ) }
+		return '';
 	}
 
 	/** Get random joke */
@@ -269,11 +254,8 @@ export class BotData
 
 			return joke.length === 0 ? '' : `${joke[0].text} - ${joke[0].name} [ #${jokeIndex} ]`;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
+		catch ( error: unknown ) { log( error ) }
+		return '';
 	}
 
 	/** Get last 10 saved events */
@@ -303,11 +285,8 @@ export class BotData
 			}
 			return events;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return [];
-		}
+		catch ( error: unknown ) { log( error ) }
+		return [];
 	}
 
 	/** Gets Twitch schedule
@@ -386,7 +365,7 @@ export class BotData
 	 * @param {string} userId User ID
 	 * @returns {TwitchUserData|undefined}
 	 */
-	getUserData( userId: string )
+	getUserData( userId: string ): TwitchUserData | undefined
 	{
 		try
 		{
@@ -428,7 +407,7 @@ export class BotData
 	 *
 	 * @returns {Map<number,TwitchUserData>}
 	 */
-	getUsersData()
+	getUsersData(): Map<string, TwitchUserData>
 	{
 		const users = new Map<string, TwitchUserData>();
 		try
@@ -445,17 +424,16 @@ export class BotData
 					name: user.name,
 					follow_date: user.follow_date,
 					message_count: user.message_count,
-					first_count: user.first_count
+					first_count: user.first_count,
+					profile_picture: '',
+					color: ''
 				} );
 			}
 
 			return users;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return users;
-		}
+		catch ( error: unknown ) { log( error ) }
+		return users;
 	}
 
 	/** Set all twitch channel badges
@@ -505,10 +483,7 @@ export class BotData
 
 			this.badges = badges;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Set all twitch emotes */
@@ -535,14 +510,11 @@ export class BotData
 	async setFollowers()
 	{
 		const user = await this.getUser();
-		if ( !user )
-			return;
+		if ( !user ) return;
 
 		const followers = await user.getChannelFollowers();
-		if ( !followers.data )
-			return;
+		if ( !followers.data ) return;
 
-		const followersData: TwitchEventData[] = [];
 		for ( const follower of followers.data )
 		{
 			const followTimestamp = follower.followDate.getTime() / 1000;
@@ -557,17 +529,13 @@ export class BotData
 				timestamp: followTimestamp
 			};
 
-			followersData.push( follow );
-
 			// Follower already exists
 			if ( this.getUserData( follower.userId )?.follow_date )
 				continue;
 
-			this.addEvent( follow );
 			this.updateUserData( followerData, 'follow_date', followTimestamp );
+			this.addEvent( follow );
 		}
-
-		this.followers = followersData;
 	}
 
 	/** Set channel mod list */
@@ -677,31 +645,29 @@ export class BotData
 			!event ||
 			event.type?.startsWith( 'reward' ) ||
 			this.eventExists( event )
-		)
-		{
-			return;
-		}
+		) return;
 
 		try
 		{
 			// Insert user first if not exists (SQLite foreign key problem)
 			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)', [ event.user_id ] );
+		}
+		catch ( error: unknown ) { log( error ) }
+
+		try
+		{
 			this.db.query(
-				`INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)`,
-				[ event.type, event.user_id, event.timestamp, event.count || 0 ]
+				'INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)',
+				[ event.type, event.user_id, event.timestamp, event.count ?? 0 ]
 			);
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Add quote to quotes */
 	addQuote( quote: TwitchQuote )
 	{
 		if ( !quote ) return '';
-
 		try
 		{
 			this.db.query(
@@ -710,18 +676,14 @@ export class BotData
 			);
 			return ( this.db.lastInsertRowId - 1 ).toString();
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
+		catch ( error: unknown ) { log( error ) }
+		return '';
 	}
 
 	/** Add joke to jokes */
 	addJoke( joke: TwitchJoke )
 	{
 		if ( !joke ) return '';
-
 		try
 		{
 			this.db.query(
@@ -730,11 +692,8 @@ export class BotData
 			);
 			return ( this.db.lastInsertRowId - 1 ).toString();
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
+		catch ( error: unknown ) { log( error ) }
+		return '';
 	}
 
 	/** Check if an event already exists */
@@ -782,11 +741,8 @@ export class BotData
 				}
 			);
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return false;
-		}
+		catch ( error: unknown ) { log( error ) }
+		return false;
 	}
 
 	/** Check if user is Bot */
@@ -815,15 +771,14 @@ export class BotData
 		dataValue: string | number = ''
 	)
 	{
-		if ( !user?.id || !dataName )
-			return;
+		if ( !user?.id || !dataName ) return;
 
 		try
 		{
 			const userData = this.getUserData( user.id );
 			// Add user if not in DB
 			if ( !userData )
-				this.db.query( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)', [ user.id ] );
+				this.db.query( `INSERT OR IGNORE INTO twitch_users (id) VALUES (?)`, [ user.id ] );
 
 			const newUserData = [
 				user.displayName,
@@ -851,17 +806,14 @@ export class BotData
 					first_count = ?
 				WHERE id = ?;`, newUserData );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Update Stream stats
 	 *
 	 * @param {HelixUser|SimpleUser} user User Object
-	 * @param {string} eventName Name of Event
-	 * @param {number} count Event Count
+	 * @param {string} eventType
+	 * @param {number} eventCount
 	 */
 	updateStreamStats(
 		user: SimpleUser,
@@ -869,14 +821,14 @@ export class BotData
 		eventCount: number = 1
 	)
 	{
-		if ( !user?.id || !eventType )
-			return;
+		if ( !user?.id || !eventType ) return;
 
 		try
 		{
-			this.db.query( `INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`, [
-				user.id
-			] );
+			this.db.query(
+				`INSERT OR IGNORE INTO stream_stats (user_id) VALUES (?)`,
+				[ user.id ]
+			);
 
 			switch ( eventType )
 			{
@@ -938,16 +890,14 @@ export class BotData
 					break;
 			}
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Save data to file
 	 *
 	 * @param {string} fileName Name of file to be saved
 	 * @param {Object} fileData Data to be saved
+	 * @param {string} folder
 	 */
 	saveFile(
 		fileName: string,
@@ -965,15 +915,12 @@ export class BotData
 
 		try
 		{
-			Deno.writeTextFile(
+			Deno.writeTextFileSync(
 				`./twitch-bot/${folder}/${fileName}.json`,
 				JSON.stringify( fileData, null, spacing )
 			);
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Reload all JSON data files and update class properties */
@@ -1003,11 +950,8 @@ export class BotData
 			this.rewards = rewards;
 			this.timers = objectToMap( timers );
 
-			this.setRewards();
+			void this.setRewards();
 		}
-		catch ( error )
-		{
-			log( error );
-		}
+		catch ( error ) { log( error ) }
 	}
 }

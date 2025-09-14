@@ -142,6 +142,7 @@ export interface TwitchUserData
 	follow_date: number;
 	message_count: number;
 	first_count: number;
+	[key: string]: number | string | boolean | null;
 }
 
 export type TwitchInsightsBot = [ string, number, number ];

@@ -2,7 +2,7 @@
  * DB handler
  *
  * @author Wellington Estevo
- * @version 1.7.13
+ * @version 1.7.19
  */
 
 import { log } from '@propz/helpers.ts';
@@ -30,15 +30,10 @@ export class Database extends DB
 	{
 		try
 		{
-			// Create DB Schema
 			const schema = Deno.readTextFileSync( './twitch-bot/bot/BotDataSchema.sql' );
 			this.execute( schema );
-
 			log( 'Database initialized ✅' );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 }

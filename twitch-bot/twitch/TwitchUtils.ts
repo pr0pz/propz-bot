@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 1.7.19
  */
 
 import '@propz/prototypes.ts';
@@ -435,24 +435,16 @@ export abstract class TwitchUtils
 
 		const splittedMessage = eventMessage.split( ' ' );
 		const eventType = splittedMessage[0];
-
-		// Get username from random follower ...
-		const followers = this.data.followers;
-		let userName = followers[getRandomNumber( followers.length )].name ||
-			this.data.userName;
+		let userName = this.data.userName;
 
 		// ... or prioritize from command if given
 		if ( splittedMessage[1] )
-		{
 			userName = splittedMessage[1];
-		}
 
 		// Text message for TTS
 		let message = '';
 		if ( splittedMessage[2] )
-		{
 			message = splittedMessage.slice( 2 ).join( ' ' );
-		}
 
 		// Send random count number for specific event types
 		const eventTypesWithCount = [
@@ -482,9 +474,7 @@ export abstract class TwitchUtils
 		];
 		let count = parseInt( splittedMessage[2] || '0' );
 		if ( !count && eventTypesWithCount.includes( eventType ) )
-		{
 			count = getRandomNumber( 50, 1 );
-		}
 
 		void this.processEvent( {
 			eventType: eventType,
@@ -625,7 +615,7 @@ export abstract class TwitchUtils
 		};
 
 		console.table( streamData );
-		this.discord.sendStremOnlineMessage( streamData );
+		this.discord.sendStreamOnlineMessage( streamData );
 	}
 
 	/** Get simple user data from ChatUser Object */
