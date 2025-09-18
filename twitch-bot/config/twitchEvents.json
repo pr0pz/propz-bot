@@ -234,6 +234,16 @@
 		"disableOnFocus": true,
 		"hasVideo": true
 	},
+	"rewardthisisfine": {
+		"disableOnFocus": true,
+		"obs": {
+			"requestType": "SetCurrentProgramScene",
+			"requestData": {
+				"sceneName": "[S] REWARD / THISISFINE",
+				"sceneUuid": ""
+			}
+		}
+	},
 	"rewardwrongscene": {
 		"eventText": {
 			"de": "Falsche Szene mein Freund. Wechsel mal die Szene.",

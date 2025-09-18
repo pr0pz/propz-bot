@@ -9,13 +9,13 @@
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
-		"isEnabled": true,
+		"isEnabled": false,
 		"autoFulfill": true
 	},
 	{
 		"id": "8d9352dd-25da-4188-a12f-9cebb8462c4a",
 		"title": "Boom",
-		"cost": 300,
+		"cost": 400,
 		"backgroundColor": "#FFF8E3",
 		"prompt": "Nuke the stream!",
 		"globalCooldown": 60,
@@ -247,12 +247,25 @@
 		"autoFulfill": true
 	},
 	{
+		"id": "",
+		"title": "This is fine",
+		"cost": 1000,
+		"backgroundColor": "#FFD68A",
+		"prompt": "Is it though?",
+		"globalCooldown": 120,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": 3,
+		"userInputRequired": true,
+		"isEnabled": true,
+		"autoFulfill": false
+	},
+	{
 		"id": "8b98f7af-c6c0-4d14-99ed-b3beb3e3b171",
 		"title": "TTS",
 		"cost": 1000,
 		"backgroundColor": "#4868E4",
 		"prompt": "Max. 160 Zeichen -> Deine Nachricht wird laut vorgelesen (Deutsch).",
-		"globalCooldown": null,
+		"globalCooldown": 60,
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": 3,
 		"userInputRequired": true,
