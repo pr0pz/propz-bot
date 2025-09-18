@@ -2,7 +2,7 @@
  * Printer Controller
  *
  * @author Wellington Estevo
- * @version 1.6.4
+ * @version 1.8.0
  */
 
 import { log } from '@propz/helpers.ts';
@@ -38,11 +38,31 @@ export default class PrintController
 			title: '[count]x Cheeeeeeers!!',
 			text: 'Danke für die Cheers,<br>du machst den Stream bunter!'
 		},
-		communitysub: {
+		'communitysub-1': {
 			title: 'Subs für alle',
 			text: 'Danke für die [count]-Fache<br>Abo-Liebe für den Stream!'
 		},
 		'communitysub-2': {
+			title: 'Mega Sub Geschenk',
+			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
+		},
+		'communitysub-3': {
+			title: 'Mega Sub Geschenk',
+			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
+		},
+		'communitysub-4': {
+			title: 'Mega Sub Geschenk',
+			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
+		},
+		'communitysub-5': {
+			title: 'Mega Sub Geschenk',
+			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
+		},
+		'communitysub-6': {
+			title: 'Mega Sub Geschenk',
+			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
+		},
+		'communitysub-7': {
 			title: 'Mega Sub Geschenk',
 			text: 'Vielen Dank für die [count]x<br>geschenkte Coding-Extravaganz!'
 		},
@@ -62,6 +82,14 @@ export default class PrintController
 			text: 'Herzlich willkommen zurück<br>im Abo-Universum > [count]x<br />und kein Ende in Sicht!'
 		},
 		'resub-3': {
+			title: 'Resub mit Omega Ehre',
+			text: 'Herzlichen Dank für Resub [count],<br>dein Support ist unübertroffen!'
+		},
+		'resub-4': {
+			title: 'Resub mit Omega Ehre',
+			text: 'Herzlichen Dank für Resub [count],<br>dein Support ist unübertroffen!'
+		},
+		'resub-5': {
 			title: 'Resub mit Omega Ehre',
 			text: 'Herzlichen Dank für Resub [count],<br>dein Support ist unübertroffen!'
 		},

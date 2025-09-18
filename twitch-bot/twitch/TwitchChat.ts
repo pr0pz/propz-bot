@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.8.0
  */
 
 import '@propz/prototypes.ts';
@@ -315,7 +315,7 @@ export class TwitchChat {
 		this.communitySubGifts.set(user, previousGiftCount + count);
 		log(`${user}: Gifts ${count} subs`);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: eventType,
 			user: user,
 			eventCount: count,
@@ -347,9 +347,9 @@ export class TwitchChat {
 	/** Fires when a user gifts a Twitch Prime benefit to the channel.
 	 *
 	 * @param {string} _channel - The channel where the benefit was gifted.
-	 * @param {string} user - The user that received the gift.
+	 * @param {string} _user - The user that received the gift.
 	 * @param {ChatPrimeCommunityGiftInfo} _subInfo - Additional information about the gift.
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onPrimeCommunityGift = (
 		_channel: string,
@@ -362,7 +362,7 @@ export class TwitchChat {
 		}
 		log(msg.userInfo.displayName);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'primecommunitygift',
 			user: msg.userInfo,
 		});
@@ -371,9 +371,9 @@ export class TwitchChat {
 	/** Fires when a user upgrades their Prime subscription to a paid subscription in a channel.
 	 *
 	 * @param {string} _channel - The channel where the subscription was upgraded.
-	 * @param {string} user - The user that upgraded their subscription.
+	 * @param {string} _user - The user that upgraded their subscription.
 	 * @param {ChatSubUpgradeInfo} _subInfo - Additional information about the subscription upgrade
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onPrimePaidUpgrade = (
 		_channel: string,
@@ -386,7 +386,7 @@ export class TwitchChat {
 		}
 		log(msg.userInfo.displayName);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'sub',
 			user: msg.userInfo,
 			eventCount: 1,
@@ -396,9 +396,9 @@ export class TwitchChat {
 	/** Fires when a user raids a channel.
 	 *
 	 * @param {string} _channel - The channel that was raided.
-	 * @param {string} user - The user that has raided the channel.
+	 * @param {string} _user - The user that has raided the channel.
 	 * @param {ChatRaidInfo} raidInfo - Additional information about the raid.
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onRaid = (
 		_channel: string,
@@ -409,7 +409,7 @@ export class TwitchChat {
 		if (!msg?.userInfo || !raidInfo?.viewerCount) return;
 		log(`${msg.userInfo.displayName}: ${raidInfo.viewerCount} are raiding`);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'raid',
 			user: msg.userInfo,
 			eventCount: raidInfo.viewerCount,
@@ -419,9 +419,9 @@ export class TwitchChat {
 	/** Fires when a user resubscribes to a channel.
 	 *
 	 * @param {string} _channel - The channel that was resubscribed to.
-	 * @param {string} user - The resubscribing user.
+	 * @param {string} _user - The resubscribing user.
 	 * @param {ChatSubInfo} subInfo - Additional information about the resubscription.
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onResub = (
 		_channel: string,
@@ -443,11 +443,11 @@ export class TwitchChat {
 				eventType += '-2';
 				break;
 
-			case (count > 11):
+			case (count > 11 && count < 23):
 				eventType += '-3';
 				break;
 
-			case (count > 23):
+			case (count > 23 && count < 35):
 				eventType += '-4';
 				break;
 
@@ -457,7 +457,7 @@ export class TwitchChat {
 		}
 		log(`${msg.userInfo.displayName}: ${count}x`);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: eventType,
 			user: msg.userInfo,
 			eventCount: count,
@@ -471,9 +471,9 @@ export class TwitchChat {
 	 * TODO: check if this collides with onSubExtend event
 	 *
 	 * @param {string} _channel - The channel that was subscribed to.
-	 * @param {string} user - The subscribing user.
+	 * @param {string} _user - The subscribing user.
 	 * @param {ChatSubInfo} subInfo - Additional information about the subscription.
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onSub = (
 		_channel: string,
@@ -484,7 +484,7 @@ export class TwitchChat {
 		if (!msg?.userInfo || !subInfo) return;
 		log(`${msg.userInfo.displayName}: ${subInfo.months}`);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'sub',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
@@ -499,7 +499,7 @@ export class TwitchChat {
 	 * @param {string} _channel - The channel that was subscribed to.
 	 * @param {string} _recipientName - The user that the subscription was gifted to. The gifting user is defined in subInfo.gifter.
 	 * @param {ChatSubGiftInfo} subInfo - Additional information about the community subscription.
-	 * @param {UserNotice} _msg - The full message object containing all message and user information.
+	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
 	onSubGift = (
 		_channel: string,
@@ -520,7 +520,7 @@ export class TwitchChat {
 		}
 
 		// No Community Sub, so just fire the subgift event
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'subgift',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
@@ -538,7 +538,7 @@ export class TwitchChat {
 		if (!user) return;
 		log(user);
 
-		this.twitch.processEvent({
+		void this.twitch.processEvent({
 			eventType: 'ban',
 			user: user,
 		});

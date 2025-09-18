@@ -1,8 +1,8 @@
 /**
  * Chat list
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.0
+ * @version 1.8.0
  */
 
 #alerts {
@@ -19,7 +19,7 @@
 		position: relative;
 		animation: alert 10s ease-in-out;
 		max-width: 60rem;
-		
+
 		transform: translateY(-100vh);
 		opacity: 0;
 	}
@@ -29,7 +29,7 @@
 			background: 0;
 			padding-top: 24rem;
 
-			#alert-image,
+			#alert-media,
 			#alert-avatar {
 				position: absolute;
 				right: -50vw;
@@ -40,10 +40,10 @@
 				filter: drop-shadow(0 0 4rem rgba(var(--color-primary-rgb), .25));
 			}
 
-				#alert-image {
+				#alert-media {
 					transform: translateX(100%);
 
-					img {width: unset;}
+					img,video {width: unset;}
 				}
 
 				#alert-avatar {
@@ -84,35 +84,55 @@
 			}
 		}
 		.alert-follow {
-			#alert-image {width:150%;left:-25%}
+			/*#alert-media {width:150%;left:-25%}*/
+			#alert-media {
+                video { width:80% }
+            }
 		}
 		.alert-cheer {
-			#alert-image img{width:50%;}
-			.alert-title-wrapper{margin-top:-3rem}
+			#alert-media {
+                /*img {width: 50%}*/
+                video{width:80%}
+            }
+			/*.alert-title-wrapper{margin-top:-3rem}*/
 		}
 		.alert-communitysub {
-			#alert-image{left:10%}
+			#alert-media{left:10%}
 		}
 		.alert-communitysub-2 {
 			.alert-title-wrapper{margin-top:-11rem}
 		}
 		/*.alert-raid,
-		.alert-resub-1,
+		.alert-resub-1,*/
 		.alert-resub-2,
-		.alert-resub-3 {
-		}*/
-			.alert-raid #alert-image img{max-width: 55rem;}
+		.alert-resub-3,
+        .alert-resub-4,
+        .alert-resub-5{
+            .alert-title-wrapper{margin-top:-4rem}
+            #alert-media{
+                video {
+                    width: 70%;
+                }
+            }
+		}
+			.alert-raid #alert-media{
+                img,video{max-width: 55rem;}
+            }
 
-		.alert-sub,
+		.alert-sub {
+            video {width: 80%}
+        }
 		.alert-kofisubscription {
 			.alert-title-wrapper {
 				margin-top: -4rem
 			}
 		}
 		.alert-subgift .alert-title-wrapper{margin-top:0}
-		.alert-kofidonation,
-		.alert-kofishoporder {
-			#alert-image img{width:50%}
+		.alert-kofidonation {
+			#alert-media {
+                img{width:50%}
+                video{width:80%}
+            }
 		}
 
 		.alert-chatscore {
@@ -125,15 +145,19 @@
 		}
 
 	/* Image */
-	#alert-image {
+	#alert-media {
 		position: relative;
 
-		img {
+		img, video {
 			width: 100%;
 			max-width: 70rem;
 			display: block;
 			margin: 0 auto;
 		}
+
+        video {
+            width: initial;
+        }
 	}
 
 	/* Title */

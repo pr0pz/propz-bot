@@ -461,8 +461,13 @@ export abstract class TwitchUtils
 			'chatscore-8000',
 			'chatscore-9000',
 			'chatscore-10000',
-			'communitysub',
+			'communitysub-1',
 			'communitysub-2',
+			'communitysub-3',
+			'communitysub-4',
+			'communitysub-5',
+			'communitysub-6',
+			'communitysub-7',
 			'kofidonation',
 			'kofishoporder',
 			'kofisubscription',
@@ -470,6 +475,8 @@ export abstract class TwitchUtils
 			'resub-1',
 			'resub-2',
 			'resub-3',
+			'resub-4',
+			'resub-5',
 			'subgift'
 		];
 		let count = parseInt( splittedMessage[2] || '0' );

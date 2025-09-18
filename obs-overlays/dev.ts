@@ -2,7 +2,7 @@
  * This file starts the dev server for the overlay workspace (react app)
  *
  * @author Wellington Estevo
- * @version 1.6.10
+ * @version 1.8.0
  */
 
 import { log } from '@propz/helpers.ts';
@@ -43,6 +43,7 @@ function requestHandler( req: Request )
 	if (
 		pathname.startsWith( '/img' ) ||
 		pathname.startsWith( '/audio' ) ||
+		pathname.startsWith( '/alerts' ) ||
 		pathname.startsWith( '/video' )
 	)
 	{

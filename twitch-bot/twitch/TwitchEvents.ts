@@ -2,7 +2,7 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.8.0
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
@@ -69,7 +69,7 @@ export class TwitchEvents
 		// Try to get the stream 5 times
 		let stream = null;
 		let counter = 0;
-		while ( stream === null && counter < 5 )
+		while ( counter < 5 )
 		{
 			stream = await this.twitch.setStream();
 			if ( stream !== null ) break;
@@ -83,14 +83,14 @@ export class TwitchEvents
 		log( `${event.broadcasterDisplayName} / ${stream?.gameName} / ${counter}` );
 
 		// Check for test stream
-		if ( stream?.gameName && stream.gameName.toLowerCase().includes( 'test' ) ) return;
+		if ( stream?.gameName && stream?.gameName?.toLowerCase().includes( 'test' ) ) return;
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'streamonline',
 			user: event.broadcasterName
 		} );
 
-		this.twitch.sendStreamOnlineDataToDiscord( stream );
+		void this.twitch.sendStreamOnlineDataToDiscord( stream );
 	};
 
 	/** Subscribes to events representing a stream going offline.
@@ -100,9 +100,9 @@ export class TwitchEvents
 	onStreamOffline = ( event: EventSubStreamOfflineEvent ) =>
 	{
 		if ( !event ) return;
-		this.twitch.setStream( null );
+		void this.twitch.setStream( null );
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'streamoffline',
 			user: event.broadcasterName
 		} );
@@ -120,7 +120,7 @@ export class TwitchEvents
 		// Don't do anything if user has already followed
 		if ( this.twitch.data.getUserData( event.userId )?.follow_date ) return;
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'follow',
 			user: event.userDisplayName
 		} );
@@ -151,7 +151,7 @@ export class TwitchEvents
 		if ( eventType === 'rewardtts' && eventText )
 			eventText = eventText.substring( 0, 161 );
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: eventType,
 			user: event.userDisplayName,
 			eventText: eventText
@@ -165,7 +165,7 @@ export class TwitchEvents
 	onChannelUpdate = ( _event: EventSubChannelUpdateEvent ) =>
 	{
 		log( 'channelupdate' );
-		this.twitch.setStream();
+		void this.twitch.setStream();
 	};
 
 	/** Subscribes to events that represent an ad break beginning.
@@ -178,7 +178,7 @@ export class TwitchEvents
 		const durationSeconds = event.durationSeconds || 180;
 		log( durationSeconds );
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'adbreak',
 			user: event.broadcasterDisplayName,
 			eventCount: durationSeconds
@@ -213,7 +213,7 @@ export class TwitchEvents
 		log( 'shield active' );
 		this.twitch.toggleKillswitch( true );
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'shieldmodebegin',
 			user: event.broadcasterDisplayName
 		} );
@@ -229,7 +229,7 @@ export class TwitchEvents
 		log( 'shield inactive' );
 		this.twitch.toggleKillswitch( false );
 
-		this.twitch.processEvent( {
+		void this.twitch.processEvent( {
 			eventType: 'shieldmodeend',
 			user: event.broadcasterDisplayName
 		} );

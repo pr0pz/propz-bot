@@ -1,8 +1,8 @@
 /**
  * Alert Manager
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.4
+ * @version 1.8.0
  */
 
 import { useEffect, useState } from 'react';
@@ -13,12 +13,65 @@ import type { WebSocketData } from '@propz/types.ts';
 
 const Alerts = () =>
 {
-	const event = useEvent();
+	const event = useEvent() as CustomEvent;
 	const [currentAlert, setAlert] = useState<WebSocketData>();
 	const [eventQueue, setEventQueue] = useState<WebSocketData[]>([]);
 	const [isAnimating, setIsAnimating] = useState<boolean>(false);
-	
+
 	const events = new Map([
+		[ 'ban', { 'media': 'ban.gif' } ],
+		[ 'chatscore', { 'media': 'chatscore.webm' } ],
+		[ 'cheer', { 'media': 'cheer.webm' } ],
+		[ 'communitysub-1', {
+			'media': 'communitysub-1.webm',
+		} ],
+		[ 'communitysub-2', {
+			'media': 'communitysub-2.webm',
+		} ],
+		[ 'communitysub-3', {
+			'media': 'communitysub-3.webm',
+			'audio': 'communitysub-2.mp3'
+		} ],
+		[ 'communitysub-4', {
+			'media': 'communitysub-4.webm',
+			'audio': 'communitysub-2.mp3'
+		} ],
+		[ 'communitysub-5', {
+			'media': 'communitysub-5.webm',
+			'audio': 'communitysub-2.mp3'
+		} ],
+		[ 'communitysub-6', {
+			'media': 'communitysub-6.webm',
+			'audio': 'communitysub-2.mp3'
+		} ],
+		[ 'communitysub-7', {
+			'media': 'communitysub-2.webm',
+			'audio': 'communitysub-2.mp3'
+		} ],
+		[ 'firstchatter', { 'media': 'firstchatter.gif' } ],
+		[ 'follow', { 'media': 'follow.webm' } ],
+		[ 'kofidonation', { 'media': 'kofidonation.webm' } ],
+		[ 'kofisubscription', { 'media': 'kofidonation.webm' } ],
+		[ 'raid', { 'media': 'raid.webm' } ],
+		[ 'resub-1', { 'media': 'resub-1.webm' } ],
+		[ 'resub-2', {
+			'media': 'resub-2.webm',
+			'audio': 'resub-1.mp3'
+		} ],
+		[ 'resub-3', {
+			'media': 'resub-2.webm',
+			'audio': 'resub-1.mp3'
+		} ],
+		[ 'resub-4', {
+			'media': 'resub-2.webm',
+			'audio': 'resub-1.mp3'
+		} ],
+		[ 'resub-5', {
+			'media': 'resub-2.webm',
+			'audio': 'resub-1.mp3'
+		} ],
+		[ 'sub', { 'media': 'sub.webm' } ],
+		[ 'subgift', { 'media': 'subgift.webm' } ],
 		[ 'rewardwrongscene', { 'noAudio': true } ],
 		[ 'rewardtts', { 'noAudio': true } ]
 	]);
@@ -26,7 +79,7 @@ const Alerts = () =>
 	useEffect( () =>
 	{
 		if (
-			!event?.detail?.type ||
+			!event?.detail?.type ||
 			(
 				!events.has( event.detail.type ) &&
 				!event.detail?.extra?.titleAlert
@@ -61,13 +114,13 @@ const Alerts = () =>
 			setIsAnimating( false );
 			// ??
 			// Remove to test
-			setAlert();
+			setAlert( undefined );
 			log( `timeout passed` );
 		}, 10000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	};
 
 	/** Enqueue event in waitlist
-	 * 
+	 *
 	 * @param {WebSocketData} eventDetails All event details
 	 */
 	const enqueueEvent = ( eventDetails: WebSocketData ) =>
@@ -77,7 +130,7 @@ const Alerts = () =>
 	};
 
 	/** Process incoming events.
-	 * 
+	 *
 	 * @param {WebSocketData} eventDetails All event details
 	 */
 	const processEvent = ( eventDetails: WebSocketData ) =>
@@ -87,16 +140,12 @@ const Alerts = () =>
 	}
 
 	/** Render current alert.
-	 * 
-	 * @param {Object} data 
-	 * @param {Object} data 
-	 * @returns {React.JSX.Element}
-	 * @param {Object} data
-	 * @returns {React.JSX.Element}
+	 *
+	 * @param {WebSocketData} eventDetails
 	 */
 	const renderAlert = ( eventDetails: WebSocketData ) =>
 	{
-		return <Alert user={ eventDetails.user } profilePictureUrl={ eventDetails.profilePictureUrl } type={ eventDetails.type } title={ eventDetails.extra?.titleAlert ?? '' } count={ eventDetails.count ?? 0 } text={ eventDetails.text ?? '' } noAudio={ events.get( eventDetails.type )?.noAudio ?? false } color={ eventDetails.color } key={ eventDetails.key } />
+		return <Alert user={ eventDetails.user } profilePictureUrl={ eventDetails.profilePictureUrl } type={ eventDetails.type } title={ eventDetails.extra?.titleAlert ?? '' } count={ eventDetails.count ?? 0 } text={ eventDetails.text ?? '' } noAudio={ events.get( eventDetails.type )?.noAudio ?? false } color={ eventDetails.color } media={ events.get( eventDetails.type )?.media || '' } audio={ events.get( eventDetails.type )?.audio || eventDetails.type + '.mp3' } key={ eventDetails.key } />
 	}
 
 	if ( !currentAlert ) return;
