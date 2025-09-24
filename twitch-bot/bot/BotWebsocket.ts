@@ -2,7 +2,7 @@
  * Websocket Handler
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 1.8.2
  */
 
 import '@propz/prototypes.ts';
@@ -38,7 +38,12 @@ export class BotWebsocket
 		const wsData: WebSocketData = {
 			key: crypto.randomUUID(),
 			type: type,
-			user: user.displayName!,
+			user: user.displayName,
+			userId: user.id || '',
+			isSub: user.isSub || false,
+			isMod: user.isMod || false,
+			isVip: user.isVip || false,
+			isFollower: user.isFollower || false,
 			text: text || '',
 			count: Number( count ) || 0,
 			color: user.color || '#C7C7F1',

@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.7.19
+ * @version 1.8.2
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -436,6 +436,18 @@ export class BotData
 		return users;
 	}
 
+	/**
+	 * Check if user is a follower
+	 *
+	 * @param {string} userId
+	 * @returns {boolean}
+	 */
+	isFollower( userId: string): boolean
+	{
+		const userData = this.getUserData( userId );
+		return !!userData?.follow_date;
+	}
+
 	/** Set all twitch channel badges
 	 *
 	 * {
@@ -571,6 +583,12 @@ export class BotData
 
 			const rewardsCurrent = await this.twitchApi.channelPoints
 				.getCustomRewards( this.userId, true );
+
+			// For testing
+			// for ( const [ index, reward ] of rewardsCurrent.entries() )
+			// {
+			// 	log( `${reward.title} > ${reward.id}` );
+			// }
 
 			for ( const [ index, reward ] of rewards.entries() )
 			{

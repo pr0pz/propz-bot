@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.7.19
+ * @version 1.8.2
  */
 
 import '@propz/prototypes.ts';
@@ -628,35 +628,43 @@ export abstract class TwitchUtils
 	/** Get simple user data from ChatUser Object */
 	async convertToSimplerUser(
 		user: ChatUser | HelixUser | SimpleUser | string | null
-	)
+	): Promise<SimpleUser | null>
 	{
 		if ( !user ) return null;
 		let color = '';
+		let isSub = false;
+		let isVip = false;
+		let newUser: ChatUser | HelixUser | SimpleUser | string | null = user;
 
 		if ( typeof user === 'string' )
 		{
-			user = await this.data.getUser( user );
+			newUser = await this.data.getUser( user );
 		}
 
 		if ( user instanceof ChatUser )
 		{
 			color = user.color || '';
-			user = await this.data.getUser( user.userName );
+			isSub = user.isSubscriber ?? false;
+			isVip = user.isVip ?? false;
+			newUser = await this.data.getUser( user.userName );
 		}
 
-		if ( user instanceof HelixUser )
+		if ( newUser instanceof HelixUser )
 		{
 			return {
-				id: user.id,
-				name: user.name,
-				displayName: user.displayName,
-				color: color || await this.data.getColorForUser( user.id ),
-				isMod: this.data.mods.includes( user.name ),
-				profilePictureUrl: user.profilePictureUrl
+				id: newUser.id,
+				name: newUser.name,
+				displayName: newUser.displayName,
+				color: color || await this.data.getColorForUser( newUser.id ),
+				isMod: this.data.mods.includes( newUser.name ),
+				isSub: isSub ?? false,
+				isVip: isVip ?? false,
+				isFollower: this.data.isFollower( newUser.id ),
+				profilePictureUrl: newUser.profilePictureUrl,
 			} as SimpleUser;
 		}
 
-		return user;
+		return newUser as SimpleUser;
 	}
 
 	/** Handle kofi event

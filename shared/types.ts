@@ -360,6 +360,9 @@ export interface SimpleUser
 	displayName: string;
 	color?: string;
 	isMod?: boolean;
+	isSub?: boolean;
+	isVip?: boolean;
+	isFollower?: boolean;
 	profilePictureUrl?: string;
 }
 
@@ -368,6 +371,11 @@ export interface WebSocketData
 	key: string;
 	type: string;
 	user: string;
+	userId: string;
+	isSub: boolean;
+	isMod: boolean;
+	isVip: boolean;
+	isFollower: boolean;
 	text: string;
 	count: number | null;
 	color: string;
@@ -594,4 +602,9 @@ export interface SpotifyTokenData
 		message: string;
 		status: number;
 	};
+}
+
+export interface UserChatStyles {
+	twitch_user_id: string;
+	chat_styles: string;
 }

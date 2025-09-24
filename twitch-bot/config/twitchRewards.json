@@ -247,7 +247,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "36ea3300-493b-4468-9c58-4d7ea673b7b7",
 		"title": "This is fine",
 		"cost": 1000,
 		"backgroundColor": "#FFD68A",
@@ -255,7 +255,7 @@
 		"globalCooldown": 120,
 		"maxRedemptionsPerStream": null,
 		"maxRedemptionsPerUserPerStream": 3,
-		"userInputRequired": true,
+		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": false
 	},

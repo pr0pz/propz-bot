@@ -24,7 +24,7 @@
     opacity: 0;
     transform: translateY(5rem);
 
-    animation: slideInUp 20s ease-in-out;
+    animation: slideInUp 30s ease-in-out;
     background: var(--color-primary);
 }
 

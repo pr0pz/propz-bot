@@ -196,10 +196,10 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		commands: {
-			aliases: [ 'help', 'comandos' ],
+			aliases: [ 'help', 'comandos', 'dashboard' ],
 			message: {
-				de: 'Chat-Befehle? Schau mal hier ▶️ https://propz.de/twitch-commands',
-				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-commands'
+				de: 'Chat-Befehle? Schau mal hier ▶️ https://propz.de/twitch-dashboard',
+				en: 'Chat commands? Check here ▶️ https://propz.de/twitch-dashboard'
 			},
 			description: ''
 		},
