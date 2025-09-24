@@ -25,7 +25,7 @@ const ChatMessage = ( propz: { message: string; user: string; color?: string; ke
 
 	return (
 		<>
-			<li className={ propz.user.toLowerCase() } style={{ background: '0 !important' }} key={ propz.key }>
+			<li className={ propz.user.toLowerCase() } style={{ background: '0 !important' }}>
 				{ propz.isSub && propz.styles && <style>{ `.${propz.user.toLowerCase()}{${propz.styles}}` }</style> }
 				<div className='chat-message-wrapper browser radius border shadow'>
 					<div className='chat-user browser-header' style={{ color:propz.color }}>

@@ -29,22 +29,6 @@ const Chat = () =>
 
 	useEffect( ()=>
 	{
-		const getStyles = async () => {
-			const response = await fetch( 'https://dev.propz.de/wp-json/tdp/all-styles' );
-			if ( !response.ok ) return;
-
-			const result = await response.json();
-			if ( !result ) return;
-
-			const users = JSON.parse( result );
-
-			const stylesMap = new Map<string, string>();
-			users.forEach( ( user: UserChatStyles ) => {
-				stylesMap.set( user.twitch_user_id, user.chat_styles );
-			} );
-			setChatStyles(stylesMap);
-		}
-
 		void getStyles();
 	},
 	[]);
@@ -53,10 +37,46 @@ const Chat = () =>
 	{
 		if ( !event || typeof event !== 'object' || !('detail' in event) || !event.detail ) return;
 		const detail = event.detail as any;
+
+		// Reload CSS
+		if ( detail.type === 'command' && detail.text === 'reloadcss' )
+		{
+			void getStyles();
+			return;
+		}
+
 		if ( detail.type !== 'message' ) return;
 		processMessage( detail );
 	},
 	[event]);
+
+	/**
+	 * Get styles from wordpress
+	 *
+	 * @returns {Promise<void>}
+	 */
+	const getStyles = async (): Promise<void> => {
+		const response = await fetch( 'https://dev.propz.de/wp-json/tdp/all-styles',
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'propz-bot'
+				}
+			} );
+		if ( !response.ok ) return;
+
+		const result = await response.json();
+		if ( !result ) return;
+
+		const users = JSON.parse( result );
+
+		const stylesMap = new Map<string, string>();
+		users.forEach( ( user: UserChatStyles ) => {
+			stylesMap.set( user.twitch_user_id, user.chat_styles );
+		} );
+		setChatStyles(stylesMap);
+	}
 
 	/** Process chat message
 	 *

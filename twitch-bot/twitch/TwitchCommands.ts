@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.8.3
  */
 
 import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
@@ -45,7 +45,7 @@ export class TwitchCommands
 				if ( !options.messageObject ) return '';
 				return this.twitch.addJoke( options.messageObject );
 			},
-			description: 'Witz hinzufügen: !addjoke USERNAME joke',
+			description: 'Antworte auf eine Nachricht mit !addjoke um es zu den Jokes hinzuzufügen.',
 			disableIfOffline: false,
 			message: {
 				de: 'Joke gespeichert: #[count]',
@@ -58,7 +58,7 @@ export class TwitchCommands
 				if ( !options.messageObject ) return '';
 				return await this.twitch.addQuote( options.messageObject );
 			},
-			description: 'Zitat hinzufügen: !addquote USERNAME quote',
+			description: 'Antworte auf eine Nachricht mit !addquote um es zu den Quotes hinzuzufügen.',
 			disableIfOffline: false,
 			message: {
 				de: 'Zitat gespeichert: #[count]',
@@ -410,7 +410,6 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		joke: {
-			aliases: [ 'witz' ],
 			description: 'Random joke!',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
@@ -533,7 +532,6 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		neubrutalism: {
-			aliases: [ 'nb', 'neobrutalism' ],
 			message: {
 				de: 'Neu Brutalism ▶️ https://dribbble.com/search/neo-brutalism',
 				en: 'Neo Brutalism ▶️ https://dribbble.com/search/neo-brutalism'
@@ -581,13 +579,6 @@ export class TwitchCommands
 				en: 'If you have an Amazon Prime account, you can connect it to Twitch. Every month, you have the opportunity to subscribe to a streamer of your choice for FREE! @propz_tv would be very happy to receive YOUR Prime subscription! › twitch.tv/subs/propz_tv'
 			}
 		},
-		projekt: {
-			message: {
-				de: 'Gute Frage was ich hier mache: Ich baue an meiner Website (PHP + WordPress), an meinem Twitch Bot (Node JS), an meinem Stream (OBS), designe dolle Sachen (Figma) und spreche über meine Selbständigkeit.',
-				en: 'Good question what I\'m doing here: I\'m working on my website (PHP + WordPress), my Twitch bot (Node JS), my stream (OBS), designing cool stuff (Figma), and talking about my self-employment.'
-			},
-			description: 'Was ich mache'
-		},
 		propz: {
 			description: 'Just propz, plain and simple!',
 			handler: ( options: TwitchCommandOptions ) =>
@@ -604,7 +595,6 @@ export class TwitchCommands
 			hasSound: true
 		},
 		quote: {
-			aliases: [ 'zitat' ],
 			description: 'Random quote.',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
@@ -649,6 +639,12 @@ export class TwitchCommands
 				return 'Reloaded';
 			},
 			onlyMods: true
+		},
+		reloadcss: {
+			handler: () =>
+			{
+				return 'Chat Styles Reloaded';
+			}
 		},
 		reset: {
 			obs: [
@@ -1060,14 +1056,6 @@ export class TwitchCommands
 			],
 			onlyMods: true
 		},
-		tee: {
-			aliases: [ 'tea' ],
-			message: {
-				de: '🫖🫖🫖 Wie wärs mit nem Tee?! 🫖🫖🫖',
-				en: '🫖🫖🫖 How about a tea?! 🫖🫖🫖'
-			},
-			description: '🫖'
-		},
 		test: {
 			message: {
 				de: 'Test bestanden ▶️ Scheint zu funzen 🔥',
@@ -1216,14 +1204,6 @@ export class TwitchCommands
 				en: '@[user] is diligently watching [broadcaster]: [count] › Rank: [rank]'
 			}
 		},
-		wasser: {
-			aliases: [ 'water' ],
-			message: {
-				de: 'Zeit für nen Schluck H20 ▶️ 💦',
-				en: 'Time for a sip of H2O ▶️ 💦'
-			},
-			description: '💦'
-		},
 		weather: {
 			aliases: [ 'wetter', 'tempo' ],
 			disableIfOffline: true,
@@ -1259,7 +1239,6 @@ export class TwitchCommands
 			}
 		},
 		web: {
-			aliases: [ 'website' ],
 			message: {
 				de: 'Hier lebt das kreative Chaos ▶️ https://propz.de 🖥️',
 				en: 'Here lives the creative chaos ▶️ https://propz.de 🖥️'
