@@ -2,7 +2,7 @@
  * Emote Effects
  *
  * @author Wellington Estevo
- * @version 1.8.4
+ * @version 1.8.5
  */
 
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ const EmoteEffects = () =>
 	const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
 	const event = useEvent() as CustomEvent;
-	const events = new Set([ 'rewardrain', 'rewardtornado' ]);
+	const events = new Set([ 'rewardemoterain', 'rewardemotetornado' ]);
 
 	const configDefaults = {
 		minEmotes: 50,
@@ -76,9 +76,9 @@ const EmoteEffects = () =>
 
 		// Trigger animation
 		setIsAnimating( true );
-		if ( nextEvent.type === 'rewardrain' )
+		if ( nextEvent.type === 'rewardemoterain' )
 			emoteRain();
-		else if ( nextEvent.text === 'rewardtornado' )
+		else if ( nextEvent.text === 'rewardemotetornado' )
 			emoteTornado();
 
 		// Simulate some delay for the animation

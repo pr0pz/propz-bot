@@ -2,7 +2,7 @@
  * Chat Manager
  *
  * @author Wellington Estevo
- * @version 1.8.4
+ * @version 1.8.5
  */
 
 import { log } from '@propz/helpers.ts';
@@ -116,7 +116,7 @@ const Chat = () =>
 
 	return (
 		<>
-			<ul className="chat-messages radius">
+			<div className="chat-messages">
 				{chatMessages.map( (messageData) => (
 					<ChatMessage
 						key={messageData.key}
@@ -127,7 +127,7 @@ const Chat = () =>
 						styles={messageData.styles}
 					/>
 				))}
-			</ul>
+			</div>
 		</>
 	);
 }
