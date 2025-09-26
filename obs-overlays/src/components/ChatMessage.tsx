@@ -2,7 +2,7 @@
  * Single Chat message with Shadow DOM isolation
  *
  * @author Wellington Estevo
- * @version 1.8.5
+ * @version 1.8.6
  */
 
 import parse from 'html-react-parser';
@@ -21,7 +21,7 @@ const baseChatMessageCSS = `
 .chat-message-wrapper {
 	display: block;
 	position: relative;
-    width: 90%;
+    width: 100%;
     margin-bottom: 1.5rem;
     
     opacity: .9;
@@ -38,6 +38,7 @@ const baseChatMessageCSS = `
 }
 
 .chat-user {
+	position: relative;
     background: var(--color-primary);
     padding: 1rem 2rem;
 
