@@ -2,7 +2,7 @@
  * Single ALert
  *
  * @author Wellington Estevo
- * @version 1.8.0
+ * @version 1.8.4
  */
 
 import { useEffect, useState } from 'react';
@@ -35,7 +35,11 @@ const Alert = ( propz: {
 	// Reset Playstate
 	useEffect( () =>
 	{
-		if ( event.detail?.text !== 'clear' ) return;
+		if (
+			event?.detail?.type !== 'command' &&
+			event?.detail?.text !== 'clear'
+		) return;
+
 		setTtsPlaystate( false );
 	},
 	[event]) // eslint-disable-line react-hooks/exhaustive-deps

@@ -2,7 +2,7 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.8.0
+ * @version 1.8.4
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
@@ -89,6 +89,8 @@ export class TwitchEvents
 			eventType: 'streamonline',
 			user: event.broadcasterName
 		} );
+
+		void this.twitch.handleFocus( 10 );
 
 		void this.twitch.sendStreamOnlineDataToDiscord( stream );
 	};

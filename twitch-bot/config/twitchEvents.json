@@ -61,16 +61,6 @@
 			}
 		}
 	},
-	"rewardarbeitszeitbetrug": {
-		"obs": {
-			"requestType": "TriggerMediaInputAction",
-			"requestData": {
-				"inputName": "[Video] Arbeitszeitbetrug",
-				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
-			}
-		},
-		"disableOnFocus": true
-	},
 	"rewardboom": {
 		"disableOnFocus": true,
 		"hasVideo": true,
@@ -144,6 +134,8 @@
 		"disableOnFocus": true,
 		"hasVideo": true
 	},
+	"rewardemoterain": {},
+	"rewardemotetornado": {},
 	"rewardfireworks": {
 		"obs": [
 			{
@@ -208,10 +200,6 @@
 		"disableOnFocus": true,
 		"hasVideo": "propz",
 		"showAvatar": true
-	},
-	"rewardps1": {
-		"hasSound": true,
-		"disableOnFocus": true
 	},
 	"rewardrip": {
 		"disableOnFocus": true,

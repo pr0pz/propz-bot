@@ -2,7 +2,7 @@
  * Chat Manager
  *
  * @author Wellington Estevo
- * @version 1.8.2
+ * @version 1.8.4
  */
 
 import { log } from '@propz/helpers.ts';
@@ -23,7 +23,7 @@ interface ChatMessageData {
 const Chat = () =>
 {
 	const event = useEvent();
-	const initialMessage: ChatMessageData = { message: "Chat ist ready to rumble", user: "Propz_tv", key: "1" };
+	const initialMessage: ChatMessageData = { message: "Chat ist ready to rumble", user: "Propz_tv", key: "1", isSub: false, styles: '' };
 	const [chatMessages, setChatMessages] = useState<ChatMessageData[]>([initialMessage]);
 	const [chatStyles, setChatStyles] = useState<Map<string, string>>(new Map());
 

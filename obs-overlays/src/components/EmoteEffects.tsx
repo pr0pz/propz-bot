@@ -1,8 +1,8 @@
 /**
  * Emote Effects
- * 
+ *
  * @author Wellington Estevo
- * @version 1.0.15
+ * @version 1.8.4
  */
 
 import { useEffect, useState } from 'react';
@@ -17,8 +17,8 @@ const EmoteEffects = () =>
 	const [eventQueue, setEventQueue] = useState<WebSocketData[]>([]);
 	const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-	const event: CustomEvent = useEvent();
-	const events = new Set([ 'rain', 'tornado' ]);
+	const event = useEvent() as CustomEvent;
+	const events = new Set([ 'rewardrain', 'rewardtornado' ]);
 
 	const configDefaults = {
 		minEmotes: 50,
@@ -48,18 +48,18 @@ const EmoteEffects = () =>
 			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_60efb136afd6466e8eef3d317fd77062/static/light/3.0',
 			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_b4a4305a337c4cca9b6c1b3dc2eb86b6/animated/light/3.0'
 		]
-	}	
+	}
 
 	useEffect( () =>
 	{
-		if ( !event ) return;
-		if ( event.detail?.text === 'clear' )
+		if ( !event?.detail?.type ) return;
+		if ( event.detail.text === 'clear' )
 		{
-			setEvent();
+			setEvent( undefined );
 			return;
 		}
-		
-		if ( !events.has( event.detail.text ) ) return;
+
+		if ( !events.has( event.detail.type ) ) return;
 		setEventQueue( ( prevEvents: WebSocketData[] ) => [...prevEvents, event.detail ] )
 	},
 	[event]);
@@ -76,9 +76,9 @@ const EmoteEffects = () =>
 
 		// Trigger animation
 		setIsAnimating( true );
-		if ( nextEvent.text === 'rain' )
+		if ( nextEvent.type === 'rewardrain' )
 			emoteRain();
-		else if ( nextEvent.text === 'tornado' )
+		else if ( nextEvent.text === 'rewardtornado' )
 			emoteTornado();
 
 		// Simulate some delay for the animation
@@ -89,17 +89,17 @@ const EmoteEffects = () =>
 			setIsAnimating( false );
 			// ??
 			// Remove to test
-			setEvent();
+			setEvent( undefined );
 			document.querySelector( '#animation' )?.remove();
 			log( `event processed` );
 		}, 50000 ); // Timeout sollte mindestens so groß wie die Animationsdauer sein
 	}
 
 	/** Make Emotes Rain.
-	 * 
+	 *
 	 * Animation by Nelson Rodriques:
 	 * https://codepen.io/nelsonr/pen/NEvyWv
-	 * 
+	 *
 	 * @param {Object} configParam - Contains the rain config.
 	 */
 	const emoteRain = ( configParam?: any ) =>
@@ -159,7 +159,7 @@ const EmoteEffects = () =>
 			const dir = [-1,1][ getRandomNumber( config.maxSwingAngle / 10 ) ];
 			// Velocity = y coord change per frame (something between 1 and 2 is good)
 			const velocity = config.velocity / angle;
-			
+
 			emotes.push({
 				x: getRandomNumber( canvas.width - config.emoteSize / 2 ),
 				y: getRandomNumber( -100, canvas.height / 2 * -1 ),
@@ -173,15 +173,15 @@ const EmoteEffects = () =>
 		}
 
 		/**  Called every frame
-		 * 
-		 * @param {*} dt 
+		 *
+		 * @param {*} dt
 		 */
 		function update( dt )
 		{
 			for ( let i = 0; i < emotes.length; i++ )
 			{
 				emotes[i].y += emotes[i].v;
-				
+
 				// Out of bounds?
 				if ( emotes[i].y > canvas.height )
 				{
@@ -203,8 +203,8 @@ const EmoteEffects = () =>
 		}
 
 		/** Actually draw the stuff
-		 * 
-		 * @param {*} dt 
+		 *
+		 * @param {*} dt
 		 */
 		function draw( dt )
 		{
@@ -217,7 +217,7 @@ const EmoteEffects = () =>
 			update( dt );
 
 			ctx.clearRect( 0, 0, canvas.width, canvas.height );
-			
+
 			// Draw every single emote
 			for ( let i = 0; i < emotes.length; i++)
 			{
@@ -236,10 +236,10 @@ const EmoteEffects = () =>
 	}
 
 	/** Make the Emote Tornado.
-	 * 
+	 *
 	 * Animation by Yusuke Nakaya:
 	 * https://codepen.io/YusukeNakaya/pen/yzNBpM
-	 * 
+	 *
 	 * @param {Object} configParam - Contains the rain config
 	 */
 	const emoteTornado = ( configParam?: any ) =>
@@ -248,10 +248,10 @@ const EmoteEffects = () =>
 			...configDefaults,
 			...configParam
 		};
-		
+
 		const getRandomNumber = ( max = 1, min = 0 ) => Math.floor( Math.random() * ( max - min ) ) + min;
 		const numberOfElements = getRandomNumber( config.maxEmotes, config.minEmotes );
-		
+
 		// Create wrapper
 		const wrapper = document.createElement( 'div' );
 		wrapper.id = 'animation';
@@ -271,7 +271,7 @@ const EmoteEffects = () =>
 			100%{transform:rotateX(360deg) rotateY(540deg) rotateZ(360deg) translateY(120vh);opacity:0}
 		}
 		</style>`;
-		
+
 		wrapper.appendChild( emotesWrapper );
 
 		// Actually create all emote elements

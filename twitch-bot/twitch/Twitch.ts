@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.7.19
+ * @version 1.8.4
  */
 
 import '@propz/prototypes.ts';
@@ -130,23 +130,23 @@ export class Twitch extends TwitchUtils
 		} );
 
 		// Reactions
-		for ( const [ _index, reaction ] of Object.entries( this.data.reactions ) )
-		{
-			if (
-				!reaction?.trigger ||
-				!reaction?.message ||
-				!chatMessage.match( reaction.trigger.toRegExp() )
-			)
-			{
-				continue;
-			}
-
-			let message = getMessage( reaction.message );
-			message = message.replace( '[user]', user.displayName );
-			// Reply
-			// this.chat.sendMessage( message, msg );
-			void this.chat.sendAction( message );
-		}
+		// for ( const [ _index, reaction ] of Object.entries( this.data.reactions ) )
+		// {
+		// 	if (
+		// 		!reaction?.trigger ||
+		// 		!reaction?.message ||
+		// 		!chatMessage.match( reaction.trigger.toRegExp() )
+		// 	)
+		// 	{
+		// 		continue;
+		// 	}
+		//
+		// 	let message = getMessage( reaction.message );
+		// 	message = message.replace( '[user]', user.displayName );
+		// 	// Reply
+		// 	// this.chat.sendMessage( message, msg );
+		// 	void this.chat.sendAction( message );
+		// }
 
 		if ( !this.isStreamActive )
 			return;

@@ -2,10 +2,10 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.8.3
+ * @version 1.8.4
  */
 
-import { getTimePassed, log, sanitizeMessage } from '@propz/helpers.ts';
+import { log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../external/Deepl.ts';
 import { Gemini } from '../external/Gemini.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
@@ -102,7 +102,7 @@ export class TwitchCommands
 			cooldown: 120,
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent( {
+				void this.twitch.processEvent( {
 					eventType: 'ban',
 					user: options.param,
 					isTest: true
@@ -154,6 +154,12 @@ export class TwitchCommands
 		calmdown: {
 			cooldown: 20,
 			hasSound: true,
+			disableOnFocus: true
+		},
+		chat: {
+			aliases: [ 'icq' ],
+			description: 'Ein Zeichen, dass propz den Chat durchlesen soll',
+			hasSound: 'icq',
 			disableOnFocus: true
 		},
 		chatscore: {
@@ -332,7 +338,6 @@ export class TwitchCommands
 			description: 'First-Chat score'
 		},
 		floripa: {
-			aliases: [ 'florianopolis' ],
 			message: 'Floripa › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
 		},
 		fokus: {
@@ -385,11 +390,6 @@ export class TwitchCommands
 			hasSound: true,
 			hasVideo: true,
 			onlyMods: true
-		},
-		icq: {
-			aliases: [ 'chat' ],
-			hasSound: true,
-			disableOnFocus: true
 		},
 		instagram: {
 			aliases: [ 'insta' ],
@@ -455,11 +455,10 @@ export class TwitchCommands
 		},
 		ko: {
 			cooldown: 60,
-			hasVideo: true
+			hasVideo: true,
 		},
-		lachen: {
-			aliases: [ 'laugh', 'laughter' ],
-			hasSound: true,
+		haha: {
+			hasSound: 'lachen',
 			onlyMods: true
 		},
 		letsgo: {
@@ -564,7 +563,6 @@ export class TwitchCommands
 				}
 			]
 		},
-		peitsch: {},
 		playlist: {
 			description: 'Link zur aktuellen Playlist',
 			handler: async ( _options: TwitchCommandOptions ) =>
@@ -583,7 +581,7 @@ export class TwitchCommands
 			description: 'Just propz, plain and simple!',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent( {
+				void this.twitch.processEvent( {
 					eventType: 'propz',
 					user: options.param || this.twitch.data.userName
 				} );
@@ -616,7 +614,7 @@ export class TwitchCommands
 					);
 					if ( !raid ) return;
 
-					this.twitch.processEvent( {
+					void this.twitch.processEvent( {
 						eventType: 'startraid',
 						user: target
 					} );
@@ -627,10 +625,6 @@ export class TwitchCommands
 				}
 			},
 			onlyMods: true
-		},
-		rain: {
-			cooldown: 60,
-			description: 'Let it rain'
 		},
 		reload: {
 			handler: async () =>
@@ -652,24 +646,6 @@ export class TwitchCommands
 					requestType: 'SetSourceFilterEnabled',
 					requestData: {
 						sourceName: '[Video] Colorful',
-						sourceUuid: '',
-						filterName: 'reset',
-						filterEnabled: true
-					}
-				},
-				{
-					requestType: 'SetSourceFilterEnabled',
-					requestData: {
-						sourceName: '[Video] Halloween',
-						sourceUuid: '',
-						filterName: 'reset',
-						filterEnabled: true
-					}
-				},
-				{
-					requestType: 'SetSourceFilterEnabled',
-					requestData: {
-						sourceName: '[Video] Christmas',
 						sourceUuid: '',
 						filterName: 'reset',
 						filterEnabled: true
@@ -761,7 +737,7 @@ export class TwitchCommands
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
-						inputName: '[Browser] Alerts',
+						inputName: '[Browser] Alerts/Mediaboard',
 						inputUuid: '',
 						propertyName: 'refreshnocache'
 					}
@@ -785,7 +761,15 @@ export class TwitchCommands
 				{
 					requestType: 'PressInputPropertiesButton',
 					requestData: {
-						inputName: '[Browser] Stream Events Vertical',
+						inputName: '[Browser] Focus',
+						inputUuid: '',
+						propertyName: 'refreshnocache'
+					}
+				},
+				{
+					requestType: 'PressInputPropertiesButton',
+					requestData: {
+						inputName: '[Browser] Wetter',
 						inputUuid: '',
 						propertyName: 'refreshnocache'
 					}
@@ -803,7 +787,6 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		rewardsongrequest: {
-			aliases: [ 'sr' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				const s = new Spotify( this.twitch.data.db );
@@ -819,7 +802,6 @@ export class TwitchCommands
 			}
 		},
 		roadmap: {
-			aliases: [ 'roadmaps' ],
 			message: {
 				de: 'Roadmaps für alle DEVs und die es werden wollen ▶️ https://roadmap.sh',
 				en: 'Roadmaps for all DEVs and aspiring developers ▶️ https://roadmap.sh'
@@ -921,7 +903,7 @@ export class TwitchCommands
 		slap: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.processEvent( {
+				void this.twitch.processEvent( {
 					eventType: 'slap',
 					user: options.param || options.sender.displayName,
 					sender: options.param ?
@@ -938,7 +920,7 @@ export class TwitchCommands
 		so: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.chat.sendShoutout( options.param );
+				void this.twitch.chat.sendShoutout( options.param );
 			},
 			onlyMods: true
 		},
@@ -1032,7 +1014,7 @@ export class TwitchCommands
 		streamonline: {
 			handler: () =>
 			{
-				this.twitch.sendStreamOnlineDataToDiscord();
+				void this.twitch.sendStreamOnlineDataToDiscord();
 			},
 			onlyMods: true
 		},
@@ -1078,11 +1060,10 @@ export class TwitchCommands
 			description: 'Trends für Kreative'
 		},
 		time: {
-			aliases: [ 'zeit', 'uhrzeit' ],
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
 				return new Date().toLocaleTimeString( 'de-DE', {
-					timeZone: 'America/Sao_Paulo'
+					timeZone: 'Europe/Berlin'
 				} );
 			}
 		},
@@ -1100,12 +1081,8 @@ export class TwitchCommands
 			},
 			description: 'Alle benutzen Tools'
 		},
-		tornado: {
-			cooldown: 60,
-			description: 'Tornado twister!'
-		},
 		translate: {
-			aliases: [ 't', 'deepl' ],
+			aliases: [ 't' ],
 			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
@@ -1122,7 +1099,7 @@ export class TwitchCommands
 							message,
 							this.twitch.streamLanguage
 						);
-						this.twitch.chat.sendMessage( translation, options.messageObject );
+						void this.twitch.chat.sendMessage( translation, options.messageObject );
 						return '';
 					}
 				}
@@ -1163,14 +1140,6 @@ export class TwitchCommands
 					'@[user] has shed the lurk costume! 👋 Welcome back to the creative spotlight.',
 					'The Lurk mode is over - @[user] returns! 🚀 Glad to have you back in the code cosmos!'
 				]
-			}
-		},
-		uptime: {
-			description: 'So lange läuft der Stream',
-			disableIfOffline: true,
-			handler: ( _options: TwitchCommandOptions ) =>
-			{
-				return getTimePassed( Date.now() - this.twitch.streamStartTime );
 			}
 		},
 		uwu: {
@@ -1255,9 +1224,10 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
-		wtfisgoingon: {
-			hasSound: true,
-			onlyMods: true
+		wtf: {
+			cooldown: 120,
+			disableOnFocus: true,
+			hasSound: 'wtfisgoingon'
 		},
 		yeah: {
 			cooldown: 20,
@@ -1288,7 +1258,7 @@ export class TwitchCommands
 			return '';
 		}
 
-		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?\!(\w+)/ig );
+		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?!(\w+)/ig );
 		const commandName = matches?.[0]?.[1] ?? '';
 
 		for ( const [ cmdName, cmd ] of this.commands.entries() )
