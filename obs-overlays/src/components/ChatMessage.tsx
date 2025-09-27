@@ -2,7 +2,7 @@
  * Single Chat message with Shadow DOM isolation
  *
  * @author Wellington Estevo
- * @version 1.8.6
+ * @version 1.8.8
  */
 
 import parse from 'html-react-parser';
@@ -19,9 +19,7 @@ const baseChatMessageCSS = `
 }
 
 .chat-message-wrapper {
-	display: block;
 	position: relative;
-    width: 100%;
     margin-bottom: 1.5rem;
     
     opacity: .9;
@@ -49,6 +47,15 @@ const baseChatMessageCSS = `
     
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
+}
+
+.chat-user-avatar {
+	border-radius: 100%;
+	width: 6rem;
+	position: absolute;
+	right: 2rem;
+	top: -1rem;
+	z-index: 1;
 }
 
 .chat-message {
@@ -89,8 +96,15 @@ const baseChatMessageCSS = `
 }
 `;
 
-const ShadowChatMessage = ( propz: { message: string; user: string; color?: string; userStyles?: string } ) => {
-	const event = useEvent();
+const ShadowChatMessage = ( propz: {
+	message: string;
+	user: string;
+	color?: string;
+	userStyles?: string;
+	profilePictureUrl: string
+} ) =>
+{
+	const event = useEvent() as CustomEvent;
 	const [chatMessage, setMessage] = useState<string>( propz.message );
 	const [chatUser, setUser] = useState<string>( propz.user );
 
@@ -99,12 +113,14 @@ const ShadowChatMessage = ( propz: { message: string; user: string; color?: stri
 		if ( (event as { detail?: { text?: string } })?.detail?.text !== 'clear' ) return;
 		setMessage( '*** STREAM HYGIENE ***' );
 		setUser( '*** STREAM HYGIENE ***' );
-	}, [event]);
+	},
+	[event]);
 
 	return (
 		<div className='chat-message-wrapper'>
 			<div className='chat-user' style={{ color: propz.color }}>
-				{ chatUser }:
+				<div className='chat-user-name'>{ chatUser }</div>
+				{ propz.profilePictureUrl && <img src={ propz.profilePictureUrl } alt={ chatUser } className='chat-user-avatar' /> }
 			</div>
 			<div className='chat-message'>
 				{ parse( chatMessage.replaceAll( '\\', '' ) ) }
@@ -113,11 +129,20 @@ const ShadowChatMessage = ( propz: { message: string; user: string; color?: stri
 	);
 };
 
-const ChatMessage = ( propz: { message: string; user: string; color?: string; key: string, isSub: boolean, styles: string } ) =>
+const ChatMessage = ( propz: {
+	message: string;
+	user: string;
+	color?: string;
+	key: string,
+	isSub: boolean,
+	styles: string,
+	profilePictureUrl: string
+} ) =>
 {
 	const shadowRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
+	useEffect(() =>
+	{
 		if (!shadowRef.current) return;
 
 		const shadow = shadowRef.current.attachShadow({ mode: 'open' });
@@ -144,6 +169,7 @@ const ChatMessage = ( propz: { message: string; user: string; color?: string; ke
 				user={propz.user}
 				color={propz.color}
 				userStyles={propz.styles}
+				profilePictureUrl={propz.profilePictureUrl}
 			/>
 		);
 

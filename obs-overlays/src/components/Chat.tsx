@@ -2,7 +2,7 @@
  * Chat Manager
  *
  * @author Wellington Estevo
- * @version 1.8.5
+ * @version 1.8.8
  */
 
 import { log } from '@propz/helpers.ts';
@@ -18,6 +18,7 @@ interface ChatMessageData {
 	isSub: boolean;
 	styles: string;
 	key: string;
+	profilePictureUrl?: string;
 }
 
 const Chat = () =>
@@ -84,6 +85,17 @@ const Chat = () =>
 	 */
 	const processMessage = ( messageData: WebSocketData ) =>
 	{
+		let profilePictureUrl = '';
+		if (
+			messageData.isFollower ||
+			messageData.isVip ||
+			messageData.isMod ||
+			messageData.isSub
+		)
+		{
+			profilePictureUrl = messageData.profilePictureUrl ?? '';
+		}
+
 		const messageStyle = chatStyles.get( messageData.userId );
 		const newMessageData: ChatMessageData = {
 			message: messageData.text,
@@ -91,7 +103,8 @@ const Chat = () =>
 			color: messageData.color,
 			isSub: messageData.isSub,
 			styles: messageStyle ?? '',
-			key: messageData.key
+			key: messageData.key,
+			profilePictureUrl: profilePictureUrl
 		};
 
 		console.log( newMessageData );
@@ -125,6 +138,7 @@ const Chat = () =>
 						color={messageData.color}
 						isSub={messageData.isSub}
 						styles={messageData.styles}
+						profilePictureUrl={messageData.profilePictureUrl ?? ''}
 					/>
 				))}
 			</div>
