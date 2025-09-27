@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.8.0
+ * @version 1.8.7
  */
 
 import '@propz/prototypes.ts';
@@ -47,17 +47,25 @@ export class TwitchChat {
 	connect() {
 		this.connectTimer = clearTimer(this.connectTimer);
 
-		try {
+		try
+		{
 			if (!this.chatClient.isConnected && !this.chatClient.isConnecting) {
 				this.chatClient.connect();
 			}
-		} catch (error: unknown) {
+		}
+		catch ( error: unknown )
+		{
 			log(error);
-			if (
-				error instanceof Error &&
-				error.message.toLowerCase() != 'connection already present'
-			) {
-				log(`Error connecting to Twitter Chat › retry in 30s`);
+
+			if ( error instanceof Error )
+			{
+				if ( error.message.toLowerCase().includes('connection already present') )
+				{
+					log('Skipping reconnect - connection exists');
+					return;
+				}
+
+				log(`Error connecting to Twitch Chat › retry in 30s`);
 				this.connectTimer = setTimeout(() => this.connect(), 30000);
 			}
 		}
@@ -195,8 +203,16 @@ export class TwitchChat {
 		}
 
 		log(reason);
-		log(`Disconnected unexpectedly › Trying to reconnect in 30s`);
-		setTimeout(() => this.connect(), 30000);
+		log(`Disconnected unexpectedly › Trying to reconnect in 30s`)
+		this.connectTimer = clearTimer(this.connectTimer);
+		this.connectTimer = setTimeout(() =>
+		{
+			if (!this.chatClient.isConnected && !this.chatClient.isConnecting)
+			{
+				log('Manual reconnect after timeout');
+				this.connect();
+			}
+		}, 60000);
 	};
 
 	/** Fires when authentication fails.

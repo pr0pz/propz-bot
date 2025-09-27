@@ -6,13 +6,20 @@
 			"interpreter": "deno",
 			"interpreter_args": "run -A --unstable-cron --unstable-detect-cjs --env-file",
 			"max_memory_restart": "250M",
+			"kill_timeout": 1000,
+			"min_uptime": "10s",
+			"max_restarts": 3,
+			"restart_delay": 5000,
 			"instances": 1,
 			"autorestart": true,
 			"watch": false,
 			"log_date_format": "YYYY-MM-DD HH:mm:ss Z",
 			"merge_logs": true,
 			"out_file": "./logs/propzbot-out.log",
-			"error_file": "./logs/propzbot-error.log"
+			"error_file": "./logs/propzbot-error.log",
+			"monitor_options": {
+				"memory_check_interval": 5000
+			}
 		}
 	]
 }
