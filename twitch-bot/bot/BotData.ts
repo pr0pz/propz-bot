@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.8.2
+ * @version 1.8.9
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -538,6 +538,7 @@ export class BotData
 			const follow: TwitchEventData = {
 				type: 'follow',
 				user_id: follower.userId,
+				user_name: follower.userName,
 				timestamp: followTimestamp
 			};
 
@@ -668,7 +669,7 @@ export class BotData
 		try
 		{
 			// Insert user first if not exists (SQLite foreign key problem)
-			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id) VALUES (?)', [ event.user_id ] );
+			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id, name) VALUES (?, ?)', [ event.user_id, event.user_name ] )
 		}
 		catch ( error: unknown ) { log( error ) }
 
@@ -796,7 +797,10 @@ export class BotData
 			const userData = this.getUserData( user.id );
 			// Add user if not in DB
 			if ( !userData )
-				this.db.query( `INSERT OR IGNORE INTO twitch_users (id) VALUES (?)`, [ user.id ] );
+			{
+				this.db.query( `INSERT OR IGNORE INTO twitch_users (id)
+                                VALUES (?)`, [ user.id ] );
+			}
 
 			const newUserData = [
 				user.displayName,

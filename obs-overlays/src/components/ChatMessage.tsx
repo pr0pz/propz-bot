@@ -2,7 +2,7 @@
  * Single Chat message with Shadow DOM isolation
  *
  * @author Wellington Estevo
- * @version 1.8.8
+ * @version 1.8.9
  */
 
 import parse from 'html-react-parser';
@@ -20,9 +20,7 @@ const baseChatMessageCSS = `
 
 .chat-message-wrapper {
 	position: relative;
-    margin-bottom: 1.5rem;
     
-    opacity: .9;
     background: var(--color-primary);
     box-shadow: .5rem .5rem 0 var(--color-dark);
     border: var(--border-size) solid var(--color-dark);
@@ -31,13 +29,10 @@ const baseChatMessageCSS = `
     color: #fff;
     font-family: var(--font-family-chat);
     line-height: 1.2;
-
-    animation: slideInUp 30s ease-in-out;
 }
 
 .chat-user {
 	position: relative;
-    background: var(--color-primary);
     padding: 1rem 2rem;
 
     font-family: var(--font-family-headline);
@@ -74,25 +69,6 @@ const baseChatMessageCSS = `
 
 .chat-message img {
     max-width: 100%;
-}
-
-@keyframes slideInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(5rem);
-    }
-    5% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    95% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-1rem);
-    }
 }
 `;
 
@@ -179,7 +155,7 @@ const ChatMessage = ( propz: {
 		};
 	}, [propz.message, propz.user, propz.color, propz.styles, propz.isSub]);
 
-	return <div ref={shadowRef} className={propz.user.toLowerCase()} style={{ background: '0 !important' }}></div>;
+	return <div ref={shadowRef} className={propz.user.toLowerCase() + ` chat-message-wrapper`}></div>;
 }
 
 export default ChatMessage;

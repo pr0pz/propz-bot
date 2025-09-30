@@ -2,13 +2,41 @@
  * Chat list
  *
  * @author Wellington Estevo
- * @version 1.6.6
+ * @version 1.8.9
  */
 
 .chat-messages {
-    display: flex;
+    display: grid;
+    gap: 1.5rem;
     flex-direction: column;
     align-self: flex-end;
     width: 100%;
-    padding: 0 .5rem .5rem;
+    padding: 0 .5rem 1rem;
+}
+
+.chat-message-wrapper {
+    position: relative;
+    background: 0;
+    opacity: 0;
+    transform: translateY(5rem);
+    animation: slideInUp 30s ease-in-out;
+}
+
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(5rem);
+    }
+    5% {
+        opacity: .9;
+        transform: translateY(0);
+    }
+    95% {
+        opacity: .9;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-1rem);
+    }
 }

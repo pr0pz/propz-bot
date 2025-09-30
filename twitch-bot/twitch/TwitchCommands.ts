@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.8.4
+ * @version 1.8.9
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -635,10 +635,7 @@ export class TwitchCommands
 			onlyMods: true
 		},
 		reloadcss: {
-			handler: () =>
-			{
-				return 'Chat Styles Reloaded';
-			}
+			handler: () => ''
 		},
 		reset: {
 			obs: [
@@ -1107,6 +1104,12 @@ export class TwitchCommands
 					options.message,
 					this.twitch.streamLanguage
 				);
+			}
+		},
+		tucalendi: {
+			message: {
+				de: 'Vollständig KI-gemanagte Terminbuchung 🗓️ https://www.tucalendi.com/de/',
+				en: 'Fully AI-powered appointment booking 🗓️ https://www.tucalendi.com/de/'
 			}
 		},
 		twurple: {

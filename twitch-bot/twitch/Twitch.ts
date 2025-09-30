@@ -228,6 +228,7 @@ export class Twitch extends TwitchUtils
 			this.data.addEvent( {
 				type: eventType,
 				user_id: user.id || '',
+				user_name: user.name,
 				timestamp: Math.floor( Date.now() / 1000 ),
 				count: eventCount
 			} );

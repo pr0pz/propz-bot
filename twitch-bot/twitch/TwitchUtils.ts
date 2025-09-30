@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.8.2
+ * @version 1.8.9
  */
 
 import '@propz/prototypes.ts';
@@ -344,7 +344,7 @@ export abstract class TwitchUtils
 		{
 			if ( messagePart.type === 'text' )
 			{
-				messageParts.push( messagePart.text );
+				messageParts.push( `<span>${messagePart.text}</span>` );
 				continue;
 			}
 
