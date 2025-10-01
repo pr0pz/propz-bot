@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.8.9
+ * @version 1.8.10
  */
 
 import '@propz/prototypes.ts';
@@ -191,6 +191,38 @@ export abstract class TwitchUtils
 		message = message.replace( '[count]', count.toString() );
 		message = message.replace( '[rank]', rank.toString() );
 		message = message.replace( '[broadcaster]', this.data.userDisplayName );
+
+		return message;
+	}
+
+	/**
+	 * Get ranking text for chat message
+	 *
+	 * @param {keyof } type
+	 * @returns {string}
+	 */
+	getRankingText( type: keyof TwitchUserData = 'message_count' ): string
+	{
+		if ( !type ) return '';
+
+		const usersData = this.data.getUsersData();
+		if ( !usersData ) return '';
+
+		// Sort users by type
+		const sortedUsers = usersData
+			.entries()
+			.filter( ( [ _user_id, user ] ) => user[type] as number > 0 )
+			.map( ( [ _user_id, user ] ) => [ user.name, user[type] as number ] )
+			.toArray()
+			.sort( ( a, b ) => ( b[1] as number ) - ( a[1] as number ) )
+			.slice( 0, 10 );
+
+		let message = '';
+		for( let i = 0; i < sortedUsers.length; i++ )
+		{
+			if ( message ) message += ' propztPROPZ ';
+			message += `${i + 1}. ${sortedUsers[i][0]}: ${sortedUsers[i][1]}`;
+		}
 
 		return message;
 	}

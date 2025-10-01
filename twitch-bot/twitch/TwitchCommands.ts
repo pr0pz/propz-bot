@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.8.9
+ * @version 1.8.10
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -163,7 +163,6 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		chatscore: {
-			aliases: [ 'chatranking' ],
 			description: 'Anzahl geschriebener Chat-Nachrichten',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
@@ -176,6 +175,12 @@ export class TwitchCommands
 			message: {
 				de: '@[user] hat [count] Chat-Nachrichten geschrieben › Rank: [rank]',
 				en: '@[user] has written [count] chat messages › Rank: [rank]'
+			}
+		},
+		chatranking: {
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.getRankingText( 'message_count' );
 			}
 		},
 		chatting: {
@@ -322,7 +327,6 @@ export class TwitchCommands
 			}
 		},
 		firstscore: {
-			aliases: [ 'firstranking' ],
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				return await this.twitch.getUserScoreText(
@@ -336,6 +340,12 @@ export class TwitchCommands
 				en: '@[user] was [count]x first chatter › Rank: [rank]'
 			},
 			description: 'First-Chat score'
+		},
+		firstranking: {
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.getRankingText( 'first_count' );
+			}
 		},
 		floripa: {
 			message: 'Floripa › https://maps.app.goo.gl/nh8erwbu112ytM3V7'
@@ -585,6 +595,26 @@ export class TwitchCommands
 					eventType: 'propz',
 					user: options.param || this.twitch.data.userName
 				} );
+			}
+		},
+		protonmail: {
+			message: {
+				de: 'Sichere E-Mail, die Ihre Privatsphäre schützt › https://propz.de/proton-mail',
+				en: 'Secure email that protects your privacy › https://propz.de/proton-mail'
+			}
+		},
+		protonpass: {
+			aliases: [ 'proton' ],
+			message: {
+				de: 'Der datenschutzfreundliche Passwortmanager, dem Streamer vertrauen › https://propz.de/proton-pass',
+				en: 'The privacy focused password manager that streamers trust › https://propz.de/proton-pass'
+			}
+		},
+		protonvpn: {
+			aliases: [ 'vpn' ],
+			message: {
+				de: 'Surfen Sie privat mit einem sicheren VPN, das Ihre Privatsphäre schützt. › https://propz.de/proton-vpn',
+				en: 'Browse privately with a secure VPN that safeguards your privacy. › https://propz.de/proton-vpn'
 			}
 		},
 		pun: {
@@ -1109,7 +1139,7 @@ export class TwitchCommands
 		tucalendi: {
 			message: {
 				de: 'Vollständig KI-gemanagte Terminbuchung 🗓️ https://www.tucalendi.com/de/',
-				en: 'Fully AI-powered appointment booking 🗓️ https://www.tucalendi.com/de/'
+				en: 'Fully AI-powered appointment booking 🗓️ https://www.tucalendi.com/en/'
 			}
 		},
 		twurple: {
