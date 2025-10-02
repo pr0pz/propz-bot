@@ -1,5 +1,5 @@
 -- BotData Database Schema
--- Version 1.7.0
+-- Version 1.9.0
 
 -- Authentication
 CREATE TABLE IF NOT EXISTS auth (
@@ -19,7 +19,10 @@ CREATE TABLE IF NOT EXISTS twitch_users (
     message_count INTEGER DEFAULT 0,
     first_count INTEGER DEFAULT 0,
     sub_count INTEGER DEFAULT 0,
-    subgift_count INTEGER DEFAULT 0
+    gift_count INTEGER DEFAULT 0,
+    gift_subs INTEGER DEFAULT 0,
+    raid_count INTEGER DEFAULT 0,
+    raid_viewers INTEGER DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_users_user_name ON twitch_users(name);
 CREATE INDEX IF NOT EXISTS idx_users_follow_date ON twitch_users (follow_date);

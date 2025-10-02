@@ -2,20 +2,19 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.8.9
+ * @version 1.9.0
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
-import type { SimpleUser, TwitchBadge, TwitchBadgeVersion, TwitchEmote, TwitchEvent, TwitchEventData, TwitchJoke, TwitchJokeRow, TwitchQuote, TwitchQuoteRow, TwitchReaction, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { SimpleUser, TwitchEmote, TwitchEvent, TwitchEventData, TwitchJoke, TwitchJokeRow, TwitchQuote, TwitchQuoteRow, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
 import type { ApiClient } from '@twurple/api';
 import type { Database } from './Database.ts';
 
 // Config
 import discordEvents from '../config/discordEvents.json' with { type: 'json' };
 import events from '../config/twitchEvents.json' with { type: 'json' };
-import reactions from '../config/twitchReactions.json' with { type: 'json' };
 import rewards from '../config/twitchRewards.json' with { type: 'json' };
 import timers from '../config/twitchTimers.json' with { type: 'json' };
 
@@ -32,14 +31,12 @@ export class BotData
 	// Config
 	public discordEvents: Map<string, TwitchEvent>;
 	public events: Map<string, TwitchEvent>;
-	public reactions: TwitchReaction[] = reactions;
 	public rewards: TwitchReward[] = rewards;
 	public timers: Map<string, TwitchTimers>;
 
 	// Dynamic
 	public twitchUser: HelixUser | null = null;
 	public mods: string[] = [];
-	public badges: TwitchBadge[] = [];
 	public emotes: Map<string, string> = new Map();
 	public bots: string[] = [];
 
@@ -55,7 +52,6 @@ export class BotData
 	async init()
 	{
 		await this.setUser();
-		// this.setBadges();
 		void this.setEmotes();
 		void this.setFollowers();
 		void this.setMods();
@@ -369,38 +365,25 @@ export class BotData
 	{
 		try
 		{
-			const result = this.db.queryEntries(
-				`SELECT
-					id,
-					name,
-					profile_picture,
-					color,
-					follow_date,
-					message_count,
-					first_count
-				FROM twitch_users
-				WHERE id = ?`,
-				[ userId ]
-			);
-
-			if ( !result || result.length === 0 )
-				return;
-
+			const result = this.db.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+			if ( !result || result.length === 0 ) return;
 			return {
-				id: result[0]['id'],
-				name: result[0]['name'],
-				profile_picture: result[0]['profile_picture'],
-				color: result[0]['color'],
-				follow_date: result[0]['follow_date'],
-				message_count: result[0]['message_count'],
-				first_count: result[0]['first_count']
+				id: result[0],
+				name: result[1],
+				profile_picture: result[2],
+				color: result[3],
+				follow_date: result[4],
+				message_count: result[5],
+				first_count: result[6],
+				sub_count: result[7],
+				gift_count: result[8],
+				gift_subs: result[9],
+				raid_count: result[10],
+				raid_viewers: result[11],
 			} as TwitchUserData;
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return;
-		}
+		catch ( error: unknown ) { log( error ) }
+		return;
 	}
 
 	/** Get data for twitch user/s
@@ -422,11 +405,16 @@ export class BotData
 				users.set( user.id, {
 					id: user.id,
 					name: user.name,
+					profile_picture: user.profile_picture ?? '',
+					color: user.color ?? '',
 					follow_date: user.follow_date,
 					message_count: user.message_count,
 					first_count: user.first_count,
-					profile_picture: '',
-					color: ''
+					sub_count: user.sub_count,
+					gift_count: user.gift_count,
+					gift_subs: user.gift_subs,
+					raid_count: user.raid_count,
+					raid_viewers: user.raid_viewers,
 				} );
 			}
 
@@ -446,56 +434,6 @@ export class BotData
 	{
 		const userData = this.getUserData( userId );
 		return !!userData?.follow_date;
-	}
-
-	/** Set all twitch channel badges
-	 *
-	 * {
-	 * 		id: 'bits',
-	 * 		versions: [
-	 * 			{
-	 * 				id: 'xxx',
-	 * 				name: 'name',
-	 * 				url: 'https...'
-	 * 			}, ...
-	 * 		]
-	 * }, ...
-	 */
-	async setBadges()
-	{
-		try
-		{
-			const channelBadges = await this.twitchApi.chat.getChannelBadges( this.userId );
-			const globalBadges = await this.twitchApi.chat.getGlobalBadges();
-
-			if ( !channelBadges && !globalBadges )
-				return;
-
-			const badges = [];
-			for ( const badge of [ ...channelBadges, ...globalBadges ] )
-			{
-				const versions = [];
-				for ( const badgeVersion of badge.versions )
-				{
-					const ev: TwitchBadgeVersion = {
-						id: badgeVersion.id,
-						name: badgeVersion.title,
-						url: badgeVersion.getImageUrl( 2 )
-					};
-					versions.push( ev );
-				}
-
-				const e: TwitchBadge = {
-					id: badge.id,
-					versions: versions
-				};
-
-				badges.push( e );
-			}
-
-			this.badges = badges;
-		}
-		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Set all twitch emotes */
@@ -537,8 +475,7 @@ export class BotData
 			};
 			const follow: TwitchEventData = {
 				type: 'follow',
-				user_id: follower.userId,
-				user_name: follower.userName,
+				user: followerData,
 				timestamp: followTimestamp
 			};
 
@@ -546,7 +483,6 @@ export class BotData
 			if ( this.getUserData( follower.userId )?.follow_date )
 				continue;
 
-			this.updateUserData( followerData, 'follow_date', followTimestamp );
 			this.addEvent( follow );
 		}
 	}
@@ -657,28 +593,103 @@ export class BotData
 		}
 	}
 
+	/**
+	 * Add user to DB
+	 *
+	 * @param {number} userId
+	 * @param {string} userName
+	 */
+	addUserToDB( userId: number|string, userName: string ): TwitchUserData|undefined
+	{
+		try
+		{
+			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id, name) VALUES (?, ?)', [ userId, userName ] );
+			return {
+				id: userId.toString(),
+				name: userName,
+				profile_picture: '',
+				color: '#C7C7F1',
+				follow_date: 0,
+				message_count: 0,
+				first_count: 0,
+				sub_count: 0,
+				gift_count: 0,
+				gift_subs: 0,
+				raid_count: 0,
+				raid_viewers: 0
+			}
+		}
+		catch ( error: unknown ) { log( error ) }
+		return undefined;
+	}
+
 	/** Add new event */
 	addEvent( event: TwitchEventData )
 	{
 		if (
 			!event ||
+			// No id? Probably kofi event
+			!event.user.id ||
 			event.type?.startsWith( 'reward' ) ||
 			this.eventExists( event )
 		) return;
 
-		try
-		{
-			// Insert user first if not exists (SQLite foreign key problem)
-			this.db.query( 'INSERT OR IGNORE INTO twitch_users (id, name) VALUES (?, ?)', [ event.user_id, event.user_name ] )
-		}
-		catch ( error: unknown ) { log( error ) }
+		// First try to add user to DB to prevent key constraint errors
+		void this.addUserToDB( event.user.id, event.user.name );
 
+		// Add to event table
 		try
 		{
 			this.db.query(
 				'INSERT INTO twitch_events (type, user_id, timestamp, count) VALUES (?, ?, ?, ?)',
-				[ event.type, event.user_id, event.timestamp, event.count ?? 0 ]
+				[ event.type, event.user.id, event.timestamp, event.count ?? 0 ]
 			);
+		}
+		catch ( error: unknown ) { log( error ) }
+
+		// Update user count data based on event
+		this.updateUserCountData( event );
+	}
+
+	/**
+	 * Update User count data based on event
+	 *
+	 * @param {} event
+	 */
+	updateUserCountData( event: TwitchEventData ): void
+	{
+		let type = '';
+		let value = event.count ?? 1;
+
+		if ( event.type === 'sub' || event.type.startsWith('resub') )
+		{
+			type = 'sub_count';
+			value = 1;
+		}
+		else if ( event.type === 'subgift' || event.type.startsWith('communitysub') )
+		{
+			type = 'gift_count';
+		}
+		else if ( event.type === 'raid' )
+		{
+			type = 'raid_count';
+		}
+		else if ( event.type === 'follow')
+		{
+			type = 'follow_date';
+			value = event.timestamp;
+		}
+		else {
+			return;
+		}
+
+		try
+		{
+			this.updateUserData( event.user, type, value );
+			if ( type === 'gift_count' )
+				this.updateUserData( event.user, 'gift_subs', value );
+			else if ( type === 'raid_count' )
+				this.updateUserData( event.user, 'raid_viewers', value );
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
@@ -741,14 +752,14 @@ export class BotData
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.name
+							event.name == eventToCheck.user.name
 						);
 					}
 					else
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.name &&
+							event.name == eventToCheck.user.name &&
 							event.count === eventToCheck.count &&
 							(
 								event.timestamp === eventToCheck.timestamp ||
@@ -787,46 +798,53 @@ export class BotData
 	updateUserData(
 		user: SimpleUser,
 		dataName: string,
-		dataValue: string | number = ''
+		dataValue: number = 1
 	)
 	{
 		if ( !user?.id || !dataName ) return;
 
 		try
 		{
-			const userData = this.getUserData( user.id );
+			let userData = this.getUserData( user.id );
 			// Add user if not in DB
 			if ( !userData )
 			{
-				this.db.query( `INSERT OR IGNORE INTO twitch_users (id)
-                                VALUES (?)`, [ user.id ] );
+				userData = this.addUserToDB( user.id, user.name );
+				if ( !userData ) return;
 			}
 
 			const newUserData = [
 				user.displayName,
 				user.profilePictureUrl || '',
 				user.color || '#C7C7F1',
-				dataName === 'follow_date' && !userData?.follow_date ?
+				dataName === 'follow_date' && !userData.follow_date ?
 					dataValue :
-					( userData?.follow_date || 0 ),
+					userData?.follow_date,
 				dataName === 'message_count' ?
-					( userData?.message_count || 0 ) + 1 :
-					( userData?.message_count || 0 ),
+					userData.message_count + dataValue :
+					userData.message_count,
 				dataName === 'first_count' ?
-					( userData?.first_count || 0 ) + 1 :
-					( userData?.first_count || 0 ),
+					userData.first_count + 1 :
+					userData.first_count,
+				dataName === 'sub_count' ?
+					userData.sub_count + 1 :
+					userData.sub_count,
+				dataName === 'gift_count' ?
+					userData.gift_count + 1 :
+					userData.gift_count,
+				dataName === 'gift_subs' ?
+					userData.gift_subs + dataValue :
+					userData.gift_subs,
+				dataName === 'raid_count' ?
+					userData.raid_count + 1 :
+					userData.raid_count,
+				dataName === 'raid_viewers' ?
+					userData.raid_viewers + dataValue :
+					userData.raid_viewers,
 				user.id
 			];
 
-			this.db.query( `
-				UPDATE twitch_users SET
-					name = ?,
-					profile_picture = ?,
-					color = ?,
-					follow_date = ?,
-					message_count = ?,
-					first_count = ?
-				WHERE id = ?;`, newUserData );
+			this.db.preparedStatements.get( 'updateUserData' )?.execute( newUserData );
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
@@ -873,10 +891,7 @@ export class BotData
 					break;
 
 				case 'message':
-					this.db.query(
-						'UPDATE stream_stats SET message = message + 1 WHERE user_id = ?',
-						[ user.id ]
-					);
+					this.db.preparedStatements.get( 'updateStatsMessage' )?.execute( [ user.id ] );
 					break;
 
 				case 'cheer':
@@ -897,6 +912,8 @@ export class BotData
 				case 'resub-1':
 				case 'resub-2':
 				case 'resub-3':
+				case 'resub-4':
+				case 'resub-5':
 					this.db.query(
 						`UPDATE stream_stats SET sub = sub + ? WHERE user_id = ?`,
 						[ eventCount, user.id ]
@@ -904,7 +921,13 @@ export class BotData
 					break;
 
 				case 'subgift':
-				case 'communitysub':
+				case 'communitysub-1':
+				case 'communitysub-2':
+				case 'communitysub-3':
+				case 'communitysub-4':
+				case 'communitysub-5':
+				case 'communitysub-6':
+				case 'communitysub-7':
 					this.db.query(
 						`UPDATE stream_stats SET subgift = subgift + ? WHERE user_id = ?`,
 						[ eventCount, user.id ]
@@ -956,9 +979,6 @@ export class BotData
 			const events = JSON.parse(
 				Deno.readTextFileSync( './twitch-bot/config/twitchEvents.json' )
 			);
-			const reactions = JSON.parse(
-				Deno.readTextFileSync( './twitch-bot/config/twitchReactions.json' )
-			);
 			const rewards = JSON.parse(
 				Deno.readTextFileSync( './twitch-bot/config/twitchRewards.json' )
 			);
@@ -968,7 +988,6 @@ export class BotData
 
 			this.discordEvents = objectToMap( discordEvents );
 			this.events = objectToMap( events );
-			this.reactions = reactions;
 			this.rewards = rewards;
 			this.timers = objectToMap( timers );
 

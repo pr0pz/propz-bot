@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.8.10
+ * @version 1.9.0
  */
 
 import '@propz/prototypes.ts';
@@ -212,7 +212,7 @@ export abstract class TwitchUtils
 		const sortedUsers = usersData
 			.entries()
 			.filter( ( [ _user_id, user ] ) => user[type] as number > 0 )
-			.map( ( [ _user_id, user ] ) => [ user.name, user[type] as number ] )
+			.map( ( [ _user_id, user ] ) => [ user.name, user[type] as number, user.gift_count, user.raid_viewers ] )
 			.toArray()
 			.sort( ( a, b ) => ( b[1] as number ) - ( a[1] as number ) )
 			.slice( 0, 10 );
@@ -220,8 +220,16 @@ export abstract class TwitchUtils
 		let message = '';
 		for( let i = 0; i < sortedUsers.length; i++ )
 		{
-			if ( message ) message += ' propztPROPZ ';
-			message += `${i + 1}. ${sortedUsers[i][0]}: ${sortedUsers[i][1]}`;
+			// ×
+			if ( message ) message += ' ||| ';
+			message += `${i + 1}. @${sortedUsers[i][0]}: ${sortedUsers[i][1]}`
+
+			if ( type === 'gift_subs' )
+				message += ` subs (${sortedUsers[i][2]}x gifted)`;
+			else if ( type === 'raid_count' )
+				message += ` raids (${sortedUsers[i][3]} viewers)`;
+			else if ( type === 'sub_count' )
+				message += ` months`;
 		}
 
 		return message;
@@ -671,6 +679,14 @@ export abstract class TwitchUtils
 		if ( typeof user === 'string' )
 		{
 			newUser = await this.data.getUser( user );
+			// No user found? Probably kofi event
+			if ( !newUser )
+			{
+				newUser = {
+					name: user,
+					displayName: user
+				}
+			}
 		}
 
 		if ( user instanceof ChatUser )
@@ -761,7 +777,7 @@ export abstract class TwitchUtils
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
 			eventType === lastEvent.type &&
-			userName.toLowerCase() === ( lastEvent.name?.toLowerCase() || '' )
+			userName.toLowerCase() === ( lastEvent.user.name?.toLowerCase() || '' )
 		) return false;
 
 		// Focus Mode

@@ -389,6 +389,28 @@ export class TwitchCommands
 			hasSound: true,
 			disableOnFocus: true
 		},
+		giftscore: {
+			description: 'Wer hat am meisten Subs verschenkt?',
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				return await this.twitch.getUserScoreText(
+					options.param || options.sender.name,
+					options.returnMessage,
+					'gift_count'
+				);
+			},
+			message: {
+				de: '@[user] hat [count] Abos verschenkt › Rank: [rank]',
+				en: '@[user] gifted [count] Subs › Rank: [rank]'
+			}
+		},
+		giftranking: {
+			description: 'Wer sind die Top Sub gifter?',
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.getRankingText( 'gift_subs' );
+			}
+		},
 		github: {
 			message: {
 				de: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻',
@@ -644,6 +666,28 @@ export class TwitchCommands
 				}
 			},
 			onlyMods: true
+		},
+		raidscore: {
+			description: 'Wie oft hat der User geraidet?',
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				return await this.twitch.getUserScoreText(
+					options.param || options.sender.name,
+					options.returnMessage,
+					'raid_count'
+				);
+			},
+			message: {
+				de: '@[user] hat uns [count]x geraidet › Rank: [rank]',
+				en: '@[user] raided us [count]x times › Rank: [rank]'
+			}
+		},
+		raidranking: {
+			description: 'Wer sind die Top Raider?',
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.getRankingText( 'raid_count' );
+			}
 		},
 		reload: {
 			handler: async () =>
@@ -1053,6 +1097,28 @@ export class TwitchCommands
 				}
 			],
 			onlyMods: true
+		},
+		subscore: {
+			description: 'Anzahl gesubbter Monate',
+			handler: async ( options: TwitchCommandOptions ) =>
+			{
+				return await this.twitch.getUserScoreText(
+					options.param || options.sender.name,
+					options.returnMessage,
+					'sub_count'
+				);
+			},
+			message: {
+				de: '@[user] hat [count] Monate aboniert › Rank: [rank]',
+				en: '@[user] subbed [count] months › Rank: [rank]'
+			}
+		},
+		subranking: {
+			description: 'Wer sind die Top subber?',
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				return this.twitch.getRankingText( 'sub_count' );
+			}
 		},
 		test: {
 			message: {

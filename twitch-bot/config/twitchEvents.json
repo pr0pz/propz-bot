@@ -1024,6 +1024,78 @@
 			}
 		}
 	},
+	"resub-4": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"@[user] - der Abo-Meister! 🌟🚀 Resub Nummer [count], deine Unterstützung ist der Anker unseres kreativen Kosmos!",
+				"Resub-Legende @[user] ist wieder am Start! 🚀 Herzlichen Dank für Resub Nummer [count], du machst den Stream legendär!",
+				"Code-Titan @[user] bleibt ungeschlagen! 🌌 Resub Nummer [count], danke für den anhaltenden Nerd-Support! 🚀",
+				"@[user] hat den Resub-Olymp erklommen! 🏆 Resub Nummer [count], du bist ein Abo-Champion im Twitchversum!",
+				"Resub-Exzellenz mit @[user]! 🌟 Herzlichen Dank für Resub Nummer [count], deine Unterstützung ist unübertroffen! 🚀"
+			],
+			"en": [
+				"@[user] - the sub master! 🌟🚀 Resub number [count], your support is the anchor of our creative cosmos!",
+				"Resub legend @[user] is back! 🚀 Thanks for resub number [count], you make the stream legendary!",
+				"Code titan @[user] remains unbeaten! 🌌 Resub number [count], thanks for the ongoing nerd support! 🚀",
+				"@[user] has reached the resub Olympus! 🏆 Resub number [count], you're a sub champion in the Twitchverse!",
+				"Resub excellence with @[user]! 🌟 Thanks for resub number [count], your support is unmatched! 🚀"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Resub mit Omega Ehre",
+				"titleEvent": "Resub"
+			},
+			"en": {
+				"titleAlert": "Resub with Omega Honor",
+				"titleEvent": "Resub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
+	"resub-5": {
+		"saveEvent": true,
+		"message": {
+			"de": [
+				"@[user] - der Abo-Meister! 🌟🚀 Resub Nummer [count], deine Unterstützung ist der Anker unseres kreativen Kosmos!",
+				"Resub-Legende @[user] ist wieder am Start! 🚀 Herzlichen Dank für Resub Nummer [count], du machst den Stream legendär!",
+				"Code-Titan @[user] bleibt ungeschlagen! 🌌 Resub Nummer [count], danke für den anhaltenden Nerd-Support! 🚀",
+				"@[user] hat den Resub-Olymp erklommen! 🏆 Resub Nummer [count], du bist ein Abo-Champion im Twitchversum!",
+				"Resub-Exzellenz mit @[user]! 🌟 Herzlichen Dank für Resub Nummer [count], deine Unterstützung ist unübertroffen! 🚀"
+			],
+			"en": [
+				"@[user] - the sub master! 🌟🚀 Resub number [count], your support is the anchor of our creative cosmos!",
+				"Resub legend @[user] is back! 🚀 Thanks for resub number [count], you make the stream legendary!",
+				"Code titan @[user] remains unbeaten! 🌌 Resub number [count], thanks for the ongoing nerd support! 🚀",
+				"@[user] has reached the resub Olympus! 🏆 Resub number [count], you're a sub champion in the Twitchverse!",
+				"Resub excellence with @[user]! 🌟 Thanks for resub number [count], your support is unmatched! 🚀"
+			]
+		},
+		"extra": {
+			"de": {
+				"titleAlert": "Resub mit Omega Ehre",
+				"titleEvent": "Resub"
+			},
+			"en": {
+				"titleAlert": "Resub with Omega Honor",
+				"titleEvent": "Resub"
+			}
+		},
+		"obs": {
+			"requestType": "TriggerMediaInputAction",
+			"requestData": {
+				"inputName": "[Video] Fireworks Alert",
+				"mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"
+			}
+		}
+	},
 	"sub": {
 		"saveEvent": true,
 		"message": {

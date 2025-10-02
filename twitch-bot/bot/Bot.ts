@@ -223,7 +223,10 @@ export class Bot
 				await this.discord.client.destroy();
 
 			if ( this.twitch.data.db )
+			{
+				this.twitch.data.db.cleanupDatabase();
 				this.twitch.data.db.close();
+			}
 
 			log( 'SIGINT Shutdown 🔻' );
 

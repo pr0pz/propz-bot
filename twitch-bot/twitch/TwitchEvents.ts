@@ -2,13 +2,12 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.8.11
+ * @version 1.9.0
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 
-import type { SimpleUser } from '@propz/types.ts';
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
 import type { TwitchUtils } from './TwitchUtils.ts';
 
@@ -126,15 +125,6 @@ export class TwitchEvents
 			eventType: 'follow',
 			user: event.userDisplayName
 		} );
-
-		// Update persistent user data
-		const user: SimpleUser = {
-			id: event.userId,
-			name: event.userName,
-			displayName: event.userDisplayName
-		};
-		const followDateTimestamp = Math.floor( event.followDate.getTime() / 1000 );
-		this.twitch.data.updateUserData( user, 'follow_date', followDateTimestamp );
 	};
 
 	/** Subscribes to events that represents a Channel Points reward being redeemed.

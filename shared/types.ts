@@ -67,12 +67,6 @@ export interface TwitchEventExtra
 	titleEvent?: string;
 }
 
-export interface TwitchReaction
-{
-	trigger: string;
-	message: string | string[];
-}
-
 export interface TwitchTimers
 {
 	message?: BotReactionMessage;
@@ -82,8 +76,7 @@ export interface TwitchTimers
 export interface TwitchEventData
 {
 	type: string;
-	user_id: string;
-	user_name: string;
+	user: SimpleUser;
 	timestamp: number;
 	count?: number;
 	extra?: TwitchEventExtra;
@@ -142,6 +135,11 @@ export interface TwitchUserData
 	follow_date: number;
 	message_count: number;
 	first_count: number;
+	sub_count: number;
+	gift_count: number;
+	gift_subs: number;
+	raid_count: number;
+	raid_viewers: number;
 	[key: string]: number | string | boolean | null;
 }
 
