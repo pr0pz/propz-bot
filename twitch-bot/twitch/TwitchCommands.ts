@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.8.10
+ * @version 1.8.11
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -178,6 +178,7 @@ export class TwitchCommands
 			}
 		},
 		chatranking: {
+			description: 'Wer sind die Top chatter?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
 				return this.twitch.getRankingText( 'message_count' );
@@ -233,7 +234,7 @@ export class TwitchCommands
 			}
 		},
 		discord: {
-			aliases: [ 'dc', 'ds' ],
+			aliases: [ 'dc' ],
 			message: {
 				de: 'Ab in die kreative Discord-Community ▶️ https://propz.de/discord/ 🚀',
 				en: 'Join the creative Discord community ▶️ https://propz.de/discord/ 🚀'
@@ -312,7 +313,6 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		first: {
-			aliases: [ 'firstchatter' ],
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				return options.returnMessage?.replace(
@@ -342,6 +342,7 @@ export class TwitchCommands
 			description: 'First-Chat score'
 		},
 		firstranking: {
+			description: 'Wer sind die Top first chatter?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
 				return this.twitch.getRankingText( 'first_count' );
@@ -502,18 +503,6 @@ export class TwitchCommands
 					'@[user] is on the Lurk Train! 🚂 Come back when you\'re ready for creative action!'
 				]
 			}
-		},
-		mahlzeit: {
-			handler: ( options: TwitchCommandOptions ) =>
-			{
-				const user = options.param || options.sender.displayName;
-				return options.returnMessage.replace( '[user]', user );
-			},
-			message: {
-				de: 'Mahlzeit @[user]! 🍽️',
-				en: 'Mahlzeit @[user]! 🍽️'
-			},
-			description: 'Selber Mahlzeit!'
 		},
 		mark: {
 			aliases: [ 'marker' ],

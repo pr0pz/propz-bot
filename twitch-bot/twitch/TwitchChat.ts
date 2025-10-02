@@ -2,7 +2,7 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.8.7
+ * @version 1.8.11
  */
 
 import '@propz/prototypes.ts';
@@ -463,11 +463,11 @@ export class TwitchChat {
 				eventType += '-3';
 				break;
 
-			case (count > 23 && count < 35):
+			case (count > 22 && count < 35):
 				eventType += '-4';
 				break;
 
-			case (count > 35):
+			case (count > 34):
 				eventType += '-5';
 				break;
 		}
