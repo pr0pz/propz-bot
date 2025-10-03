@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.9.0
+ * @version 1.9.2
  */
 
 import '@propz/prototypes.ts';
@@ -52,6 +52,7 @@ export class Twitch extends TwitchUtils
 		void Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
 			this.firstChatter = '';
+			this.data.db.execute( `DELETE FROM stream_stats;` );
 			this.data.db.cleanupDatabase();
 			this.data.db.initDatabase();
 			this.data.init();

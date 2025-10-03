@@ -68,9 +68,6 @@ export class Database extends DB
 	{
 		try
 		{
-			// Clear daily stats
-			this.execute( `DELETE FROM stream_stats;` );
-
 			// Finalize all prepared statements
 			for ( const [_name, stmt] of this.preparedStatements.entries() )
 			{
