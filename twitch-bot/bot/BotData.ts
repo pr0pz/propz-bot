@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.9.0
+ * @version 1.9.1
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -365,13 +365,14 @@ export class BotData
 	{
 		try
 		{
-			const result = this.db.preparedStatements.get( 'get_user' )?.first( [ userId ] ) || [];
+			const result = this.db.preparedStatements.get( 'getUserData' )?.first( [ userId ] ) || [];
 			if ( !result || result.length === 0 ) return;
+
 			return {
 				id: result[0],
 				name: result[1],
-				profile_picture: result[2],
 				color: result[3],
+				profile_picture: result[2],
 				follow_date: result[4],
 				message_count: result[5],
 				first_count: result[6],
@@ -627,9 +628,8 @@ export class BotData
 	addEvent( event: TwitchEventData )
 	{
 		if (
-			!event ||
 			// No id? Probably kofi event
-			!event.user.id ||
+			!event?.user?.id ||
 			event.type?.startsWith( 'reward' ) ||
 			this.eventExists( event )
 		) return;
@@ -815,36 +815,21 @@ export class BotData
 
 			const newUserData = [
 				user.displayName,
-				user.profilePictureUrl || '',
 				user.color || '#C7C7F1',
-				dataName === 'follow_date' && !userData.follow_date ?
-					dataValue :
-					userData?.follow_date,
-				dataName === 'message_count' ?
-					userData.message_count + dataValue :
-					userData.message_count,
-				dataName === 'first_count' ?
-					userData.first_count + 1 :
-					userData.first_count,
-				dataName === 'sub_count' ?
-					userData.sub_count + 1 :
-					userData.sub_count,
-				dataName === 'gift_count' ?
-					userData.gift_count + 1 :
-					userData.gift_count,
-				dataName === 'gift_subs' ?
-					userData.gift_subs + dataValue :
-					userData.gift_subs,
-				dataName === 'raid_count' ?
-					userData.raid_count + 1 :
-					userData.raid_count,
-				dataName === 'raid_viewers' ?
-					userData.raid_viewers + dataValue :
-					userData.raid_viewers,
+				user.profilePictureUrl || '',
+				dataName === 'follow_date' && !userData.follow_date ? dataValue : userData.follow_date,
+				dataName === 'message_count' ? userData.message_count + 1 : userData.message_count,
+				dataName === 'first_count' ? userData.first_count + 1 : userData.first_count,
+				dataName === 'sub_count' ? userData.sub_count + 1 : userData.sub_count,
+				dataName === 'gift_count' ? userData.gift_count + 1 : userData.gift_count,
+				dataName === 'gift_subs' ? userData.gift_subs + dataValue : userData.gift_subs,
+				dataName === 'raid_count' ? userData.raid_count + 1 : userData.raid_count,
+				dataName === 'raid_viewers' ? userData.raid_viewers + dataValue : userData.raid_viewers,
 				user.id
 			];
 
 			this.db.preparedStatements.get( 'updateUserData' )?.execute( newUserData );
+
 		}
 		catch ( error: unknown ) { log( error ) }
 	}

@@ -2,7 +2,7 @@
  * DB handler
  *
  * @author Wellington Estevo
- * @version 1.9.0
+ * @version 1.9.1
  */
 
 import { log } from '@propz/helpers.ts';
@@ -39,12 +39,12 @@ export class Database extends DB
 			this.preparedStatements.set( 'getUserData',
 				this.prepareQuery( `SELECT * FROM twitch_users WHERE id = ?` ) );
 
-			this.preparedStatements.set( 'updateUserdata',
+			this.preparedStatements.set( 'updateUserData',
 				this.prepareQuery( `
 					UPDATE twitch_users SET
 						name = ?,
-						profile_picture = ?,
 						color = ?,
+						profile_picture = ?,
 						follow_date = ?,
 						message_count = ?,
 						first_count = ?,
