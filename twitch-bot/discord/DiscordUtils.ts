@@ -69,8 +69,8 @@ export class DiscordUtils
 			const browser = await puppeteer.launch( { args: puppeteerArgs } );
 			const page = await browser.newPage();
 
-			await page.setViewport({ width: 1920, height: 1080 });
-			await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
+			void await page.setViewport({ width: 1920, height: 1080 });
+			void await page.setContent( htmlContent, { waitUntil: 'load' } );
 			const screenshotBuffer = await page.screenshot({ fullPage: true });
 
 			await page.close();

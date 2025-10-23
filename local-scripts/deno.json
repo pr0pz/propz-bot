@@ -4,8 +4,8 @@
 		".": "./index.ts"
 	},
 	"imports": {
-		"puppeteer": "npm:puppeteer@^24.19.0",
-		"sharp": "npm:sharp@^0.34.3",
+		"puppeteer": "npm:puppeteer@^24.26.1",
+		"sharp": "npm:sharp@^0.34.4",
 		"usb": "npm:usb@^2.16.0"
 	}
 }

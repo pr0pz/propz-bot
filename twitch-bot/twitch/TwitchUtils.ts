@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.9.3
+ * @version 1.9.4
  */
 
 import '@propz/prototypes.ts';
@@ -777,7 +777,7 @@ export abstract class TwitchUtils
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
 			eventType === lastEvent.type &&
-			userName.toLowerCase() === ( lastEvent.user.name?.toLowerCase() || '' )
+			userName.toLowerCase() === ( lastEvent.user?.name?.toLowerCase() || '' )
 		) return false;
 
 		// Focus Mode
