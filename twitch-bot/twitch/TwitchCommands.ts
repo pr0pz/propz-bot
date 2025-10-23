@@ -2,14 +2,13 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.8.11
+ * @version 1.9.3
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../external/Deepl.ts';
 import { Gemini } from '../external/Gemini.ts';
 import { OpenWeather } from '../external/OpenWeather.ts';
-import { Spotify } from '../external/Spotify.ts';
 import { Youtube } from '../external/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
@@ -115,8 +114,7 @@ export class TwitchCommands
 			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				const s = new Spotify( this.twitch.data.db );
-				const song = await s.addBangerToPlaylist();
+				const song = await this.twitch.spotify.addBangerToPlaylist();
 				if ( song.includes( 'Error' ) ) return song;
 				return options.returnMessage?.replace(
 					'[song]',
@@ -207,6 +205,14 @@ export class TwitchCommands
 			message: 'Stream interface cleared',
 			onlyMods: true
 		},
+		clearstats: {
+			handler: ( _options: TwitchCommandOptions ) =>
+			{
+				this.twitch.data.db.execute( `DELETE FROM stream_stats;` );
+				return 'Deleted current Stream stats';
+			},
+			onlyMods: true
+		},
 		commands: {
 			aliases: [ 'help', 'comandos', 'dashboard' ],
 			message: {
@@ -227,7 +233,8 @@ export class TwitchCommands
 			disableOnFocus: true
 		},
 		donate: {
-			aliases: [ 'ko-fi', 'kofi' ],
+			aliases: [ 'kofi' ],
+			description: 'Support the Stream',
 			message: {
 				de: 'Unterstütze den kreativen Flow mit einer Runde virtuellen Kaffee! ☕ https://propz.de/donate',
 				en: 'Support the creative flow with a virtual coffee! ☕ https://propz.de/donate'
@@ -240,6 +247,12 @@ export class TwitchCommands
 				en: 'Join the creative Discord community ▶️ https://propz.de/discord/ 🚀'
 			},
 			description: 'Link zur Discord Community'
+		},
+		dogado: {
+			message: {
+				de: 'Hosting made in Germany: Super schnelle NVMe VPS mit ISO zertifizierten Support ⚡ https://propz.de/dogado-vps [Werbung]',
+				en: 'Hosting made in Germany: Super fast NVMe VPS with ISO certified Support ⚡ https://propz.de/dogado-vps [Ad]',
+			}
 		},
 		doro: {
 			message: {
@@ -588,8 +601,7 @@ export class TwitchCommands
 			description: 'Link zur aktuellen Playlist',
 			handler: async ( _options: TwitchCommandOptions ) =>
 			{
-				const s = new Spotify( this.twitch.data.db );
-				return await s.getCurrentPlaylist();
+				return await this.twitch.spotify.getCurrentPlaylist();
 			}
 		},
 		prime: {
@@ -610,22 +622,22 @@ export class TwitchCommands
 		},
 		protonmail: {
 			message: {
-				de: 'Sichere E-Mail, die Ihre Privatsphäre schützt › https://propz.de/proton-mail',
-				en: 'Secure email that protects your privacy › https://propz.de/proton-mail'
+				de: 'Sichere E-Mail, die Ihre Privatsphäre schützt › https://propz.de/proton-mail [Werbung]',
+				en: 'Secure email that protects your privacy › https://propz.de/proton-mail [Ad]'
 			}
 		},
 		protonpass: {
 			aliases: [ 'proton' ],
 			message: {
-				de: 'Der datenschutzfreundliche Passwortmanager, dem Streamer vertrauen › https://propz.de/proton-pass',
-				en: 'The privacy focused password manager that streamers trust › https://propz.de/proton-pass'
+				de: 'Der datenschutzfreundliche Passwortmanager, dem Streamer vertrauen › https://propz.de/proton-pass [Werbung]',
+				en: 'The privacy focused password manager that streamers trust › https://propz.de/proton-pass [Ad]'
 			}
 		},
 		protonvpn: {
 			aliases: [ 'vpn' ],
 			message: {
-				de: 'Surfen Sie privat mit einem sicheren VPN, das Ihre Privatsphäre schützt. › https://propz.de/proton-vpn',
-				en: 'Browse privately with a secure VPN that safeguards your privacy. › https://propz.de/proton-vpn'
+				de: 'Surfen Sie privat mit einem sicheren VPN, das Ihre Privatsphäre schützt. › https://propz.de/proton-vpn [Werbung]',
+				en: 'Browse privately with a secure VPN that safeguards your privacy. › https://propz.de/proton-vpn [Ad]'
 			}
 		},
 		pun: {
@@ -849,8 +861,7 @@ export class TwitchCommands
 		rewardsongrequest: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				const s = new Spotify( this.twitch.data.db );
-				const track = await s.addToQueue( options.param );
+				const track = await this.twitch.spotify.addToQueue( options.param );
 				if ( track.includes( 'Error' ) )
 					return track;
 
@@ -960,6 +971,13 @@ export class TwitchCommands
 			message: 'Stream Title set to \'[title]\'',
 			onlyMods: true
 		},
+		skiptrack: {
+			description: '2 votes to skip a Song',
+			handler: async ( _options: TwitchCommandOptions ) =>
+			{
+				return await this.twitch.spotify.skipToNext();
+			}
+		},
 		slap: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
@@ -988,8 +1006,7 @@ export class TwitchCommands
 			description: 'Der aktuelle Song',
 			handler: async ( _options: TwitchCommandOptions ) =>
 			{
-				const s = new Spotify( this.twitch.data.db );
-				return await s.getCurrentSong();
+				return await this.twitch.spotify.getCurrentSong();
 			}
 		},
 		soundboard: {
@@ -1193,8 +1210,8 @@ export class TwitchCommands
 		},
 		tucalendi: {
 			message: {
-				de: 'Vollständig KI-gemanagte Terminbuchung 🗓️ https://www.tucalendi.com/de/',
-				en: 'Fully AI-powered appointment booking 🗓️ https://www.tucalendi.com/en/'
+				de: 'Vollständig KI-gemanagte Terminbuchung 🗓️ https://www.tucalendi.com/de/ [Werbung]',
+				en: 'Fully AI-powered appointment booking 🗓️ https://www.tucalendi.com/en/ [Ad]'
 			}
 		},
 		twurple: {

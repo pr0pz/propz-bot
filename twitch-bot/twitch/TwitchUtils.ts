@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.9.0
+ * @version 1.9.3
  */
 
 import '@propz/prototypes.ts';
@@ -16,6 +16,7 @@ import {ChatUser, parseChatMessage} from '@twurple/chat';
 import cld from 'cld';
 import {Deepl} from '../external/Deepl.ts';
 import {StreamElements} from '../external/StreamElements.ts';
+import {Spotify} from '../external/Spotify.ts';
 import {Youtube} from '../external/Youtube.ts';
 import {TwitchChat} from './TwitchChat.ts';
 import {TwitchCommands} from './TwitchCommands.ts';
@@ -43,6 +44,7 @@ export abstract class TwitchUtils
 	public chat: TwitchChat;
 	public events: TwitchEvents;
 	public commands: TwitchCommands;
+	public spotify: Spotify
 
 	// Runtime vars
 	public isDev: boolean = false;
@@ -61,12 +63,10 @@ export abstract class TwitchUtils
 		this.chat = new TwitchChat( this );
 		this.events = new TwitchEvents( this );
 		this.commands = new TwitchCommands( this );
+		this.spotify = new Spotify( this.data.db );
 
 		// Running localy for testing?
-		if ( Deno.args?.[0]?.toString() === 'dev' )
-		{
-			this.isDev = true;
-		}
+		this.isDev = ( Deno.args?.[0]?.toString() === 'dev' );
 	}
 
 	/** Get the start time as timestamp */

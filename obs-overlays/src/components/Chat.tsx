@@ -57,7 +57,7 @@ const Chat = () =>
 	 * @returns {Promise<void>}
 	 */
 	const getStyles = async (): Promise<void> => {
-		const response = await fetch( 'https://dev.propz.de/wp-json/tdp/all-styles',
+		const response = await fetch( 'https://propz.de/wp-json/tdp/all-styles',
 			{
 				method: 'GET',
 				headers: {

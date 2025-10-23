@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 1.7.6
+ * @version 1.9.3
  */
 
 import { log } from '@propz/helpers.ts';
@@ -16,9 +16,10 @@ export class Spotify
 {
 	private apiUrl = 'https://api.spotify.com/v1';
 	private authUrl = 'https://accounts.spotify.com/api/token';
-	private spotifyClientId;
-	private spotifyClientSecret;
-	private spotifyInitialOauthCode;
+	private readonly spotifyClientId;
+	private readonly spotifyClientSecret;
+	private readonly spotifyInitialOauthCode;
+	private skipNextTrack = 0;
 	private playlistBanger = '7zVD6GFNSJQv7aenpcKIrr';
 
 	constructor( private db: Database )
@@ -409,5 +410,28 @@ export class Spotify
 	private getArtist( artists: SpotifyApi.ArtistObjectSimplified[] ): string
 	{
 		return artists.map( ( artist ) => artist.name ).join( ' feat. ' );
+	}
+
+	/**
+	 * Skips the playback to the next track.
+	 */
+	public async skipToNext(): Promise<string>
+	{
+		if ( this.skipNextTrack === 0 )
+		{
+			this.skipNextTrack++;
+			return 'One more vote to skip the Song.';
+		}
+		this.skipNextTrack = 0;
+
+		const headers = await this.getAuthHeaders();
+		if ( !headers ) return '';
+
+		try
+		{
+			void await fetch( `${this.apiUrl}/me/player/next`, { headers: headers } );
+		}
+		catch ( error: unknown ) { log( error ) }
+		return '';
 	}
 }

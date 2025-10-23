@@ -14,3 +14,8 @@ obs-overlays/public/build
 .Spotlight-V100
 .Trashes
 *BotData.sql*
+
+dockerfile
+deno-docker.json
+compose.y*ml
+.dockerignore

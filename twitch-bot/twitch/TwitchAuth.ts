@@ -4,7 +4,7 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  *
  * @author Wellington Estevo
- * @version 1.7.12
+ * @version 1.9.3
  */
 
 import { log } from '@propz/helpers.ts';
@@ -15,7 +15,7 @@ import type { Database } from '../bot/Database.ts';
 
 export class TwitchAuth
 {
-	private authProvider: RefreshingAuthProvider | null = null;
+	private readonly authProvider: RefreshingAuthProvider | null = null;
 	private scopes = [
 		'bits:read',
 		'channel:bot',
@@ -86,6 +86,8 @@ export class TwitchAuth
 
 	constructor( private db: Database )
 	{
+		db.query( `INSERT OR IGNORE INTO auth (name, data) VALUES ('twitch', '')` );
+
 		this.authProvider = new RefreshingAuthProvider( {
 			clientId: this.clientId,
 			clientSecret: this.clientSecret,
