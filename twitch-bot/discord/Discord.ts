@@ -2,7 +2,7 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 1.9.5
  */
 
 import '@propz/prototypes.ts';
@@ -305,7 +305,7 @@ export class Discord extends DiscordUtils
 		if ( !message ) return;
 
 		log( `<${message.author.tag}> '${message.content}'` );
-		if ( message?.author?.tag !== 'pr0pz' ) return;
+		if ( message?.author?.tag !== 'propz_tv' ) return;
 
 		// Handle commands
 		const splittedMessage: string[] = message.content.split( ' ' );

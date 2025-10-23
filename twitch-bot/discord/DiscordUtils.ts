@@ -2,7 +2,7 @@
  * Discord Helper
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 1.9.5
  */
 
 import '@propz/prototypes.ts';
@@ -66,11 +66,14 @@ export class DiscordUtils
 				'--disable-gpu'
 			];
 
-			const browser = await puppeteer.launch( { args: puppeteerArgs } );
+			const browser = await puppeteer.launch( {
+				args: puppeteerArgs,
+				headless: 'shell',
+			} );
 			const page = await browser.newPage();
 
+			void await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
 			void await page.setViewport({ width: 1920, height: 1080 });
-			void await page.setContent( htmlContent, { waitUntil: 'load' } );
 			const screenshotBuffer = await page.screenshot({ fullPage: true });
 
 			await page.close();
