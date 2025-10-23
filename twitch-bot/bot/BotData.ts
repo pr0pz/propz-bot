@@ -2,7 +2,7 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.9.1
+ * @version 1.10.0
  */
 
 import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
@@ -18,10 +18,10 @@ import events from '../config/twitchEvents.json' with { type: 'json' };
 import rewards from '../config/twitchRewards.json' with { type: 'json' };
 import timers from '../config/twitchTimers.json' with { type: 'json' };
 
-import { BetterTTV } from '../external/BetterTTV.ts';
-import { FrankerFaceZ } from '../external/FrankerFaceZ.ts';
-import { SevenTV } from '../external/SevenTV.ts';
-import { TwitchInsights } from '../external/TwitchInsights.ts';
+import { BetterTTV } from '../modules/BetterTTV.ts';
+import { FrankerFaceZ } from '../modules/FrankerFaceZ.ts';
+import { SevenTV } from '../modules/SevenTV.ts';
+import { TwitchInsights } from '../modules/TwitchInsights.ts';
 
 export class BotData
 {

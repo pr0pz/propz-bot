@@ -2,14 +2,15 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.9.3
+ * @version 1.10.0
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
-import { Deepl } from '../external/Deepl.ts';
-import { Gemini } from '../external/Gemini.ts';
-import { OpenWeather } from '../external/OpenWeather.ts';
-import { Youtube } from '../external/Youtube.ts';
+import { Deepl } from '../modules/Deepl.ts';
+import { Gemini } from '../modules/Gemini.ts';
+import { Giveaway } from '../modules/Giveaway.ts';
+import { OpenWeather } from '../modules/OpenWeather.ts';
+import { Youtube } from '../modules/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
 import type { TwitchUtils } from './TwitchUtils.ts';
@@ -431,6 +432,12 @@ export class TwitchCommands
 			},
 			description: 'Creative Coding Chaos'
 		},
+		giveaway: {
+			message: {
+				de: 'Zu gewinnen gibt es eine Obergeile Tasse aus Brasilien!',
+				en: 'You can win a wonderful mug from Brazil!'
+			}
+		},
 		hallelujah: {
 			aliases: [ 'halleluja', 'aleluia' ],
 			hasSound: true,
@@ -498,6 +505,18 @@ export class TwitchCommands
 				en: 'Killswitch [text]'
 			},
 			onlyMods: true
+		},
+		klassetasse: {
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				if ( !options.sender.id ) return '';
+				Giveaway.joinGiveaway( options.sender.id );
+				return options.returnMessage.replace( '[user]', options.sender.displayName );
+			},
+			message: {
+				de: '@[user] nimmt jetzt Teil',
+				en: '@[user] joined the giveaway'
+			}
 		},
 		ko: {
 			cooldown: 60,
@@ -1088,6 +1107,14 @@ export class TwitchCommands
 			],
 			onlyMods: true
 		},
+		startgiveaway: {
+			handler: () =>
+			{
+				Giveaway.startGiveaway();
+				return 'Giveaway raffle just started!';
+			},
+			onlyMods: true
+		},
 		streamonline: {
 			handler: () =>
 			{
@@ -1323,6 +1350,20 @@ export class TwitchCommands
 			cooldown: 20,
 			disableOnFocus: true,
 			hasSound: true
+		},
+		win: {
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				const user = this.twitch.data.getUserData( Giveaway.pickWinner() );
+				if ( !user ) return 'Something went wrong, try again!';
+				return options.returnMessage.replace( '[user]', user.name );
+
+			},
+			message: {
+				de: 'Herzlichen Glückwunsch an @[user] - DU HAST GEWONNEN 🎉🎉🎉',
+				en: 'Congratulations to @[user] - YOU JUST WON 🎉🎉🎉'
+			},
+			onlyMods: true
 		},
 		wololo: {
 			cooldown: 20,

@@ -1,5 +1,5 @@
 -- BotData Database Schema
--- Version 1.9.3
+-- Version 1.10.0
 
 -- Authentication
 CREATE TABLE IF NOT EXISTS auth (
@@ -71,5 +71,12 @@ CREATE TABLE IF NOT EXISTS stream_stats (
     first_chatter INTEGER DEFAULT 0,
     sub INTEGER DEFAULT 0,
     subgift INTEGER DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES twitch_users(id)
+);
+
+-- Giveaway --
+CREATE TABLE IF NOT EXISTS giveaway (
+    user_id TEXT PRIMARY KEY,
+    date INTEGER,
     FOREIGN KEY (user_id) REFERENCES twitch_users(id)
 );

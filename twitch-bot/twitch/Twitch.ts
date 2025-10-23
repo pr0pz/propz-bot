@@ -2,12 +2,12 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.9.2
+ * @version 1.10.0
  */
 
 import '@propz/prototypes.ts';
 import { getMessage, log, mapToObject, sanitizeMessage } from '@propz/helpers.ts';
-import { OpenWeather } from '../external/OpenWeather.ts';
+import { OpenWeather } from '../modules/OpenWeather.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
 
 import type { ApiRequest, ApiResponse, SimpleUser, TwitchCommandOptions } from '@propz/types.ts';

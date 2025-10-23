@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.9.4
+ * @version 1.10.0
  */
 
 import '@propz/prototypes.ts';
@@ -14,10 +14,10 @@ import {HelixUser} from '@twurple/api';
 import type {ChatMessage} from '@twurple/chat';
 import {ChatUser, parseChatMessage} from '@twurple/chat';
 import cld from 'cld';
-import {Deepl} from '../external/Deepl.ts';
-import {StreamElements} from '../external/StreamElements.ts';
-import {Spotify} from '../external/Spotify.ts';
-import {Youtube} from '../external/Youtube.ts';
+import {Deepl} from '../modules/Deepl.ts';
+import {StreamElements} from '../modules/StreamElements.ts';
+import {Spotify} from '../modules/Spotify.ts';
+import {Youtube} from '../modules/Youtube.ts';
 import {TwitchChat} from './TwitchChat.ts';
 import {TwitchCommands} from './TwitchCommands.ts';
 import {TwitchEvents} from './TwitchEvents.ts';
