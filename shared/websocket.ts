@@ -2,7 +2,7 @@
  * Websocket Controller
  *
  * @author Wellington Estevo
- * @version 1.7.17
+ * @version 1.9.6
  */
 
 import EventEmitter from 'events';
@@ -46,7 +46,6 @@ export default class WebsocketController
 		if ( !this.ws ) return;
 		if ( this.pingInterval ) clearInterval( this.pingInterval );
 		this.connectTimer = clearTimer( this.connectTimer );
-		this.websocketEvents.removeAllListeners();
 
 		this.ws.removeEventListener( 'open', this.onOpen );
 		this.ws.removeEventListener( 'close', this.onClose );
