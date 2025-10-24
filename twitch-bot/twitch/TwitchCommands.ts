@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.0
+ * @version 1.10.1
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -1354,14 +1354,18 @@ export class TwitchCommands
 		win: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				const user = this.twitch.data.getUserData( Giveaway.pickWinner() );
-				if ( !user ) return 'Something went wrong, try again!';
-				return options.returnMessage.replace( '[user]', user.name );
+				const winnerCount = options.param ? parseInt( options.param ) : 1;
+				const winners = Giveaway.pickWinners( winnerCount );
+				if ( !winners ) return 'Something went wrong, ask the shitty coder!';
 
+				return options.returnMessage.replace(
+					'[user]',
+					winners.map( user => user[1] ).join( ', @' )
+				);
 			},
 			message: {
 				de: 'Herzlichen Glückwunsch an @[user] - DU HAST GEWONNEN 🎉🎉🎉',
-				en: 'Congratulations to @[user] - YOU JUST WON 🎉🎉🎉'
+				en: 'Congratulations to @[user] - YOU WON 🎉🎉🎉'
 			},
 			onlyMods: true
 		},

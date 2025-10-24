@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.0
+ * @version 1.10.1
  */
 
 import { Database } from "../bot/Database.ts";
@@ -24,11 +24,33 @@ export class Giveaway
 	 *
 	 * @returns {number}
 	 */
-	public static pickWinner(): string
+	public static pickWinners( winnerCount: number = 1, date: string = '' ): undefined|string[][]
 	{
 		const db = Database.getInstance();
-		const results = db.query( `SELECT user_id FROM giveaway;` );
-		return results[ getRandomNumber( results.length - 1, 0 ) ][0] as string;
+		const winners = [];
+
+		const results = db.query<string[]>(
+			`SELECT
+				 g.user_id,
+				 u.name
+			FROM giveaway g
+			LEFT JOIN twitch_users u ON g.user_id = u.id
+			WHERE date <= ?;`,
+			date ? [ Date.parse( date ) ] : [ Date.now() ]
+		);
+		if ( !results ) return;
+
+		let i = 0;
+		while( i < winnerCount )
+		{
+			const winnerUser = results[ getRandomNumber( results.length - 1, 0 ) ];
+			winners.push( winnerUser );
+			// Delete winner from db
+			db.query( `DELETE FROM giveaway WHERE user_id = ?`, [ winnerUser[0] ] );
+			i++;
+		}
+		if ( !winners ) return;
+		return winners;
 	}
 
 	/**
@@ -40,7 +62,7 @@ export class Giveaway
 	{
 		if ( !userId ) return;
 		const db = Database.getInstance();
-		db.query( `INSERT OR IGNORE INTO giveaway ( user_id, date ) VALUES ( ?, CURRENT_TIMESTAMP );`, [ userId ] );
+		db.query( `INSERT OR IGNORE INTO giveaway ( user_id, date ) VALUES ( ?, unixepoch() );`, [ userId ] );
 	}
 
 }
