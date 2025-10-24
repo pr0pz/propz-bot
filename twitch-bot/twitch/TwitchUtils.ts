@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.4
+ * @version 1.10.5
  */
 
 import '@propz/prototypes.ts';
@@ -15,6 +15,7 @@ import type {ChatMessage} from '@twurple/chat';
 import {ChatUser, parseChatMessage} from '@twurple/chat';
 import cld from 'cld';
 import {Deepl} from '../modules/Deepl.ts';
+import {Focus} from '../modules/Focus.ts';
 import {Killswitch} from '../modules/Killswitch.ts';
 import {StreamElements} from '../modules/StreamElements.ts';
 import {Spotify} from '../modules/Spotify.ts';
@@ -46,12 +47,12 @@ export abstract class TwitchUtils
 	// Modules
 	public spotify: Spotify;
 	public killswitch: Killswitch;
+	public focus: Focus;
 
 	// Runtime vars
 	public isDev: boolean = false;
 	public stream: HelixStream | null = null;
 	public firstChatter = '';
-	private focusTimer: number = 0;
 	private validMessageThreshold: number = 5;
 
 	protected constructor(
@@ -65,6 +66,7 @@ export abstract class TwitchUtils
 		this.commands = new TwitchCommands( this );
 		this.spotify = new Spotify( this.data.db );
 		this.killswitch = new Killswitch();
+		this.focus = new Focus( this );
 
 		// Running localy for testing?
 		this.isDev = ( Deno.args?.[0]?.toString() === 'dev' );
@@ -475,77 +477,6 @@ export abstract class TwitchUtils
 		} as StreamDataApi;
 	}
 
-	/** Handle Focus Command
-	 *
-	 * @param {string|number} focusStatusOrTime Focus status or focus time
-	 */
-	handleFocus( focusStatusOrTime: string | number = 10 ): number
-	{
-		if ( !focusStatusOrTime || !focusStatusOrTime.isNumeric() ) return 0;
-		this.focusTimer = clearTimer( this.focusTimer );
-		focusStatusOrTime = parseInt( focusStatusOrTime.toString() );
-		this.focusTimer = setTimeout( () => this.toggleFocus( false ), focusStatusOrTime * 60 * 1000 );
-		void this.toggleFocus( true, focusStatusOrTime );
-
-		return focusStatusOrTime;
-	}
-
-	/** Toggle Focus status */
-	async toggleFocus( focusStatus: boolean = false, focusTimer: number = 10 )
-	{
-		if (
-			typeof focusStatus !== 'boolean' ||
-			typeof focusTimer !== 'number'
-		) return;
-
-		this.toggleRewardPause( focusStatus );
-		const eventType = focusStatus ? 'focusstart' : 'focusstop';
-
-		void this.processEvent( {
-			eventType: eventType,
-			user: await this.data.getUser() || this.data.userName,
-			eventCount: focusTimer
-		} );
-
-		// Clear timeout
-		if ( !focusStatus && this.focusTimer )
-			this.focusTimer = clearTimer( this.focusTimer );
-	}
-
-	/** Toggle Reward Status for focus blacklist rewards
-	 *
-	 * @param {boolean} focusStatus
-	 */
-	toggleRewardPause( focusStatus: boolean = false )
-	{
-		if ( typeof focusStatus !== 'boolean' ) return;
-
-		try
-		{
-			for ( const [ _index, reward ] of this.data.rewards.entries() )
-			{
-				const rewardSlug = getRewardSlug( reward.title );
-				if ( !this.data.getEvent( rewardSlug ).disableOnFocus ) continue;
-
-				const rewardUpdateData = {
-					title: reward.title,
-					cost: reward.cost,
-					isPaused: focusStatus
-				};
-
-				this.data.twitchApi.channelPoints.updateCustomReward(
-					this.data.userId,
-					reward.id.toString(),
-					rewardUpdateData
-				);
-			}
-		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
-	}
-
 	/** Send Stream Online Data to discord
 	 *
 	 * @param {HelixStream} stream Current Stream
@@ -701,7 +632,7 @@ export abstract class TwitchUtils
 		) return false;
 
 		// Focus Mode
-		if ( this.focusTimer && event.disableOnFocus )
+		if ( this.focus.timer && event.disableOnFocus )
 			return false;
 
 		if ( this.data.isBot( userName ) )
@@ -722,7 +653,7 @@ export abstract class TwitchUtils
 		if ( !command ) return false;
 
 		// Focus Mode
-		if ( this.focusTimer && command.disableOnFocus )
+		if ( this.focus.timer && command.disableOnFocus )
 			return false;
 
 		// Disable if Stream is offline

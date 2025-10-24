@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.4
+ * @version 1.10.5
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -372,7 +372,7 @@ export class TwitchCommands
 		fokus: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				const focusTimer = this.twitch.handleFocus(
+				const focusTimer = this.twitch.focus.handle(
 					parseInt( options.param || '10' )
 				);
 				if ( !focusTimer ) return;
