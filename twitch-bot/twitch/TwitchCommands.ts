@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.1
+ * @version 1.10.2
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -10,6 +10,7 @@ import { Deepl } from '../modules/Deepl.ts';
 import { Gemini } from '../modules/Gemini.ts';
 import { Giveaway } from '../modules/Giveaway.ts';
 import { OpenWeather } from '../modules/OpenWeather.ts';
+import { Quote } from '../modules/Quote.ts';
 import { Youtube } from '../modules/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
@@ -56,7 +57,8 @@ export class TwitchCommands
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.messageObject ) return '';
-				return await this.twitch.addQuote( options.messageObject );
+				const quoteNumber = await Quote.add( options.messageObject, options.stream );
+				return options.returnMessage.replace( '[count]', quoteNumber );
 			},
 			description: 'Antworte auf eine Nachricht mit !addquote um es zu den Quotes hinzuzufügen.',
 			disableIfOffline: false,
@@ -510,7 +512,7 @@ export class TwitchCommands
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.sender.id ) return '';
-				Giveaway.joinGiveaway( options.sender.id );
+				Giveaway.join( options.sender.id );
 				return options.returnMessage.replace( '[user]', options.sender.displayName );
 			},
 			message: {
@@ -668,7 +670,7 @@ export class TwitchCommands
 			description: 'Random quote.',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.data.getQuote( parseInt( options.param ) || 0 );
+				return Quote.get( parseInt( options.param ) || 0 );
 			}
 		},
 		raid: {
@@ -1110,7 +1112,7 @@ export class TwitchCommands
 		startgiveaway: {
 			handler: () =>
 			{
-				Giveaway.startGiveaway();
+				Giveaway.start();
 				return 'Giveaway raffle just started!';
 			},
 			onlyMods: true

@@ -2,7 +2,7 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.10.0
+ * @version 1.10.2
  */
 
 import '@propz/prototypes.ts';
@@ -98,7 +98,8 @@ export class Twitch extends TwitchUtils
 				param: chatMessageSplitted[1] || '',
 				message: chatMessage.replaceAll( /^(?:@\w+\s)?!\w+/gi, '' ).trim(),
 				returnMessage: message,
-				messageObject: msg
+				messageObject: msg,
+				stream: this.stream
 			};
 
 			message = await command.handler( options ) || '';

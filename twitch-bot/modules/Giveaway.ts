@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.1
+ * @version 1.10.2
  */
 
 import { Database } from "../bot/Database.ts";
@@ -13,7 +13,7 @@ export class Giveaway
 	/**
 	 * Reset giveaway table for new giveaway
 	 */
-	public static startGiveaway(): void
+	public static start(): void
 	{
 		const db = Database.getInstance();
 		db.query( `DELETE FROM giveaway` );
@@ -58,7 +58,7 @@ export class Giveaway
 	 *
 	 * @param {number | string} userId
 	 */
-	public static joinGiveaway( userId: number|string ): void
+	public static join( userId: number|string ): void
 	{
 		if ( !userId ) return;
 		const db = Database.getInstance();

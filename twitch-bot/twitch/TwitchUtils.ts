@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.0
+ * @version 1.10.2
  */
 
 import '@propz/prototypes.ts';
@@ -319,46 +319,6 @@ export abstract class TwitchUtils
 
 		return getMessage(
 			this.commands.commands.get( 'addjoke' )?.message,
-			this.streamLanguage
-		).replace( '[count]', lastId );
-	}
-
-	/** Add Quote
-	 *
-	 * @param {string} chatMessage Original chat message object
-	 * @returns {Promise<string>}
-	 */
-	async addQuote( chatMessage: ChatMessage ): Promise<string>
-	{
-		if ( !chatMessage.isReply )
-			return 'Error › Use !addquote only as message reply';
-
-		if ( !chatMessage.parentMessageText )
-			return 'Error › Quote text is empty';
-
-		if ( !chatMessage.parentMessageUserId )
-			return 'Error › Invalid Author';
-
-		const videoId = await Youtube.getCurrentLivestreamVideoId();
-		const videoTimestamp = Math.floor( ( Date.now() - this.streamStartTime ) / 1000 ) - 20;
-
-		const quote: TwitchQuote = {
-			date: new Date().toISOString(),
-			category: this.stream?.gameName || '',
-			text: chatMessage.parentMessageText.sanitize(),
-			user_id: chatMessage.parentMessageUserId.sanitize(),
-			vod_url: Youtube.getYoutubeVideoUrlById( videoId, videoTimestamp )
-		};
-
-		const logText =
-			`cat: ${quote.category} / t: ${quote.text} / u: ${quote.user_id} / vidid: ${videoId} / vidt: ${videoTimestamp} / vod: ${quote.vod_url}`;
-		log( logText );
-		// return logText;
-
-		const lastId = this.data.addQuote( quote );
-
-		return getMessage(
-			this.commands.commands.get( 'addquote' )?.message,
 			this.streamLanguage
 		).replace( '[count]', lastId );
 	}

@@ -2,11 +2,12 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 1.8.9
+ * @version 1.10.2
  */
 
 import type { ChatMessage } from '@twurple/chat';
 import type { Buffer } from 'node:buffer';
+import type { HelixStream } from '@twurple/api';
 
 export interface BotReactionMessage
 {
@@ -37,6 +38,7 @@ export interface TwitchCommandOptions
 	message: string;
 	returnMessage: string;
 	messageObject: ChatMessage | null;
+	stream: HelixStream | null;
 }
 
 export interface TwitchEvent
