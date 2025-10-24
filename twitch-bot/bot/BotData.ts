@@ -2,13 +2,13 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 1.10.3
  */
 
-import { getRandomNumber, getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
+import { getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
 import { HelixUser } from '@twurple/api';
 
-import type { SimpleUser, TwitchEmote, TwitchEvent, TwitchEventData, TwitchJoke, TwitchJokeRow, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { SimpleUser, TwitchEmote, TwitchEvent, TwitchEventData, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
 import type { ApiClient } from '@twurple/api';
 import type { Database } from './Database.ts';
 
@@ -168,39 +168,6 @@ export class BotData
 	{
 		if ( !eventType ) return {};
 		return this.events.get( eventType ) || {};
-	}
-
-	/** Get random joke */
-	getJoke( jokeId: number = 0 )
-	{
-		try
-		{
-			let jokeIndex = jokeId;
-			if ( jokeIndex < 1 )
-			{
-				const totalJokes = this.db.queryEntries( `SELECT COUNT(*) as count FROM twitch_jokes` );
-
-				if ( !totalJokes?.[0]?.count )
-					return '';
-
-				jokeIndex = getRandomNumber( Number( totalJokes[0].count ), 1 );
-			}
-
-			const joke = this.db.queryEntries<TwitchJokeRow>( `
-				SELECT 
-					q.id,
-					q.text,
-					q.user_id,
-					u.name  -- Include the username from users table
-				FROM twitch_jokes q
-				LEFT JOIN twitch_users u ON q.user_id = u.id
-				WHERE q.id = ?
-				ORDER BY q.id`, [ jokeIndex ] );
-
-			return joke.length === 0 ? '' : `${joke[0].text} - ${joke[0].name} [ #${jokeIndex} ]`;
-		}
-		catch ( error: unknown ) { log( error ) }
-		return '';
 	}
 
 	/** Get last 10 saved events */
@@ -641,22 +608,6 @@ export class BotData
 				this.updateUserData( event.user, 'raid_viewers', value );
 		}
 		catch ( error: unknown ) { log( error ) }
-	}
-
-	/** Add joke to jokes */
-	addJoke( joke: TwitchJoke )
-	{
-		if ( !joke ) return '';
-		try
-		{
-			this.db.query(
-				`INSERT INTO twitch_jokes (text, user_id) VALUES (?, ?)`,
-				[ joke.text, joke.user_id ]
-			);
-			return ( this.db.lastInsertRowId - 1 ).toString();
-		}
-		catch ( error: unknown ) { log( error ) }
-		return '';
 	}
 
 	/** Check if an event already exists */

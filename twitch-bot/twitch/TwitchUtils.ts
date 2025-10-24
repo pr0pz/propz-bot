@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 1.10.3
  */
 
 import '@propz/prototypes.ts';
@@ -17,7 +17,6 @@ import cld from 'cld';
 import {Deepl} from '../modules/Deepl.ts';
 import {StreamElements} from '../modules/StreamElements.ts';
 import {Spotify} from '../modules/Spotify.ts';
-import {Youtube} from '../modules/Youtube.ts';
 import {TwitchChat} from './TwitchChat.ts';
 import {TwitchCommands} from './TwitchCommands.ts';
 import {TwitchEvents} from './TwitchEvents.ts';
@@ -30,8 +29,6 @@ import type {
 	StreamData,
 	StreamDataApi,
 	StreamElementsViewerStats,
-	TwitchJoke,
-	TwitchQuote,
 	TwitchUserData
 } from '@propz/types.ts';
 import type {BotData} from '../bot/BotData.ts';
@@ -288,39 +285,6 @@ export abstract class TwitchUtils
 				eventCount: count
 			} );
 		}
-	}
-
-	/** Add Quote
-	 *
-	 * @param {string} chatMessage Original chat message object
-	 * @returns {string}
-	 */
-	addJoke( chatMessage: ChatMessage ): string
-	{
-		if ( !chatMessage.isReply )
-			return 'Error › Use !addjoke only as message reply';
-
-		if ( !chatMessage.parentMessageText )
-			return 'Error › Quote text is empty';
-
-		if ( !chatMessage.parentMessageUserId )
-			return 'Error › Invalid Author';
-
-		const joke: TwitchJoke = {
-			text: chatMessage.parentMessageText.sanitize(),
-			user_id: chatMessage.parentMessageUserId.sanitize()
-		};
-
-		const logText = `t: ${joke.text} / u: ${joke.user_id}`;
-		log( logText );
-		// return logText;
-
-		const lastId = this.data.addJoke( joke );
-
-		return getMessage(
-			this.commands.commands.get( 'addjoke' )?.message,
-			this.streamLanguage
-		).replace( '[count]', lastId );
 	}
 
 	/** Search and replace emotes with images tags on chat message.

@@ -2,13 +2,14 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 1.10.3
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
 import { Deepl } from '../modules/Deepl.ts';
 import { Gemini } from '../modules/Gemini.ts';
 import { Giveaway } from '../modules/Giveaway.ts';
+import { Joke } from '../modules/Joke.ts';
 import { OpenWeather } from '../modules/OpenWeather.ts';
 import { Quote } from '../modules/Quote.ts';
 import { Youtube } from '../modules/Youtube.ts';
@@ -44,7 +45,8 @@ export class TwitchCommands
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.messageObject ) return '';
-				return this.twitch.addJoke( options.messageObject );
+				const jokeNumber = Joke.add( options.messageObject );
+				return options.returnMessage.replace( '[count]', jokeNumber );
 			},
 			description: 'Antworte auf eine Nachricht mit !addjoke um es zu den Jokes hinzuzufügen.',
 			disableIfOffline: false,
@@ -468,7 +470,7 @@ export class TwitchCommands
 			description: 'Random joke!',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.data.getJoke( parseInt( options.param ) || 0 );
+				return Joke.get( parseInt( options.param ) || 0 );
 			}
 		},
 		junge: {

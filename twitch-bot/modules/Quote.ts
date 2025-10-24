@@ -2,7 +2,7 @@
  * Quote
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 1.10.3
  */
 
 import { getRandomNumber, log } from "@propz/helpers.ts";
@@ -58,7 +58,7 @@ export class Quote
 			);
 		}
 		catch ( error: unknown ) { log( error ) }
-		return ( ( db.lastInsertRowId ?? 1 ) - 1 ).toString();
+		return db.lastInsertRowId.toString();
 	}
 
 	/** Get random quote */
