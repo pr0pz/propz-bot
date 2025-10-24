@@ -2,7 +2,7 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.9.0
+ * @version 1.10.4
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
@@ -203,7 +203,7 @@ export class TwitchEvents
 	{
 		if ( !event ) return;
 		log( 'shield active' );
-		this.twitch.toggleKillswitch( true );
+		this.twitch.killswitch.set( true );
 
 		void this.twitch.processEvent( {
 			eventType: 'shieldmodebegin',
@@ -219,7 +219,7 @@ export class TwitchEvents
 	{
 		if ( !event ) return;
 		log( 'shield inactive' );
-		this.twitch.toggleKillswitch( false );
+		this.twitch.killswitch.set( false );
 
 		void this.twitch.processEvent( {
 			eventType: 'shieldmodeend',

@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.3
+ * @version 1.10.4
  */
 
 import { log, sanitizeMessage } from '@propz/helpers.ts';
@@ -498,10 +498,10 @@ export class TwitchCommands
 		killswitch: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				this.twitch.toggleKillswitch();
+				this.twitch.killswitch.toggle();
 				return options.returnMessage?.replace(
 					'[text]',
-					this.twitch.killswitch ? 'Activated' : 'Deactivated'
+					this.twitch.killswitch.status ? 'Activated' : 'Deactivated'
 				);
 			},
 			message: {

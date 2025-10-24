@@ -3,7 +3,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.3
+ * @version 1.10.4
  */
 
 import '@propz/prototypes.ts';
@@ -15,6 +15,7 @@ import type {ChatMessage} from '@twurple/chat';
 import {ChatUser, parseChatMessage} from '@twurple/chat';
 import cld from 'cld';
 import {Deepl} from '../modules/Deepl.ts';
+import {Killswitch} from '../modules/Killswitch.ts';
 import {StreamElements} from '../modules/StreamElements.ts';
 import {Spotify} from '../modules/Spotify.ts';
 import {TwitchChat} from './TwitchChat.ts';
@@ -41,13 +42,15 @@ export abstract class TwitchUtils
 	public chat: TwitchChat;
 	public events: TwitchEvents;
 	public commands: TwitchCommands;
-	public spotify: Spotify
+
+	// Modules
+	public spotify: Spotify;
+	public killswitch: Killswitch;
 
 	// Runtime vars
 	public isDev: boolean = false;
 	public stream: HelixStream | null = null;
 	public firstChatter = '';
-	public killswitch: boolean = false;
 	private focusTimer: number = 0;
 	private validMessageThreshold: number = 5;
 
@@ -61,6 +64,7 @@ export abstract class TwitchUtils
 		this.events = new TwitchEvents( this );
 		this.commands = new TwitchCommands( this );
 		this.spotify = new Spotify( this.data.db );
+		this.killswitch = new Killswitch();
 
 		// Running localy for testing?
 		this.isDev = ( Deno.args?.[0]?.toString() === 'dev' );
@@ -471,14 +475,6 @@ export abstract class TwitchUtils
 		} as StreamDataApi;
 	}
 
-	/** Toggle Killswitch status */
-	toggleKillswitch( killswitchStatus?: boolean )
-	{
-		this.killswitch = typeof killswitchStatus !== 'undefined' ?
-			Boolean( killswitchStatus ) :
-			!this.killswitch;
-	}
-
 	/** Handle Focus Command
 	 *
 	 * @param {string|number} focusStatusOrTime Focus status or focus time
@@ -688,7 +684,7 @@ export abstract class TwitchUtils
 
 		// Killswitch
 		if (
-			this.killswitch &&
+			this.killswitch.status &&
 			userName !== this.data.userName
 		) return false;
 
@@ -760,7 +756,7 @@ export abstract class TwitchUtils
 			return false;
 
 		// Killswitch
-		if ( this.killswitch && user.toLowerCase() !== this.data.userName )
+		if ( this.killswitch.status && user.toLowerCase() !== this.data.userName )
 			return false;
 
 		return true;
