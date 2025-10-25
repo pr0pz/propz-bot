@@ -1,5 +1,5 @@
 {
-	"version": "1.10.6",
+	"version": "1.10.7",
 	"nodeModulesDir": "auto",
 	"fmt": {
 		"singleQuote": true,
@@ -45,6 +45,7 @@
 	},
 	"imports": {
 		"@propz/": "./shared/",
+		"@twitch/": "./twitch-bot/twitch/",
 		"@modules/": "./twitch-bot/modules/"
 	}
 }

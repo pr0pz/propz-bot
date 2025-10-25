@@ -2,18 +2,18 @@
  * Quote
  *
  * @author Wellington Estevo
- * @version 1.10.3
+ * @version 1.10.7
  */
 
 import { getRandomNumber, log } from "@propz/helpers.ts";
 import { Database } from "../bot/Database.ts";
-import { Youtube } from "./Youtube.ts";
+import { Youtube } from "@modules/Youtube.ts";
 
 import type { ChatMessage } from "@twurple/chat";
 import type { HelixStream } from "@twurple/api";
 import type { TwitchQuote, TwitchQuoteRow } from "@propz/types.ts";
 
-export class Quote
+export class Quotes
 {
 	/** Add Quote
 	 *

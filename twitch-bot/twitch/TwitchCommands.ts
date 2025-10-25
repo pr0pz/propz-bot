@@ -9,9 +9,10 @@ import { log } from '@propz/helpers.ts';
 import { Deepl } from '@modules/Deepl.ts';
 import { Gemini } from '@modules/Gemini.ts';
 import { Giveaway } from '@modules/Giveaway.ts';
-import { Joke } from '@modules/Joke.ts';
+import { Jokes } from '@modules/Jokes.ts';
 import { OpenWeather } from '@modules/OpenWeather.ts';
-import { Quote } from '@modules/Quote.ts';
+import { Quotes } from '@modules/Quotes.ts';
+import { Rankings } from '@modules/Rankings.ts';
 import { Youtube } from '@modules/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
@@ -45,7 +46,7 @@ export class TwitchCommands
 			handler: ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.messageObject ) return '';
-				const jokeNumber = Joke.add( options.messageObject );
+				const jokeNumber = Jokes.add( options.messageObject );
 				return options.returnMessage.replace( '[count]', jokeNumber );
 			},
 			description: 'Antworte auf eine Nachricht mit !addjoke um es zu den Jokes hinzuzufügen.',
@@ -59,7 +60,7 @@ export class TwitchCommands
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
 				if ( !options.messageObject ) return '';
-				const quoteNumber = await Quote.add( options.messageObject, options.stream );
+				const quoteNumber = await Quotes.add( options.messageObject, options.stream );
 				return options.returnMessage.replace( '[count]', quoteNumber );
 			},
 			description: 'Antworte auf eine Nachricht mit !addquote um es zu den Quotes hinzuzufügen.',
@@ -169,10 +170,11 @@ export class TwitchCommands
 			description: 'Anzahl geschriebener Chat-Nachrichten',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'message_count'
+					'message_count',
+					this.twitch.data
 				);
 			},
 			message: {
@@ -184,7 +186,7 @@ export class TwitchCommands
 			description: 'Wer sind die Top chatter?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getRankingText( 'message_count' );
+				return Rankings.getRankingText( 'message_count', this.twitch.data.getUsersData() );
 			}
 		},
 		chatting: {
@@ -347,10 +349,11 @@ export class TwitchCommands
 		firstscore: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'first_count'
+					'first_count',
+					this.twitch.data
 				);
 			},
 			message: {
@@ -363,7 +366,7 @@ export class TwitchCommands
 			description: 'Wer sind die Top first chatter?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getRankingText( 'first_count' );
+				return Rankings.getRankingText( 'first_count', this.twitch.data.getUsersData() );
 			}
 		},
 		floripa: {
@@ -388,10 +391,11 @@ export class TwitchCommands
 		followage: {
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'follow_date'
+					'follow_date',
+					this.twitch.data
 				);
 			},
 			aliases: [ 'follow' ],
@@ -411,10 +415,11 @@ export class TwitchCommands
 			description: 'Wer hat am meisten Subs verschenkt?',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'gift_count'
+					'gift_count',
+					this.twitch.data
 				);
 			},
 			message: {
@@ -426,7 +431,7 @@ export class TwitchCommands
 			description: 'Wer sind die Top Sub gifter?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getRankingText( 'gift_subs' );
+				return Rankings.getRankingText( 'gift_subs', this.twitch.data.getUsersData() );
 			}
 		},
 		github: {
@@ -470,7 +475,7 @@ export class TwitchCommands
 			description: 'Random joke!',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return Joke.get( parseInt( options.param ) || 0 );
+				return Jokes.get( parseInt( options.param ) || 0 );
 			}
 		},
 		junge: {
@@ -669,10 +674,10 @@ export class TwitchCommands
 			hasSound: true
 		},
 		quote: {
-			description: 'Random quote.',
+			description: 'Random Quotes.',
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return Quote.get( parseInt( options.param ) || 0 );
+				return Quotes.get( parseInt( options.param ) || 0 );
 			}
 		},
 		raid: {
@@ -706,10 +711,11 @@ export class TwitchCommands
 			description: 'Wie oft hat der User geraidet?',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'raid_count'
+					'raid_count',
+					this.twitch.data
 				);
 			},
 			message: {
@@ -721,7 +727,7 @@ export class TwitchCommands
 			description: 'Wer sind die Top Raider?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getRankingText( 'raid_count' );
+				return Rankings.getRankingText( 'raid_count', this.twitch.data.getUsersData() );
 			}
 		},
 		reload: {
@@ -1150,10 +1156,11 @@ export class TwitchCommands
 			description: 'Anzahl gesubbter Monate',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserScoreText(
+				return await Rankings.getUserScoreText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					'sub_count'
+					'sub_count',
+					this.twitch.data
 				);
 			},
 			message: {
@@ -1165,7 +1172,7 @@ export class TwitchCommands
 			description: 'Wer sind die Top subber?',
 			handler: ( _options: TwitchCommandOptions ) =>
 			{
-				return this.twitch.getRankingText( 'sub_count' );
+				return Rankings.getRankingText( 'sub_count', this.twitch.data.getUsersData() );
 			}
 		},
 		test: {
@@ -1279,7 +1286,7 @@ export class TwitchCommands
 			description: 'Zugeschaute Stunden',
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				return await this.twitch.getUserWatchtimeText(
+				return await Rankings.getUserWatchtimeText(
 					options.param || options.sender.name,
 					options.returnMessage
 				);

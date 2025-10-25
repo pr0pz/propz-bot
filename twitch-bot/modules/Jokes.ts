@@ -2,7 +2,7 @@
  * Joke
  *
  * @author Wellington Estevo
- * @version 1.10.3
+ * @version 1.10.7
  */
 
 import { getRandomNumber, log } from "@propz/helpers.ts";
@@ -11,7 +11,7 @@ import { Database } from "../bot/Database.ts";
 import type { ChatMessage } from "@twurple/chat";
 import type { TwitchJoke, TwitchJokeRow } from "@propz/types.ts";
 
-export class Joke
+export class Jokes
 {
 	/** Add Joke
 	 *

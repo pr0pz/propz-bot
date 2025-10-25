@@ -3,23 +3,22 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.6
+ * @version 1.10.7
  */
 
 import '@propz/prototypes.ts';
 
-import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
+import { getMessage, getRandomNumber, log } from '@propz/helpers.ts';
 import type { HelixStream } from '@twurple/api';
 import { HelixUser } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
 import { ChatUser } from '@twurple/chat';
 import { Focus } from '@modules/Focus.ts';
 import { Killswitch } from '@modules/Killswitch.ts';
-import { StreamElements } from '@modules/StreamElements.ts';
 import { Spotify } from '@modules/Spotify.ts';
-import { TwitchChat } from './TwitchChat.ts';
-import { TwitchCommands } from './TwitchCommands.ts';
-import { TwitchEvents } from './TwitchEvents.ts';
+import { TwitchChat } from '@twitch/TwitchChat.ts';
+import { TwitchCommands } from '@twitch/TwitchCommands.ts';
+import { TwitchEvents } from '@twitch/TwitchEvents.ts';
 
 import type {
 	ApiRequest,
@@ -27,9 +26,7 @@ import type {
 	KofiData,
 	SimpleUser,
 	StreamData,
-	StreamDataApi,
-	StreamElementsViewerStats,
-	TwitchUserData
+	StreamDataApi
 } from '@propz/types.ts';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
@@ -108,130 +105,7 @@ export abstract class TwitchUtils
 		}
 	}
 
-	/** Get watchtime command text
-	 *
-	 * @param {string} userName
-	 * @param {string} message
-	 */
-	async getUserWatchtimeText( userName: string, message: string )
-	{
-		if ( !userName || !message )
-			return '';
 
-		const viewerStats: StreamElementsViewerStats | undefined = await StreamElements
-		.getViewerStats( userName );
-
-		if ( !viewerStats || !('watchtime' in viewerStats) )
-			return '';
-
-		const watchtime = viewerStats.watchtime * 60 * 1000;
-
-		message = message.replace( '[user]', userName );
-		message = message.replace( '[broadcaster]', this.data.userDisplayName );
-		message = message.replace( '[count]', getTimePassed( watchtime ) );
-		message = message.replace( '[rank]', viewerStats.rank.toString() );
-
-		return message;
-	}
-
-	/** Get user score: messages, firsts, follow
-	 *
-	 * @param {string} userName User to get score
-	 * @param {string} message Message to search replace values
-	 * @param {keyof TwitchUserData} type Type of score to get
-	 */
-	async getUserScoreText(
-		userName: string,
-		message: string,
-		type: keyof TwitchUserData = 'message_count'
-	)
-	{
-		if (
-			!userName || !message || !type ||
-			userName.toLowerCase() === this.data.userName
-		) return '';
-
-		const user = await this.data.getUser( userName );
-		if ( !user ) return '';
-
-		const usersData = this.data.getUsersData();
-		if ( !usersData ) return '';
-
-		let count: string | number = Number( usersData.get( user.id )?.[ type ] ) ?? 0;
-		if ( !count ) return '';
-
-		// Sort users by type
-		const sortedUsers = usersData
-		.entries()
-		.filter( ( [ _user_id, user ] ) => user[ type ] as number > 0 )
-		.map( ( [ user_id, user ] ) => [ user_id, user[ type ] as number, user.name ] )
-		.toArray()
-		.sort( ( a, b ) =>
-		{
-			// Aufsteigende Sortierung für 'follow'
-			if ( type === 'follow_date' )
-			{
-				return (a[ 1 ] as number) - (b[ 1 ] as number);
-			}
-			// Absteigende Sortierung für andere Typen
-			else
-			{
-				return (b[ 1 ] as number) - (a[ 1 ] as number);
-			}
-		} );
-
-		const rank = sortedUsers.findIndex( ( [ id, _data, _userName ] ) => id === user.id ) + 1;
-
-		if ( type === 'follow_date' )
-			count = getTimePassed( Date.now() - count * 1000 );
-
-		message = message.replace( '[user]', user.displayName );
-		message = message.replace( '[count]', count.toString() );
-		message = message.replace( '[rank]', rank.toString() );
-		message = message.replace( '[broadcaster]', this.data.userDisplayName );
-
-		return message;
-	}
-
-	/**
-	 * Get ranking text for chat message
-	 *
-	 * @param {keyof } type
-	 * @returns {string}
-	 */
-	getRankingText( type: keyof TwitchUserData = 'message_count' ): string
-	{
-		if ( !type ) return '';
-
-		const usersData = this.data.getUsersData();
-		if ( !usersData ) return '';
-
-		// Sort users by type
-		const sortedUsers = usersData
-		.entries()
-		.filter( ( [ _user_id, user ] ) => user[ type ] as number > 0 )
-		.map( ( [ _user_id, user ] ) => [ user.name, user[ type ] as number, user.gift_count, user.raid_viewers ] )
-		.toArray()
-		.sort( ( a, b ) => (b[ 1 ] as number) - (a[ 1 ] as number) )
-		.slice( 0, 10 );
-
-		let message = '';
-		for ( let i = 0; i < sortedUsers.length; i++ )
-		{
-			// ×
-			if ( message ) message += ' ||| ';
-			message += `${ i + 1 }. @${ sortedUsers[ i ][ 0 ] }: ${ sortedUsers[ i ][ 1 ] }`
-
-			if ( type === 'gift_subs' )
-				message += ` subs (${ sortedUsers[ i ][ 2 ] }x gifted)`;
-			else if ( type === 'raid_count' )
-				message += ` raids (${ sortedUsers[ i ][ 3 ] } viewers)`;
-			else if ( type === 'sub_count' )
-				message += ` months`;
-		}
-
-		return message;
-	}
 
 	/** Send test event
 	 *
