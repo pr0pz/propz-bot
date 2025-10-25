@@ -1,5 +1,5 @@
 {
-	"version": "1.10.5",
+	"version": "1.10.6",
 	"nodeModulesDir": "auto",
 	"fmt": {
 		"singleQuote": true,
@@ -44,6 +44,7 @@
 		"build": "deno run -A --env-file ./obs-overlays/build.ts"
 	},
 	"imports": {
-		"@propz/": "./shared/"
+		"@propz/": "./shared/",
+		"@modules/": "./twitch-bot/modules/"
 	}
 }

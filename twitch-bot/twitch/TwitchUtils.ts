@@ -3,25 +3,23 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.5
+ * @version 1.10.6
  */
 
 import '@propz/prototypes.ts';
 
-import {clearTimer, getMessage, getRandomNumber, getRewardSlug, getTimePassed, log} from '@propz/helpers.ts';
-import type {HelixStream} from '@twurple/api';
-import {HelixUser} from '@twurple/api';
-import type {ChatMessage} from '@twurple/chat';
-import {ChatUser, parseChatMessage} from '@twurple/chat';
-import cld from 'cld';
-import {Deepl} from '../modules/Deepl.ts';
-import {Focus} from '../modules/Focus.ts';
-import {Killswitch} from '../modules/Killswitch.ts';
-import {StreamElements} from '../modules/StreamElements.ts';
-import {Spotify} from '../modules/Spotify.ts';
-import {TwitchChat} from './TwitchChat.ts';
-import {TwitchCommands} from './TwitchCommands.ts';
-import {TwitchEvents} from './TwitchEvents.ts';
+import { getMessage, getRandomNumber, getTimePassed, log } from '@propz/helpers.ts';
+import type { HelixStream } from '@twurple/api';
+import { HelixUser } from '@twurple/api';
+import type { ChatMessage } from '@twurple/chat';
+import { ChatUser } from '@twurple/chat';
+import { Focus } from '@modules/Focus.ts';
+import { Killswitch } from '@modules/Killswitch.ts';
+import { StreamElements } from '@modules/StreamElements.ts';
+import { Spotify } from '@modules/Spotify.ts';
+import { TwitchChat } from './TwitchChat.ts';
+import { TwitchCommands } from './TwitchCommands.ts';
+import { TwitchEvents } from './TwitchEvents.ts';
 
 import type {
 	ApiRequest,
@@ -33,9 +31,9 @@ import type {
 	StreamElementsViewerStats,
 	TwitchUserData
 } from '@propz/types.ts';
-import type {BotData} from '../bot/BotData.ts';
-import type {BotWebsocket} from '../bot/BotWebsocket.ts';
-import type {Discord} from '../discord/Discord.ts';
+import type { BotData } from '../bot/BotData.ts';
+import type { BotWebsocket } from '../bot/BotWebsocket.ts';
+import type { Discord } from '../discord/Discord.ts';
 
 export abstract class TwitchUtils
 {
@@ -46,14 +44,13 @@ export abstract class TwitchUtils
 
 	// Modules
 	public spotify: Spotify;
-	public killswitch: Killswitch;
+	public killswitch = new Killswitch();
 	public focus: Focus;
 
 	// Runtime vars
 	public isDev: boolean = false;
 	public stream: HelixStream | null = null;
 	public firstChatter = '';
-	private validMessageThreshold: number = 5;
 
 	protected constructor(
 		public data: BotData,
@@ -65,11 +62,10 @@ export abstract class TwitchUtils
 		this.events = new TwitchEvents( this );
 		this.commands = new TwitchCommands( this );
 		this.spotify = new Spotify( this.data.db );
-		this.killswitch = new Killswitch();
 		this.focus = new Focus( this );
 
 		// Running localy for testing?
-		this.isDev = ( Deno.args?.[0]?.toString() === 'dev' );
+		this.isDev = (Deno.args?.[ 0 ]?.toString() === 'dev');
 	}
 
 	/** Get the start time as timestamp */
@@ -105,8 +101,7 @@ export abstract class TwitchUtils
 				this.data.userName
 			);
 			return this.stream;
-		}
-		catch ( error: unknown )
+		} catch ( error: unknown )
 		{
 			log( error );
 			return null;
@@ -124,9 +119,9 @@ export abstract class TwitchUtils
 			return '';
 
 		const viewerStats: StreamElementsViewerStats | undefined = await StreamElements
-			.getViewerStats( userName );
+		.getViewerStats( userName );
 
-		if ( !viewerStats || !( 'watchtime' in viewerStats ) )
+		if ( !viewerStats || !('watchtime' in viewerStats) )
 			return '';
 
 		const watchtime = viewerStats.watchtime * 60 * 1000;
@@ -162,28 +157,28 @@ export abstract class TwitchUtils
 		const usersData = this.data.getUsersData();
 		if ( !usersData ) return '';
 
-		let count: string | number = Number( usersData.get( user.id )?.[type] ) ?? 0;
+		let count: string | number = Number( usersData.get( user.id )?.[ type ] ) ?? 0;
 		if ( !count ) return '';
 
 		// Sort users by type
 		const sortedUsers = usersData
-			.entries()
-			.filter( ( [ _user_id, user ] ) => user[type] as number > 0 )
-			.map( ( [ user_id, user ] ) => [ user_id, user[type] as number, user.name ] )
-			.toArray()
-			.sort( ( a, b ) =>
+		.entries()
+		.filter( ( [ _user_id, user ] ) => user[ type ] as number > 0 )
+		.map( ( [ user_id, user ] ) => [ user_id, user[ type ] as number, user.name ] )
+		.toArray()
+		.sort( ( a, b ) =>
+		{
+			// Aufsteigende Sortierung für 'follow'
+			if ( type === 'follow_date' )
 			{
-				// Aufsteigende Sortierung für 'follow'
-				if ( type === 'follow_date' )
-				{
-					return ( a[1] as number ) - ( b[1] as number );
-				}
-				// Absteigende Sortierung für andere Typen
-				else
-				{
-					return ( b[1] as number ) - ( a[1] as number );
-				}
-			} );
+				return (a[ 1 ] as number) - (b[ 1 ] as number);
+			}
+			// Absteigende Sortierung für andere Typen
+			else
+			{
+				return (b[ 1 ] as number) - (a[ 1 ] as number);
+			}
+		} );
 
 		const rank = sortedUsers.findIndex( ( [ id, _data, _userName ] ) => id === user.id ) + 1;
 
@@ -213,186 +208,29 @@ export abstract class TwitchUtils
 
 		// Sort users by type
 		const sortedUsers = usersData
-			.entries()
-			.filter( ( [ _user_id, user ] ) => user[type] as number > 0 )
-			.map( ( [ _user_id, user ] ) => [ user.name, user[type] as number, user.gift_count, user.raid_viewers ] )
-			.toArray()
-			.sort( ( a, b ) => ( b[1] as number ) - ( a[1] as number ) )
-			.slice( 0, 10 );
+		.entries()
+		.filter( ( [ _user_id, user ] ) => user[ type ] as number > 0 )
+		.map( ( [ _user_id, user ] ) => [ user.name, user[ type ] as number, user.gift_count, user.raid_viewers ] )
+		.toArray()
+		.sort( ( a, b ) => (b[ 1 ] as number) - (a[ 1 ] as number) )
+		.slice( 0, 10 );
 
 		let message = '';
-		for( let i = 0; i < sortedUsers.length; i++ )
+		for ( let i = 0; i < sortedUsers.length; i++ )
 		{
 			// ×
 			if ( message ) message += ' ||| ';
-			message += `${i + 1}. @${sortedUsers[i][0]}: ${sortedUsers[i][1]}`
+			message += `${ i + 1 }. @${ sortedUsers[ i ][ 0 ] }: ${ sortedUsers[ i ][ 1 ] }`
 
 			if ( type === 'gift_subs' )
-				message += ` subs (${sortedUsers[i][2]}x gifted)`;
+				message += ` subs (${ sortedUsers[ i ][ 2 ] }x gifted)`;
 			else if ( type === 'raid_count' )
-				message += ` raids (${sortedUsers[i][3]} viewers)`;
+				message += ` raids (${ sortedUsers[ i ][ 3 ] } viewers)`;
 			else if ( type === 'sub_count' )
 				message += ` months`;
 		}
 
 		return message;
-	}
-
-	/** Check and set firstchatter of each stream
-	 *
-	 * @param {SimpleUser} user user data
-	 */
-	setStreamFirstChatter( user: SimpleUser )
-	{
-		if (
-			this.firstChatter ||
-			user?.name === this.data.userName
-		) return;
-
-		this.firstChatter = user.displayName;
-		this.data.updateUserData( user, 'first_count' );
-		this.data.updateStreamStats( user, 'first_chatter' );
-
-		void this.processEvent( {
-			eventType: 'firstchatter',
-			user: user.displayName
-		} );
-	}
-
-	/** Check for chat score
-	 *
-	 * @param {HelixUser} user User Object to check for
-	 */
-	checkChatScore( user: SimpleUser )
-	{
-		if ( user?.name === this.data.userName )
-			return;
-
-		const chatscores = [
-			100,
-			500,
-			1000,
-			2000,
-			3000,
-			4000,
-			5000,
-			6000,
-			7000,
-			8000,
-			9000,
-			10000
-		];
-		const count = this.data.getUserData( user.id! )?.message_count || 0;
-		if ( count && chatscores.includes( count ) )
-		{
-			void this.processEvent( {
-				eventType: 'chatscore-' + count,
-				user: user,
-				eventCount: count
-			} );
-		}
-	}
-
-	/** Search and replace emotes with images tags on chat message.
-	 *
-	 * @param {string} message Message to search and replace
-	 * @param {ChatMessage} msg message object
-	 * @returns {string} Modlist with all nicknames
-	 */
-	searchReplaceEmotes( message: string, msg: ChatMessage ): string
-	{
-		if ( !message || !msg )
-			return '';
-
-		const emotes = this.data.emotes;
-		if ( !emotes ) return '';
-
-		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
-		const messageParts = [];
-
-		for ( const [ _index, messagePart ] of parsedMessage.entries() )
-		{
-			if ( messagePart.type === 'text' )
-			{
-				messageParts.push( `<span>${messagePart.text}</span>` );
-				continue;
-			}
-
-			// Replace known Emotes
-			if ( emotes.has( messagePart.name ) )
-			{
-				messageParts.push(
-					`<img src='${
-						emotes.get( messagePart.name )
-					}' alt='${messagePart.name}' class='emote emote-known' />`
-				);
-			}
-			// Replace unknown Emotes
-			else if ( messagePart.type === 'emote' )
-			{
-				messageParts.push(
-					`<img src='https://static-cdn.jtvnw.net/emoticons/v2/${messagePart.id}/static/dark/3.0' alt='${messagePart.name}' class='emote emote-unknown' />`
-				);
-			}
-		}
-
-		let messageWithEmotes = messageParts.join( ' ' );
-
-		// Replace all External Emotes
-		messageWithEmotes = messageWithEmotes.split( ' ' ).map( ( word ) =>
-			emotes.has( word ) ?
-				`<img src='${emotes.get( word )}' alt='${word}' class='emote emote-external' />` :
-				word
-		).join( ' ' );
-
-		return messageWithEmotes;
-	}
-
-	/** Check if is valid text message for stats.
-	 *
-	 * @param {string} message Message to search and replace
-	 * @param {ChatMessage} msg Message object
-	 */
-	isValidMessageText( message: string, msg: ChatMessage )
-	{
-		if ( !message || !msg )
-			return false;
-
-		const emotes = this.data.emotes;
-		if ( !emotes ) return false;
-
-		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
-		const messageParts = [];
-
-		for ( const messagePart of parsedMessage )
-		{
-			// Check if its normal text and not external emote
-			if ( messagePart.type === 'text' && messagePart.text !== ' ' )
-			{
-				messageParts.push( messagePart.text );
-			}
-		}
-
-		if (
-			!messageParts.length ||
-			messageParts.join( ' ' ).length < this.validMessageThreshold
-		) return false;
-
-		const messageWithEmotes = [];
-		for ( const word of messageParts.join( ' ' ).split( ' ' ) )
-		{
-			if ( !emotes.has( word ) )
-			{
-				messageWithEmotes.push( word );
-			}
-		}
-
-		if (
-			!messageWithEmotes.length ||
-			messageWithEmotes.join( ' ' ).length < this.validMessageThreshold
-		) return false;
-
-		return true;
 	}
 
 	/** Send test event
@@ -404,16 +242,16 @@ export abstract class TwitchUtils
 		if ( !eventMessage ) return;
 
 		const splittedMessage = eventMessage.split( ' ' );
-		const eventType = splittedMessage[0];
+		const eventType = splittedMessage[ 0 ];
 		let userName = this.data.userName;
 
 		// ... or prioritize from command if given
-		if ( splittedMessage[1] )
-			userName = splittedMessage[1];
+		if ( splittedMessage[ 1 ] )
+			userName = splittedMessage[ 1 ];
 
 		// Text message for TTS
 		let message = '';
-		if ( splittedMessage[2] )
+		if ( splittedMessage[ 2 ] )
 			message = splittedMessage.slice( 2 ).join( ' ' );
 
 		// Send random count number for specific event types
@@ -449,7 +287,7 @@ export abstract class TwitchUtils
 			'resub-5',
 			'subgift'
 		];
-		let count = parseInt( splittedMessage[2] || '0' );
+		let count = parseInt( splittedMessage[ 2 ] || '0' );
 		if ( !count && eventTypesWithCount.includes( eventType ) )
 			count = getRandomNumber( 50, 1 );
 
@@ -492,18 +330,18 @@ export abstract class TwitchUtils
 		if ( !user ) return;
 
 		const streamAnnouncementMessage = getMessage(
-			this.data.getEvent( 'streamonline' ).message,
-			this.streamLanguage
-		).replace( '[user]', user.displayName ) ||
-			`${user.displayName} ist jetzt live!`;
+				this.data.getEvent( 'streamonline' ).message,
+				this.streamLanguage
+			).replace( '[user]', user.displayName ) ||
+			`${ user.displayName } ist jetzt live!`;
 
 		const streamData: StreamData = {
 			displayName: user.displayName,
 			profilePictureUrl: user.profilePictureUrl,
-			streamUrl: `https://twitch.tv/${user.name}/`,
+			streamUrl: `https://twitch.tv/${ user.name }/`,
 			streamThumbnailUrl: stream?.thumbnailUrl ?
-				stream.getThumbnailUrl( 800, 450 ) + `?id=${stream.id}` :
-				`${Deno.env.get( 'PUBLIC_URL' )?.toString()}/assets/thumbnail-propz.jpg`,
+				stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` :
+				`${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-propz.jpg`,
 			streamTitle: stream?.title ? stream.title : streamAnnouncementMessage,
 			streamDescription: stream?.gameName ?
 				stream.gameName :
@@ -559,7 +397,7 @@ export abstract class TwitchUtils
 				isSub: isSub ?? false,
 				isVip: isVip ?? false,
 				isFollower: this.data.isFollower( newUser.id ),
-				profilePictureUrl: newUser.profilePictureUrl,
+				profilePictureUrl: newUser.profilePictureUrl
 			} as SimpleUser;
 		}
 
@@ -578,7 +416,7 @@ export abstract class TwitchUtils
 			kofiData?.verification_token !== Deno.env.get( 'KOFI_TOKEN' )
 		) return 400;
 
-		log( `Webhook: Kofi ${kofiData.type}` );
+		log( `Webhook: Kofi ${ kofiData.type }` );
 
 		const type = 'kofi' + kofiData.type.trim().replace( ' ', '' ).toLowerCase();
 		const name = kofiData.from_name || 'anonymous';
@@ -588,7 +426,7 @@ export abstract class TwitchUtils
 			user: name,
 			eventCount: parseFloat( kofiData.amount ),
 			eventText: kofiData.message || '',
-			isTest: ( name == 'Jo Example' )
+			isTest: (name == 'Jo Example')
 		} );
 
 		return 200;
@@ -628,7 +466,7 @@ export abstract class TwitchUtils
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
 			eventType === lastEvent.type &&
-			userName.toLowerCase() === ( lastEvent.user?.name?.toLowerCase() || '' )
+			userName.toLowerCase() === (lastEvent.user?.name?.toLowerCase() || '')
 		) return false;
 
 		// Focus Mode
@@ -641,63 +479,11 @@ export abstract class TwitchUtils
 		return true;
 	}
 
-	/** Check if commands can be executed */
-	fireCommand( chatMessage: string, userName: string )
-	{
-		if ( !chatMessage ) return false;
-
-		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
-		const command = this.commands.commands.get( commandName );
-
-		// No data for this command
-		if ( !command ) return false;
-
-		// Focus Mode
-		if ( this.focus.timer && command.disableOnFocus )
-			return false;
-
-		// Disable if Stream is offline
-		if ( !this.isStreamActive && command.disableIfOffline )
-			return false;
-
-		// Check for mod properties
-		if (
-			command.onlyMods &&
-			!this.data.mods.includes( userName ) &&
-			userName !== this.data.userName
-		) return false;
-
-		if ( this.commands.isCommandInCooldown( commandName ) )
-			return false;
-
-		return true;
-	}
-
-	/** Check if message should be handled */
-	fireMessage( channel: string, user: string, text: string, msg: ChatMessage )
-	{
-		if ( !channel || !user || !text || !msg )
-			return false;
-
-		// Not home channel
-		if ( channel !== this.data.userName )
-			return false;
-
-		if ( this.data.isBot( user ) )
-			return false;
-
-		// Killswitch
-		if ( this.killswitch.status && user.toLowerCase() !== this.data.userName )
-			return false;
-
-		return true;
-	}
-
 	/** Handle timed messages */
 	handleTimers()
 	{
 		const minutesPassed = Math.floor(
-			( Date.now() - this.streamStartTime ) / 1000 / 60
+			(Date.now() - this.streamStartTime) / 1000 / 60
 		).toString();
 		const timer = this.data.timers.get( minutesPassed );
 		if ( !timer ) return;
@@ -763,33 +549,6 @@ export abstract class TwitchUtils
 		return user.name;
 	}
 
-	/** Auto translate if needed
-	 *
-	 * @param {string} message
-	 * @param {ChatMessage} msg
-	 */
-	async translateIfNeeded( message: string, msg: ChatMessage )
-	{
-		try
-		{
-			const result = await cld.detect( message, {
-				bestEffort: true
-			} );
-
-			if ( result?.languages?.[0]?.code !== 'pt' )
-			{
-				return;
-			}
-
-			const translation = await Deepl.translate( message, this.streamLanguage );
-			void this.chat.sendMessage( translation, msg );
-		}
-		catch ( _error: unknown )
-		{
-			/* meh */
-		}
-	}
-
 	/** Reload data */
 	async reloadConfig()
 	{
@@ -800,25 +559,15 @@ export abstract class TwitchUtils
 		{
 			// Dynamically import the module to bypass the cache
 			const { TwitchCommands } = await import(
-				`./TwitchCommands.ts?cache-bust=${Date.now()}`
-			);
+				`./TwitchCommands.ts?cache-bust=${ Date.now() }`
+				);
 			this.commands = new TwitchCommands( this );
 			log( 'Config reloaded ♻️' );
-		}
-		catch ( error: unknown )
+		} catch ( error: unknown )
 		{
 			log( error );
 		}
 	}
-
-	// Overrides
-	// deno-lint-ignore no-unused-vars
-	async processChatCommand( chatMessage: string, msg: ChatMessage )
-	{}
-
-	// deno-lint-ignore no-unused-vars
-	async processChatMessage( chatMessage: string, msg: ChatMessage )
-	{}
 
 	// deno-lint-ignore no-unused-vars
 	async processEvent( options: {

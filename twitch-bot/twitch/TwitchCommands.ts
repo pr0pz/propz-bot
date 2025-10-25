@@ -2,17 +2,17 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 1.10.5
+ * @version 1.10.6
  */
 
-import { log, sanitizeMessage } from '@propz/helpers.ts';
-import { Deepl } from '../modules/Deepl.ts';
-import { Gemini } from '../modules/Gemini.ts';
-import { Giveaway } from '../modules/Giveaway.ts';
-import { Joke } from '../modules/Joke.ts';
-import { OpenWeather } from '../modules/OpenWeather.ts';
-import { Quote } from '../modules/Quote.ts';
-import { Youtube } from '../modules/Youtube.ts';
+import { log } from '@propz/helpers.ts';
+import { Deepl } from '@modules/Deepl.ts';
+import { Gemini } from '@modules/Gemini.ts';
+import { Giveaway } from '@modules/Giveaway.ts';
+import { Joke } from '@modules/Joke.ts';
+import { OpenWeather } from '@modules/OpenWeather.ts';
+import { Quote } from '@modules/Quote.ts';
+import { Youtube } from '@modules/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@propz/types.ts';
 import type { TwitchUtils } from './TwitchUtils.ts';
@@ -1216,27 +1216,7 @@ export class TwitchCommands
 			disableIfOffline: true,
 			handler: async ( options: TwitchCommandOptions ) =>
 			{
-				if ( !options.messageObject ) return;
-				// Check if command as sent as reply
-				if ( options.messageObject.isReply )
-				{
-					const message = sanitizeMessage(
-						options.messageObject.parentMessageText ?? ''
-					);
-					if ( this.twitch.isValidMessageText( message, options.messageObject ) )
-					{
-						const translation = await Deepl.translate(
-							message,
-							this.twitch.streamLanguage
-						);
-						void this.twitch.chat.sendMessage( translation, options.messageObject );
-						return '';
-					}
-				}
-				return await Deepl.translate(
-					options.message,
-					this.twitch.streamLanguage
-				);
+				return await Deepl.maybeTranslate( options, this.twitch );
 			}
 		},
 		tucalendi: {

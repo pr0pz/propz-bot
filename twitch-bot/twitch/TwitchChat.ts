@@ -2,11 +2,12 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.8.11
+ * @version 1.10.6
  */
 
 import '@propz/prototypes.ts';
-import {clearTimer, getRandomNumber, log} from '@propz/helpers.ts';
+import { ChatHelper } from '@modules/ChatHelper.ts';
+import { clearTimer, getRandomNumber, log } from '@propz/helpers.ts';
 import type {
 	ChatCommunitySubInfo,
 	ChatMessage,
@@ -19,54 +20,58 @@ import type {
 	ClearChat,
 	UserNotice
 } from '@twurple/chat';
-import {ChatClient} from '@twurple/chat';
+import { ChatClient } from '@twurple/chat';
 
-import type {HelixChatAnnouncementColor} from '@twurple/api';
-import type {TwitchUtils} from './TwitchUtils.ts';
+import type { HelixChatAnnouncementColor } from '@twurple/api';
+import type { TwitchUtils } from './TwitchUtils.ts';
 
-export class TwitchChat {
+export class TwitchChat
+{
 	public chatClient!: ChatClient;
+	public chatHelper: ChatHelper;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
 	private communitySubGifts = new Map<string | undefined, number>();
 	private connectTimer: number = 0;
 
-	constructor(private twitch: TwitchUtils) {
-		try {
-			this.twitch = twitch;
-			this.chatClient = new ChatClient({
+	constructor( private twitch: TwitchUtils )
+	{
+		this.chatHelper = new ChatHelper( this.twitch );
+		try
+		{
+			this.chatClient = new ChatClient( {
 				authProvider: twitch.data.twitchApi._authProvider,
-				channels: [this.twitch.data.userName],
-			});
+				channels: [ this.twitch.data.userName ]
+			} );
 			this.handleChatClientEvents();
-		} catch (error: unknown) {
-			log(error);
 		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Connect to Twitch Chat */
-	connect() {
-		this.connectTimer = clearTimer(this.connectTimer);
+	connect()
+	{
+		this.connectTimer = clearTimer( this.connectTimer );
 
 		try
 		{
-			if (!this.chatClient.isConnected && !this.chatClient.isConnecting) {
-				this.chatClient.connect();
-			}
-		}
-		catch ( error: unknown )
+			if (
+				!this.chatClient.isConnected &&
+				!this.chatClient.isConnecting
+			) this.chatClient.connect();
+		} catch ( error: unknown )
 		{
-			log(error);
+			log( error );
 
 			if ( error instanceof Error )
 			{
-				if ( error.message.toLowerCase().includes('connection already present') )
+				if ( error.message.toLowerCase().includes( 'connection already present' ) )
 				{
-					log('Skipping reconnect - connection exists');
+					log( 'Skipping reconnect - connection exists' );
 					return;
 				}
 
-				log(`Error connecting to Twitch Chat › retry in 30s`);
-				this.connectTimer = setTimeout(() => this.connect(), 30000);
+				log( `Error connecting to Twitch Chat › retry in 30s` );
+				this.connectTimer = setTimeout( () => this.connect(), 30000 );
 			}
 		}
 	}
@@ -76,31 +81,35 @@ export class TwitchChat {
 	 * @param {String} message - Message to send
 	 * @param {ChatMessage} replyTo - Nick to reply to
 	 */
-	async sendMessage(message: string = '', replyTo?: ChatMessage) {
-		if (!message) {
-			return;
-		}
-		try {
-			if (replyTo) {
-				await this.chatClient.say(this.twitch.data.userName, message, {
-					replyTo: replyTo,
-				});
-			} else {
-				await this.chatClient.say(this.twitch.data.userName, message);
+	async sendMessage( message: string = '', replyTo?: ChatMessage )
+	{
+		if ( !message ) return;
+		try
+		{
+			if ( replyTo )
+			{
+				await this.chatClient.say( this.twitch.data.userName, message, {
+					replyTo: replyTo
+				} );
+			}
+			else
+			{
+				await this.chatClient.say( this.twitch.data.userName, message );
 			}
 
-			log(message);
-		} catch (error: unknown) {
-			log(error);
-		}
+			log( message );
+		} catch ( error: unknown )
+		{ log( error ) }
 	}
 
 	/** Send action to chat (/me)
 	 *
 	 * @param {String} message - Message to send
 	 */
-	async sendAction(message: string) {
-		if (!message) {
+	async sendAction( message: string )
+	{
+		if ( !message )
+		{
 			return;
 		}
 		const beeps = [
@@ -114,15 +123,17 @@ export class TwitchChat {
 			'[Boop Prpz]',
 			'[Prpz Bleep]',
 			'[Boop Bleep]',
-			'[Beep Bop]',
+			'[Beep Bop]'
 		];
-		const beep = beeps[getRandomNumber(beeps.length - 1)] + ' ';
+		const beep = beeps[ getRandomNumber( beeps.length - 1 ) ] + ' ';
 
-		try {
-			await this.chatClient.action(this.twitch.data.userName, beep + message);
-			log(message);
-		} catch (error: unknown) {
-			log(error);
+		try
+		{
+			await this.chatClient.action( this.twitch.data.userName, beep + message );
+			log( message );
+		} catch ( error: unknown )
+		{
+			log( error );
 		}
 	}
 
@@ -133,22 +144,26 @@ export class TwitchChat {
 	 */
 	async sendAnnouncement(
 		message: string,
-		color: HelixChatAnnouncementColor = 'primary',
-	) {
-		if (!message) {
+		color: HelixChatAnnouncementColor = 'primary'
+	)
+	{
+		if ( !message )
+		{
 			return;
 		}
-		try {
+		try
+		{
 			await this.twitch.data.twitchApi.chat.sendAnnouncement(
 				this.twitch.data.userId,
 				{
 					color: color,
-					message: message,
-				},
+					message: message
+				}
 			);
-			log(message);
-		} catch (error: unknown) {
-			log(error);
+			log( message );
+		} catch ( error: unknown )
+		{
+			log( error );
 		}
 	}
 
@@ -158,37 +173,45 @@ export class TwitchChat {
 	 *
 	 * @param {string} toUserName
 	 */
-	async sendShoutout(toUserName: string) {
-		if (toUserName?.toLowerCase() === this.twitch.data.userName) {
+	async sendShoutout( toUserName: string )
+	{
+		if ( toUserName?.toLowerCase() === this.twitch.data.userName )
+		{
 			return;
 		}
 
 		// Check if its a chat message the needs to be split
-		if (toUserName.includes(' ')) {
-			const splittedMessage = toUserName.trim().split(' ');
-			toUserName = splittedMessage[1] || '';
-			if (!toUserName) {
+		if ( toUserName.includes( ' ' ) )
+		{
+			const splittedMessage = toUserName.trim().split( ' ' );
+			toUserName = splittedMessage[ 1 ] || '';
+			if ( !toUserName )
+			{
 				return;
 			}
 		}
 
 		const fromUser = await this.twitch.data.getUser();
-		const toUser = await this.twitch.data.getUser(toUserName);
-		if (!fromUser || !toUser) {
+		const toUser = await this.twitch.data.getUser( toUserName );
+		if ( !fromUser || !toUser )
+		{
 			return;
 		}
 
-		try {
-			await this.twitch.data.twitchApi.chat.shoutoutUser(fromUser, toUser);
-			log(toUserName);
-		} catch (error: unknown) {
-			log(error);
+		try
+		{
+			await this.twitch.data.twitchApi.chat.shoutoutUser( fromUser, toUser );
+			log( toUserName );
+		} catch ( error: unknown )
+		{
+			log( error );
 		}
 	}
 
 	/** Fires when the client successfully connects to the chat server */
-	onConnect = () => {
-		log(`Connected to Twitch Chat as ${this.twitch.data.userDisplayName}`);
+	onConnect = () =>
+	{
+		log( `Connected to Twitch Chat as ${ this.twitch.data.userDisplayName }` );
 	};
 
 	/** Fires when chat cleint disconnects
@@ -196,23 +219,25 @@ export class TwitchChat {
 	 * @param {boolean} manually Whether the disconnect was requested by the user.
 	 * @param {Error} reason The error that caused the disconnect, or undefined if there was no error.
 	 */
-	onDisconnect = (manually: boolean, reason?: Error) => {
-		if (manually) {
-			log(`Disconnected (manually) ...`);
+	onDisconnect = ( manually: boolean, reason?: Error ) =>
+	{
+		if ( manually )
+		{
+			log( `Disconnected (manually) ...` );
 			return;
 		}
 
-		log(reason);
-		log(`Disconnected unexpectedly › Trying to reconnect in 30s`)
-		this.connectTimer = clearTimer(this.connectTimer);
-		this.connectTimer = setTimeout(() =>
+		log( reason );
+		log( `Disconnected unexpectedly › Trying to reconnect in 30s` )
+		this.connectTimer = clearTimer( this.connectTimer );
+		this.connectTimer = setTimeout( () =>
 		{
-			if (!this.chatClient.isConnected && !this.chatClient.isConnecting)
+			if ( !this.chatClient.isConnected && !this.chatClient.isConnecting )
 			{
-				log('Manual reconnect after timeout');
+				log( 'Manual reconnect after timeout' );
 				this.connect();
 			}
-		}, 60000);
+		}, 60000 );
 	};
 
 	/** Fires when authentication fails.
@@ -220,8 +245,9 @@ export class TwitchChat {
 	 * @param {string} text - The message text.
 	 * @param {number} retryCount - The number of authentication attempts, including this one, that failed in the current attempt to connect.Resets when authentication succeeds.
 	 */
-	onAuthenticationFailure = (text: string, retryCount: number) => {
-		log(`(${retryCount}x) › ${text}`);
+	onAuthenticationFailure = ( text: string, retryCount: number ) =>
+	{
+		log( `(${ retryCount }x) › ${ text }` );
 	};
 
 	/** Fires when a user sends a message to a channel.
@@ -235,46 +261,40 @@ export class TwitchChat {
 		channel: string,
 		user: string,
 		text: string,
-		msg: ChatMessage,
-	) => {
-		if (!this.twitch.fireMessage(channel, user, text, msg)) {
-			return;
-		}
+		msg: ChatMessage
+	) =>
+	{
+		if ( !this.chatHelper.fireMessage( channel, user, text, msg ) ) return;
 
-		log(`${user}: '${text}'`);
+		log( `${ user }: '${ text }'` );
 
 		// Trim text
 		text = text.trim();
-		if (!text) {
-			return;
-		}
+		if ( !text ) return;
 
 		// Process command ...
-		if (text.isCommand()) {
-			void this.twitch.processChatCommand(text, msg);
-		} // ... or message
-		else if (!msg.isRedemption) {
-			void this.twitch.processChatMessage(text, msg);
-		}
+		if ( text.isCommand() )
+			void this.chatHelper.processChatCommand( text, msg );
+		// ... or message
+		else if ( !msg.isRedemption )
+			void this.chatHelper.processChatMessage( text, msg );
 
 		// First chatter event
-		if (msg.isFirst) {
-			void this.twitch.processEvent({
+		if ( msg.isFirst )
+			void this.twitch.processEvent( {
 				eventType: 'first',
 				user: user,
-				eventText: text,
-			});
-		}
+				eventText: text
+			} );
 
 		// Cheer event
-		if (msg.isCheer) {
-			void this.twitch.processEvent({
+		if ( msg.isCheer )
+			void this.twitch.processEvent( {
 				eventType: 'cheer',
 				user: user,
 				eventText: text,
-				eventCount: msg.bits,
-			});
-		}
+				eventCount: msg.bits
+			} );
 	};
 
 	/** Fires when a user gifts random subscriptions to the community of a channel.
@@ -288,16 +308,16 @@ export class TwitchChat {
 		_channel: string,
 		user: string,
 		subInfo: ChatCommunitySubInfo,
-		_msg: UserNotice,
-	) => {
-		if (!user || !subInfo) {
-			return;
-		}
+		_msg: UserNotice
+	) =>
+	{
+		if ( !user || !subInfo ) return;
 
 		// Get right event based on number of subs gifted
 		let eventType = 'communitysub';
 		const count = subInfo.count || 1;
-		switch (true) {
+		switch ( true )
+		{
 			case (count >= 5 && count < 10):
 				eventType += '-2';
 				break;
@@ -327,15 +347,15 @@ export class TwitchChat {
 		}
 
 		// Prevent sub spam
-		const previousGiftCount = this.communitySubGifts.get(user) || 0;
-		this.communitySubGifts.set(user, previousGiftCount + count);
-		log(`${user}: Gifts ${count} subs`);
+		const previousGiftCount = this.communitySubGifts.get( user ) || 0;
+		this.communitySubGifts.set( user, previousGiftCount + count );
+		log( `${ user }: Gifts ${ count } subs` );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: eventType,
 			user: user,
-			eventCount: count,
-		});
+			eventCount: count
+		} );
 	};
 
 	/** Fires when a user upgrades their gift subscription to a paid subscription in a channel.
@@ -349,15 +369,16 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		_subInfo: ChatSubGiftUpgradeInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo) return;
-		log(msg.userInfo.displayName);
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo ) return;
+		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'giftpaidupgrade',
-			user: msg.userInfo,
-		});
+			user: msg.userInfo
+		} );
 	};
 
 	/** Fires when a user gifts a Twitch Prime benefit to the channel.
@@ -371,17 +392,16 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		_subInfo: ChatPrimeCommunityGiftInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo) {
-			return;
-		}
-		log(msg.userInfo.displayName);
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo ) return;
+		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'primecommunitygift',
-			user: msg.userInfo,
-		});
+			user: msg.userInfo
+		} );
 	};
 
 	/** Fires when a user upgrades their Prime subscription to a paid subscription in a channel.
@@ -395,18 +415,17 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		_subInfo: ChatSubUpgradeInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo) {
-			return;
-		}
-		log(msg.userInfo.displayName);
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo ) return;
+		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'sub',
 			user: msg.userInfo,
-			eventCount: 1,
-		});
+			eventCount: 1
+		} );
 	};
 
 	/** Fires when a user raids a channel.
@@ -420,16 +439,17 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		raidInfo: ChatRaidInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo || !raidInfo?.viewerCount) return;
-		log(`${msg.userInfo.displayName}: ${raidInfo.viewerCount} are raiding`);
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo || !raidInfo?.viewerCount ) return;
+		log( `${ msg.userInfo.displayName }: ${ raidInfo.viewerCount } are raiding` );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'raid',
 			user: msg.userInfo,
-			eventCount: raidInfo.viewerCount,
-		});
+			eventCount: raidInfo.viewerCount
+		} );
 	};
 
 	/** Fires when a user resubscribes to a channel.
@@ -443,14 +463,16 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		subInfo: ChatSubInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo || !subInfo) return;
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo || !subInfo ) return;
 
 		// Get right event based on number of months subscribed
 		let eventType = 'resub';
 		const count = subInfo.months || 1;
-		switch (true) {
+		switch ( true )
+		{
 			case (count < 4):
 				eventType += '-1';
 				break;
@@ -471,14 +493,14 @@ export class TwitchChat {
 				eventType += '-5';
 				break;
 		}
-		log(`${msg.userInfo.displayName}: ${count}x`);
+		log( `${ msg.userInfo.displayName }: ${ count }x` );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: eventType,
 			user: msg.userInfo,
 			eventCount: count,
-			eventText: subInfo.message || '',
-		});
+			eventText: subInfo.message || ''
+		} );
 	};
 
 	/** Fires when a user subscribes to a channel.
@@ -495,17 +517,18 @@ export class TwitchChat {
 		_channel: string,
 		_user: string,
 		subInfo: ChatSubInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo || !subInfo) return;
-		log(`${msg.userInfo.displayName}: ${subInfo.months}`);
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo || !subInfo ) return;
+		log( `${ msg.userInfo.displayName }: ${ subInfo.months }` );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'sub',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
-			eventText: subInfo.message || '',
-		});
+			eventText: subInfo.message || ''
+		} );
 	};
 
 	/** Fires when a user gifts a subscription to a channel to another user.
@@ -521,27 +544,29 @@ export class TwitchChat {
 		_channel: string,
 		_recipientName: string,
 		subInfo: ChatSubGiftInfo,
-		msg: UserNotice,
-	) => {
-		if (!msg?.userInfo || !subInfo) return;
+		msg: UserNotice
+	) =>
+	{
+		if ( !msg?.userInfo || !subInfo ) return;
 
 		const gifterName = subInfo.gifter || '';
-		log(` ${gifterName}: ${subInfo.months}`);
+		log( ` ${ gifterName }: ${ subInfo.months }` );
 
 		// Prevent sub gift spam
-		const previousGiftCount = this.communitySubGifts.get(gifterName) || 0;
-		if (previousGiftCount > 0) {
-			this.communitySubGifts.set(gifterName, previousGiftCount - 1);
+		const previousGiftCount = this.communitySubGifts.get( gifterName ) || 0;
+		if ( previousGiftCount > 0 )
+		{
+			this.communitySubGifts.set( gifterName, previousGiftCount - 1 );
 			return;
 		}
 
 		// No Community Sub, so just fire the subgift event
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'subgift',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
-			eventText: subInfo.message || '',
-		});
+			eventText: subInfo.message || ''
+		} );
 	};
 
 	/** Fires when a user is permanently banned from a channel.
@@ -550,30 +575,32 @@ export class TwitchChat {
 	 * @param {string} user - The banned user.
 	 * @param {ClearChat} _msg - The full message object containing all message and user information.
 	 */
-	onBan = (_channel: string, user: string, _msg: ClearChat) => {
-		if (!user) return;
-		log(user);
+	onBan = ( _channel: string, user: string, _msg: ClearChat ) =>
+	{
+		if ( !user ) return;
+		log( user );
 
-		void this.twitch.processEvent({
+		void this.twitch.processEvent( {
 			eventType: 'ban',
-			user: user,
-		});
+			user: user
+		} );
 	};
 
 	/** Handle chat client events */
-	private handleChatClientEvents() {
-		this.chatClient.onConnect(this.onConnect);
-		this.chatClient.onDisconnect(this.onDisconnect);
-		this.chatClient.onAuthenticationFailure(this.onAuthenticationFailure);
-		this.chatClient.onMessage(this.onMessage);
-		this.chatClient.onCommunitySub(this.onCommunitySub);
-		this.chatClient.onGiftPaidUpgrade(this.onGiftPaidUpgrade);
-		this.chatClient.onPrimeCommunityGift(this.onPrimeCommunityGift);
-		this.chatClient.onPrimePaidUpgrade(this.onPrimePaidUpgrade);
-		this.chatClient.onRaid(this.onRaid);
-		this.chatClient.onResub(this.onResub);
-		this.chatClient.onSub(this.onSub);
-		this.chatClient.onSubGift(this.onSubGift);
-		this.chatClient.onBan(this.onBan);
+	private handleChatClientEvents()
+	{
+		this.chatClient.onConnect( this.onConnect );
+		this.chatClient.onDisconnect( this.onDisconnect );
+		this.chatClient.onAuthenticationFailure( this.onAuthenticationFailure );
+		this.chatClient.onMessage( this.onMessage );
+		this.chatClient.onCommunitySub( this.onCommunitySub );
+		this.chatClient.onGiftPaidUpgrade( this.onGiftPaidUpgrade );
+		this.chatClient.onPrimeCommunityGift( this.onPrimeCommunityGift );
+		this.chatClient.onPrimePaidUpgrade( this.onPrimePaidUpgrade );
+		this.chatClient.onRaid( this.onRaid );
+		this.chatClient.onResub( this.onResub );
+		this.chatClient.onSub( this.onSub );
+		this.chatClient.onSubGift( this.onSubGift );
+		this.chatClient.onBan( this.onBan );
 	}
 }

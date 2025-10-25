@@ -2,17 +2,17 @@
  * Main Twitch Controler
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 1.10.6
  */
 
 import '@propz/prototypes.ts';
-import { getMessage, log, mapToObject, sanitizeMessage } from '@propz/helpers.ts';
+import { getMessage, log, mapToObject } from '@propz/helpers.ts';
 import { OpenWeather } from '../modules/OpenWeather.ts';
 import { TwitchUtils } from './TwitchUtils.ts';
 
 import type { ApiRequest, ApiResponse, SimpleUser, TwitchCommandOptions } from '@propz/types.ts';
 import type { HelixUser } from '@twurple/api';
-import type { ChatMessage, ChatUser } from '@twurple/chat';
+import type { ChatUser } from '@twurple/chat';
 import type { BotData } from '../bot/BotData.ts';
 import type { BotWebsocket } from '../bot/BotWebsocket.ts';
 import type { Discord } from '../discord/Discord.ts';
@@ -60,113 +60,6 @@ export class Twitch extends TwitchUtils
 		} );
 
 		log( 'Cronjobs init ✅' );
-	}
-
-	/** Process chat command
-	 *
-	 * @param {string} chatMessage Message text
-	 * @param {ChatMessage} msg Message object
-	 * @param {SimpleUser|null} user
-	 */
-	override async processChatCommand( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
-	{
-		const userName = msg?.userInfo?.userName ?? user?.name ?? '';
-		if ( !this.fireCommand( chatMessage, userName ) ) return;
-
-		const sender = await this.convertToSimplerUser( msg?.userInfo ?? user ?? null );
-		if ( !sender ) return;
-
-		const commandName = this.commands.getCommandNameFromMessage( chatMessage );
-		const command = this.commands.commands.get( commandName )!;
-
-		this.ws.maybeSendWebsocketData( {
-			type: 'command',
-			user: sender,
-			text: commandName,
-			obs: command.obs,
-			hasSound: command.hasSound,
-			hasVideo: command.hasVideo
-		} );
-
-		let message = getMessage( command.message, this.streamLanguage );
-
-		if ( command.handler )
-		{
-			const chatMessageSplitted = chatMessage.trim().split( ' ' );
-			const options: TwitchCommandOptions = {
-				sender: sender,
-				param: chatMessageSplitted[1] || '',
-				message: chatMessage.replaceAll( /^(?:@\w+\s)?!\w+/gi, '' ).trim(),
-				returnMessage: message,
-				messageObject: msg,
-				stream: this.stream
-			};
-
-			message = await command.handler( options ) || '';
-		}
-
-		if ( message )
-			void this.chat.sendAction( message );
-	}
-
-	/** Process chat command
-	 *
-	 * @param {string} chatMessage Message text
-	 * @param {ChatMessage} msg Message Object
-	 */
-	override async processChatMessage( chatMessage: string, msg: ChatMessage )
-	{
-		if ( !chatMessage || !msg || !msg.userInfo )
-			return;
-
-		const user = await this.convertToSimplerUser( msg.userInfo );
-		if ( !user ) return;
-
-		const chatMessageSanitized = sanitizeMessage( chatMessage );
-		const chatMessagesWithEmotes = this.searchReplaceEmotes( chatMessageSanitized, msg );
-
-		// Send to websocket connections
-		this.ws.maybeSendWebsocketData( {
-			type: 'message',
-			user: user,
-			text: chatMessagesWithEmotes
-		} );
-
-		// Reactions
-		// for ( const [ _index, reaction ] of Object.entries( this.data.reactions ) )
-		// {
-		// 	if (
-		// 		!reaction?.trigger ||
-		// 		!reaction?.message ||
-		// 		!chatMessage.match( reaction.trigger.toRegExp() )
-		// 	)
-		// 	{
-		// 		continue;
-		// 	}
-		//
-		// 	let message = getMessage( reaction.message );
-		// 	message = message.replace( '[user]', user.displayName );
-		// 	// Reply
-		// 	// this.chat.sendMessage( message, msg );
-		// 	void this.chat.sendAction( message );
-		// }
-
-		if ( !this.isStreamActive )
-			return;
-
-		// First Chat Event
-		this.setStreamFirstChatter( user );
-
-		// Update message count
-		if ( this.isValidMessageText( chatMessageSanitized, msg ) )
-		{
-			this.data.updateUserData( user, 'message_count' );
-			this.data.updateStreamStats( user, 'message' );
-			void this.translateIfNeeded( chatMessageSanitized, msg );
-		}
-
-		// Check for chat score
-		this.checkChatScore( user );
 	}
 
 	/** Process Twitch event.
@@ -223,7 +116,7 @@ export class Twitch extends TwitchUtils
 
 		// Exec command
 		if ( event.isCommand )
-			void this.processChatCommand( `!${eventType} ${eventText}`, null, user );
+			void this.chat.chatHelper.processChatCommand( `!${eventType} ${eventText}`, null, user );
 
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )
