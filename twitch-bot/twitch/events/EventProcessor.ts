@@ -6,6 +6,9 @@
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
+import { StreamEvents } from '@modules/features/StreamEvents.ts';
+import { StreamStats} from '@modules/features/StreamStats.ts';
 
 import type { SimpleUser } from '@shared/types.ts';
 import type { ChatUser } from '@twurple/chat';
@@ -20,17 +23,23 @@ export class EventProcessor
 	 *
 	 * @param options
 	 */
-	async process( options: {
+	public async process( options: {
 		eventType: string;
 		user: HelixUser | ChatUser | SimpleUser | string | null;
 		eventCount?: number;
 		eventText?: string;
 		isTest?: boolean;
 		sender?: string;
-	} )
+	} ): Promise<void>
 	{
-		let { eventType, user, eventCount = 0, eventText = '', isTest = false, sender = this.twitch.data.broadcasterName } =
-			options;
+		let {
+			eventType,
+			user,
+			eventCount = 0,
+			eventText = '',
+			isTest = false,
+			sender = BotData.broadcasterName
+		} = options;
 
 		if ( !this.validate( eventType, user ) )
 			return;
@@ -43,15 +52,14 @@ export class EventProcessor
 			// Twitch user not found = Probably kofi event
 			if ( typeof user === 'string' )
 			{
-				if ( !eventType.startsWith( 'kofi' ) )
-					return;
+				if ( !eventType.startsWith( 'kofi' ) ) return;
 				user = { name: userName, displayName: userName } as SimpleUser;
 			}
 		}
 		user = await this.twitch.userConverter.convertToSimplerUser( user );
 		if ( !user ) return;
 
-		const event = this.twitch.data.getEvent( eventType );
+		const event = this.twitch.streamEvents.get( eventType );
 
 		this.twitch.ws.maybeSendWebsocketData( {
 			type: eventType,
@@ -75,14 +83,14 @@ export class EventProcessor
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )
 		{
-			this.twitch.data.addEvent( {
+			StreamEvents.add( {
 				type: eventType,
 				user: user,
 				timestamp: Math.floor( Date.now() / 1000 ),
 				count: eventCount
 			} );
 
-			this.twitch.data.updateStreamStats( user, eventType, eventCount );
+			StreamStats.update( user, eventType, eventCount );
 		}
 
 		// Check for event messages and send to chat.
@@ -106,10 +114,10 @@ export class EventProcessor
 	 * @param {string} eventType Event type name
 	 * @param {HelixUser|SimpleUser|ChatUser|string|null} user
 	 */
-	validate(
+	public validate(
 		eventType: string,
 		user: HelixUser | SimpleUser | ChatUser | string | null
-	)
+	): boolean
 	{
 		if ( !eventType || !user )
 			return false;
@@ -117,17 +125,17 @@ export class EventProcessor
 		const userName = this.twitch.userConverter.getUsernameFromObject( user );
 		if ( !userName ) return false;
 
-		const event = this.twitch.data.getEvent( eventType );
+		const event = this.twitch.streamEvents.get( eventType );
 		if ( !event ) return false;
 
 		// Killswitch
 		if (
 			this.twitch.killswitch.status &&
-			userName !== this.twitch.data.broadcasterName
+			userName !== BotData.broadcasterName
 		) return false;
 
 		// Prevent chatscore events to fire multiple times
-		const [ lastEvent ] = this.twitch.data.getLastEventsData( this.twitch.stream.language ).slice(
+		const [ lastEvent ] = this.twitch.streamEvents.getLast( this.twitch.stream.language ).slice(
 			0,
 			1
 		);
@@ -142,9 +150,6 @@ export class EventProcessor
 		if ( this.twitch.focus.timer && event.disableOnFocus )
 			return false;
 
-		if ( this.twitch.data.isBot( userName ) )
-			return false;
-
 		return true;
 	}
 
@@ -152,13 +157,13 @@ export class EventProcessor
 	 *
 	 * @param {string} eventMessage Whole chat message to parse
 	 */
-	sendTest( eventMessage: string )
+	public sendTest( eventMessage: string ): void
 	{
 		if ( !eventMessage ) return;
 
 		const splittedMessage = eventMessage.split( ' ' );
 		const eventType = splittedMessage[ 0 ];
-		let userName = this.twitch.data.botName;
+		let userName = BotData.botName;
 
 		// ... or prioritize from command if given
 		if ( splittedMessage[ 1 ] )

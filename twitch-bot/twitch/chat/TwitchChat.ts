@@ -6,6 +6,7 @@
  */
 
 import '@shared/prototypes.ts';
+import { BotData } from '@bot/BotData.ts';
 import { ChatClient } from '@twurple/chat';
 import { ChatMessageProcessor } from '@twitch/chat/ChatMessageProcessor.ts';
 import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';
@@ -40,7 +41,7 @@ export class TwitchChat
 		{
 			this.chatClient = new ChatClient( {
 				authProvider: this.twitch.authProvider,
-				channels: [ this.twitch.data.broadcasterName ]
+				channels: [  BotData.broadcasterName ]
 			} );
 			this.handleChatClientEvents();
 		}
@@ -48,7 +49,7 @@ export class TwitchChat
 	}
 
 	/** Connect to Twitch Chat */
-	connect()
+	public connect(): void
 	{
 		this.connectTimer = clearTimer( this.connectTimer );
 
@@ -81,20 +82,20 @@ export class TwitchChat
 	 * @param {String} message - Message to send
 	 * @param {ChatMessage} replyTo - Nick to reply to
 	 */
-	async sendMessage( message: string = '', replyTo?: ChatMessage )
+	public async sendMessage( message: string = '', replyTo?: ChatMessage ): Promise<void>
 	{
 		if ( !message ) return;
 		try
 		{
 			if ( replyTo )
 			{
-				await this.chatClient.say( this.twitch.data.broadcasterName, message, {
+				await this.chatClient.say(  BotData.broadcasterName, message, {
 					replyTo: replyTo
 				} );
 			}
 			else
 			{
-				await this.chatClient.say( this.twitch.data.broadcasterName, message );
+				await this.chatClient.say(  BotData.broadcasterName, message );
 			}
 
 			log( message );
@@ -106,7 +107,7 @@ export class TwitchChat
 	 *
 	 * @param {String} message - Message to send
 	 */
-	async sendAction( message: string )
+	public async sendAction( message: string ): Promise<void>
 	{
 		if ( !message )
 		{
@@ -129,7 +130,7 @@ export class TwitchChat
 
 		try
 		{
-			await this.chatClient.action( this.twitch.data.broadcasterName, beep + message );
+			await this.chatClient.action(  BotData.broadcasterName, beep + message );
 			log( message );
 		} catch ( error: unknown )
 		{
@@ -142,10 +143,10 @@ export class TwitchChat
 	 * @param {String} message - The announcement to make in the broadcaster's chat room. Announcements are limited to a maximum of 500 characters; announcements longer than 500 characters are truncated.
 	 * @param {HelixChatAnnouncementColor} color - The color used to highlight the announcement. If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement.
 	 */
-	async sendAnnouncement(
+	public async sendAnnouncement(
 		message: string,
 		color: HelixChatAnnouncementColor = 'primary'
-	)
+	): Promise<void>
 	{
 		if ( !message )
 		{
@@ -154,7 +155,7 @@ export class TwitchChat
 		try
 		{
 			await this.twitch.data.twitchApi.chat.sendAnnouncement(
-				this.twitch.data.broadcasterId,
+				BotData.broadcasterId,
 				{
 					color: color,
 					message: message
@@ -171,9 +172,9 @@ export class TwitchChat
 	 *
 	 * @param {string} toUserName
 	 */
-	async sendShoutout( toUserName: string )
+	public async sendShoutout( toUserName: string ): Promise<void>
 	{
-		if ( toUserName?.toLowerCase() === this.twitch.data.broadcasterName )
+		if ( toUserName?.toLowerCase() ===  BotData.broadcasterName )
 		{
 			return;
 		}
@@ -207,9 +208,9 @@ export class TwitchChat
 	}
 
 	/** Fires when the client successfully connects to the chat server */
-	onConnect = () =>
+	public onConnect = () =>
 	{
-		log( `Connected to Twitch Chat as ${ this.twitch.data.botName }` );
+		log( `Connected to Twitch Chat as ${  BotData.botName }` );
 	};
 
 	/** Fires when chat cleint disconnects
@@ -217,7 +218,7 @@ export class TwitchChat
 	 * @param {boolean} manually Whether the disconnect was requested by the user.
 	 * @param {Error} reason The error that caused the disconnect, or undefined if there was no error.
 	 */
-	onDisconnect = ( manually: boolean, reason?: Error ) =>
+	public onDisconnect = ( manually: boolean, reason?: Error ) =>
 	{
 		if ( manually )
 		{
@@ -243,7 +244,7 @@ export class TwitchChat
 	 * @param {string} text - The message text.
 	 * @param {number} retryCount - The number of authentication attempts, including this one, that failed in the current attempt to connect.Resets when authentication succeeds.
 	 */
-	onAuthenticationFailure = ( text: string, retryCount: number ) =>
+	public onAuthenticationFailure = ( text: string, retryCount: number ) =>
 	{
 		log( `(${ retryCount }x) › ${ text }` );
 	};
@@ -255,7 +256,7 @@ export class TwitchChat
 	 * @param {string} text - The message text.
 	 * @param {ChatMessage} msg - The full message object containing all message and user information.
 	 */
-	onMessage = (
+	public onMessage = (
 		channel: string,
 		user: string,
 		text: string,
@@ -302,7 +303,7 @@ export class TwitchChat
 	 * @param {ChatCommunitySubInfo} subInfo - Additional information about the community subscription.
 	 * @param {UserNotice} _msg - The full message object containing all message and user information.
 	 */
-	onCommunitySub = (
+	public onCommunitySub = (
 		_channel: string,
 		user: string,
 		subInfo: ChatCommunitySubInfo,
@@ -363,7 +364,7 @@ export class TwitchChat
 	 * @param {ChatSubGiftUpgradeInfo} _subInfo - Additional information about the subscription upgrade.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onGiftPaidUpgrade = (
+	public onGiftPaidUpgrade = (
 		_channel: string,
 		_user: string,
 		_subInfo: ChatSubGiftUpgradeInfo,
@@ -386,7 +387,7 @@ export class TwitchChat
 	 * @param {ChatPrimeCommunityGiftInfo} _subInfo - Additional information about the gift.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onPrimeCommunityGift = (
+	public onPrimeCommunityGift = (
 		_channel: string,
 		_user: string,
 		_subInfo: ChatPrimeCommunityGiftInfo,
@@ -409,7 +410,7 @@ export class TwitchChat
 	 * @param {ChatSubUpgradeInfo} _subInfo - Additional information about the subscription upgrade
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onPrimePaidUpgrade = (
+	public onPrimePaidUpgrade = (
 		_channel: string,
 		_user: string,
 		_subInfo: ChatSubUpgradeInfo,
@@ -433,7 +434,7 @@ export class TwitchChat
 	 * @param {ChatRaidInfo} raidInfo - Additional information about the raid.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onRaid = (
+	public onRaid = (
 		_channel: string,
 		_user: string,
 		raidInfo: ChatRaidInfo,
@@ -457,7 +458,7 @@ export class TwitchChat
 	 * @param {ChatSubInfo} subInfo - Additional information about the resubscription.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onResub = (
+	public onResub = (
 		_channel: string,
 		_user: string,
 		subInfo: ChatSubInfo,
@@ -511,7 +512,7 @@ export class TwitchChat
 	 * @param {ChatSubInfo} subInfo - Additional information about the subscription.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onSub = (
+	public onSub = (
 		_channel: string,
 		_user: string,
 		subInfo: ChatSubInfo,
@@ -538,7 +539,7 @@ export class TwitchChat
 	 * @param {ChatSubGiftInfo} subInfo - Additional information about the community subscription.
 	 * @param {UserNotice} msg - The full message object containing all message and user information.
 	 */
-	onSubGift = (
+	public onSubGift = (
 		_channel: string,
 		_recipientName: string,
 		subInfo: ChatSubGiftInfo,
@@ -573,7 +574,7 @@ export class TwitchChat
 	 * @param {string} user - The banned user.
 	 * @param {ClearChat} _msg - The full message object containing all message and user information.
 	 */
-	onBan = ( _channel: string, user: string, _msg: ClearChat ) =>
+	public onBan = ( _channel: string, user: string, _msg: ClearChat ) =>
 	{
 		if ( !user ) return;
 		log( user );

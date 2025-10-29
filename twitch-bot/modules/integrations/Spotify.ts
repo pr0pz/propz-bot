@@ -8,52 +8,48 @@
  */
 
 import { log } from '@shared/helpers.ts';
+import { Database } from '@bot/Database.ts';
+
 import type {} from '@types/spotify-api';
 import type { SpotifyTokenData } from '@shared/types.ts';
-import type { Database } from '@bot/Database.ts';
 
 export class Spotify
 {
-	private apiUrl = 'https://api.spotify.com/v1';
-	private authUrl = 'https://accounts.spotify.com/api/token';
-	private readonly spotifyClientId;
-	private readonly spotifyClientSecret;
-	private readonly spotifyInitialOauthCode;
 	private skipNextTrack = 0;
-	private playlistBanger = '7zVD6GFNSJQv7aenpcKIrr';
 
-	constructor( private db: Database )
-	{
-		this.spotifyClientId = Deno.env.get( 'SPOTIFY_CLIENT_ID' ) || '';
-		this.spotifyClientSecret = Deno.env.get( 'SPOTIFY_CLIENT_SECRET' ) || '';
-		this.spotifyInitialOauthCode = Deno.env.get( 'SPOTIFY_INITIAL_OAUTH_CODE' ) || '';
-		db.query( `INSERT OR IGNORE INTO auth (name, data) VALUES ('spotify', '')` );
-	}
+	constructor() {}
+
+	private static get apiUrl() { return 'https://api.spotify.com/v1' }
+	private static get authUrl() { return 'https://accounts.spotify.com/api/token' }
+	private static get playlistBanger() { return '7zVD6GFNSJQv7aenpcKIrr' }
+	private static get spotifyClientId() { return Deno.env.get( 'SPOTIFY_CLIENT_ID' ) || '' }
+	private static get spotifyClientSecret() { return Deno.env.get( 'SPOTIFY_CLIENT_SECRET' ) || '' }
+	private static get spotifyInitialOauthCode() { return Deno.env.get( 'SPOTIFY_INITIAL_OAUTH_CODE' ) || '' }
 
 	/**
 	 * Get initial access token from Spotify
 	 *
 	 * @returns
 	 */
-	private async getAccessToken(): Promise<SpotifyTokenData | null>
+	private static async getAccessToken(): Promise<SpotifyTokenData | null>
 	{
 		if (
-			!this.spotifyClientId ||
-			!this.spotifyClientSecret ||
-			!this.spotifyInitialOauthCode
+			!Spotify.spotifyClientId ||
+			!Spotify.spotifyClientSecret ||
+			!Spotify.spotifyInitialOauthCode
 		) return null;
 
 		try
 		{
 			const body = new URLSearchParams( {
 				grant_type: 'authorization_code',
-				code: this.spotifyInitialOauthCode,
+				code: Spotify.spotifyInitialOauthCode,
 				redirect_uri: 'https://propz.tv'
 			} );
 
-			const response = await fetch( this.authUrl, {
+			const response = await fetch( Spotify.authUrl, {
 				headers: new Headers( {
-					Authorization: `Basic ${btoa( this.spotifyClientId + ':' + this.spotifyClientSecret )}`,
+					Authorization: `Basic ${btoa( Spotify.spotifyClientId + ':' + Spotify.spotifyClientSecret )}`,
 					'Content-Type': 'application/x-www-form-urlencoded'
 				} ),
 				method: 'post',
@@ -76,7 +72,7 @@ export class Spotify
 
 			// Get exact expire time
 			newTokenData.expires_at = Date.prototype.timestamp() + newTokenData.expires_in;
-			this.saveTokenData( newTokenData );
+			Spotify.saveTokenData( newTokenData );
 			return newTokenData;
 		}
 		catch ( error: unknown )
@@ -92,26 +88,26 @@ export class Spotify
 	 * @param tokenData SpotifyTokenData
 	 * @returns
 	 */
-	private async refreshAccessToken( tokenData: SpotifyTokenData ): Promise<SpotifyTokenData | null>
+	private static async refreshAccessToken( tokenData: SpotifyTokenData ): Promise<SpotifyTokenData | null>
 	{
 		if (
-			!this.spotifyClientId ||
-			!this.spotifyClientSecret ||
-			!this.spotifyInitialOauthCode
+			!Spotify.spotifyClientId ||
+			!Spotify.spotifyClientSecret ||
+			!Spotify.spotifyInitialOauthCode
 		) return null;
 
 		try
 		{
 			const response = await fetch( this.authUrl, {
 				headers: new Headers( {
-					Authorization: `Basic ${btoa( this.spotifyClientId + ':' + this.spotifyClientSecret )}`,
+					Authorization: `Basic ${btoa( Spotify.spotifyClientId + ':' + Spotify.spotifyClientSecret )}`,
 					'Content-Type': 'application/x-www-form-urlencoded'
 				} ),
 				method: 'post',
 				body: new URLSearchParams( {
 					grant_type: 'refresh_token',
 					refresh_token: tokenData.refresh_token,
-					client_id: this.spotifyClientId
+					client_id: Spotify.spotifyClientId
 				} )
 			} );
 
@@ -132,7 +128,7 @@ export class Spotify
 			// Get exact expire time
 			newTokenData.refresh_token = tokenData.refresh_token;
 			newTokenData.expires_at = Date.prototype.timestamp() + newTokenData.expires_in;
-			this.saveTokenData( newTokenData );
+			Spotify.saveTokenData( newTokenData );
 			return newTokenData;
 		}
 		catch ( error: unknown )
@@ -148,20 +144,21 @@ export class Spotify
 	 *
 	 * @returns
 	 */
-	private async getTokenData(): Promise<SpotifyTokenData | null>
+	private static async getTokenData(): Promise<SpotifyTokenData | null>
 	{
 		try
 		{
-			const results = this.db.queryEntries( `SELECT data FROM auth WHERE name = 'spotify'` );
+			const db = Database.getInstance()
+			const results = db.queryEntries( `SELECT data FROM auth WHERE name = 'spotify'` );
 			// Doesn't exist, so get it first time
-			if ( !results?.[0]?.['data'] ) return this.getAccessToken();
+			if ( !results?.[0]?.['data'] ) return Spotify.getAccessToken();
 
 			const tokenData = JSON.parse( results?.[0]?.['data'] as string ) as SpotifyTokenData || '';
 
 			// Refresh
 			if ( tokenData.expires_at <= Date.prototype.timestamp() )
 			{
-				const newTokenData = await this.refreshAccessToken( tokenData );
+				const newTokenData = await Spotify.refreshAccessToken( tokenData );
 				return newTokenData;
 			}
 
@@ -179,19 +176,18 @@ export class Spotify
 	 *
 	 * @param tokenData
 	 */
-	private saveTokenData( tokenData: SpotifyTokenData )
+	private static saveTokenData( tokenData: SpotifyTokenData )
 	{
 		try
 		{
-			this.db.query(
+			const db = Database.getInstance();
+			db.query( `INSERT OR IGNORE INTO auth (name, data) VALUES ('spotify', '')` );
+			db.query(
 				`UPDATE auth SET data = ? WHERE name = 'spotify'`,
 				[ JSON.stringify( tokenData, null, '\t' ) ]
 			);
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/**
@@ -199,20 +195,20 @@ export class Spotify
 	 *
 	 * @returns String
 	 */
-	public async getCurrentSong(): Promise<string>
+	public static async getCurrentSong(): Promise<string>
 	{
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
-			const response = await fetch( `${this.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
 
 			const result = await response.json() as SpotifyApi.CurrentlyPlayingResponse;
 			if ( !result?.item ) return '';
 
 			const track = result.item as SpotifyApi.TrackObjectFull;
-			const artist = this.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
+			const artist = Spotify.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
 
 			return `${artist} - ${track.name} › ${track.external_urls.spotify}`;
 		}
@@ -228,15 +224,15 @@ export class Spotify
 	 *
 	 * @returns
 	 */
-	public async getCurrentPlaylist(): Promise<string>
+	public static async getCurrentPlaylist(): Promise<string>
 	{
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
 			// Current Track info
-			const currentPlaying = await fetch( `${this.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			const currentPlaying = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
 			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
 			if ( !currentPlayingResponse?.context?.href ) return 'Playlist not found';
 
@@ -272,24 +268,24 @@ export class Spotify
 	 *
 	 * @returns
 	 */
-	public async addBangerToPlaylist()
+	public static async addBangerToPlaylist()
 	{
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
 			// Current Track info
-			const currentPlaying = await fetch( `${this.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			const currentPlaying = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
 			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
 
 			if ( !currentPlayingResponse?.item ) return 'Error › No Song is playing or what';
 			const track = currentPlayingResponse.item as SpotifyApi.TrackObjectFull;
-			const artist = this.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
+			const artist = Spotify.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
 
 			// Add to Playlist
 			const addToBanger = await fetch(
-				`${this.apiUrl}/playlists/${this.playlistBanger}/tracks`,
+				`${Spotify.apiUrl}/playlists/${Spotify.playlistBanger}/tracks`,
 				{
 					headers: headers,
 					body: JSON.stringify( {
@@ -321,9 +317,9 @@ export class Spotify
 	 * @param trackUrl
 	 * @returns
 	 */
-	public async addToQueue( trackUrl: string )
+	public static async addToQueue( trackUrl: string )
 	{
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 		const trackUrlInfo = trackUrl.match( /track\/(\w+)\??/i );
 		if ( !trackUrlInfo?.[1] ) return '';
@@ -331,7 +327,7 @@ export class Spotify
 
 		try
 		{
-			const addToQueue = await fetch( `${this.apiUrl}/me/player/queue?uri=${trackUri}`, {
+			const addToQueue = await fetch( `${Spotify.apiUrl}/me/player/queue?uri=${trackUri}`, {
 				headers: headers,
 				method: 'post'
 			} );
@@ -360,14 +356,14 @@ export class Spotify
 	 * @param trackId
 	 * @returns
 	 */
-	private async getTrack( trackId: string ): Promise<string>
+	private static async getTrack( trackId: string ): Promise<string>
 	{
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
-			const track = await fetch( `${this.apiUrl}/tracks/${trackId}`, { headers: headers } );
+			const track = await fetch( `${Spotify.apiUrl}/tracks/${trackId}`, { headers: headers } );
 
 			const trackResponse = await track.json();
 			if ( !track.ok && trackResponse.error )
@@ -379,7 +375,7 @@ export class Spotify
 				return '';
 			}
 
-			const artist = this.getArtist( trackResponse.artists as SpotifyApi.ArtistObjectSimplified[] );
+			const artist = Spotify.getArtist( trackResponse.artists as SpotifyApi.ArtistObjectSimplified[] );
 			return `${artist} - ${trackResponse.name}`;
 		}
 		catch ( error: unknown )
@@ -394,9 +390,9 @@ export class Spotify
 	 *
 	 * @returns
 	 */
-	private async getAuthHeaders(): Promise<Headers | null>
+	private static async getAuthHeaders(): Promise<Headers | null>
 	{
-		const tokenData = await this.getTokenData();
+		const tokenData = await Spotify.getTokenData();
 		if ( !tokenData?.access_token ) return null;
 		return new Headers( { Authorization: `Bearer ${tokenData.access_token}` } );
 	}
@@ -407,7 +403,7 @@ export class Spotify
 	 * @param artists
 	 * @returns
 	 */
-	private getArtist( artists: SpotifyApi.ArtistObjectSimplified[] ): string
+	private static getArtist( artists: SpotifyApi.ArtistObjectSimplified[] ): string
 	{
 		return artists.map( ( artist ) => artist.name ).join( ' feat. ' );
 	}
@@ -424,12 +420,12 @@ export class Spotify
 		}
 		this.skipNextTrack = 0;
 
-		const headers = await this.getAuthHeaders();
+		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
-			void await fetch( `${this.apiUrl}/me/player/next`, { headers: headers } );
+			void await fetch( `${Spotify.apiUrl}/me/player/next`, { headers: headers } );
 		}
 		catch ( error: unknown ) { log( error ) }
 		return '';

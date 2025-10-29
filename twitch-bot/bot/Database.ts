@@ -88,7 +88,7 @@ export class Database extends DB
 	/**
 	 * Daily Cronjob tasks
 	 */
-	public cronjobDaily(): void
+	public static cronjobDaily(): void
 	{
 		const db = Database.getInstance();
 		void db.execute( `DELETE FROM stream_stats;` );

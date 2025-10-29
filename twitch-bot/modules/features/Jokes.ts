@@ -52,7 +52,7 @@ export class Jokes
 	}
 
 	/** Get random joke */
-	public static get( jokeId: number = 0 )
+	public static get( jokeId: number = 0 ): string
 	{
 		try
 		{

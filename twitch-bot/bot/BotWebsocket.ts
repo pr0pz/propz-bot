@@ -29,7 +29,7 @@ export class BotWebsocket
 		extra?: TwitchEventExtra;
 		obs?: ObsData | ObsData[];
 		saveEvent?: boolean;
-	} )
+	} ): void
 	{
 		const { type, user, text, count, extra, obs, hasSound, hasVideo, hasImage, showAvatar, saveEvent } = options;
 

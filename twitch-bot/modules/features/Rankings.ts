@@ -5,11 +5,12 @@
  * @version 2.0.0
  */
 
+import { BotData } from '@bot/BotData.ts';
 import { StreamElements } from '@integrations/StreamElements.ts';
 import { getTimePassed } from '@shared/helpers.ts';
+import { UserData } from '@features/UserData.ts';
 
 import type { StreamElementsViewerStats, TwitchUserData } from '@shared/types.ts';
-import type { BotData } from '@bot/BotData.ts';
 
 export class Rankings
 {
@@ -19,7 +20,7 @@ export class Rankings
 	 * @param {string} message
 	 * @param {string} broadcasterName Broadcaster display name
 	 */
-	public static async getUserWatchtimeText( userName: string, message: string, broadcasterName: string )
+	public static async getUserWatchtimeText( userName: string, message: string, broadcasterName: string ): Promise<string>
 	{
 		if ( !userName || !message )
 			return '';
@@ -51,17 +52,17 @@ export class Rankings
 		message: string,
 		type: keyof TwitchUserData = 'message_count',
 		data: BotData
-	)
+	): Promise<string>
 	{
 		if (
 			!userName || !message || !type ||
-			userName.toLowerCase() === data.broadcasterName
+			userName.toLowerCase() === BotData.broadcasterName
 		) return '';
 
 		const user = await data.getUser( userName );
 		if ( !user ) return '';
 
-		const usersData = data.getUsersData();
+		const usersData = UserData.getAll();
 		if ( !usersData ) return '';
 
 		let count: string | number = Number( usersData.get( user.id )?.[ type ] ) ?? 0;
@@ -95,7 +96,7 @@ export class Rankings
 		message = message.replace( '[user]', user.displayName );
 		message = message.replace( '[count]', count.toString() );
 		message = message.replace( '[rank]', rank.toString() );
-		message = message.replace( '[broadcaster]', data.broadcasterName );
+		message = message.replace( '[broadcaster]', BotData.broadcasterName );
 
 		return message;
 	}

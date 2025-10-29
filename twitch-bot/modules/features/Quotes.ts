@@ -21,7 +21,7 @@ export class Quotes
 	 * @param {HelixStream} stream Current Stream object
 	 * @returns {Promise<string>}
 	 */
-	static async add( chatMessage: ChatMessage, stream: HelixStream|undefined ): Promise<string>
+	public static async add( chatMessage: ChatMessage, stream: HelixStream|undefined ): Promise<string>
 	{
 		if ( !chatMessage.isReply )
 			return 'Error › Use !addquote only as message reply';
@@ -62,7 +62,7 @@ export class Quotes
 	}
 
 	/** Get random quote */
-	static get( quoteId: number = 0 ): string
+	public static get( quoteId: number = 0 ): string
 	{
 		try
 		{

@@ -57,7 +57,7 @@ export class Discord extends DiscordUtils
 	}
 
 	/** Connect Discord Bot */
-	async connect()
+	public async connect(): Promise<void>
 	{
 		const token = Deno.env.get( 'DISCORD_BOT_TOKEN' );
 		if ( !token )
@@ -74,7 +74,7 @@ export class Discord extends DiscordUtils
 	}
 
 	/** Add all client listeners */
-	handleClientEvents()
+	private handleClientEvents(): void
 	{
 		this.client.on( 'clientReady', this.onClientReady );
 		this.client.on( 'messageCreate', this.onMessageCreate );
@@ -128,7 +128,7 @@ export class Discord extends DiscordUtils
 	 * @param {String} channelId Send to this channel
 	 * @param {String} messageText Message to send
 	 */
-	private async sendMessage( channelId: string, messageText: string )
+	private async sendMessage( channelId: string, messageText: string ): Promise<void>
 	{
 		if ( !channelId || !messageText ) return;
 
@@ -151,7 +151,7 @@ export class Discord extends DiscordUtils
 	 * @param {EmbedBuilder} embed to send
 	 * @param {String} messageText Optional text message
 	 */
-	private async sendEmbed( channelId: string, embed: EmbedBuilder, messageText: string = '' )
+	private async sendEmbed( channelId: string, embed: EmbedBuilder, messageText: string = '' ): Promise<void>
 	{
 		if ( !channelId || !embed ) return;
 
@@ -178,7 +178,7 @@ export class Discord extends DiscordUtils
 	 * @param {string} messageText Optional text message
 	 */
 	private async sendAttachment( channelId: string, attachment: Attachment | AttachmentBuilder,
-		messageText: string = '' )
+		messageText: string = '' ): Promise<void>
 	{
 		if ( !channelId || !attachment ) return;
 
@@ -198,44 +198,11 @@ export class Discord extends DiscordUtils
 		catch ( error: unknown ) { log( error ) }
 	}
 
-	/** Create post in Forum
-	 *
-	 * @param {string} channelId Channel id
-	 * @param {String} title
-	 * @param {string} message
-	 * @returns {Promise<ForumThreadChannel|undefined>}
-	 */
-	async createPost( channelId: string, title: string, message: string ): Promise<ForumThreadChannel | undefined>
-	{
-		if ( !channelId || !title || !message ) return;
-
-		let channel = await this.getChannelById( channelId );
-		if ( !channel ) return;
-		channel = channel as ForumChannel;
-
-		// Get right tag
-		const tagTwitchQuestion = channel.availableTags.find( ( tag ) => tag.name === 'twitch-question' );
-		if ( !tagTwitchQuestion ) return;
-
-		try
-		{
-			const threadOptions: GuildForumThreadCreateOptions = {
-				name: title,
-				message: { content: message },
-				appliedTags: [ tagTwitchQuestion.id ]
-			};
-			const threadChannel = await channel.threads.create( threadOptions );
-			log( `<${channel.name}> ${title}: ${message}` );
-			return threadChannel;
-		}
-		catch ( error: unknown ) { log( error ) }
-	}
-
 	/** Send Stream online message
 	 *
 	 * @param {StreamData} streamData Stream data
 	 */
-	sendStreamOnlineMessage( streamData: StreamData )
+	public sendStreamOnlineMessage( streamData: StreamData ): void
 	{
 		if ( !streamData ) return;
 		try
@@ -252,7 +219,7 @@ export class Discord extends DiscordUtils
 	 * @param {string} eventName Github event name
 	 * @param {any} githubData Github event data
 	 */
-	handleGithubEvent( eventName: string, githubData: any )
+	public handleGithubEvent( eventName: string, githubData: any ): void
 	{
 		if ( !eventName || !githubData || !this.client.isReady() ) return;
 
@@ -271,7 +238,7 @@ export class Discord extends DiscordUtils
 	 * @param {GuildMember} member Member who needs a welcome message
 	 * @param {boolean} test If testing function
 	 */
-	private async sendWelcomeImage( member: GuildMember, test: boolean = false )
+	private async sendWelcomeImage( member: GuildMember, test: boolean = false ): Promise<void>
 	{
 		if ( !member ) return;
 		log( member.displayName );
@@ -297,13 +264,13 @@ export class Discord extends DiscordUtils
 	}
 
 	/** Discord bot successfully connected */
-	onClientReady = ( client: Client ) =>
+	public onClientReady = ( client: Client ) =>
 	{
 		log( client?.user?.tag || 'x' );
 	};
 
 	/** When someone writes a message */
-	onMessageCreate = async ( message: Message ) =>
+	public onMessageCreate = async ( message: Message ) =>
 	{
 		if ( !message ) return;
 
@@ -335,7 +302,7 @@ export class Discord extends DiscordUtils
 	};
 
 	/** When someone writes a message */
-	onMessage = ( message: Message ) =>
+	public onMessage = ( message: Message ) =>
 	{
 		if ( !message ) return;
 		log( `PM <${message.author.tag}>: '${message.content}'` );
@@ -343,7 +310,7 @@ export class Discord extends DiscordUtils
 	};
 
 	/** On command interaction */
-	onInteractionCreate = async ( interaction: Interaction ) =>
+	public onInteractionCreate = async ( interaction: Interaction ) =>
 	{
 		if ( !interaction || !interaction.isChatInputCommand() ) return;
 		log( interaction );
@@ -353,7 +320,7 @@ export class Discord extends DiscordUtils
 	};
 
 	/** When a new member joins our server */
-	onGuildMemberAdd = ( member: GuildMember ) =>
+	public onGuildMemberAdd = ( member: GuildMember ) =>
 	{
 		if ( !member?.guild ) return;
 

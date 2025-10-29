@@ -7,6 +7,7 @@
 
 import { log, mapToObject } from '@shared/helpers.ts';
 import { OpenWeather } from '@integrations/OpenWeather.ts';
+import { StreamStats } from '@features/StreamStats.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -20,7 +21,7 @@ export class Api
 	 *
 	 * @param {ApiRequest} apiRequest
 	 */
-	async process( apiRequest: ApiRequest ): Promise<ApiResponse>
+	public async process( apiRequest: ApiRequest ): Promise<ApiResponse>
 	{
 		const response: ApiResponse = { data: false };
 		if ( !apiRequest?.request ) return response;
@@ -45,7 +46,7 @@ export class Api
 				break;
 
 			case 'getStreamStats':
-				response.data = this.twitch.data.streamStats;
+				response.data = StreamStats.get();
 				break;
 
 			case 'getEmotes':
@@ -65,11 +66,11 @@ export class Api
 				break;
 
 			case 'getEvents':
-				response.data = mapToObject( this.twitch.data.events );
+				response.data = mapToObject( this.twitch.streamEvents.getAll() );
 				break;
 
 			case 'getLastEvents':
-				response.data = this.twitch.data.getLastEventsData( this.twitch.stream.language );
+				response.data = this.twitch.streamEvents.getLast( this.twitch.stream.language );
 				break;
 
 			case 'getWeather':
@@ -97,7 +98,7 @@ export class Api
 	 *
 	 * @param {KofiData} kofiData Webhook data passed from ko-fi.com
 	 */
-	handleKofiWebhook( kofiData: KofiData ): number
+	public handleKofiWebhook( kofiData: KofiData ): number
 	{
 		if (
 			!kofiData?.type ||

@@ -6,12 +6,15 @@
  */
 
 import cld from 'cld';
+import { BotData } from '@bot/BotData.ts';
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';
+import { StreamStats } from '@modules/features/StreamStats.ts';
+import { UserData } from '@modules/features/UserData.ts';
 
 import type { ChatMessage }  from '@twurple/chat';
-import type { Twitch } from "@twitch/core/Twitch.ts";
+import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { SimpleUser } from '@shared/types.ts';
 
 export class ChatMessageProcessor
@@ -23,7 +26,7 @@ export class ChatMessageProcessor
 	 * @param {string} chatMessage Message text
 	 * @param {ChatMessage} msg Message Object
 	 */
-	public async process( chatMessage: string, msg: ChatMessage )
+	public async process( chatMessage: string, msg: ChatMessage ): Promise<void>
 	{
 		if ( !chatMessage || !msg || !msg.userInfo )
 			return;
@@ -69,8 +72,8 @@ export class ChatMessageProcessor
 		// Update message count
 		if ( this.isValidMessageText( chatMessageSanitized, msg ) )
 		{
-			this.twitch.data.updateUserData( user, 'message_count' );
-			this.twitch.data.updateStreamStats( user, 'message' );
+			UserData.update( user, 'message_count' );
+			StreamStats.update( user, 'message' );
 			void this.translateIfNeeded( chatMessageSanitized, msg );
 		}
 
@@ -79,20 +82,22 @@ export class ChatMessageProcessor
 	}
 
 	/** Check if message should be handled */
-	validate( channel: string, user: string, text: string, msg: ChatMessage )
+	public validate(
+		channel: string,
+		user: string,
+		text: string,
+		msg: ChatMessage
+	): boolean
 	{
 		if ( !channel || !user || !text || !msg )
 			return false;
 
 		// Not home channel
-		if ( channel !== this.twitch.data.broadcasterName )
-			return false;
-
-		if ( this.twitch.data.isBot( user ) )
+		if ( channel !== BotData.broadcasterName )
 			return false;
 
 		// Killswitch
-		if ( this.twitch.killswitch.status && user.toLowerCase() !== this.twitch.data.broadcasterName )
+		if ( this.twitch.killswitch.status && user.toLowerCase() !==  BotData.broadcasterName )
 			return false;
 
 		return true;
@@ -103,7 +108,7 @@ export class ChatMessageProcessor
 	 * @param {string} message Message to search and replace
 	 * @param {ChatMessage} msg Message object
 	 */
-	isValidMessageText( message: string, msg: ChatMessage )
+	public isValidMessageText( message: string, msg: ChatMessage ): boolean
 	{
 		if ( !message || !msg )
 			return false;
@@ -153,7 +158,7 @@ export class ChatMessageProcessor
 	 * @param {ChatMessage} msg message object
 	 * @returns {string} Modlist with all nicknames
 	 */
-	searchReplaceEmotes( message: string, msg: ChatMessage ): string
+	private searchReplaceEmotes( message: string, msg: ChatMessage ): string
 	{
 		if ( !message || !msg )
 			return '';
@@ -207,7 +212,7 @@ export class ChatMessageProcessor
 	 * @param {string} message
 	 * @param {ChatMessage} msg
 	 */
-	async translateIfNeeded( message: string, msg: ChatMessage )
+	private async translateIfNeeded( message: string, msg: ChatMessage ): Promise<void>
 	{
 		try
 		{
@@ -230,15 +235,15 @@ export class ChatMessageProcessor
 	 *
 	 * @param {SimpleUser} user User Object to check for
 	 */
-	checkChatScore( user: SimpleUser )
+	private checkChatScore( user: SimpleUser ): void
 	{
-		if ( user?.name === this.twitch.data.broadcasterName )
+		if ( user?.name ===  BotData.broadcasterName )
 			return;
 
 		const chatscores = [
 			100, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
 		];
-		const count = this.twitch.data.getUserData( user.id! )?.message_count || 0;
+		const count = UserData.get( user.id! )?.message_count || 0;
 		if ( count && chatscores.includes( count ) )
 		{
 			void this.twitch.events.eventProcessor.process( {

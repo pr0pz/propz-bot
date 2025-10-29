@@ -105,7 +105,7 @@ export class TwitchAuth
 	}
 
 	/** Returns authprovider */
-	async getAuthProvider( type: 'broadcaster' | 'bot' ): Promise<RefreshingAuthProvider | null>
+	public async getAuthProvider( type: 'broadcaster' | 'bot' ): Promise<RefreshingAuthProvider | null>
 	{
 		const authData = this.authData.get( type )!;
 		if ( !authData.authProvider )

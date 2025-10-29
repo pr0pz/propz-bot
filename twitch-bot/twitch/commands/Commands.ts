@@ -6,6 +6,8 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
+
 import soundboardCommands from '@twitch/commands/CommandsSoundboard.ts';
 import createFunCommands from '@twitch/commands/CommandsFun.ts';
 import createModCommands from '@twitch/commands/CommandsMod.ts';
@@ -33,7 +35,7 @@ export class Commands
 		} ) );
 	}
 
-	get() { return this.commands; }
+	public get(): Map<string, TwitchCommand> { return this.commands; }
 
 	/** Process chat command
 	 *
@@ -43,10 +45,9 @@ export class Commands
 	 */
 	public async process( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
 	{
-		const userName = msg?.userInfo?.userName ?? user?.name ?? '';
-		if ( !this.validate( chatMessage, userName ) ) return;
-
 		const sender = await this.twitch.userConverter.convertToSimplerUser( msg?.userInfo ?? user ?? null );
+		if ( !this.validate( chatMessage, sender ) ) return;
+
 		if ( !sender ) return;
 
 		const commandName = this.getCommandNameFromMessage( chatMessage );
@@ -83,9 +84,9 @@ export class Commands
 	}
 
 	/** Check if commands can be executed */
-	public validate( chatMessage: string, userName: string )
+	public validate( chatMessage: string, user: SimpleUser|null ): boolean
 	{
-		if ( !chatMessage ) return false;
+		if ( !chatMessage || !user ) return false;
 
 		const commandName = this.getCommandNameFromMessage( chatMessage );
 		const command = this.commands.get( commandName );
@@ -104,8 +105,8 @@ export class Commands
 		// Check for mod properties
 		if (
 			command.onlyMods &&
-			!this.twitch.data.mods.includes( userName ) &&
-			userName !== this.twitch.data.broadcasterName
+			!user.isMod &&
+			user.name.toLowerCase() !==  BotData.broadcasterName.toLowerCase()
 		) return false;
 
 		if ( this.isCommandInCooldown( commandName ) )
@@ -115,7 +116,7 @@ export class Commands
 	}
 
 	/** Extracts the command name form chat message */
-	getCommandNameFromMessage( chatMessage: string )
+	private getCommandNameFromMessage( chatMessage: string ): string
 	{
 		if ( !chatMessage ) return '';
 
@@ -132,7 +133,7 @@ export class Commands
 	}
 
 	/** Check if command is in cooldown */
-	isCommandInCooldown( commandName: string )
+	private isCommandInCooldown( commandName: string ): boolean
 	{
 		if (
 			!commandName ||
@@ -162,7 +163,7 @@ export class Commands
 	 *
 	 * @returns {Promise<void>}
 	 */
-	async reloadCommands(): Promise<void>
+	public async reloadCommands(): Promise<void>
 	{
 		try
 		{

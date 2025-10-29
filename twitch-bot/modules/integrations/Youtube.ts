@@ -12,7 +12,7 @@ import { log } from '@shared/helpers.ts';
 export class Youtube
 {
 	/** Get Youtube VOD link */
-	public static async getVodLink( isStreamActive: boolean )
+	public static async getVodLink( isStreamActive: boolean ): Promise<string>
 	{
 		const vodId = isStreamActive ?
 			await this.getCurrentLivestreamVideoId() :
@@ -22,7 +22,7 @@ export class Youtube
 	}
 
 	/** Get ID of current livestream */
-	public static async getCurrentLivestreamVideoId()
+	public static async getCurrentLivestreamVideoId(): Promise<string>
 	{
 		const ytApiKey = Deno.env.get( 'YOUTUBE_API_KEY' ) || '';
 		const ytChannelId = Deno.env.get( 'YOUTUBE_CHANNEL_ID' ) || '';
@@ -49,7 +49,7 @@ export class Youtube
 	}
 
 	/** Get ID of last vod */
-	public static async getLastLivestreamVideoId()
+	public static async getLastLivestreamVideoId(): Promise<string>
 	{
 		const ytApiKey = Deno.env.get( 'YOUTUBE_API_KEY' ) || '';
 		const ytChannelId = Deno.env.get( 'YOUTUBE_CHANNEL_ID' ) || '';
@@ -80,7 +80,7 @@ export class Youtube
 	 * @param {string} videoId - ID of video
 	 * @param {number} videoTimestamp - timestamp to start video
 	 */
-	public static getYoutubeVideoUrlById( videoId: string = '', videoTimestamp: number = 0 )
+	public static getYoutubeVideoUrlById( videoId: string = '', videoTimestamp: number = 0 ): string
 	{
 		if ( !videoId ) return '';
 		let videoUrl: string = `https://www.youtube.com/watch?v=${videoId}`;

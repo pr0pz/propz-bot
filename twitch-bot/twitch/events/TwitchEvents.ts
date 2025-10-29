@@ -6,11 +6,13 @@
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
+import { EventProcessor } from "./EventProcessor.ts";
+import { UserData } from '@modules/features/UserData.ts';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
 import type { Twitch } from '@twitch/core/Twitch.ts';
-import { EventProcessor } from "./EventProcessor.ts";
 
 export class TwitchEvents
 {
@@ -26,24 +28,24 @@ export class TwitchEvents
 	}
 
 	/** Add event handler fucntions to events */
-	handleEvents()
+	private handleEvents(): void
 	{
-		this.listener.onStreamOnline( this.twitch.data.broadcasterId, this.onStreamOnline );
-		this.listener.onStreamOffline( this.twitch.data.broadcasterId, this.onStreamOffline );
-		this.listener.onChannelFollow( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId, this.onChannelFollow );
-		this.listener.onChannelRedemptionAdd( this.twitch.data.broadcasterId, this.onChannelRedemptionAdd );
-		this.listener.onChannelUpdate( this.twitch.data.broadcasterId, this.onChannelUpdate );
-		this.listener.onChannelAdBreakBegin( this.twitch.data.broadcasterId, this.onChannelAdBreakBegin );
-		this.listener.onChannelShieldModeBegin( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId,
+		this.listener.onStreamOnline(  BotData.broadcasterId, this.onStreamOnline );
+		this.listener.onStreamOffline(  BotData.broadcasterId, this.onStreamOffline );
+		this.listener.onChannelFollow(  BotData.broadcasterId,  BotData.broadcasterId, this.onChannelFollow );
+		this.listener.onChannelRedemptionAdd(  BotData.broadcasterId, this.onChannelRedemptionAdd );
+		this.listener.onChannelUpdate(  BotData.broadcasterId, this.onChannelUpdate );
+		this.listener.onChannelAdBreakBegin(  BotData.broadcasterId, this.onChannelAdBreakBegin );
+		this.listener.onChannelShieldModeBegin(  BotData.broadcasterId,  BotData.broadcasterId,
 			this.onChannelShieldModeBegin );
-		this.listener.onChannelShieldModeEnd( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId,
+		this.listener.onChannelShieldModeEnd(  BotData.broadcasterId,  BotData.broadcasterId,
 			this.onChannelShieldModeEnd );
-		this.listener.onChannelRaidFrom( this.twitch.data.broadcasterId, this.onChannelRaidFrom );
-		this.listener.onChannelRaidTo( this.twitch.data.broadcasterId, this.onChannelRaidTo );
+		this.listener.onChannelRaidFrom(  BotData.broadcasterId, this.onChannelRaidFrom );
+		this.listener.onChannelRaidTo(  BotData.broadcasterId, this.onChannelRaidTo );
 	}
 
 	/** Start listener */
-	startListener()
+	public startListener(): void
 	{
 		this.listenerTimer = clearTimer( this.listenerTimer );
 		if ( !this.listener ) return;
@@ -63,7 +65,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubStreamOnlineEvent} event An EventSub event representing a stream going live.
 	 */
-	onStreamOnline = async ( event: EventSubStreamOnlineEvent ) =>
+	public onStreamOnline = async ( event: EventSubStreamOnlineEvent ) =>
 	{
 		if ( !event ) return;
 
@@ -100,7 +102,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubStreamOfflineEvent} event An EventSub event representing a stream going offline.
 	 */
-	onStreamOffline = ( event: EventSubStreamOfflineEvent ) =>
+	public onStreamOffline = ( event: EventSubStreamOfflineEvent ) =>
 	{
 		if ( !event ) return;
 		void this.twitch.stream.set( null );
@@ -115,13 +117,12 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelFollowEvent} event An EventSub event representing a channel being followed.
 	 */
-	onChannelFollow = ( event: EventSubChannelFollowEvent ) =>
+	public onChannelFollow = ( event: EventSubChannelFollowEvent ) =>
 	{
 		if ( !event ) return;
-		if ( this.twitch.data.isBot( event.userName ) ) return;
 
 		// Don't do anything if user has already followed
-		if ( this.twitch.data.getUserData( event.userId )?.follow_date ) return;
+		if ( UserData.get( event.userId )?.follow_date ) return;
 
 		void this.eventProcessor.process( {
 			eventType: 'follow',
@@ -133,7 +134,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelRedemptionAddEvent} event An EventSub event representing a Channel Points redemption.
 	 */
-	onChannelRedemptionAdd = ( event: EventSubChannelRedemptionAddEvent ) =>
+	public onChannelRedemptionAdd = ( event: EventSubChannelRedemptionAddEvent ) =>
 	{
 		if ( !event ) return;
 		const eventType = getRewardSlug( event.rewardTitle );
@@ -156,7 +157,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelUpdateEvent} _event The function that will be called for any new notifications.
 	 */
-	onChannelUpdate = ( _event: EventSubChannelUpdateEvent ) =>
+	public onChannelUpdate = ( _event: EventSubChannelUpdateEvent ) =>
 	{
 		log( 'channelupdate' );
 		void this.twitch.stream.set();
@@ -166,7 +167,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelAdBreakBeginEvent} event The function that will be called for any new notifications.
 	 */
-	onChannelAdBreakBegin = ( event: EventSubChannelAdBreakBeginEvent ) =>
+	public onChannelAdBreakBegin = ( event: EventSubChannelAdBreakBeginEvent ) =>
 	{
 		if ( !event ) return;
 		const durationSeconds = event.durationSeconds || 180;
@@ -183,7 +184,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelRaidEvent} event The function that will be called for any new notifications.
 	 */
-	onChannelRaidFrom = ( event: EventSubChannelRaidEvent ) =>
+	public onChannelRaidFrom = ( event: EventSubChannelRaidEvent ) =>
 	{
 		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );
 	};
@@ -192,7 +193,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelRaidEvent} event The function that will be called for any new notifications.
 	 */
-	onChannelRaidTo = ( event: EventSubChannelRaidEvent ) =>
+	public onChannelRaidTo = ( event: EventSubChannelRaidEvent ) =>
 	{
 		log( `Raided: ${event.raidedBroadcasterName} / Raiding: ${event.raidingBroadcasterName}` );
 	};
@@ -201,7 +202,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelShieldModeBeginEvent} event The function that will be called for any new notifications.
 	 */
-	onChannelShieldModeBegin = ( event: EventSubChannelShieldModeBeginEvent ) =>
+	public onChannelShieldModeBegin = ( event: EventSubChannelShieldModeBeginEvent ) =>
 	{
 		if ( !event ) return;
 		log( 'shield active' );
@@ -217,7 +218,7 @@ export class TwitchEvents
 	 *
 	 * @param {EventSubChannelShieldModeEndEvent} event The function that will be called for any new notifications.
 	 */
-	onChannelShieldModeEnd = ( event: EventSubChannelShieldModeEndEvent ) =>
+	public onChannelShieldModeEnd = ( event: EventSubChannelShieldModeEndEvent ) =>
 	{
 		if ( !event ) return;
 		log( 'shield inactive' );

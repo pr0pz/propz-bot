@@ -7,6 +7,8 @@
  */
 
 import { log } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
+import { Database } from '@bot/Database.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
@@ -18,7 +20,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			handler: (_options: TwitchCommandOptions) => {
 				try {
 					twitch.data.twitchApi.channels.startChannelCommercial(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						180
 					);
 				} catch (error: unknown) {
@@ -57,8 +59,10 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			onlyMods: true
 		},
 		clearstats: {
-			handler: (_options: TwitchCommandOptions) => {
-				twitch.data.db.execute(`DELETE FROM stream_stats;`);
+			handler: (_options: TwitchCommandOptions) =>
+			{
+				const db = Database.getInstance();
+				db.execute(`DELETE FROM stream_stats;`);
 				return 'Deleted current Stream stats';
 			},
 			onlyMods: true
@@ -117,7 +121,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			handler: async (options: TwitchCommandOptions) => {
 				try {
 					await twitch.data.twitchApi.streams.createStreamMarker(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						options.message || 'Marker'
 					);
 					return `Marker created`;
@@ -136,7 +140,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 					if (!target) return;
 
 					const raid = await twitch.data.twitchApi.raids.startRaid(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						target.id
 					);
 					if (!raid) return;
@@ -154,7 +158,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 		reload: {
 			handler: async () => {
 				await twitch.commands.reloadCommands();
-				twitch.data.reloadConfig();
+				await twitch.rewards.init();
+				twitch.streamEvents.reload();
 				return 'Reloaded';
 			},
 			onlyMods: true
@@ -369,7 +374,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 					}
 
 					await twitch.data.twitchApi.channels.updateChannelInfo(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						{
 							gameId: game.id
 						}
@@ -388,7 +393,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			handler: async (options: TwitchCommandOptions) => {
 				try {
 					await twitch.data.twitchApi.channels.updateChannelInfo(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						{
 							language: options.message
 						}
@@ -405,7 +410,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			handler: async (options: TwitchCommandOptions) => {
 				try {
 					await twitch.data.twitchApi.channels.updateChannelInfo(
-						twitch.data.broadcasterId,
+						BotData.broadcasterId,
 						{
 							title: options.message
 						}

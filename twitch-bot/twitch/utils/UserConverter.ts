@@ -7,6 +7,7 @@
 
 import { HelixUser } from '@twurple/api';
 import { ChatUser } from '@twurple/chat';
+import { UserData } from '@modules/features/UserData.ts';
 
 import type { SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -16,12 +17,13 @@ export class UserConverter
 	constructor( private twitch: Twitch ) {}
 
 	/** Get simple user data from ChatUser Object */
-	async convertToSimplerUser(
+	public async convertToSimplerUser(
 		user: ChatUser | HelixUser | SimpleUser | string | null
 	): Promise<SimpleUser | null>
 	{
 		if ( !user ) return null;
 		let color = '';
+		let isMod = false;
 		let isSub = false;
 		let isVip = false;
 		let newUser: ChatUser | HelixUser | SimpleUser | string | null = user;
@@ -42,8 +44,9 @@ export class UserConverter
 		if ( user instanceof ChatUser )
 		{
 			color = user.color || '';
-			isSub = user.isSubscriber ?? false;
-			isVip = user.isVip ?? false;
+			isMod = user.isMod;
+			isSub = user.isSubscriber;
+			isVip = user.isVip;
 			newUser = await this.twitch.data.getUser( user.userName );
 		}
 
@@ -54,10 +57,10 @@ export class UserConverter
 				name: newUser.name,
 				displayName: newUser.displayName,
 				color: color || await this.twitch.data.getColorForUser( newUser.id ),
-				isMod: this.twitch.data.mods.includes( newUser.name ),
-				isSub: isSub ?? false,
-				isVip: isVip ?? false,
-				isFollower: this.twitch.data.isFollower( newUser.id ),
+				isMod: isMod,
+				isSub: isSub,
+				isVip: isVip,
+				isFollower: UserData.isFollower( newUser.id ),
 				profilePictureUrl: newUser.profilePictureUrl
 			} as SimpleUser;
 		}
@@ -66,7 +69,7 @@ export class UserConverter
 	}
 
 	/** Get the right username */
-	getUsernameFromObject( user: HelixUser | ChatUser | SimpleUser | string )
+	public getUsernameFromObject( user: HelixUser | ChatUser | SimpleUser | string ): string
 	{
 		if ( !user ) return '';
 		if ( typeof user === 'string' ) return user.toLowerCase();

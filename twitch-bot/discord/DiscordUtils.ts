@@ -20,7 +20,7 @@ export class DiscordUtils
 	 *
 	 * @returns {Promise<AttachmentBuilder|null>}
 	*/
-	async generateWelcomeImageAttachment( member: GuildMember, message: string ): Promise<AttachmentBuilder|undefined>
+	public async generateWelcomeImageAttachment( member: GuildMember, message: string ): Promise<AttachmentBuilder|undefined>
 	{
 		if ( !member || !message ) return;
 		try {
@@ -90,7 +90,7 @@ export class DiscordUtils
 	 * @param {any} githubData
 	 * @returns {EmbedBuilder|undefined}
 	 */
-	generateGithubEmbed( eventName: string, githubData: any ): EmbedBuilder|undefined
+	public generateGithubEmbed( eventName: string, githubData: any ): EmbedBuilder|undefined
 	{
 		if (
 			!eventName ||
@@ -254,7 +254,7 @@ export class DiscordUtils
 	 *
 	 * @param {any} streamData Current Stream data
 	 */
-	generateStreamOnlineMessageEmbed( streamData: StreamData )
+	public generateStreamOnlineMessageEmbed( streamData: StreamData ): EmbedBuilder
 	{
 		return new EmbedBuilder()
 			.setTitle( streamData.streamTitle )

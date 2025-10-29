@@ -6,7 +6,9 @@
  * @version 2.0.0
  */
 
+import { BotData } from '@bot/BotData.ts';
 import { Rankings } from '@modules/features/Rankings.ts';
+import { UserData } from '@modules/features/UserData.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -39,7 +41,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 		chatranking: {
 			description: 'Wer sind die Top chatter?',
 			handler: (_options: TwitchCommandOptions) => {
-				return Rankings.getRankingText('message_count', twitch.data.getUsersData());
+				return Rankings.getRankingText('message_count', UserData.getAll());
 			}
 		},
 		dailydev: {
@@ -115,7 +117,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 		firstranking: {
 			description: 'Wer sind die Top first chatter?',
 			handler: (_options: TwitchCommandOptions) => {
-				return Rankings.getRankingText('first_count', twitch.data.getUsersData());
+				return Rankings.getRankingText('first_count', UserData.getAll());
 			}
 		},
 		floripa: {
@@ -155,7 +157,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 		giftranking: {
 			description: 'Wer sind die Top Sub gifter?',
 			handler: (_options: TwitchCommandOptions) => {
-				return Rankings.getRankingText('gift_subs', twitch.data.getUsersData());
+				return Rankings.getRankingText('gift_subs', UserData.getAll());
 			}
 		},
 		github: {
@@ -224,7 +226,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 		raidranking: {
 			description: 'Wer sind die Top Raider?',
 			handler: (_options: TwitchCommandOptions) => {
-				return Rankings.getRankingText('raid_count', twitch.data.getUsersData());
+				return Rankings.getRankingText('raid_count', UserData.getAll());
 			}
 		},
 		roadmap: {
@@ -252,7 +254,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 		subranking: {
 			description: 'Wer sind die Top subber?',
 			handler: (_options: TwitchCommandOptions) => {
-				return Rankings.getRankingText('sub_count', twitch.data.getUsersData());
+				return Rankings.getRankingText('sub_count', UserData.getAll());
 			}
 		},
 		testconf: {
@@ -295,7 +297,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 				return await Rankings.getUserWatchtimeText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					twitch.data.broadcasterName
+					BotData.broadcasterName
 				);
 			},
 			message: {

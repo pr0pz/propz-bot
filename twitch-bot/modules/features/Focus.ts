@@ -6,6 +6,8 @@
  */
 
 import { clearTimer, getRewardSlug, log } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
+
 import type { Twitch } from '@twitch/core/Twitch.ts';
 
 export class Focus
@@ -17,7 +19,7 @@ export class Focus
 	 *
 	 * @param {string|number} focusStatusOrTime Focus status or focus time
 	 */
-	handle( focusStatusOrTime: string | number = 10 ): number
+	public handle( focusStatusOrTime: string | number = 10 ): number
 	{
 		if ( !focusStatusOrTime || !focusStatusOrTime.isNumeric() ) return 0;
 
@@ -31,7 +33,7 @@ export class Focus
 	}
 
 	/** Toggle Focus status */
-	async set( focusStatus: boolean = false, focusTimer: number = 10 )
+	public async set( focusStatus: boolean = false, focusTimer: number = 10 ): Promise<void>
 	{
 		if (
 			typeof focusStatus !== 'boolean' ||
@@ -43,7 +45,7 @@ export class Focus
 
 		void this.twitch.events.eventProcessor.process( {
 			eventType: eventType,
-			user: await this.twitch.data.getUser() || this.twitch.data.broadcasterName,
+			user: await this.twitch.data.getUser() ||  BotData.broadcasterName,
 			eventCount: focusTimer
 		} );
 
@@ -57,16 +59,16 @@ export class Focus
 	 *
 	 * @param {boolean} focusStatus
 	 */
-	setRewardPause( focusStatus: boolean = false )
+	private setRewardPause( focusStatus: boolean = false ): void
 	{
 		if ( typeof focusStatus !== 'boolean' ) return;
 
 		try
 		{
-			for ( const [ _index, reward ] of this.twitch.data.rewards.entries() )
+			for ( const [ _index, reward ] of this.twitch.rewards.get().entries() )
 			{
 				const rewardSlug = getRewardSlug( reward.title );
-				if ( !this.twitch.data.getEvent( rewardSlug ).disableOnFocus ) continue;
+				if ( !this.twitch.streamEvents.get( rewardSlug ).disableOnFocus ) continue;
 
 				const rewardUpdateData = {
 					title: reward.title,
@@ -75,7 +77,7 @@ export class Focus
 				};
 
 				this.twitch.data.twitchApi.channelPoints.updateCustomReward(
-					this.twitch.data.broadcasterId,
+					 BotData.broadcasterId,
 					reward.id.toString(),
 					rewardUpdateData
 				);

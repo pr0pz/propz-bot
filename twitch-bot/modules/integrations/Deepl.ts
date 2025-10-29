@@ -12,7 +12,7 @@ import type { TwitchCommandOptions } from '@shared/types.ts';
 
 export class Deepl
 {
-	public static async maybeTranslate( options: TwitchCommandOptions, twitch: Twitch )
+	public static async maybeTranslate( options: TwitchCommandOptions, twitch: Twitch ): Promise<string>
 	{
 		if ( !options.messageObject ) return '';
 		// Check if command is sent as reply

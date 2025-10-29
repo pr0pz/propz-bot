@@ -6,6 +6,7 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
+import { BotData } from '@bot/BotData.ts';
 
 import type { StreamData, StreamDataApi } from '@shared/types.ts';
 import type { HelixStream } from '@twurple/api';
@@ -18,25 +19,25 @@ export class StreamHelper
 	constructor( private twitch: Twitch ) {}
 
 	/** Get the start time as timestamp */
-	get startTime()
+	public get startTime(): number
 	{
 		return this.stream?.startDate.getTime() ?? 0;
 	}
 
 	/** Get current Stream language */
-	get language()
+	public get language(): string
 	{
 		return this.stream?.language || 'de';
 	}
 
 	/** Returns if stream is active */
-	get isActive()
+	public get isActive(): boolean
 	{
 		return this.stream !== null;
 	}
 
 	/** Set the current stream */
-	async set(
+	public async set(
 		stream?: HelixStream | undefined | null
 	): Promise<HelixStream | null>
 	{
@@ -46,7 +47,7 @@ export class StreamHelper
 		try
 		{
 			this.stream = await this.twitch.data.twitchApi.streams.getStreamByUserName(
-				this.twitch.data.broadcasterName
+				 BotData.broadcasterName
 			);
 			return this.stream;
 		} catch ( error: unknown )
@@ -58,7 +59,7 @@ export class StreamHelper
 
 
 	/** Get the current stream for API */
-	forApi(): StreamDataApi | undefined
+	public forApi(): StreamDataApi | undefined
 	{
 		const stream = this.stream;
 		if ( !stream ) return;
@@ -76,7 +77,7 @@ export class StreamHelper
 	 *
 	 * @param {HelixStream} stream Current Stream
 	 */
-	async sendStreamOnlineDataToDiscord( stream?: HelixStream | undefined | null )
+	public async sendStreamOnlineDataToDiscord( stream?: HelixStream | undefined | null ): Promise<void>
 	{
 		if ( !this.twitch.discord.client.isReady() ) return;
 
@@ -87,7 +88,7 @@ export class StreamHelper
 		if ( !user ) return;
 
 		const streamAnnouncementMessage = getMessage(
-				this.twitch.data.getEvent( 'streamonline' ).message,
+				this.twitch.streamEvents.get( 'streamonline' ).message,
 				this.language
 			).replace( '[user]', user.displayName ) ||
 			`${ user.displayName } ist jetzt live!`;

@@ -27,7 +27,7 @@ export class Bot
 	}
 
 	/** Main function */
-	run()
+	public run(): void
 	{
 		this.server = Deno.serve(
 			{ port: 1337, hostname: '127.0.0.1' },
@@ -41,7 +41,7 @@ export class Bot
 	 *
 	 * @param {Request} req Incoming request
 	 */
-	handleServerRequests = async ( req: Request ): Promise<Response> =>
+	private handleServerRequests = async ( req: Request ): Promise<Response> =>
 	{
 		// CORS Preflight-Request (OPTIONS)
 		if (
@@ -207,7 +207,7 @@ export class Bot
 	}
 
 	/** Disconnect and kill everything on quit */
-	private handleExit()
+	private handleExit(): void
 	{
 		Deno.addSignalListener( 'SIGINT', async () =>
 		{

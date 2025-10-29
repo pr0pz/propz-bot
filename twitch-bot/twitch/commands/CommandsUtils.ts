@@ -6,9 +6,11 @@
  * @version 2.0.0
  */
 
+import { BotData } from '@bot/BotData.ts';
 import { Deepl } from '@modules/integrations/Deepl.ts';
 import { Gemini } from '@modules/integrations/Gemini.ts';
 import { OpenWeather } from '@modules/integrations/OpenWeather.ts';
+import { Spotify } from '@modules/integrations/Spotify.ts';
 import { Youtube } from '@modules/integrations/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
@@ -23,7 +25,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 			handler: async (options: TwitchCommandOptions) => {
 				return await Gemini.generate(
 					options.message,
-					options.sender.name || twitch.data.broadcasterName
+					options.sender.name || BotData.broadcasterName
 				);
 			}
 		},
@@ -31,7 +33,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 			description: 'Fügt den aktuellen Song zur "Absolute Banger" Playlist',
 			disableIfOffline: true,
 			handler: async (options: TwitchCommandOptions) => {
-				const song = await twitch.spotify.addBangerToPlaylist();
+				const song = await Spotify.addBangerToPlaylist();
 				if (song.includes('Error')) return song;
 				return options.returnMessage?.replace(
 					'[song]',
@@ -70,7 +72,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		playlist: {
 			description: 'Link zur aktuellen Playlist',
 			handler: async (_options: TwitchCommandOptions) => {
-				return await twitch.spotify.getCurrentPlaylist();
+				return await Spotify.getCurrentPlaylist();
 			}
 		},
 		reloadcss: {
@@ -78,7 +80,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		rewardsongrequest: {
 			handler: async (options: TwitchCommandOptions) => {
-				const track = await twitch.spotify.addToQueue(options.param);
+				const track = await Spotify.addToQueue(options.param);
 				if (track.includes('Error'))
 					return track;
 
@@ -98,7 +100,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		song: {
 			description: 'Der aktuelle Song',
 			handler: async (_options: TwitchCommandOptions) => {
-				return await twitch.spotify.getCurrentSong();
+				return await Spotify.getCurrentSong();
 			}
 		},
 		soundboard: {

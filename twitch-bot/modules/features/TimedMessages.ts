@@ -6,16 +6,17 @@
  */
 
 import { getMessage, objectToMap } from '@shared/helpers.ts';
-import timedMessages from '@config/twitchTimers.json' with { type: 'json' };
 
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { TwitchTimers } from '@shared/types.ts';
 
 export class TimedMessages
 {
-	public static checkAndSend( twitch: Twitch )
+	public static handle( twitch: Twitch ): void
 	{
-		const timers: Map<string, TwitchTimers> = objectToMap( timedMessages );
+		const timers: Map<string, TwitchTimers> = objectToMap( JSON.parse(
+			Deno.readTextFileSync( './twitch-bot/config/twitchTimers.json' )
+		) );
 
 		const minutesPassed = Math.floor(
 			(Date.now() - twitch.stream.startTime) / 1000 / 60

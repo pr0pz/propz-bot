@@ -12,7 +12,7 @@ export class Killswitch
 	constructor( public status: boolean = false ) {}
 
 	/** Set killswitch status */
-	public set( killswitchStatus: boolean )
+	public set( killswitchStatus: boolean ): void
 	{
 		if ( typeof killswitchStatus !== 'boolean' ) return;
 		this.status = Boolean( killswitchStatus );
@@ -20,7 +20,7 @@ export class Killswitch
 	}
 
 	/** Toggle Killswitch status */
-	public toggle( killswitchStatus?: boolean )
+	public toggle( killswitchStatus?: boolean ): void
 	{
 		this.status = typeof killswitchStatus !== 'undefined' ?
 			Boolean( killswitchStatus ) :

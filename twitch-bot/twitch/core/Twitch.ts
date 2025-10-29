@@ -8,18 +8,19 @@
 import '@shared/prototypes.ts';
 
 import { log } from '@shared/helpers.ts';
-
-import { TwitchChat } from '@twitch/chat/TwitchChat.ts';
-import { TwitchEvents } from '@twitch/events/TwitchEvents.ts';
-import { Commands } from '@twitch/commands/Commands.ts';
-
 import { Api } from '@modules/features/Api.ts';
+import { Commands } from '@twitch/commands/Commands.ts';
+import { Database } from '@bot/Database.ts';
 import { FirstChatter } from '@modules/features/FirstChatter.ts';
 import { Focus } from '@modules/features/Focus.ts';
 import { Killswitch } from '@modules/features/Killswitch.ts';
 import { Spotify } from '@modules/integrations/Spotify.ts';
+import { StreamEvents } from '@modules/features/StreamEvents.ts';
 import { StreamHelper } from '@twitch/utils/StreamHelper.ts';
 import { TimedMessages } from '@modules/features/TimedMessages.ts';
+import { TwitchChat } from '@twitch/chat/TwitchChat.ts';
+import { TwitchEvents } from '@twitch/events/TwitchEvents.ts';
+import { TwitchRewards } from '@twitch/core/TwitchRewards.ts';
 import { UserConverter } from '@twitch/utils/UserConverter.ts';
 
 import type { BotData } from '@bot/BotData.ts';
@@ -37,8 +38,10 @@ export class Twitch
 	public killswitch = new Killswitch();
 	public firstChatter: FirstChatter;
 	public focus: Focus;
-	public spotify: Spotify;
+	public rewards: TwitchRewards;
+	public spotify = new Spotify();
 	public stream: StreamHelper;
+	public streamEvents = new StreamEvents();
 	public userConverter: UserConverter;
 
 	public isDev: boolean = false;
@@ -61,7 +64,7 @@ export class Twitch
 		this.events = new TwitchEvents( this );
 		this.firstChatter = new FirstChatter( this );
 		this.focus = new Focus( this );
-		this.spotify = new Spotify( this.data.db );
+		this.rewards = new TwitchRewards( this.data.twitchApi );
 		this.stream = new StreamHelper( this );
 		this.userConverter = new UserConverter( this );
 
@@ -70,12 +73,12 @@ export class Twitch
 	}
 
 	/** Init Main Twitch Controller */
-	async init()
+	public async init(): Promise<void>
 	{
 		void this.data.init();
+		void this.rewards.init();
 		this.chat.connect();
 		this.events.startListener();
-		this.firstChatter.firstChatter = this.data.firstChatter;
 
 		await this.stream.set();
 
@@ -84,13 +87,12 @@ export class Twitch
 		void Deno.cron( 'Bot minutely', '* * * * *', () =>
 		{
 			if ( !this.stream.isActive ) return;
-			TimedMessages.checkAndSend( this );
+			TimedMessages.handle( this );
 		} );
 
 		void Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
-			this.firstChatter.cronjobDaily();
-			this.data.db.cronjobDaily();
+			Database.cronjobDaily()
 			this.data.cronjobDaily();
 		} );
 
