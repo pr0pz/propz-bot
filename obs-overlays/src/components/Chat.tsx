@@ -5,11 +5,11 @@
  * @version 1.8.8
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import ChatMessage from "./ChatMessage.tsx";
-import type { WebSocketData, UserChatStyles } from '@propz/types.ts';
+import type { WebSocketData, UserChatStyles } from '@shared/types.ts';
 
 interface ChatMessageData {
 	message: string;

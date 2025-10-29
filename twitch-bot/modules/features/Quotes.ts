@@ -2,16 +2,16 @@
  * Quote
  *
  * @author Wellington Estevo
- * @version 1.10.7
+ * @version 2.0.0
  */
 
-import { getRandomNumber, log } from "@propz/helpers.ts";
-import { Database } from "../bot/Database.ts";
-import { Youtube } from "@modules/Youtube.ts";
+import { getRandomNumber, log } from '@shared/helpers.ts';
+import { Database } from '@bot/Database.ts';
+import { Youtube } from '@integrations/Youtube.ts';
 
-import type { ChatMessage } from "@twurple/chat";
-import type { HelixStream } from "@twurple/api";
-import type { TwitchQuote, TwitchQuoteRow } from "@propz/types.ts";
+import type { ChatMessage } from '@twurple/chat';
+import type { HelixStream } from '@twurple/api';
+import type { TwitchQuote, TwitchQuoteRow } from '@shared/types.ts';
 
 export class Quotes
 {
@@ -96,7 +96,7 @@ export class Quotes
 				return '';
 
 			const date = new Date( Date.parse( quote[0].date ) );
-			let message = `${quote[0].text} - ${quote[0].name} [ #${quoteIndex} / ${
+			let message = `${quote[0].text} - @${quote[0].name} [ #${quoteIndex} / ${
 				date.toLocaleDateString( 'de-DE', {
 					day: '2-digit',
 					month: '2-digit',

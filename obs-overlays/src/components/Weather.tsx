@@ -5,7 +5,7 @@
  * @version 1.6.7
  */
 
-import {log} from '@propz/helpers.ts';
+import {log} from '@shared/helpers.ts';
 import {useEffect, useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
 

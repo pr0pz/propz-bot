@@ -2,12 +2,12 @@
  * Websocket Handler
  *
  * @author Wellington Estevo
- * @version 1.8.2
+ * @version 2.0.0
  */
 
-import '@propz/prototypes.ts';
-import { log } from '@propz/helpers.ts';
-import type { ObsData, SimpleUser, TwitchEventExtra, WebSocketData } from '@propz/types.ts';
+import '@shared/prototypes.ts';
+import { log } from '@shared/helpers.ts';
+import type { ObsData, SimpleUser, TwitchEventExtra, WebSocketData } from '@shared/types.ts';
 
 export class BotWebsocket
 {

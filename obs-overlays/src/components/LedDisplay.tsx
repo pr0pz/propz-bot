@@ -7,9 +7,9 @@
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 
-import type { WebSocketData } from '@propz/types.ts';
+import type { WebSocketData } from '@shared/types.ts';
 
 const LedDisplay = () =>
 {

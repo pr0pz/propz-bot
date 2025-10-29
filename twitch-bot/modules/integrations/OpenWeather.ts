@@ -2,11 +2,11 @@
  * OpenWeather
  *
  * @author Wellington Estevo
- * @version 1.6.7
+ * @version 2.0.0
  */
 
-import {log} from '@propz/helpers.ts';
-import type {OpenWeatherResponse, WeatherData} from '@propz/types.ts';
+import {log} from '@shared/helpers.ts';
+import type {OpenWeatherResponse, WeatherData} from '@shared/types.ts';
 
 export class OpenWeather
 {

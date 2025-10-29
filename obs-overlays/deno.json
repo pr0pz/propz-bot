@@ -1,5 +1,5 @@
 {
-	"name": "@propz/overlays",
+	"name": "@shared/overlays",
 	"exports": {
 		".": "./src/index.tsx"
 	},

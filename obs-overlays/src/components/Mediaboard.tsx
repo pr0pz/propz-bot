@@ -5,8 +5,8 @@
  * @version 1.7.20
  */
 
-import { log } from '@propz/helpers.ts';
-import type { TwitchCommand, TwitchEvent, WebSocketData } from '@propz/types.ts';
+import { log } from '@shared/helpers.ts';
+import type { TwitchCommand, TwitchEvent, WebSocketData } from '@shared/types.ts';
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 

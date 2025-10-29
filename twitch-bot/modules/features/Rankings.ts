@@ -2,13 +2,14 @@
  * Rankings
  *
  * @author Wellington Estevo
- * @version 1.10.7
+ * @version 2.0.0
  */
 
-import { StreamElements } from '@modules/StreamElements.ts';
-import { getTimePassed } from '@propz/helpers.ts';
+import { StreamElements } from '@integrations/StreamElements.ts';
+import { getTimePassed } from '@shared/helpers.ts';
 
-import type { StreamElementsViewerStats, TwitchUserData } from '@propz/types.ts';
+import type { StreamElementsViewerStats, TwitchUserData } from '@shared/types.ts';
+import type { BotData } from '@bot/BotData.ts';
 
 export class Rankings
 {
@@ -16,8 +17,9 @@ export class Rankings
 	 *
 	 * @param {string} userName
 	 * @param {string} message
+	 * @param {string} broadcasterName Broadcaster display name
 	 */
-	public static async getUserWatchtimeText( userName: string, message: string )
+	public static async getUserWatchtimeText( userName: string, message: string, broadcasterName: string )
 	{
 		if ( !userName || !message )
 			return '';
@@ -30,7 +32,7 @@ export class Rankings
 		const watchtime = viewerStats.watchtime * 60 * 1000;
 
 		message = message.replace( '[user]', userName );
-		message = message.replace( '[broadcaster]', twitch.data.userDisplayName );
+		message = message.replace( '[broadcaster]', broadcasterName );
 		message = message.replace( '[count]', getTimePassed( watchtime ) );
 		message = message.replace( '[rank]', viewerStats.rank.toString() );
 
@@ -53,7 +55,7 @@ export class Rankings
 	{
 		if (
 			!userName || !message || !type ||
-			userName.toLowerCase() === data.userName
+			userName.toLowerCase() === data.broadcasterName
 		) return '';
 
 		const user = await data.getUser( userName );
@@ -93,7 +95,7 @@ export class Rankings
 		message = message.replace( '[user]', user.displayName );
 		message = message.replace( '[count]', count.toString() );
 		message = message.replace( '[rank]', rank.toString() );
-		message = message.replace( '[broadcaster]', data.userDisplayName );
+		message = message.replace( '[broadcaster]', data.broadcasterName );
 
 		return message;
 	}
@@ -107,7 +109,7 @@ export class Rankings
 	 */
 	public static getRankingText(
 		type: keyof TwitchUserData = 'message_count',
-		usersData: Map<number,TwitchUserData>
+		usersData: Map<string,TwitchUserData>
 	): string
 	{
 		if ( !type || !usersData ) return '';

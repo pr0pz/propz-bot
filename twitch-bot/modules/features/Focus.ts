@@ -2,14 +2,15 @@
  * Focus
  *
  * @author Wellington Estevo
- * @version 1.10.5
+ * @version 2.0.0
  */
-import { clearTimer, getRewardSlug, log } from "@propz/helpers.ts";
-import type { TwitchUtils } from "../twitch/TwitchUtils.ts";
+
+import { clearTimer, getRewardSlug, log } from '@shared/helpers.ts';
+import type { Twitch } from '@twitch/core/Twitch.ts';
 
 export class Focus
 {
-	constructor( private twitch: TwitchUtils, public timer: number = 0 ) {}
+	constructor( private twitch: Twitch, public timer: number = 0 ) {}
 
 	/**
 	 * Handle Focus Command
@@ -40,9 +41,9 @@ export class Focus
 		this.setRewardPause( focusStatus );
 		const eventType = focusStatus ? 'focusstart' : 'focusstop';
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: eventType,
-			user: await this.twitch.data.getUser() || this.twitch.data.userName,
+			user: await this.twitch.data.getUser() || this.twitch.data.broadcasterName,
 			eventCount: focusTimer
 		} );
 
@@ -74,7 +75,7 @@ export class Focus
 				};
 
 				this.twitch.data.twitchApi.channelPoints.updateCustomReward(
-					this.twitch.data.userId,
+					this.twitch.data.broadcasterId,
 					reward.id.toString(),
 					rewardUpdateData
 				);

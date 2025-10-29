@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
 import Window from './Window.tsx';
-import type { WebSocketData } from '@propz/types.ts';
+import type { WebSocketData } from '@shared/types.ts';
 
 const Raid = () =>
 {

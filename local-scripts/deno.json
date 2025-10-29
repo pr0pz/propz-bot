@@ -1,5 +1,5 @@
 {
-	"name": "@propz/local-scripts",
+	"name": "@shared/local-scripts",
 	"exports": {
 		".": "./index.ts"
 	},

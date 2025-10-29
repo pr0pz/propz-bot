@@ -2,12 +2,13 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 2.0.0
  */
 
 import type { ChatMessage } from '@twurple/chat';
 import type { Buffer } from 'node:buffer';
 import type { HelixStream } from '@twurple/api';
+import type { RefreshingAuthProvider } from '@twurple/auth';
 
 export interface BotReactionMessage
 {
@@ -82,6 +83,14 @@ export interface TwitchEventData
 	timestamp: number;
 	count?: number;
 	extra?: TwitchEventExtra;
+}
+
+export interface TwitchAuthData
+{
+	authProvider: RefreshingAuthProvider | null;
+	initialOauthCode: string;
+	userId: string;
+	scopes: string[];
 }
 
 export interface TwitchQuote

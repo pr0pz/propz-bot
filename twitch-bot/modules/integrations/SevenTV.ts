@@ -2,11 +2,11 @@
  * SevenTV
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
-import type { SevenTVEmoteSet, TwitchEmote } from '@propz/types.ts';
+import { log } from '@shared/helpers.ts';
+import type { SevenTVEmoteSet, TwitchEmote } from '@shared/types.ts';
 
 export class SevenTV
 {

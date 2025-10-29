@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import Window from './Window.tsx';
 
 const Alert = ( propz: {

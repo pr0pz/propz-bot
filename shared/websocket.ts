@@ -2,11 +2,11 @@
  * Websocket Controller
  *
  * @author Wellington Estevo
- * @version 1.9.6
+ * @version 2.0.0
  */
 
 import EventEmitter from 'events';
-import { clearTimer, log } from './helpers.ts';
+import { clearTimer, log } from '@shared/helpers.ts';
 
 export default class WebsocketController
 {

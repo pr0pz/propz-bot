@@ -2,11 +2,11 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 1.10.2
+ * @version 2.0.0
  */
 
-import { Database } from "../bot/Database.ts";
-import { getRandomNumber } from "@propz/helpers.ts";
+import { Database } from '@bot/Database.ts';
+import { getRandomNumber } from '@shared/helpers.ts';
 
 export class Giveaway
 {

@@ -2,10 +2,10 @@
  * Killswitch
  *
  * @author Wellington Estevo
- * @version 1.10.4
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 
 export class Killswitch
 {

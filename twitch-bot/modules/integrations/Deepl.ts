@@ -2,17 +2,17 @@
  * Deepl
  *
  * @author Wellington Estevo
- * @version 1.10.6
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log, sanitizeMessage } from '@shared/helpers.ts';
 
-import type { TwitchUtils } from "../twitch/Twitch.ts";
-import type { TwitchCommandOptions } from '@propz/types.ts';
+import type { Twitch } from '@twitch/core/Twitch.ts';
+import type { TwitchCommandOptions } from '@shared/types.ts';
 
 export class Deepl
 {
-	public static async maybeTranslate( options: TwitchCommandOptions, twitch: TwitchUtils )
+	public static async maybeTranslate( options: TwitchCommandOptions, twitch: Twitch )
 	{
 		if ( !options.messageObject ) return '';
 		// Check if command is sent as reply
@@ -21,11 +21,11 @@ export class Deepl
 			const message = sanitizeMessage(
 				options.messageObject.parentMessageText ?? ''
 			);
-			if ( twitch.chat.chatHelper.isValidMessageText( message, options.messageObject ) )
+			if ( twitch.chat.chatMessageProcessor.isValidMessageText( message, options.messageObject ) )
 			{
 				const translation = await Deepl.translate(
 					message,
-					twitch.streamLanguage
+					twitch.stream.language
 				);
 				void twitch.chat.sendMessage( translation, options.messageObject );
 				return '';
@@ -33,7 +33,7 @@ export class Deepl
 		}
 		return await Deepl.translate(
 			options.message,
-			twitch.streamLanguage
+			twitch.stream.language
 		);
 	}
 

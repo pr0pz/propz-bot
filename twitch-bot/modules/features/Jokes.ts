@@ -2,14 +2,14 @@
  * Joke
  *
  * @author Wellington Estevo
- * @version 1.10.7
+ * @version 2.0.0
  */
 
-import { getRandomNumber, log } from "@propz/helpers.ts";
-import { Database } from "../bot/Database.ts";
+import { getRandomNumber, log } from '@shared/helpers.ts';
+import { Database } from '@bot/Database.ts';
 
-import type { ChatMessage } from "@twurple/chat";
-import type { TwitchJoke, TwitchJokeRow } from "@propz/types.ts";
+import type { ChatMessage } from '@twurple/chat';
+import type { TwitchJoke, TwitchJokeRow } from '@shared/types.ts';
 
 export class Jokes
 {

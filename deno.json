@@ -1,5 +1,5 @@
 {
-	"version": "1.10.7",
+	"version": "2.0.0",
 	"nodeModulesDir": "auto",
 	"fmt": {
 		"singleQuote": true,
@@ -44,8 +44,18 @@
 		"build": "deno run -A --env-file ./obs-overlays/build.ts"
 	},
 	"imports": {
-		"@propz/": "./shared/",
+		"@bot/": "./twitch-bot/bot/",
+		"@config/": "./twitch-bot/config/",
+		"@discord/": "./twitch-bot/discord/",
+		"@modules/": "./twitch-bot/modules/",
+		"@features/": "./twitch-bot/modules/features/",
+		"@integrations/": "./twitch-bot/modules/integrations/",
+		"@shared/": "./shared/",
 		"@twitch/": "./twitch-bot/twitch/",
-		"@modules/": "./twitch-bot/modules/"
+		"@twitch/core/": "./twitch-bot/twitch/core/",
+		"@twitch/chat/": "./twitch-bot/twitch/chat/",
+		"@twitch/commands/": "./twitch-bot/twitch/commands/",
+		"@twitch/events/": "./twitch-bot/twitch/events/",
+		"@twitch/utils/": "./twitch-bot/twitch/utils/"
 	}
 }

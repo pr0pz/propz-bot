@@ -2,17 +2,17 @@
  * Discord Helper
  *
  * @author Wellington Estevo
- * @version 1.9.5
+ * @version 2.0.0
  */
 
-import '@propz/prototypes.ts';
+import '@shared/prototypes.ts';
 import puppeteer from 'puppeteer';
 import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { Buffer } from 'node:buffer';
 
 import type { GuildMember } from 'discord.js';
-import type { GithubData, StreamData } from '@propz/types.ts';
+import type { GithubData, StreamData } from '@shared/types.ts';
 
 export class DiscordUtils
 {
@@ -24,7 +24,7 @@ export class DiscordUtils
 	{
 		if ( !member || !message ) return;
 		try {
-			let htmlContent = Deno.readTextFileSync( './twitch-bot/discord/DiscordWelcome.html' );
+			let htmlContent = Deno.readTextFileSync( '@discord/DiscordWelcome.html' );
 			const colors = [ 'red', 'green', 'yellow', 'beige', 'blue', 'purple' ];
 			const splittedText = message.split( '|' );
 			const avatarUrl = member.displayAvatarURL({ extension: 'jpg', size: 512 });

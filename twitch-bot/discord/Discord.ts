@@ -2,22 +2,24 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 1.9.5
+ * @version 2.0.0
  */
 
-import '@propz/prototypes.ts';
+import '@shared/prototypes.ts';
 
-import { getMessage, log } from '@propz/helpers.ts';
+import { getMessage, log, objectToMap } from '@shared/helpers.ts';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { DiscordUtils } from './DiscordUtils.ts';
+import { DiscordUtils } from '@discord/DiscordUtils.ts';
+import discordEvents from '@config/discordEvents.json' with { type: 'json' };
 
-import type { StreamData } from '@propz/types.ts';
+import type { StreamData } from '@shared/types.ts';
 import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, ForumChannel, ForumThreadChannel, Guild, GuildForumThreadCreateOptions, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
-import type { BotData } from '../bot/BotData.ts';
+import type { TwitchEvent } from "@shared/types.ts";
 
 export class Discord extends DiscordUtils
 {
 	public client: Client;
+	public discordEvents: Map<string, TwitchEvent>;
 
 	// Configure your Discord data here
 	private guildid = '693476252669050951';
@@ -46,10 +48,11 @@ export class Discord extends DiscordUtils
 		GatewayIntentBits.MessageContent
 	];
 
-	constructor( private data: BotData )
+	constructor()
 	{
 		super();
 		this.client = new Client( { intents: this.intents } );
+		this.discordEvents = objectToMap( discordEvents );
 		this.handleClientEvents();
 	}
 
@@ -274,7 +277,7 @@ export class Discord extends DiscordUtils
 		log( member.displayName );
 
 		const eventType = 'guildmemberadd';
-		const event = this.data.discordEvents.get( eventType );
+		const event = this.discordEvents.get( eventType );
 
 		if ( !event?.message?.de || !event?.messageImage?.de ) return;
 

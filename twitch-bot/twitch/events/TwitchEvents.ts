@@ -2,23 +2,25 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 1.10.5
+ * @version 2.0.0
  */
 
-import { clearTimer, getRewardSlug, log, sleep } from '@propz/helpers.ts';
+import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
-import type { TwitchUtils } from './TwitchUtils.ts';
+import type { Twitch } from '@twitch/core/Twitch.ts';
+import { EventProcessor } from "./EventProcessor.ts";
 
 export class TwitchEvents
 {
 	public listener: EventSubWsListener;
+	public eventProcessor: EventProcessor;
 	private listenerTimer: number = 0;
 
-	constructor( private twitch: TwitchUtils )
+	constructor( private twitch: Twitch )
 	{
-		this.twitch = twitch;
+		this.eventProcessor = new EventProcessor( this.twitch );
 		this.listener = new EventSubWsListener( { apiClient: this.twitch.data.twitchApi } );
 		this.handleEvents();
 	}
@@ -26,18 +28,18 @@ export class TwitchEvents
 	/** Add event handler fucntions to events */
 	handleEvents()
 	{
-		this.listener.onStreamOnline( this.twitch.data.userId, this.onStreamOnline );
-		this.listener.onStreamOffline( this.twitch.data.userId, this.onStreamOffline );
-		this.listener.onChannelFollow( this.twitch.data.userId, this.twitch.data.userId, this.onChannelFollow );
-		this.listener.onChannelRedemptionAdd( this.twitch.data.userId, this.onChannelRedemptionAdd );
-		this.listener.onChannelUpdate( this.twitch.data.userId, this.onChannelUpdate );
-		this.listener.onChannelAdBreakBegin( this.twitch.data.userId, this.onChannelAdBreakBegin );
-		this.listener.onChannelShieldModeBegin( this.twitch.data.userId, this.twitch.data.userId,
+		this.listener.onStreamOnline( this.twitch.data.broadcasterId, this.onStreamOnline );
+		this.listener.onStreamOffline( this.twitch.data.broadcasterId, this.onStreamOffline );
+		this.listener.onChannelFollow( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId, this.onChannelFollow );
+		this.listener.onChannelRedemptionAdd( this.twitch.data.broadcasterId, this.onChannelRedemptionAdd );
+		this.listener.onChannelUpdate( this.twitch.data.broadcasterId, this.onChannelUpdate );
+		this.listener.onChannelAdBreakBegin( this.twitch.data.broadcasterId, this.onChannelAdBreakBegin );
+		this.listener.onChannelShieldModeBegin( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId,
 			this.onChannelShieldModeBegin );
-		this.listener.onChannelShieldModeEnd( this.twitch.data.userId, this.twitch.data.userId,
+		this.listener.onChannelShieldModeEnd( this.twitch.data.broadcasterId, this.twitch.data.broadcasterId,
 			this.onChannelShieldModeEnd );
-		this.listener.onChannelRaidFrom( this.twitch.data.userId, this.onChannelRaidFrom );
-		this.listener.onChannelRaidTo( this.twitch.data.userId, this.onChannelRaidTo );
+		this.listener.onChannelRaidFrom( this.twitch.data.broadcasterId, this.onChannelRaidFrom );
+		this.listener.onChannelRaidTo( this.twitch.data.broadcasterId, this.onChannelRaidTo );
 	}
 
 	/** Start listener */
@@ -70,7 +72,7 @@ export class TwitchEvents
 		let counter = 0;
 		while ( counter < 5 )
 		{
-			stream = await this.twitch.setStream();
+			stream = await this.twitch.stream.set();
 			if ( stream !== null ) break;
 			await sleep( 250 );
 			counter++;
@@ -84,14 +86,14 @@ export class TwitchEvents
 		// Check for test stream
 		if ( stream?.gameName && stream?.gameName?.toLowerCase().includes( 'test' ) ) return;
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'streamonline',
 			user: event.broadcasterName
 		} );
 
 		void this.twitch.focus.handle( 7 );
 
-		void this.twitch.sendStreamOnlineDataToDiscord( stream );
+		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream );
 	};
 
 	/** Subscribes to events representing a stream going offline.
@@ -101,9 +103,9 @@ export class TwitchEvents
 	onStreamOffline = ( event: EventSubStreamOfflineEvent ) =>
 	{
 		if ( !event ) return;
-		void this.twitch.setStream( null );
+		void this.twitch.stream.set( null );
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'streamoffline',
 			user: event.broadcasterName
 		} );
@@ -121,7 +123,7 @@ export class TwitchEvents
 		// Don't do anything if user has already followed
 		if ( this.twitch.data.getUserData( event.userId )?.follow_date ) return;
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'follow',
 			user: event.userDisplayName
 		} );
@@ -143,7 +145,7 @@ export class TwitchEvents
 		if ( eventType === 'rewardtts' && eventText )
 			eventText = eventText.substring( 0, 161 );
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: eventType,
 			user: event.userDisplayName,
 			eventText: eventText
@@ -157,7 +159,7 @@ export class TwitchEvents
 	onChannelUpdate = ( _event: EventSubChannelUpdateEvent ) =>
 	{
 		log( 'channelupdate' );
-		void this.twitch.setStream();
+		void this.twitch.stream.set();
 	};
 
 	/** Subscribes to events that represent an ad break beginning.
@@ -170,7 +172,7 @@ export class TwitchEvents
 		const durationSeconds = event.durationSeconds || 180;
 		log( durationSeconds );
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'adbreak',
 			user: event.broadcasterDisplayName,
 			eventCount: durationSeconds
@@ -205,7 +207,7 @@ export class TwitchEvents
 		log( 'shield active' );
 		this.twitch.killswitch.set( true );
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'shieldmodebegin',
 			user: event.broadcasterDisplayName
 		} );
@@ -221,7 +223,7 @@ export class TwitchEvents
 		log( 'shield inactive' );
 		this.twitch.killswitch.set( false );
 
-		void this.twitch.processEvent( {
+		void this.eventProcessor.process( {
 			eventType: 'shieldmodeend',
 			user: event.broadcasterDisplayName
 		} );

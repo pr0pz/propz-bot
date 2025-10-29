@@ -116,7 +116,7 @@ Ko-fi/GitHub ──► HTTP Server ─────┘
 
 ### Workspace-Konfiguration
 - **Monorepo-Setup** mit Deno Workspaces
-- **@propz/ Imports** für shared Module
+- **@shared/ Imports** für shared Module
 - **JSX-Support** für React-Komponenten (OBS-Overlays)
 
 ## Wichtige Funktionen & Commands
@@ -407,7 +407,7 @@ pm2 startup
    ```json
    {
      "imports": {
-       "@propz/": "./shared/",
+       "@shared/": "./shared/",
        "@twurple/": "npm:@twurple/",
        "@std/": "jsr:@std/"
      }

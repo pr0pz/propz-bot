@@ -4,13 +4,13 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 1.9.3
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import type {} from '@types/spotify-api';
-import type { SpotifyTokenData } from '@propz/types.ts';
-import type { Database } from '../bot/Database.ts';
+import type { SpotifyTokenData } from '@shared/types.ts';
+import type { Database } from '@bot/Database.ts';
 
 export class Spotify
 {

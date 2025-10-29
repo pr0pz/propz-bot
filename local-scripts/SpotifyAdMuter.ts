@@ -5,7 +5,7 @@
  * @version 1.0.9
  */
 
-import { execCommand, log } from '@propz/helpers.ts';
+import { execCommand, log } from '@shared/helpers.ts';
 
 export default class SpotifyAdMuter
 {

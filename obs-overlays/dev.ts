@@ -5,7 +5,7 @@
  * @version 1.8.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { serveDir } from '@std/http/file-server';
 import * as esbuild from 'esbuild';
 

@@ -2,12 +2,14 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 1.10.6
+ * @version 2.0.0
  */
 
-import '@propz/prototypes.ts';
-import { ChatHelper } from '@modules/ChatHelper.ts';
-import { clearTimer, getRandomNumber, log } from '@propz/helpers.ts';
+import '@shared/prototypes.ts';
+import { ChatClient } from '@twurple/chat';
+import { ChatMessageProcessor } from '@twitch/chat/ChatMessageProcessor.ts';
+import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';
+
 import type {
 	ChatCommunitySubInfo,
 	ChatMessage,
@@ -20,27 +22,25 @@ import type {
 	ClearChat,
 	UserNotice
 } from '@twurple/chat';
-import { ChatClient } from '@twurple/chat';
-
 import type { HelixChatAnnouncementColor } from '@twurple/api';
-import type { TwitchUtils } from './TwitchUtils.ts';
+import type { Twitch } from '@twitch/core/Twitch.ts';
 
 export class TwitchChat
 {
 	public chatClient!: ChatClient;
-	public chatHelper: ChatHelper;
+	public chatMessageProcessor: ChatMessageProcessor;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
 	private communitySubGifts = new Map<string | undefined, number>();
 	private connectTimer: number = 0;
 
-	constructor( private twitch: TwitchUtils )
+	constructor( private twitch: Twitch )
 	{
-		this.chatHelper = new ChatHelper( this.twitch );
+		this.chatMessageProcessor = new ChatMessageProcessor( this.twitch );
 		try
 		{
 			this.chatClient = new ChatClient( {
-				authProvider: twitch.data.twitchApi._authProvider,
-				channels: [ this.twitch.data.userName ]
+				authProvider: this.twitch.authProvider,
+				channels: [ this.twitch.data.broadcasterName ]
 			} );
 			this.handleChatClientEvents();
 		}
@@ -88,13 +88,13 @@ export class TwitchChat
 		{
 			if ( replyTo )
 			{
-				await this.chatClient.say( this.twitch.data.userName, message, {
+				await this.chatClient.say( this.twitch.data.broadcasterName, message, {
 					replyTo: replyTo
 				} );
 			}
 			else
 			{
-				await this.chatClient.say( this.twitch.data.userName, message );
+				await this.chatClient.say( this.twitch.data.broadcasterName, message );
 			}
 
 			log( message );
@@ -129,7 +129,7 @@ export class TwitchChat
 
 		try
 		{
-			await this.chatClient.action( this.twitch.data.userName, beep + message );
+			await this.chatClient.action( this.twitch.data.broadcasterName, beep + message );
 			log( message );
 		} catch ( error: unknown )
 		{
@@ -154,17 +154,15 @@ export class TwitchChat
 		try
 		{
 			await this.twitch.data.twitchApi.chat.sendAnnouncement(
-				this.twitch.data.userId,
+				this.twitch.data.broadcasterId,
 				{
 					color: color,
 					message: message
 				}
 			);
 			log( message );
-		} catch ( error: unknown )
-		{
-			log( error );
 		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Sends a shoutout to the specified broadcaster.
@@ -175,7 +173,7 @@ export class TwitchChat
 	 */
 	async sendShoutout( toUserName: string )
 	{
-		if ( toUserName?.toLowerCase() === this.twitch.data.userName )
+		if ( toUserName?.toLowerCase() === this.twitch.data.broadcasterName )
 		{
 			return;
 		}
@@ -211,7 +209,7 @@ export class TwitchChat
 	/** Fires when the client successfully connects to the chat server */
 	onConnect = () =>
 	{
-		log( `Connected to Twitch Chat as ${ this.twitch.data.userDisplayName }` );
+		log( `Connected to Twitch Chat as ${ this.twitch.data.botName }` );
 	};
 
 	/** Fires when chat cleint disconnects
@@ -264,7 +262,7 @@ export class TwitchChat
 		msg: ChatMessage
 	) =>
 	{
-		if ( !this.chatHelper.fireMessage( channel, user, text, msg ) ) return;
+		if ( !this.chatMessageProcessor.validate( channel, user, text, msg ) ) return;
 
 		log( `${ user }: '${ text }'` );
 
@@ -274,14 +272,14 @@ export class TwitchChat
 
 		// Process command ...
 		if ( text.isCommand() )
-			void this.chatHelper.processChatCommand( text, msg );
+			void this.twitch.commands.process( text, msg );
 		// ... or message
 		else if ( !msg.isRedemption )
-			void this.chatHelper.processChatMessage( text, msg );
+			void this.chatMessageProcessor.process( text, msg );
 
 		// First chatter event
 		if ( msg.isFirst )
-			void this.twitch.processEvent( {
+			void this.twitch.events.eventProcessor.process( {
 				eventType: 'first',
 				user: user,
 				eventText: text
@@ -289,7 +287,7 @@ export class TwitchChat
 
 		// Cheer event
 		if ( msg.isCheer )
-			void this.twitch.processEvent( {
+			void this.twitch.events.eventProcessor.process( {
 				eventType: 'cheer',
 				user: user,
 				eventText: text,
@@ -351,7 +349,7 @@ export class TwitchChat
 		this.communitySubGifts.set( user, previousGiftCount + count );
 		log( `${ user }: Gifts ${ count } subs` );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: eventType,
 			user: user,
 			eventCount: count
@@ -375,7 +373,7 @@ export class TwitchChat
 		if ( !msg?.userInfo ) return;
 		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'giftpaidupgrade',
 			user: msg.userInfo
 		} );
@@ -398,7 +396,7 @@ export class TwitchChat
 		if ( !msg?.userInfo ) return;
 		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'primecommunitygift',
 			user: msg.userInfo
 		} );
@@ -421,7 +419,7 @@ export class TwitchChat
 		if ( !msg?.userInfo ) return;
 		log( msg.userInfo.displayName );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'sub',
 			user: msg.userInfo,
 			eventCount: 1
@@ -445,7 +443,7 @@ export class TwitchChat
 		if ( !msg?.userInfo || !raidInfo?.viewerCount ) return;
 		log( `${ msg.userInfo.displayName }: ${ raidInfo.viewerCount } are raiding` );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'raid',
 			user: msg.userInfo,
 			eventCount: raidInfo.viewerCount
@@ -495,7 +493,7 @@ export class TwitchChat
 		}
 		log( `${ msg.userInfo.displayName }: ${ count }x` );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: eventType,
 			user: msg.userInfo,
 			eventCount: count,
@@ -523,7 +521,7 @@ export class TwitchChat
 		if ( !msg?.userInfo || !subInfo ) return;
 		log( `${ msg.userInfo.displayName }: ${ subInfo.months }` );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'sub',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
@@ -561,7 +559,7 @@ export class TwitchChat
 		}
 
 		// No Community Sub, so just fire the subgift event
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'subgift',
 			user: msg.userInfo,
 			eventCount: subInfo.months || 1,
@@ -580,7 +578,7 @@ export class TwitchChat
 		if ( !user ) return;
 		log( user );
 
-		void this.twitch.processEvent( {
+		void this.twitch.events.eventProcessor.process( {
 			eventType: 'ban',
 			user: user
 		} );

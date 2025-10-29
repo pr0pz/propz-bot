@@ -5,7 +5,7 @@
  * @version 1.6.10
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import * as esbuild from 'esbuild';
 
 const botUrl = Deno.env.get( 'BOT_URL' ) || '';

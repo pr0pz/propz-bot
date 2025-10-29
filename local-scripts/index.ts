@@ -5,8 +5,8 @@
  * @version 1.7.7
  */
 
-// import ObsController from '@propz/obs.ts';
-import WebsocketController from '@propz/websocket.ts';
+// import ObsController from '@shared/obs.ts';
+import WebsocketController from '@shared/websocket.ts';
 import PrintController from './PrintController.ts';
 // import SpotifyAdMuter from './SpotifyAdMuter.ts';
 

@@ -5,8 +5,8 @@
  * @version 1.6.10
  */
 
-import ObsController from '@propz/obs.ts';
-import WebsocketController from '@propz/websocket.ts';
+import ObsController from '@shared/obs.ts';
+import WebsocketController from '@shared/websocket.ts';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const EventContext = createContext();

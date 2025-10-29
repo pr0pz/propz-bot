@@ -4,10 +4,10 @@
  * https://developers.google.com/youtube/v3/docs/search/list#usage
  *
  * @author Wellington Estevo
- * @version 1.6.8
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 
 export class Youtube
 {

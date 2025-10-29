@@ -7,10 +7,10 @@
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '../EventContext.tsx';
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import Window from './Window.tsx';
 
-import type { UserStreamStats, WebSocketData } from '@propz/types.ts';
+import type { UserStreamStats, WebSocketData } from '@shared/types.ts';
 import Button from './Button.tsx';
 
 const Credits = () =>

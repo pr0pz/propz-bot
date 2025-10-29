@@ -1,11 +1,12 @@
+// deno-lint-ignore-file no-import-prefix
 /**
  * DB handler
  *
  * @author Wellington Estevo
- * @version 1.9.1
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 import type { PreparedQuery } from 'https://deno.land/x/sqlite/mod.ts';
 
@@ -20,7 +21,7 @@ export class Database extends DB
 		this.initDatabase();
 	}
 
-	static getInstance(): Database
+	public static getInstance(): Database
 	{
 		if ( !Database.instance )
 			Database.instance = new Database();
@@ -28,7 +29,7 @@ export class Database extends DB
 		return Database.instance;
 	}
 
-	public initDatabase()
+	public initDatabase(): void
 	{
 		try
 		{
@@ -64,7 +65,7 @@ export class Database extends DB
 	}
 
 	/** Clean up everything DB related */
-	public cleanupDatabase()
+	public cleanupDatabase(): void
 	{
 		try
 		{
@@ -82,5 +83,16 @@ export class Database extends DB
 			log( 'Database cleanup ♻️' );
 		}
 		catch( error: unknown ) { log( error ) }
+	}
+
+	/**
+	 * Daily Cronjob tasks
+	 */
+	public cronjobDaily(): void
+	{
+		const db = Database.getInstance();
+		void db.execute( `DELETE FROM stream_stats;` );
+		void db.cleanupDatabase();
+		void db.initDatabase();
 	}
 }

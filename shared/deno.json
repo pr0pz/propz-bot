@@ -1,5 +1,5 @@
 {
-	"name": "@propz/shared",
+	"name": "@shared/shared",
 	"exports": {
 		".": "./helper.ts"
 	},

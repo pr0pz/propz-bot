@@ -2,26 +2,25 @@
  * Static data
  *
  * @author Wellington Estevo
- * @version 1.10.3
+ * @version 2.0.0
  */
 
-import { getRewardSlug, log, objectToMap } from '@propz/helpers.ts';
+import { getRewardSlug, log, objectToMap } from '@shared/helpers.ts';
+import { Database } from '@bot/Database.ts';
 import { HelixUser } from '@twurple/api';
 
-import type { SimpleUser, TwitchEmote, TwitchEvent, TwitchEventData, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { SimpleUser, TwitchEmote, TwitchEvent, TwitchEventData, TwitchReward, TwitchStreamDate, TwitchTimers, TwitchUserData } from '@shared/types.ts';
 import type { ApiClient } from '@twurple/api';
-import type { Database } from './Database.ts';
 
 // Config
-import discordEvents from '../config/discordEvents.json' with { type: 'json' };
-import events from '../config/twitchEvents.json' with { type: 'json' };
-import rewards from '../config/twitchRewards.json' with { type: 'json' };
-import timers from '../config/twitchTimers.json' with { type: 'json' };
+import events from '@config/twitchEvents.json' with { type: 'json' };
+import rewards from '@config/twitchRewards.json' with { type: 'json' };
+import timers from '@config/twitchTimers.json' with { type: 'json' };
 
-import { BetterTTV } from '../modules/BetterTTV.ts';
-import { FrankerFaceZ } from '../modules/FrankerFaceZ.ts';
-import { SevenTV } from '../modules/SevenTV.ts';
-import { TwitchInsights } from '../modules/TwitchInsights.ts';
+import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
+import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';
+import { SevenTV } from '@modules/integrations/SevenTV.ts';
+import { TwitchInsights } from '@modules/integrations/TwitchInsights.ts';
 
 export class BotData
 {
@@ -29,7 +28,6 @@ export class BotData
 	public db: Database;
 
 	// Config
-	public discordEvents: Map<string, TwitchEvent>;
 	public events: Map<string, TwitchEvent>;
 	public rewards: TwitchReward[] = rewards;
 	public timers: Map<string, TwitchTimers>;
@@ -40,12 +38,11 @@ export class BotData
 	public emotes: Map<string, string> = new Map();
 	public bots: string[] = [];
 
-	constructor( twitchApi: ApiClient, db: Database )
+	constructor( twitchApi: ApiClient )
 	{
 		this.twitchApi = twitchApi;
-		this.db = db;
+		this.db = Database.getInstance();
 		this.timers = objectToMap( timers );
-		this.discordEvents = objectToMap( discordEvents );
 		this.events = objectToMap( events );
 	}
 
@@ -59,22 +56,28 @@ export class BotData
 		void this.setBots();
 	}
 
-	/** Get own twitch user display name */
-	get userDisplayName()
-	{
-		return Deno.env.get( 'TWITCH_USER_DISPLAYNAME' ) || '';
-	}
-
 	/** Get own twitch user id */
-	get userId()
+	get botId()
 	{
-		return Deno.env.get( 'TWITCH_USER_ID' ) || '';
+		return Deno.env.get( 'BOT_ID' ) || '';
 	}
 
 	/** Get own twitch user name */
-	get userName()
+	get botName()
 	{
-		return Deno.env.get( 'TWITCH_USERNAME' ) || '';
+		return Deno.env.get( 'BOT_NAME' ) || '';
+	}
+
+	/** Get own twitch user id */
+	get broadcasterId()
+	{
+		return Deno.env.get( 'BROADCASTER_ID' ) || '';
+	}
+
+	/** Get own twitch user id */
+	get broadcasterName()
+	{
+		return Deno.env.get( 'BROADCASTER_NAME' ) || '';
 	}
 
 	/** Get Stream first chatter */
@@ -147,7 +150,7 @@ export class BotData
 		{
 			const [ globalEmotes, channelEmotes ] = await Promise.all( [
 				this.twitchApi.chat.getGlobalEmotes(),
-				this.twitchApi.chat.getChannelEmotes( this.userId )
+				this.twitchApi.chat.getChannelEmotes( this.broadcasterId )
 			] );
 
 			globalEmotes.concat( channelEmotes ).forEach( ( emote ) =>
@@ -211,7 +214,7 @@ export class BotData
 		try
 		{
 			schedule = await this.twitchApi.schedule.getSchedule(
-				this.userId,
+				this.broadcasterId,
 				{
 					startDate: new Date().toISOString(),
 					limit: 10,
@@ -256,7 +259,7 @@ export class BotData
 		if ( user instanceof HelixUser )
 			return user;
 
-		if ( !user || user?.toLowerCase() === this.userName )
+		if ( !user || user?.toLowerCase() === this.broadcasterName )
 			return this.twitchUser;
 
 		try
@@ -358,9 +361,9 @@ export class BotData
 	{
 		const [ emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV ] = await Promise.all( [
 			this.getEmotesTwitch(),
-			FrankerFaceZ.getEmotes( this.userId ),
+			FrankerFaceZ.getEmotes( this.broadcasterId ),
 			SevenTV.getEmotes(),
-			BetterTTV.getEmotes( this.userId )
+			BetterTTV.getEmotes( this.broadcasterId )
 		] );
 		const emotes = Object.assign(
 			{},
@@ -409,7 +412,7 @@ export class BotData
 	{
 		try
 		{
-			const mods = await this.twitchApi.moderation.getModerators( this.userId );
+			const mods = await this.twitchApi.moderation.getModerators( this.broadcasterId );
 			if ( mods.data.length === 0 )
 				return;
 
@@ -418,7 +421,7 @@ export class BotData
 				modNicks.push( mod.userName.toLowerCase() );
 
 			// Add own botnick to list (not default)
-			modNicks.push( this.userName );
+			modNicks.push( this.broadcasterName );
 			this.mods = modNicks;
 		}
 		catch ( error: unknown )
@@ -436,7 +439,7 @@ export class BotData
 			if ( !rewards ) return;
 
 			const rewardsCurrent = await this.twitchApi.channelPoints
-				.getCustomRewards( this.userId, true );
+				.getCustomRewards( this.broadcasterId, true );
 
 			// For testing
 			// for ( const [ index, reward ] of rewardsCurrent.entries() )
@@ -449,7 +452,7 @@ export class BotData
 				if ( reward.id === '' )
 				{
 					const rewardCreated = await this.twitchApi.channelPoints
-						.createCustomReward( this.userId, reward );
+						.createCustomReward( this.broadcasterId, reward );
 					rewards[index].id = rewardCreated.id;
 					log(
 						`createCustomReward › ${getRewardSlug( reward.title )} › ${rewardCreated.id}`
@@ -475,13 +478,15 @@ export class BotData
 					)
 					{
 						this.twitchApi.channelPoints.updateCustomReward(
-							this.userId,
+							this.broadcasterId,
 							reward.id.toString(),
 							reward
 						);
 					}
 				}
 			}
+
+			log( 'Rewards reloaded ♻️' );
 
 			this.rewards = rewards;
 		}
@@ -502,7 +507,7 @@ export class BotData
 	{
 		try
 		{
-			this.twitchUser = await this.twitchApi.users.getUserByName( this.userName );
+			this.twitchUser = await this.twitchApi.users.getUserByName( this.broadcasterName );
 		}
 		catch ( error: unknown )
 		{
@@ -817,7 +822,7 @@ export class BotData
 		fileName: string,
 		fileData: unknown = null,
 		folder: string = 'data'
-	)
+	): void
 	{
 		if ( !fileName || !fileData || !folder )
 		{
@@ -838,30 +843,35 @@ export class BotData
 	}
 
 	/** Reload all JSON data files and update class properties */
-	reloadConfig()
+	reloadConfig(): void
 	{
 		try
 		{
-			const discordEvents = JSON.parse(
-				Deno.readTextFileSync( './twitch-bot/config/discordEvents.json' )
-			);
 			const events = JSON.parse(
-				Deno.readTextFileSync( './twitch-bot/config/twitchEvents.json' )
+				Deno.readTextFileSync( '@config/twitchEvents.json' )
 			);
 			const rewards = JSON.parse(
-				Deno.readTextFileSync( './twitch-bot/config/twitchRewards.json' )
+				Deno.readTextFileSync( '@config/twitchRewards.json' )
 			);
 			const timers = JSON.parse(
-				Deno.readTextFileSync( './twitch-bot/config/twitchTimers.json' )
+				Deno.readTextFileSync( '@config/twitchTimers.json' )
 			);
 
-			this.discordEvents = objectToMap( discordEvents );
 			this.events = objectToMap( events );
 			this.rewards = rewards;
 			this.timers = objectToMap( timers );
 
-			void this.setRewards();
+			log( 'Config reloaded ♻️' );
 		}
 		catch ( error ) { log( error ) }
+	}
+
+	/**
+	 * Daily Cronjob Tasks
+	 */
+	cronjobDaily(): void
+	{
+		void this.reloadConfig()
+		void this.init();
 	}
 }

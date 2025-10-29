@@ -4,11 +4,11 @@
  * https://dev.streamelements.com/docs/api-docs/5fff39cc30655-channel-redemptions
  *
  * @author Wellington Estevo
- * @version 1.6.0
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
-import type { StreamElementsViewerStats } from '@propz/types.ts';
+import { log } from '@shared/helpers.ts';
+import type { StreamElementsViewerStats } from '@shared/types.ts';
 
 export class StreamElements
 {
@@ -23,7 +23,7 @@ export class StreamElements
 			"rank": 1
 		}
 	 *
-	 * @param {string} viewerName - Viewer to look for
+	 * @param userName
 	 */
 	public static async getViewerStats(
 		userName: string

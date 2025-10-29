@@ -5,13 +5,13 @@
  * @version 1.8.0
  */
 
-import { log } from '@propz/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { Buffer } from 'node:buffer'; // To download images if necessary
 import puppeteer from 'puppeteer';
 import sharp from 'sharp';
 import usb from 'usb';
 
-import type { ImageBuffer, Pixel, PrintAlertEvents, WebSocketData } from '@propz/types.ts';
+import type { ImageBuffer, Pixel, PrintAlertEvents, WebSocketData } from '@shared/types.ts';
 import type { OutEndpoint } from 'usb';
 
 export default class PrintController

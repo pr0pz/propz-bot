@@ -2,16 +2,16 @@
  * Bot
  *
  * @author Wellington Estevo
- * @version 1.7.18
+ * @version 2.0.0
  */
 
-import '@propz/prototypes.ts';
-import { log } from '@propz/helpers.ts';
+import '@shared/prototypes.ts';
+import { log } from '@shared/helpers.ts';
 
-import type { ApiRequest, ApiResponse, KofiData } from '@propz/types.ts';
-import type { Discord } from '../discord/Discord.ts';
-import type { Twitch } from '../twitch/Twitch.ts';
-import type { BotWebsocket } from './BotWebsocket.ts';
+import type { ApiRequest, ApiResponse, KofiData } from '@shared/types.ts';
+import type { Discord } from '@discord/Discord.ts';
+import type { Twitch } from '@twitch/core/Twitch.ts';
+import type { BotWebsocket } from '@bot/BotWebsocket.ts';
 
 export class Bot
 {
@@ -144,7 +144,7 @@ export class Bot
 			if ( req.headers.get( 'x-propz-event' ) )
 			{
 				const body = await req.json();
-				void this.twitch.processEvent({
+				void this.twitch.events.eventProcessor.process({
 					eventType: body.eventType.toString().toLowerCase() || 'propz.de',
 					user: await this.twitch.data.getUser(),
 				})
@@ -157,7 +157,7 @@ export class Bot
 				const kofiData: KofiData = JSON.parse(
 					decodeURIComponent( body.replace( /^data=/, '' ) )
 				);
-				this.twitch.handleKofiEvent( kofiData );
+				this.twitch.api.handleKofiWebhook( kofiData );
 			}
 		}
 		catch ( error: unknown )
@@ -189,7 +189,7 @@ export class Bot
 			return new Response( JSON.stringify( response ), { status: 400 } );
 		}
 
-		response = await this.twitch.processApiCall( body );
+		response = await this.twitch.api.process( body );
 		const statusCode = typeof response.data !== 'undefined' ? 200 : 400;
 
 		return new Response(

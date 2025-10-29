@@ -2,10 +2,10 @@
  * Helper functions
  *
  * @author Wellington Estevo
- * @version 1.6.5
+ * @version 2.0.0
  */
 
-import type { TwitchTimers, TwitchUserData } from '@propz/types.ts';
+import type { TwitchTimers, TwitchUserData } from '@shared/types.ts';
 
 /** Log function + overloads
  *

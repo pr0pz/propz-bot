@@ -2,11 +2,11 @@
  * OBS Websocket Controller
  *
  * @author Wellington Estevo
- * @version 1.6.10
+ * @version 2.0.0
  */
 
-import { log } from '@propz/helpers.ts';
-import type { ObsData } from '@propz/types.ts';
+import { log } from '@shared/helpers.ts';
+import type { ObsData } from '@shared/types.ts';
 import OBSWebSocket from 'obs-websocket-js';
 
 export default class ObsController
