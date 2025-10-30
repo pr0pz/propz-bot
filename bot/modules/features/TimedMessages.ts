@@ -14,6 +14,8 @@ export class TimedMessages
 {
 	public static handle( twitch: Twitch ): void
 	{
+		if ( !twitch.stream.isActive ) return;
+
 		const timers: Map<string, TwitchTimers> = objectToMap( JSON.parse(
 			Deno.readTextFileSync( './bot/config/twitchTimers.json' )
 		) );

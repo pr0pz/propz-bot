@@ -7,7 +7,7 @@
 
 import { log, mapToObject } from '@shared/helpers.ts';
 import { OpenWeather } from '@integrations/OpenWeather.ts';
-import { StreamStats } from '@features/StreamStats.ts';
+import { StreamStats } from '@services/StreamStats.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';

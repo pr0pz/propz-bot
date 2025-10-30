@@ -7,7 +7,7 @@
 
 import { StreamElements } from '@integrations/StreamElements.ts';
 import { getTimePassed } from '@shared/helpers.ts';
-import { UserData } from '@features/UserData.ts';
+import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { StreamElementsViewerStats, TwitchUserData } from '@shared/types.ts';

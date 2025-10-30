@@ -8,7 +8,7 @@
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 import { EventProcessor } from "./EventProcessor.ts";
-import { UserData } from '@modules/features/UserData.ts';
+import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';

@@ -7,8 +7,8 @@
 
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
-import { StreamStats } from '@modules/features/StreamStats.ts';
-import { UserData } from '@modules/features/UserData.ts';
+import { StreamStats } from '@services/StreamStats.ts';
+import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { SimpleUser } from '@shared/types.ts';

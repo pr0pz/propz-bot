@@ -7,7 +7,7 @@
 
 import { Database } from '@services/Database.ts';
 import { log, objectToMap } from '@shared/helpers.ts';
-import { UserData } from '@modules/features/UserData.ts';
+import { UserData } from '@services/UserData.ts';
 
 import events from '@config/twitchEvents.json' with { type: 'json' };
 

@@ -7,7 +7,7 @@
  */
 
 import { Rankings } from '@modules/features/Rankings.ts';
-import { UserData } from '@modules/features/UserData.ts';
+import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';

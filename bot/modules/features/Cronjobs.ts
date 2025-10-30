@@ -18,7 +18,6 @@ export class Cronjobs
 	{
 		void Deno.cron( 'Bot minutely', '* * * * *', () =>
 		{
-			if ( !this.twitch.stream.isActive ) return;
 			TimedMessages.handle( this.twitch );
 		} );
 

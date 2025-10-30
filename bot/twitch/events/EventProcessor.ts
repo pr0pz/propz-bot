@@ -6,8 +6,8 @@
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
-import { StreamEvents } from '@modules/features/StreamEvents.ts';
-import { StreamStats} from '@modules/features/StreamStats.ts';
+import { StreamEvents } from '@services/StreamEvents.ts';
+import { StreamStats} from '@services/StreamStats.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { SimpleUser } from '@shared/types.ts';

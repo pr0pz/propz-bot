@@ -4,8 +4,8 @@
  * @author Wellington Estevo
  * @version 2.0.0
  */
-import { StreamEvents } from '@modules/features/StreamEvents.ts';
-import { UserData} from '@modules/features/UserData.ts';
+import { StreamEvents } from '@services/StreamEvents.ts';
+import { UserData} from '@services/UserData.ts';
 
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { SimpleUser, TwitchEventData } from '@shared/types.ts';

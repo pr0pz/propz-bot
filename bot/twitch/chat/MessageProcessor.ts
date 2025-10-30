@@ -9,8 +9,8 @@ import cld from 'cld';
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';
-import { StreamStats } from '@modules/features/StreamStats.ts';
-import { UserData } from '@modules/features/UserData.ts';
+import { StreamStats } from '@services/StreamStats.ts';
+import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ChatMessage }  from '@twurple/chat';

@@ -8,7 +8,7 @@
 import { log } from '@shared/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { ChatUser } from '@twurple/chat';
-import { UserData } from '@modules/features/UserData.ts';
+import { UserData } from '@services/UserData.ts';
 
 import type { SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';

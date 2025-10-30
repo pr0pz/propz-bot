@@ -18,7 +18,7 @@ import { Focus } from '@modules/features/Focus.ts';
 import { Killswitch } from '@modules/features/Killswitch.ts';
 import { LastFollowers } from '@twitch/utils/LastFollowers.ts';
 import { Spotify } from '@modules/integrations/Spotify.ts';
-import { StreamEvents } from '@modules/features/StreamEvents.ts';
+import { StreamEvents } from '@services/StreamEvents.ts';
 import { StreamHelper } from '@twitch/utils/StreamHelper.ts';
 import { TwitchAuth } from '@twitch/core/TwitchAuth.ts';
 import { TwitchChat } from '@twitch/chat/TwitchChat.ts';
