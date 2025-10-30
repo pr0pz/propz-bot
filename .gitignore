@@ -8,7 +8,7 @@
 .idea/
 .claude/
 deno.lock
-obs-overlays/public/build
+frontend/public/build
 
 ._*
 .Spotlight-V100

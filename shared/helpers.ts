@@ -5,7 +5,7 @@
  * @version 2.0.0
  */
 
-import type { TwitchTimers, TwitchUserData } from '@shared/types.ts';
+import type { TwitchTimers, TwitchUserData } from './types.ts';
 
 /** Log function + overloads
  *

@@ -6,7 +6,7 @@
  */
 
 import EventEmitter from 'events';
-import { clearTimer, log } from '@shared/helpers.ts';
+import { clearTimer, log } from './helpers.ts';
 
 export default class WebsocketController
 {

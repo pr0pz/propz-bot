@@ -101,7 +101,7 @@ Ko-fi/GitHub ──► HTTP Server ─────┘
 - **Deno.env.get()** - Environment Variables
 - **Deno.args** - CLI-Argumente für Dev/Prod-Mode
 
-### Hauptabhängigkeiten (twitch-bot/deno.json)
+### Hauptabhängigkeiten (bot/deno.json)
 ```json
 {
   "@twurple/auth": "^7.4.0",           // OAuth-Authentifizierung

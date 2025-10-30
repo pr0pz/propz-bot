@@ -2,7 +2,7 @@
 	"apps": [
 		{
 			"name": "propzbot",
-			"script": "./twitch-bot/index.ts",
+			"script": "./bot/index.ts",
 			"interpreter": "deno",
 			"interpreter_args": "run -A --unstable-cron --unstable-detect-cjs --env-file",
 			"max_memory_restart": "250M",

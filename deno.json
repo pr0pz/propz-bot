@@ -10,16 +10,16 @@
 	},
 	"lint": {
 		"include": [
-			"./twitch-bot",
-			"./local-scripts",
-			"./obs-overlays",
+			"./bot",
+			"./frontend",
+			"./local",
 			"./shared"
 		]
 	},
 	"workspace": [
-		"./twitch-bot",
-		"./local-scripts",
-		"./obs-overlays",
+		"./bot",
+		"./frontend",
+		"./local",
 		"./shared"
 	],
 	"compilerOptions": {
@@ -36,26 +36,26 @@
 		]
 	},
 	"tasks": {
-		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file ./twitch-bot/index.ts dev",
-		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./twitch-bot/*/*.json' --watch ./twitch-bot/index.ts dev",
-		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./twitch-bot/*/*.json' ./twitch-bot/index.ts dev",
-		"local": "deno run -A --env-file --watch ./local-scripts/index.ts",
-		"dev": "deno run -A --env-file --watch='./obs-overlays/src/' --watch='./shared/' ./obs-overlays/dev.ts",
-		"build": "deno run -A --env-file ./obs-overlays/build.ts"
+		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file ./bot/index.ts dev",
+		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
+		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' ./bot/index.ts dev",
+		"local": "deno run -A --env-file --watch ./local/index.ts",
+		"dev": "deno run -A --env-file --watch='./frontend/src/' --watch='./shared/' ./obs-overlays/dev.ts",
+		"build": "deno run -A --env-file ./frontend/build.ts"
 	},
 	"imports": {
-		"@bot/": "./twitch-bot/bot/",
-		"@config/": "./twitch-bot/config/",
-		"@discord/": "./twitch-bot/discord/",
-		"@modules/": "./twitch-bot/modules/",
-		"@features/": "./twitch-bot/modules/features/",
-		"@integrations/": "./twitch-bot/modules/integrations/",
+		"@bot/": "./bot/bot/",
+		"@config/": "./bot/config/",
+		"@discord/": "./bot/discord/",
+		"@modules/": "./bot/modules/",
+		"@features/": "./bot/modules/features/",
+		"@integrations/": "./bot/modules/integrations/",
 		"@shared/": "./shared/",
-		"@twitch/": "./twitch-bot/twitch/",
-		"@twitch/core/": "./twitch-bot/twitch/core/",
-		"@twitch/chat/": "./twitch-bot/twitch/chat/",
-		"@twitch/commands/": "./twitch-bot/twitch/commands/",
-		"@twitch/events/": "./twitch-bot/twitch/events/",
-		"@twitch/utils/": "./twitch-bot/twitch/utils/"
+		"@twitch/": "./bot/twitch/",
+		"@twitch/core/": "./bot/twitch/core/",
+		"@twitch/chat/": "./bot/twitch/chat/",
+		"@twitch/commands/": "./bot/twitch/commands/",
+		"@twitch/events/": "./bot/twitch/events/",
+		"@twitch/utils/": "./bot/twitch/utils/"
 	}
 }

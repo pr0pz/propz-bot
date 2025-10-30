@@ -1,0 +1,16 @@
+{
+	"name": "@propz/frontend",
+	"exports": {
+		".": "./src/index.tsx"
+	},
+	"imports": {
+		"@std/fs": "jsr:@std/fs@^1.0.19",
+		"@std/http": "jsr:@std/http@^1.0.20",
+		"esbuild": "npm:esbuild@^0.25.9",
+		"html-react-parser": "npm:html-react-parser@^5.2.6",
+		"react": "npm:react@^19.2.0",
+		"react-dom": "npm:react-dom@^19.2.0",
+		"react-dom/client": "npm:react-dom@^19.2.0/client",
+		"react-router-dom": "npm:react-router-dom@^7.9.4"
+	}
+}

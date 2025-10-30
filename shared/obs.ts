@@ -5,8 +5,8 @@
  * @version 2.0.0
  */
 
-import { log } from '@shared/helpers.ts';
-import type { ObsData } from '@shared/types.ts';
+import { log } from './helpers.ts';
+import type { ObsData } from './types.ts';
 import OBSWebSocket from 'obs-websocket-js';
 
 export default class ObsController
