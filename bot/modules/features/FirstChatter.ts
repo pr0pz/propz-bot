@@ -6,10 +6,10 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 import { Database } from '@services/Database.ts';
 import { StreamStats } from '@modules/features/StreamStats.ts';
 import { UserData } from '@modules/features/UserData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -43,8 +43,8 @@ export class FirstChatter
 	{
 		if (
 			this.get() ||
-			user?.name ===  BotData.broadcasterName ||
-			user.name ===  BotData.botName
+			user?.name ===  UserHelper.broadcasterName ||
+			user.name ===  UserHelper.botName
 		) return;
 
 		UserData.update( user, 'first_count' );

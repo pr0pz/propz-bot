@@ -6,10 +6,10 @@
  */
 
 import '@shared/prototypes.ts';
-import { BotData } from '@services/BotData.ts';
 import { ChatClient } from '@twurple/chat';
 import { MessageProcessor } from '@twitch/chat/MessageProcessor.ts';
 import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type {
 	ChatCommunitySubInfo,
@@ -44,7 +44,7 @@ export class TwitchChat
 			const authProvider = await this.twitch.twitchAuth.getAuthProvider('bot');
 			this.chatClient = new ChatClient( {
 				authProvider: authProvider!,
-				channels: [  BotData.broadcasterName ]
+				channels: [  UserHelper.broadcasterName ]
 			} );
 			this.handleChatClientEvents();
 			this.connect();
@@ -93,13 +93,13 @@ export class TwitchChat
 		{
 			if ( replyTo )
 			{
-				await this.chatClient.say(  BotData.broadcasterName, message, {
+				await this.chatClient.say(  UserHelper.broadcasterName, message, {
 					replyTo: replyTo
 				} );
 			}
 			else
 			{
-				await this.chatClient.say(  BotData.broadcasterName, message );
+				await this.chatClient.say(  UserHelper.broadcasterName, message );
 			}
 
 			log( message );
@@ -134,7 +134,7 @@ export class TwitchChat
 
 		try
 		{
-			await this.chatClient.action(  BotData.broadcasterName, beep + message );
+			await this.chatClient.action(  UserHelper.broadcasterName, beep + message );
 			log( message );
 		} catch ( error: unknown )
 		{
@@ -158,8 +158,8 @@ export class TwitchChat
 		}
 		try
 		{
-			await this.twitch.data.twitchApi.chat.sendAnnouncement(
-				BotData.broadcasterId,
+			await this.twitch.twitchApi.chat.sendAnnouncement(
+				UserHelper.broadcasterId,
 				{
 					color: color,
 					message: message
@@ -178,7 +178,7 @@ export class TwitchChat
 	 */
 	public async sendShoutout( toUserName: string ): Promise<void>
 	{
-		if ( toUserName?.toLowerCase() ===  BotData.broadcasterName )
+		if ( toUserName?.toLowerCase() ===  UserHelper.broadcasterName )
 		{
 			return;
 		}
@@ -194,8 +194,8 @@ export class TwitchChat
 			}
 		}
 
-		const fromUser = await this.twitch.data.getUser();
-		const toUser = await this.twitch.data.getUser( toUserName );
+		const fromUser = await this.twitch.userHelper.getUser();
+		const toUser = await this.twitch.userHelper.getUser( toUserName );
 		if ( !fromUser || !toUser )
 		{
 			return;
@@ -203,7 +203,7 @@ export class TwitchChat
 
 		try
 		{
-			await this.twitch.data.twitchApi.chat.shoutoutUser( fromUser, toUser );
+			await this.twitch.twitchApi.chat.shoutoutUser( fromUser, toUser );
 			log( toUserName );
 		} catch ( error: unknown )
 		{
@@ -214,7 +214,7 @@ export class TwitchChat
 	/** Fires when the client successfully connects to the chat server */
 	public onConnect = () =>
 	{
-		log( `Connected to Twitch Chat as ${  BotData.botName }` );
+		log( `Connected to Twitch Chat as ${  UserHelper.botName }` );
 	};
 
 	/** Fires when chat cleint disconnects

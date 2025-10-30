@@ -7,9 +7,9 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 import { Database } from '@services/Database.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -19,8 +19,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 		ad: {
 			handler: (_options: TwitchCommandOptions) => {
 				try {
-					twitch.data.twitchApi.channels.startChannelCommercial(
-						BotData.broadcasterId,
+					twitch.twitchApi.channels.startChannelCommercial(
+						UserHelper.broadcasterId,
 						180
 					);
 				} catch (error: unknown) {
@@ -120,8 +120,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			disableIfOffline: true,
 			handler: async (options: TwitchCommandOptions) => {
 				try {
-					await twitch.data.twitchApi.streams.createStreamMarker(
-						BotData.broadcasterId,
+					await twitch.twitchApi.streams.createStreamMarker(
+						UserHelper.broadcasterId,
 						options.message || 'Marker'
 					);
 					return `Marker created`;
@@ -136,11 +136,11 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			disableIfOffline: true,
 			handler: async (options: TwitchCommandOptions) => {
 				try {
-					const target = await twitch.data.getUser(options.param);
+					const target = await twitch.userHelper.getUser(options.param);
 					if (!target) return;
 
-					const raid = await twitch.data.twitchApi.raids.startRaid(
-						BotData.broadcasterId,
+					const raid = await twitch.twitchApi.raids.startRaid(
+						UserHelper.broadcasterId,
 						target.id
 					);
 					if (!raid) return;
@@ -356,15 +356,15 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 					let game;
 					const param = options.param.toLowerCase();
 					if (param.includes('software')) {
-						game = await twitch.data.twitchApi.games.getGameByName(
+						game = await twitch.twitchApi.games.getGameByName(
 							'Software and Game Development'
 						);
 					} else if (param.includes('chat')) {
-						game = await twitch.data.twitchApi.games.getGameByName(
+						game = await twitch.twitchApi.games.getGameByName(
 							'Just Chatting'
 						);
 					} else {
-						game = await twitch.data.twitchApi.games.getGameByName(
+						game = await twitch.twitchApi.games.getGameByName(
 							options.param
 						);
 					}
@@ -373,8 +373,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 						return `Game not found`;
 					}
 
-					await twitch.data.twitchApi.channels.updateChannelInfo(
-						BotData.broadcasterId,
+					await twitch.twitchApi.channels.updateChannelInfo(
+						UserHelper.broadcasterId,
 						{
 							gameId: game.id
 						}
@@ -392,8 +392,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			aliases: ['setlang', 'lang', 'language'],
 			handler: async (options: TwitchCommandOptions) => {
 				try {
-					await twitch.data.twitchApi.channels.updateChannelInfo(
-						BotData.broadcasterId,
+					await twitch.twitchApi.channels.updateChannelInfo(
+						UserHelper.broadcasterId,
 						{
 							language: options.message
 						}
@@ -409,8 +409,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 		settitle: {
 			handler: async (options: TwitchCommandOptions) => {
 				try {
-					await twitch.data.twitchApi.channels.updateChannelInfo(
-						BotData.broadcasterId,
+					await twitch.twitchApi.channels.updateChannelInfo(
+						UserHelper.broadcasterId,
 						{
 							title: options.message
 						}

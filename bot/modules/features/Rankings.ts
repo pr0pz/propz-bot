@@ -5,10 +5,10 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@services/BotData.ts';
 import { StreamElements } from '@integrations/StreamElements.ts';
 import { getTimePassed } from '@shared/helpers.ts';
 import { UserData } from '@features/UserData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { StreamElementsViewerStats, TwitchUserData } from '@shared/types.ts';
 
@@ -45,21 +45,21 @@ export class Rankings
 	 * @param {string} userName User to get score
 	 * @param {string} message Message to search replace values
 	 * @param {keyof TwitchUserData} type Type of score to get
-	 * @param {BotData} data Bot Data controller
+	 * @param userHelper
 	 */
 	public static async getUserScoreText(
 		userName: string,
 		message: string,
 		type: keyof TwitchUserData = 'message_count',
-		data: BotData
+		userHelper: UserHelper
 	): Promise<string>
 	{
 		if (
 			!userName || !message || !type ||
-			userName.toLowerCase() === BotData.broadcasterName
+			userName.toLowerCase() === UserHelper.broadcasterName
 		) return '';
 
-		const user = await data.getUser( userName );
+		const user = await userHelper.getUser( userName );
 		if ( !user ) return '';
 
 		const usersData = UserData.getAll();
@@ -96,7 +96,7 @@ export class Rankings
 		message = message.replace( '[user]', user.displayName );
 		message = message.replace( '[count]', count.toString() );
 		message = message.replace( '[rank]', rank.toString() );
-		message = message.replace( '[broadcaster]', BotData.broadcasterName );
+		message = message.replace( '[broadcaster]', UserHelper.broadcasterName );
 
 		return message;
 	}

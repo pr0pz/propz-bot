@@ -26,10 +26,10 @@ export class Api
 		const response: ApiResponse = { data: false };
 		if ( !apiRequest?.request ) return response;
 
-		let user: HelixUser | SimpleUser | null = await this.twitch.data.getUser();
+		let user: HelixUser | SimpleUser | null = await this.twitch.userHelper.getUser();
 		if ( !user ) return response;
 
-		user = await this.twitch.userConverter.convertToSimplerUser( user );
+		user = await this.twitch.userHelper.convertToSimplerUser( user );
 
 		if ( apiRequest.request.startsWith( 'command-' ) )
 		{
@@ -50,11 +50,7 @@ export class Api
 				break;
 
 			case 'getEmotes':
-				response.data = this.twitch.data.emotes;
-				break;
-
-			case 'getSchedule':
-				response.data = await this.twitch.data.getSchedule() || false;
+				response.data = this.twitch.emotes.get();
 				break;
 
 			case 'getStream':

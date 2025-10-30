@@ -6,9 +6,9 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@services/BotData.ts';
 import { Rankings } from '@modules/features/Rankings.ts';
 import { UserData } from '@modules/features/UserData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -30,7 +30,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'message_count',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			message: {
@@ -105,7 +105,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'first_count',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			message: {
@@ -129,7 +129,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'follow_date',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			aliases: ['follow'],
@@ -146,7 +146,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'gift_count',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			message: {
@@ -215,7 +215,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'raid_count',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			message: {
@@ -243,7 +243,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 					options.param || options.sender.name,
 					options.returnMessage,
 					'sub_count',
-					twitch.data
+					twitch.userHelper
 				);
 			},
 			message: {
@@ -297,7 +297,7 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 				return await Rankings.getUserWatchtimeText(
 					options.param || options.sender.name,
 					options.returnMessage,
-					BotData.broadcasterName
+					UserHelper.broadcasterName
 				);
 			},
 			message: {

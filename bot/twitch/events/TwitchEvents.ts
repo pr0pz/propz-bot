@@ -6,10 +6,10 @@
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 import { EventProcessor } from "./EventProcessor.ts";
 import { UserData } from '@modules/features/UserData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -23,25 +23,25 @@ export class TwitchEvents
 	constructor( private twitch: Twitch )
 	{
 		this.eventProcessor = new EventProcessor( this.twitch );
-		this.listener = new EventSubWsListener( { apiClient: this.twitch.data.twitchApi } );
+		this.listener = new EventSubWsListener( { apiClient: this.twitch.twitchApi } );
 		this.handleEvents();
 	}
 
 	/** Add event handler fucntions to events */
 	private handleEvents(): void
 	{
-		this.listener.onStreamOnline(  BotData.broadcasterId, this.onStreamOnline );
-		this.listener.onStreamOffline(  BotData.broadcasterId, this.onStreamOffline );
-		this.listener.onChannelFollow(  BotData.broadcasterId,  BotData.broadcasterId, this.onChannelFollow );
-		this.listener.onChannelRedemptionAdd(  BotData.broadcasterId, this.onChannelRedemptionAdd );
-		this.listener.onChannelUpdate(  BotData.broadcasterId, this.onChannelUpdate );
-		this.listener.onChannelAdBreakBegin(  BotData.broadcasterId, this.onChannelAdBreakBegin );
-		this.listener.onChannelShieldModeBegin(  BotData.broadcasterId,  BotData.broadcasterId,
+		this.listener.onStreamOnline(  UserHelper.broadcasterId, this.onStreamOnline );
+		this.listener.onStreamOffline(  UserHelper.broadcasterId, this.onStreamOffline );
+		this.listener.onChannelFollow(  UserHelper.broadcasterId,  UserHelper.broadcasterId, this.onChannelFollow );
+		this.listener.onChannelRedemptionAdd(  UserHelper.broadcasterId, this.onChannelRedemptionAdd );
+		this.listener.onChannelUpdate(  UserHelper.broadcasterId, this.onChannelUpdate );
+		this.listener.onChannelAdBreakBegin(  UserHelper.broadcasterId, this.onChannelAdBreakBegin );
+		this.listener.onChannelShieldModeBegin(  UserHelper.broadcasterId,  UserHelper.broadcasterId,
 			this.onChannelShieldModeBegin );
-		this.listener.onChannelShieldModeEnd(  BotData.broadcasterId,  BotData.broadcasterId,
+		this.listener.onChannelShieldModeEnd(  UserHelper.broadcasterId,  UserHelper.broadcasterId,
 			this.onChannelShieldModeEnd );
-		this.listener.onChannelRaidFrom(  BotData.broadcasterId, this.onChannelRaidFrom );
-		this.listener.onChannelRaidTo(  BotData.broadcasterId, this.onChannelRaidTo );
+		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
+		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
 	}
 
 	/** Start listener */

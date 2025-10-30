@@ -6,10 +6,10 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@services/BotData.ts';
 import { Jokes } from '@modules/features/Jokes.ts';
 import { Quotes } from '@modules/features/Quotes.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -116,7 +116,7 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 			handler: (options: TwitchCommandOptions) => {
 				void twitch.events.eventProcessor.process({
 					eventType: 'propz',
-					user: options.param || BotData.broadcasterName
+					user: options.param || UserHelper.broadcasterName
 				});
 			}
 		},
@@ -133,7 +133,7 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 					user: options.param || options.sender.displayName,
 					sender: options.param ?
 						options.sender.displayName :
-						BotData.broadcasterName
+						UserHelper.broadcasterName
 				});
 			},
 			description: 'Slap them good'

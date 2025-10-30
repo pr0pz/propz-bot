@@ -6,9 +6,9 @@
  */
 
 import { clearTimer, getRewardSlug, log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 
 import type { Twitch } from '@twitch/core/Twitch.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 export class Focus
 {
@@ -45,7 +45,7 @@ export class Focus
 
 		void this.twitch.events.eventProcessor.process( {
 			eventType: eventType,
-			user: await this.twitch.data.getUser() ||  BotData.broadcasterName,
+			user: await this.twitch.userHelper.getUser() ||  UserHelper.broadcasterName,
 			eventCount: focusTimer
 		} );
 
@@ -76,8 +76,8 @@ export class Focus
 					isPaused: focusStatus
 				};
 
-				this.twitch.data.twitchApi.channelPoints.updateCustomReward(
-					 BotData.broadcasterId,
+				this.twitch.twitchApi.channelPoints.updateCustomReward(
+					UserHelper.broadcasterId,
 					reward.id.toString(),
 					rewardUpdateData
 				);

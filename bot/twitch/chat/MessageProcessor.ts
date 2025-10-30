@@ -6,12 +6,12 @@
  */
 
 import cld from 'cld';
-import { BotData } from '@services/BotData.ts';
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';
 import { StreamStats } from '@modules/features/StreamStats.ts';
 import { UserData } from '@modules/features/UserData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ChatMessage }  from '@twurple/chat';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -31,7 +31,7 @@ export class MessageProcessor
 		if ( !chatMessage || !msg || !msg.userInfo )
 			return;
 
-		const user = await this.twitch.userConverter.convertToSimplerUser( msg.userInfo );
+		const user = await this.twitch.userHelper.convertToSimplerUser( msg.userInfo );
 		if ( !user ) return;
 
 		const chatMessageSanitized = sanitizeMessage( chatMessage );
@@ -93,11 +93,11 @@ export class MessageProcessor
 			return false;
 
 		// Not home channel
-		if ( channel !== BotData.broadcasterName )
+		if ( channel !== UserHelper.broadcasterName )
 			return false;
 
 		// Killswitch
-		if ( this.twitch.killswitch.status && user.toLowerCase() !==  BotData.broadcasterName )
+		if ( this.twitch.killswitch.status && user.toLowerCase() !==  UserHelper.broadcasterName )
 			return false;
 
 		return true;
@@ -182,7 +182,7 @@ export class MessageProcessor
 	 */
 	private checkChatScore( user: SimpleUser ): void
 	{
-		if ( user?.name ===  BotData.broadcasterName )
+		if ( user?.name ===  UserHelper.broadcasterName )
 			return;
 
 		const chatscores = [

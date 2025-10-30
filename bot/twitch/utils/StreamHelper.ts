@@ -6,7 +6,7 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { StreamData, StreamDataApi } from '@shared/types.ts';
 import type { HelixStream } from '@twurple/api';
@@ -47,7 +47,7 @@ export class StreamHelper
 		try
 		{
 			this.stream = await this.twitch.twitchApi.streams.getStreamByUserName(
-				 BotData.broadcasterName
+				 UserHelper.broadcasterName
 			);
 			return this.stream;
 		} catch ( error: unknown )
@@ -84,7 +84,7 @@ export class StreamHelper
 		stream = stream ? stream : this.stream;
 		if ( !stream ) return;
 
-		const user = await this.twitch.data.getUser();
+		const user = await this.twitch.userHelper.getUser();
 		if ( !user ) return;
 
 		const streamAnnouncementMessage = getMessage(

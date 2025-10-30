@@ -6,7 +6,7 @@
  */
 
 import { getRewardSlug, log, saveFile } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type { TwitchReward } from '@shared/types.ts';
@@ -32,7 +32,7 @@ export class TwitchRewards
 			const rewards = this.rewards;
 			if ( !rewards ) return;
 
-			const rewardsCurrent = await this.twitchApi.channelPoints.getCustomRewards( BotData.broadcasterId, true );
+			const rewardsCurrent = await this.twitchApi.channelPoints.getCustomRewards( UserHelper.broadcasterId, true );
 
 			// For testing
 			// for ( const [ index, reward ] of rewardsCurrent.entries() )
@@ -44,7 +44,7 @@ export class TwitchRewards
 			{
 				if ( reward.id === '' )
 				{
-					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( BotData.broadcasterId, reward );
+					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( UserHelper.broadcasterId, reward );
 					rewards[index].id = rewardCreated.id;
 					log(
 						`createCustomReward › ${getRewardSlug( reward.title )} › ${rewardCreated.id}`
@@ -70,7 +70,7 @@ export class TwitchRewards
 					)
 					{
 						this.twitchApi.channelPoints.updateCustomReward(
-							BotData.broadcasterId,
+							UserHelper.broadcasterId,
 							reward.id.toString(),
 							reward
 						);

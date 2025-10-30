@@ -24,8 +24,7 @@ export class Cronjobs
 
 		void Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
-			Database.cronjobDaily()
-			this.twitch.data.cronjobDaily();
+			Database.cronjobDaily();
 		} );
 
 		log( 'Cronjobs init ✅' );

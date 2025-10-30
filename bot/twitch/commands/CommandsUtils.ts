@@ -6,11 +6,11 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@services/BotData.ts';
 import { Deepl } from '@modules/integrations/Deepl.ts';
 import { Gemini } from '@modules/integrations/Gemini.ts';
 import { OpenWeather } from '@modules/integrations/OpenWeather.ts';
 import { Spotify } from '@modules/integrations/Spotify.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 import { Youtube } from '@modules/integrations/Youtube.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
@@ -25,7 +25,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 			handler: async (options: TwitchCommandOptions) => {
 				return await Gemini.generate(
 					options.message,
-					options.sender.name || BotData.broadcasterName
+					options.sender.name || UserHelper.broadcasterName
 				);
 			}
 		},
@@ -55,7 +55,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		emotes: {
 			handler: (options: TwitchCommandOptions) => {
-				const emotes = twitch.data.emotes
+				const emotes = twitch.emotes.get()
 					.entries()
 					.map(([key, _value]) => key)
 					.toArray()

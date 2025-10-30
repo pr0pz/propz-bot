@@ -139,7 +139,7 @@ export class Server
 				const body = await req.json();
 				void this.twitch.events.eventProcessor.process({
 					eventType: body.eventType.toString().toLowerCase() || 'propz.de',
-					user: await this.twitch.data.getUser(),
+					user: await this.twitch.userHelper.getUser(),
 				})
 			}
 

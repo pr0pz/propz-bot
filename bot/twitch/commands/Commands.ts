@@ -6,7 +6,7 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import soundboardCommands from '@twitch/commands/CommandsSoundboard.ts';
 import createFunCommands from '@twitch/commands/CommandsFun.ts';
@@ -45,7 +45,7 @@ export class Commands
 	 */
 	public async process( chatMessage: string, msg: ChatMessage | null, user: SimpleUser | null = null )
 	{
-		const sender = await this.twitch.userConverter.convertToSimplerUser( msg?.userInfo ?? user ?? null );
+		const sender = await this.twitch.userHelper.convertToSimplerUser( msg?.userInfo ?? user ?? null );
 		if ( !this.validate( chatMessage, sender ) ) return;
 
 		if ( !sender ) return;
@@ -106,7 +106,7 @@ export class Commands
 		if (
 			command.onlyMods &&
 			!user.isMod &&
-			user.name.toLowerCase() !==  BotData.broadcasterName.toLowerCase()
+			user.name.toLowerCase() !==  UserHelper.broadcasterName.toLowerCase()
 		) return false;
 
 		if ( this.isCommandInCooldown( commandName ) )

@@ -6,11 +6,11 @@
  */
 
 import { log, objectToMap } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
 import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';
 import { parseChatMessage } from '@twurple/chat';
 import { SevenTV } from '@modules/integrations/SevenTV.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
@@ -29,9 +29,9 @@ export class Emotes
 	{
 		const [ emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV ] = await Promise.all( [
 			this.getFromTwitch(),
-			FrankerFaceZ.getEmotes( BotData.broadcasterId ),
+			FrankerFaceZ.getEmotes( UserHelper.broadcasterId ),
 			SevenTV.getEmotes(),
-			BetterTTV.getEmotes( BotData.broadcasterId )
+			BetterTTV.getEmotes( UserHelper.broadcasterId )
 		] );
 		const emotes = Object.assign(
 			{},
@@ -52,7 +52,7 @@ export class Emotes
 		{
 			const [ globalEmotes, channelEmotes ] = await Promise.all( [
 				this.twitchApi.chat.getGlobalEmotes(),
-				this.twitchApi.chat.getChannelEmotes( BotData.broadcasterId )
+				this.twitchApi.chat.getChannelEmotes( UserHelper.broadcasterId )
 			] );
 
 			globalEmotes.concat( channelEmotes ).forEach( ( emote ) =>

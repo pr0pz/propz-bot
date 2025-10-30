@@ -6,9 +6,9 @@
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
-import { BotData } from '@services/BotData.ts';
 import { StreamEvents } from '@modules/features/StreamEvents.ts';
 import { StreamStats} from '@modules/features/StreamStats.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { SimpleUser } from '@shared/types.ts';
 import type { ChatUser } from '@twurple/chat';
@@ -38,7 +38,7 @@ export class EventProcessor
 			eventCount = 0,
 			eventText = '',
 			isTest = false,
-			sender = BotData.broadcasterName
+			sender = UserHelper.broadcasterName
 		} = options;
 
 		if ( !this.validate( eventType, user ) )
@@ -47,8 +47,8 @@ export class EventProcessor
 		// Get user data for username
 		if ( typeof user === 'string' )
 		{
-			const userName = this.twitch.userConverter.getUsernameFromObject( user );
-			user = await this.twitch.data.getUser( userName ) || '';
+			const userName = this.twitch.userHelper.getUsernameFromObject( user );
+			user = await this.twitch.userHelper.getUser( userName ) || '';
 			// Twitch user not found = Probably kofi event
 			if ( typeof user === 'string' )
 			{
@@ -56,7 +56,7 @@ export class EventProcessor
 				user = { name: userName, displayName: userName } as SimpleUser;
 			}
 		}
-		user = await this.twitch.userConverter.convertToSimplerUser( user );
+		user = await this.twitch.userHelper.convertToSimplerUser( user );
 		if ( !user ) return;
 
 		const event = this.twitch.streamEvents.get( eventType );
@@ -122,7 +122,7 @@ export class EventProcessor
 		if ( !eventType || !user )
 			return false;
 
-		const userName = this.twitch.userConverter.getUsernameFromObject( user );
+		const userName = this.twitch.userHelper.getUsernameFromObject( user );
 		if ( !userName ) return false;
 
 		const event = this.twitch.streamEvents.get( eventType );
@@ -131,7 +131,7 @@ export class EventProcessor
 		// Killswitch
 		if (
 			this.twitch.killswitch.status &&
-			userName !== BotData.broadcasterName
+			userName !== UserHelper.broadcasterName
 		) return false;
 
 		// Prevent chatscore events to fire multiple times
@@ -163,7 +163,7 @@ export class EventProcessor
 
 		const splittedMessage = eventMessage.split( ' ' );
 		const eventType = splittedMessage[ 0 ];
-		let userName = BotData.botName;
+		let userName = UserHelper.botName;
 
 		// ... or prioritize from command if given
 		if ( splittedMessage[ 1 ] )
