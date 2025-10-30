@@ -5,7 +5,7 @@
  * @version 2.0.0
  */
 
-import { getRewardSlug, log } from '@shared/helpers.ts';
+import { getRewardSlug, log, saveFile } from '@shared/helpers.ts';
 import { BotData } from '@services/BotData.ts';
 
 import type { ApiClient } from '@twurple/api';
@@ -49,7 +49,7 @@ export class TwitchRewards
 					log(
 						`createCustomReward › ${getRewardSlug( reward.title )} › ${rewardCreated.id}`
 					);
-					BotData.saveFile( 'twitchRewards', rewards, 'config' );
+					saveFile( 'twitchRewards', rewards, 'config' );
 				}
 				else
 				{

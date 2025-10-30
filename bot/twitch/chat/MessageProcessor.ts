@@ -17,7 +17,7 @@ import type { ChatMessage }  from '@twurple/chat';
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { SimpleUser } from '@shared/types.ts';
 
-export class ChatMessageProcessor
+export class MessageProcessor
 {
 	constructor( private twitch: Twitch ) {}
 
@@ -35,7 +35,7 @@ export class ChatMessageProcessor
 		if ( !user ) return;
 
 		const chatMessageSanitized = sanitizeMessage( chatMessage );
-		const chatMessagesWithEmotes = this.searchReplaceEmotes( chatMessageSanitized, msg );
+		const chatMessagesWithEmotes = this.twitch.emotes.searchReplace( chatMessageSanitized, msg );
 
 		// Send to websocket connections
 		this.twitch.ws.maybeSendWebsocketData( {
@@ -113,7 +113,7 @@ export class ChatMessageProcessor
 		if ( !message || !msg )
 			return false;
 
-		const emotes = this.twitch.data.emotes;
+		const emotes = this.twitch.emotes.get();
 		if ( !emotes ) return false;
 
 		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
@@ -150,61 +150,6 @@ export class ChatMessageProcessor
 		) return false;
 
 		return true;
-	}
-
-	/** Search and replace emotes with images tags on chat message.
-	 *
-	 * @param {string} message Message to search and replace
-	 * @param {ChatMessage} msg message object
-	 * @returns {string} Modlist with all nicknames
-	 */
-	private searchReplaceEmotes( message: string, msg: ChatMessage ): string
-	{
-		if ( !message || !msg )
-			return '';
-
-		const emotes = this.twitch.data.emotes;
-		if ( !emotes ) return '';
-
-		const parsedMessage = parseChatMessage( message, msg.emoteOffsets );
-		const messageParts = [];
-
-		for ( const [ _index, messagePart ] of parsedMessage.entries() )
-		{
-			if ( messagePart.type === 'text' )
-			{
-				messageParts.push( `<span>${ messagePart.text }</span>` );
-				continue;
-			}
-
-			// Replace known Emotes
-			if ( emotes.has( messagePart.name ) )
-			{
-				messageParts.push(
-					`<img src='${
-						emotes.get( messagePart.name )
-					}' alt='${ messagePart.name }' class='emote emote-known' />`
-				);
-			}
-			// Replace unknown Emotes
-			else if ( messagePart.type === 'emote' )
-			{
-				messageParts.push(
-					`<img src='https://static-cdn.jtvnw.net/emoticons/v2/${ messagePart.id }/static/dark/3.0' alt='${ messagePart.name }' class='emote emote-unknown' />`
-				);
-			}
-		}
-
-		let messageWithEmotes = messageParts.join( ' ' );
-
-		// Replace all External Emotes
-		messageWithEmotes = messageWithEmotes.split( ' ' ).map( ( word ) =>
-			emotes.has( word ) ?
-				`<img src='${ emotes.get( word ) }' alt='${ word }' class='emote emote-external' />` :
-				word
-		).join( ' ' );
-
-		return messageWithEmotes;
 	}
 
 	/** Auto translate if needed

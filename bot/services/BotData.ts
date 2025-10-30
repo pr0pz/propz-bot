@@ -5,28 +5,23 @@
  * @version 2.0.0
  */
 
-import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
-import { log, objectToMap } from '@shared/helpers.ts';
-import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';
+import { log } from '@shared/helpers.ts';
 import { HelixUser } from '@twurple/api';
-import { SevenTV } from '@modules/integrations/SevenTV.ts';
 import { StreamEvents } from '@modules/features/StreamEvents.ts';
 import { UserData} from '@modules/features/UserData.ts';
 
-import type { SimpleUser, TwitchEmote, TwitchEventData, TwitchStreamDate } from '@shared/types.ts';
+import type { SimpleUser, TwitchEventData, TwitchStreamDate } from '@shared/types.ts';
 import type { ApiClient } from '@twurple/api';
 
 export class BotData
 {
 	public twitchUser: HelixUser | null = null;
-	public emotes: Map<string, string> = new Map();
 
-	constructor( public twitchApi: ApiClient ) {}
+	constructor( private twitchApi: ApiClient ) {}
 
 	public async init(): Promise<void>
 	{
 		await this.setUser();
-		void this.setEmotes();
 		void this.setFollowers();
 	}
 
@@ -68,30 +63,6 @@ export class BotData
 		}
 		catch ( error: unknown ) { log( error ) }
 		return defaultColor;
-	}
-
-	/** Fetch twitch Emotes */
-	private async getEmotesTwitch(): Promise<TwitchEmote>
-	{
-		const emoteMap: TwitchEmote = {};
-		try
-		{
-			const [ globalEmotes, channelEmotes ] = await Promise.all( [
-				this.twitchApi.chat.getGlobalEmotes(),
-				this.twitchApi.chat.getChannelEmotes( BotData.broadcasterId )
-			] );
-
-			globalEmotes.concat( channelEmotes ).forEach( ( emote ) =>
-			{
-				let url = emote.getAnimatedImageUrl( '3.0' );
-				if ( !url ) url = emote.getFormattedImageUrl( '3.0' );
-				emoteMap[emote.name] = url;
-			} );
-
-			return emoteMap;
-		}
-		catch ( error: unknown ) { log( error ) }
-		return emoteMap;
 	}
 
 	/** Gets Twitch schedule
@@ -165,26 +136,6 @@ export class BotData
 		}
 	}
 
-	/** Set all twitch emotes */
-	private async setEmotes(): Promise<void>
-	{
-		const [ emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV ] = await Promise.all( [
-			this.getEmotesTwitch(),
-			FrankerFaceZ.getEmotes( BotData.broadcasterId ),
-			SevenTV.getEmotes(),
-			BetterTTV.getEmotes( BotData.broadcasterId )
-		] );
-		const emotes = Object.assign(
-			{},
-			emotesTwitch,
-			emotesFFZ,
-			emotes7TV,
-			emotesBTTV
-		);
-
-		this.emotes = objectToMap( emotes );
-	}
-
 	/** Set last 20 followers */
 	private async setFollowers(): Promise<void>
 	{
@@ -227,36 +178,6 @@ export class BotData
 		{
 			log( error );
 		}
-	}
-
-	/** Save data to file
-	 *
-	 * @param {string} fileName Name of file to be saved
-	 * @param {Object} fileData Data to be saved
-	 * @param {string} folder
-	 */
-	public static saveFile(
-		fileName: string,
-		fileData: unknown = null,
-		folder: string = 'data'
-	): void
-	{
-		if ( !fileName || !fileData || !folder )
-		{
-			log( new Error( 'Missing file name/data/folder' ) );
-			return;
-		}
-
-		const spacing = fileName.toLowerCase().includes( 'twitchbots' ) ? '' : '\t';
-
-		try
-		{
-			Deno.writeTextFileSync(
-				`./bot/${folder}/${fileName}.json`,
-				JSON.stringify( fileData, null, spacing )
-			);
-		}
-		catch ( error: unknown ) { log( error ) }
 	}
 
 	/**

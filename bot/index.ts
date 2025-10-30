@@ -6,47 +6,30 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { ApiClient } from '@twurple/api';
 import { Database } from '@services/Database.ts';
 import { Server } from '@services/Server.ts';
-import { BotData } from '@services/BotData.ts';
 import { Websocket } from '@services/Websocket.ts';
 import { Discord } from '@discord/Discord.ts';
 import { Twitch } from '@twitch/core/Twitch.ts';
-import { TwitchAuth } from '@twitch/core/TwitchAuth.ts';
 
 class Bot
 {
-	private botData!: BotData;
-	private discord!: Discord;
-	private twitch!: Twitch;
-	private twitchApi!: ApiClient;
-	private twitchAuth!: TwitchAuth;
 	private server!: Server;
-	private ws!: Websocket;
+	private readonly discord!: Discord;
+	private readonly twitch!: Twitch;
+	private readonly ws!: Websocket;
 
 	constructor()
 	{
 		this.handleExit();
-	}
-
-	public async init()
-	{
-		this.twitchAuth = new TwitchAuth();
-		const botAuthProvider = await this.twitchAuth.getAuthProvider('bot');
-		const broadcasterAuthProvider = await this.twitchAuth.getAuthProvider('broadcaster');
-
-		this.twitchApi = new ApiClient( { authProvider: broadcasterAuthProvider! } );
-		this.botData = new BotData( this.twitchApi );
 		this.ws = new Websocket();
 		this.discord = new Discord();
-		this.twitch = new Twitch( this.botData, this.discord, this.ws, botAuthProvider! );
+		this.twitch = new Twitch( this.ws, this.discord );
 		this.server = new Server( this.ws, this.twitch, this.discord );
 	}
 
-	public async run()
+	public run()
 	{
-		await this.init();
 		void this.server.start();
 		void this.discord.connect();
 		void this.twitch.init();

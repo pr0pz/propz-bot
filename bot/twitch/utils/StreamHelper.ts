@@ -46,7 +46,7 @@ export class StreamHelper
 
 		try
 		{
-			this.stream = await this.twitch.data.twitchApi.streams.getStreamByUserName(
+			this.stream = await this.twitch.twitchApi.streams.getStreamByUserName(
 				 BotData.broadcasterName
 			);
 			return this.stream;

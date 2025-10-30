@@ -272,3 +272,31 @@ export function clearTimer( timer: number ): number
 	if ( timer ) clearTimeout( timer );
 	return 0;
 }
+
+/** Save data to file
+ *
+ * @param {string} fileName Name of file to be saved
+ * @param {Object} fileData Data to be saved
+ * @param {string} folder
+ */
+export function saveFile(
+	fileName: string,
+	fileData: unknown = null,
+	folder: string = 'data'
+): void
+{
+	if ( !fileName || !fileData || !folder )
+	{
+		log( new Error( 'Missing file name/data/folder' ) );
+		return;
+	}
+
+	try
+	{
+		Deno.writeTextFileSync(
+			`./bot/${folder}/${fileName}.json`,
+			JSON.stringify( fileData, null, '\t' )
+		);
+	}
+	catch ( error: unknown ) { log( error ) }
+}

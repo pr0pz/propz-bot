@@ -8,7 +8,7 @@
 import '@shared/prototypes.ts';
 import { BotData } from '@services/BotData.ts';
 import { ChatClient } from '@twurple/chat';
-import { ChatMessageProcessor } from '@twitch/chat/ChatMessageProcessor.ts';
+import { MessageProcessor } from '@twitch/chat/MessageProcessor.ts';
 import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';
 
 import type {
@@ -29,21 +29,25 @@ import type { Twitch } from '@twitch/core/Twitch.ts';
 export class TwitchChat
 {
 	public chatClient!: ChatClient;
-	public chatMessageProcessor: ChatMessageProcessor;
+	public messageProcessor!: MessageProcessor;
 	// https://twurple.js.org/docs/examples/chat/sub-gift-spam.html
 	private communitySubGifts = new Map<string | undefined, number>();
 	private connectTimer: number = 0;
 
-	constructor( private twitch: Twitch )
+	constructor( private twitch: Twitch ) {}
+
+	public async init(): Promise<void>
 	{
-		this.chatMessageProcessor = new ChatMessageProcessor( this.twitch );
+		this.messageProcessor = new MessageProcessor( this.twitch );
 		try
 		{
+			const authProvider = await this.twitch.twitchAuth.getAuthProvider('bot');
 			this.chatClient = new ChatClient( {
-				authProvider: this.twitch.authProvider,
+				authProvider: authProvider!,
 				channels: [  BotData.broadcasterName ]
 			} );
 			this.handleChatClientEvents();
+			this.connect();
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
@@ -263,7 +267,7 @@ export class TwitchChat
 		msg: ChatMessage
 	) =>
 	{
-		if ( !this.chatMessageProcessor.validate( channel, user, text, msg ) ) return;
+		if ( !this.messageProcessor.validate( channel, user, text, msg ) ) return;
 
 		log( `${ user }: '${ text }'` );
 
@@ -276,7 +280,7 @@ export class TwitchChat
 			void this.twitch.commands.process( text, msg );
 		// ... or message
 		else if ( !msg.isRedemption )
-			void this.chatMessageProcessor.process( text, msg );
+			void this.messageProcessor.process( text, msg );
 
 		// First chatter event
 		if ( msg.isFirst )
