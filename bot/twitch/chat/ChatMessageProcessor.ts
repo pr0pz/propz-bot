@@ -6,7 +6,7 @@
  */
 
 import cld from 'cld';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';

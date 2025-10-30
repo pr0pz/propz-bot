@@ -6,7 +6,7 @@
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { StreamEvents } from '@modules/features/StreamEvents.ts';
 import { StreamStats} from '@modules/features/StreamStats.ts';
 

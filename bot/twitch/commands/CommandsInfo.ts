@@ -6,7 +6,7 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { Rankings } from '@modules/features/Rankings.ts';
 import { UserData } from '@modules/features/UserData.ts';
 

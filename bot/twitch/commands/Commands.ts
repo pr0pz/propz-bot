@@ -6,7 +6,7 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 
 import soundboardCommands from '@twitch/commands/CommandsSoundboard.ts';
 import createFunCommands from '@twitch/commands/CommandsFun.ts';

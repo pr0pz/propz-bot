@@ -5,22 +5,79 @@
  * @version 2.0.0
  */
 
+import { log } from '@shared/helpers.ts';
 import { ApiClient } from '@twurple/api';
-import { Bot } from '@bot/Bot.ts';
-import { BotData } from '@bot/BotData.ts';
-import { BotWebsocket } from '@bot/BotWebsocket.ts';
+import { Database } from '@services/Database.ts';
+import { Server } from '@services/Server.ts';
+import { BotData } from '@services/BotData.ts';
+import { Websocket } from '@services/Websocket.ts';
 import { Discord } from '@discord/Discord.ts';
 import { Twitch } from '@twitch/core/Twitch.ts';
 import { TwitchAuth } from '@twitch/core/TwitchAuth.ts';
 
-const twitchAuth = new TwitchAuth();
-const botAuthProvider = await twitchAuth.getAuthProvider('bot');
-const broadcasterAuthProvider = await twitchAuth.getAuthProvider('broadcaster');
-const twitchApi = new ApiClient( { authProvider: broadcasterAuthProvider! } );
-const data = new BotData( twitchApi );
-const ws = new BotWebsocket();
-const discord = new Discord();
-const twitch = new Twitch( data, discord, ws, botAuthProvider! );
-const bot = new Bot( discord, twitch, ws );
+class Bot
+{
+	private botData!: BotData;
+	private discord!: Discord;
+	private twitch!: Twitch;
+	private twitchApi!: ApiClient;
+	private twitchAuth!: TwitchAuth;
+	private server!: Server;
+	private ws!: Websocket;
 
-bot.run();
+	constructor()
+	{
+		this.handleExit();
+	}
+
+	public async init()
+	{
+		this.twitchAuth = new TwitchAuth();
+		const botAuthProvider = await this.twitchAuth.getAuthProvider('bot');
+		const broadcasterAuthProvider = await this.twitchAuth.getAuthProvider('broadcaster');
+
+		this.twitchApi = new ApiClient( { authProvider: broadcasterAuthProvider! } );
+		this.botData = new BotData( this.twitchApi );
+		this.ws = new Websocket();
+		this.discord = new Discord();
+		this.twitch = new Twitch( this.botData, this.discord, this.ws, botAuthProvider! );
+		this.server = new Server( this.ws, this.twitch, this.discord );
+	}
+
+	public async run()
+	{
+		await this.init();
+		void this.server.start();
+		void this.discord.connect();
+		void this.twitch.init();
+	}
+
+	/** Disconnect and kill everything on quit */
+	private handleExit(): void
+	{
+		Deno.addSignalListener( 'SIGINT', async () =>
+		{
+			await this.server.get().shutdown();
+
+			if ( this.twitch.chat.chatClient )
+				this.twitch.chat.chatClient.quit();
+
+			if ( this.twitch.events.listener )
+				this.twitch.events.listener.stop();
+
+			if ( this.discord.client )
+				await this.discord.client.destroy();
+
+			const db = Database.getInstance();
+			db.cleanupDatabase();
+			db.close();
+
+			log( 'SIGINT Shutdown 🔻' );
+
+			Deno.exit();
+		} );
+	}
+}
+
+const bot = new Bot();
+void bot.run();

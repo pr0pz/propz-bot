@@ -6,7 +6,7 @@
  */
 
 import { getRandomNumber, log } from '@shared/helpers.ts';
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 
 import type { ChatMessage } from '@twurple/chat';
 import type { TwitchJoke, TwitchJokeRow } from '@shared/types.ts';

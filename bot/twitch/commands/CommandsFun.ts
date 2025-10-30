@@ -6,7 +6,7 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { Jokes } from '@modules/features/Jokes.ts';
 import { Quotes } from '@modules/features/Quotes.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';

@@ -9,7 +9,7 @@ import '@shared/prototypes.ts';
 import { log } from '@shared/helpers.ts';
 import type { ObsData, SimpleUser, TwitchEventExtra, WebSocketData } from '@shared/types.ts';
 
-export class BotWebsocket
+export class Websocket
 {
 	public wsConnections: Map<string, WebSocket> = new Map();
 

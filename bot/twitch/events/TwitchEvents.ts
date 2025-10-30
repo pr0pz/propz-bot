@@ -6,7 +6,7 @@
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
 import { EventProcessor } from "./EventProcessor.ts";
 import { UserData } from '@modules/features/UserData.ts';

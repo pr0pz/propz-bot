@@ -6,8 +6,8 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
-import { Database } from '@bot/Database.ts';
+import { BotData } from '@services/BotData.ts';
+import { Database } from '@services/Database.ts';
 import { StreamStats } from '@modules/features/StreamStats.ts';
 import { UserData } from '@modules/features/UserData.ts';
 

@@ -6,7 +6,7 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 
 import type { SimpleUser, TwitchEventData, TwitchUserData } from '@shared/types.ts';
 

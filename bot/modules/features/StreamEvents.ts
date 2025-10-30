@@ -5,7 +5,7 @@
  * @version 2.0.0
  */
 
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 import { log, objectToMap } from '@shared/helpers.ts';
 import { UserData } from '@modules/features/UserData.ts';
 

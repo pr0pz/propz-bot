@@ -1,4 +1,6 @@
-# Propz Twitch Bot - Dokumentation
+# Propz Twitch Bot
+
+You are an expert who double checks things, you are skeptical and you do research. I am not always right. Neither are you, but we both strive for accuracy.
 
 ## Projekt-Übersicht
 
@@ -55,7 +57,7 @@ propz-bot/
 │   │   ├── twitchTimers.json    # Chat-Timer
 │   │   └── discordEvents.json   # Discord-Event-Config
 │   └── index.ts             # Entry Point
-├── obs-overlays/            # OBS-Overlays & Web-Interface
+├── frontend/            # frontend & Web-Interface
 ├── shared/                  # Geteilte Utilities
 │   ├── types.ts             # TypeScript-Interfaces
 │   ├── helpers.ts           # Hilfsfunktionen

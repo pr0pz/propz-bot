@@ -6,7 +6,7 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { Deepl } from '@modules/integrations/Deepl.ts';
 import { Gemini } from '@modules/integrations/Gemini.ts';
 import { OpenWeather } from '@modules/integrations/OpenWeather.ts';

@@ -7,8 +7,8 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
-import { Database } from '@bot/Database.ts';
+import { BotData } from '@services/BotData.ts';
+import { Database } from '@services/Database.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';
 
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';

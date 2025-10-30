@@ -6,7 +6,7 @@
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 
 import type { StreamData, StreamDataApi } from '@shared/types.ts';
 import type { HelixStream } from '@twurple/api';

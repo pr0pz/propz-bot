@@ -6,7 +6,7 @@
  */
 
 import { getRewardSlug, log } from '@shared/helpers.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type { TwitchReward } from '@shared/types.ts';

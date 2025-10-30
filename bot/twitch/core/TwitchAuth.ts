@@ -9,7 +9,7 @@
 
 import { log } from '@shared/helpers.ts';
 import { exchangeCode, RefreshingAuthProvider } from '@twurple/auth';
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 
 import type { AccessToken } from '@twurple/auth';
 import type { TwitchAuthData } from '@shared/types.ts';

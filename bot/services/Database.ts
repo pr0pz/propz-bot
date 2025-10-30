@@ -17,7 +17,7 @@ export class Database extends DB
 
 	private constructor()
 	{
-		super( './bot/bot/BotData.sql' );
+		super( './bot/services/BotData.sql' );
 		this.initDatabase();
 	}
 
@@ -33,7 +33,7 @@ export class Database extends DB
 	{
 		try
 		{
-			const schema = Deno.readTextFileSync( './bot/bot/BotDataSchema.sql' );
+			const schema = Deno.readTextFileSync( './bot/services/BotDataSchema.sql' );
 			this.execute( schema );
 
 			// Init prepared statements

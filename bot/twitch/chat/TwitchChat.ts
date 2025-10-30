@@ -6,7 +6,7 @@
  */
 
 import '@shared/prototypes.ts';
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { ChatClient } from '@twurple/chat';
 import { ChatMessageProcessor } from '@twitch/chat/ChatMessageProcessor.ts';
 import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';

@@ -40,11 +40,11 @@
 		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
 		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' ./bot/index.ts dev",
 		"local": "deno run -A --env-file --watch ./local/index.ts",
-		"dev": "deno run -A --env-file --watch='./frontend/src/' --watch='./shared/' ./obs-overlays/dev.ts",
+		"dev": "deno run -A --env-file --watch='./frontend/src/' --watch='./shared/' ./frontend/dev.ts",
 		"build": "deno run -A --env-file ./frontend/build.ts"
 	},
 	"imports": {
-		"@bot/": "./bot/bot/",
+		"@services/": "./bot/services/",
 		"@config/": "./bot/config/",
 		"@discord/": "./bot/discord/",
 		"@modules/": "./bot/modules/",

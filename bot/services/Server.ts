@@ -1,5 +1,5 @@
 /**
- * Bot
+ * Bot Server
  *
  * @author Wellington Estevo
  * @version 2.0.0
@@ -11,30 +11,23 @@ import { log } from '@shared/helpers.ts';
 import type { ApiRequest, ApiResponse, KofiData } from '@shared/types.ts';
 import type { Discord } from '@discord/Discord.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
-import type { BotWebsocket } from '@bot/BotWebsocket.ts';
+import type { Websocket } from '@services/Websocket.ts';
 
-export class Bot
+export class Server
 {
 	private server!: Deno.HttpServer;
 
-	constructor(
-		private discord: Discord,
-		private twitch: Twitch,
-		private ws: BotWebsocket
-	)
-	{
-		this.handleExit();
-	}
+	constructor( private ws: Websocket, private twitch: Twitch, private discord: Discord ) {}
 
-	/** Main function */
-	public run(): void
+	public get() { return this.server; }
+
+	/** Start server */
+	public start(): void
 	{
 		this.server = Deno.serve(
 			{ port: 1337, hostname: '127.0.0.1' },
 			this.handleServerRequests
 		);
-		void this.discord.connect();
-		void this.twitch.init();
 	}
 
 	/** Handle all incoming server requests
@@ -204,33 +197,5 @@ export class Bot
 				}
 			}
 		);
-	}
-
-	/** Disconnect and kill everything on quit */
-	private handleExit(): void
-	{
-		Deno.addSignalListener( 'SIGINT', async () =>
-		{
-			await this.server.shutdown();
-
-			if ( this.twitch.chat.chatClient )
-				this.twitch.chat.chatClient.quit();
-
-			if ( this.twitch.events.listener )
-				this.twitch.events.listener.stop();
-
-			if ( this.discord.client )
-				await this.discord.client.destroy();
-
-			if ( this.twitch.data.db )
-			{
-				this.twitch.data.db.cleanupDatabase();
-				this.twitch.data.db.close();
-			}
-
-			log( 'SIGINT Shutdown 🔻' );
-
-			Deno.exit();
-		} );
 	}
 }

@@ -29,7 +29,7 @@ deno i
 
 #### __Running the Bot on a Server with a FQDN__
 1. Don't forget to set the right BOT_URL inside your .env
-2. Set the frontend root to obs-overlays/public/
+2. Set the frontend root to frontend/public/
 3. Setup an apache reverse proxy for the /websocket + /webhook + /api URL to work + secure /api and /websocket with your IP's (local, server, etc):
 ```apacheconf
 <Location "/(api|websocket)">
@@ -67,7 +67,7 @@ deno task bot
 ```sh
 deno task local
 ```
-4. Embed obs-overlays Routes as OBS browser sources as you like/need:
+4. Embed frontend Routes as OBS browser sources as you like/need:
 - "bot.domain.com/" : Alerts, Mediaboard, Raid Animation, EmoteEffects (rain, tornado), Ad Animation
 - "bot.domain.com/chat": Stream Chat
 - "bot.domain.com/events": Last Stream Events
@@ -90,7 +90,7 @@ Every Folder of the Bot has a separate purpose:
 - Connects the Bot to OBS
 - Automatically mutes Spotify when an Ad is playing
 - Prints shit on my Printer (only important for me)
-2. obs-overlays: Are embedded inside OBS as Browser Sources with different routes (URL's). The routes are listed above.
+2. frontend: Are embedded inside OBS as Browser Sources with different routes (URL's). The routes are listed above.
 3. shared: Shared ressources across all folders
 4. bot: Main Twitch Bot Magic connecting all services/websites
 

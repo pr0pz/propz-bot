@@ -5,7 +5,7 @@
  * @version 2.0.0
  */
 
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 import { log } from '@shared/helpers.ts';
 
 import type { RowObject } from 'https://deno.land/x/sqlite/mod.ts';

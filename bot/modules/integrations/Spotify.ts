@@ -8,7 +8,7 @@
  */
 
 import { log } from '@shared/helpers.ts';
-import { Database } from '@bot/Database.ts';
+import { Database } from '@services/Database.ts';
 
 import type {} from '@types/spotify-api';
 import type { SpotifyTokenData } from '@shared/types.ts';

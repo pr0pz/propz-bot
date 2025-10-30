@@ -5,7 +5,7 @@
  * @version 2.0.0
  */
 
-import { BotData } from '@bot/BotData.ts';
+import { BotData } from '@services/BotData.ts';
 import { StreamElements } from '@integrations/StreamElements.ts';
 import { getTimePassed } from '@shared/helpers.ts';
 import { UserData } from '@features/UserData.ts';
