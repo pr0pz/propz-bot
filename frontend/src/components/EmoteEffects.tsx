@@ -78,7 +78,7 @@ const EmoteEffects = () =>
 		setIsAnimating( true );
 		if ( nextEvent.type === 'rewardemoterain' )
 			emoteRain();
-		else if ( nextEvent.text === 'rewardemotetornado' )
+		else if ( nextEvent.type === 'rewardemotetornado' )
 			emoteTornado();
 
 		// Simulate some delay for the animation

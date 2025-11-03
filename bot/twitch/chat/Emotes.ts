@@ -93,10 +93,8 @@ export class Emotes
 				const textPart = messagePart.text.split( ' ' ).map( ( word ) =>
 					emotes.has( word ) ?
 						`<img src="${ emotes.get( word ) }" class="emote emote-external" />` :
-						`<span>${ word }</span>`
+						( word === '' ? '' : `<span class="text">${ word }</span>` )
 				).join( ' ' );
-
-				console.log( textPart );
 
 				messageParts.push( textPart );
 			}

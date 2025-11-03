@@ -2,7 +2,7 @@
  * Single Chat message with Shadow DOM isolation
  *
  * @author Wellington Estevo
- * @version 1.8.9
+ * @version 2.0.0
  */
 
 import parse from 'html-react-parser';
@@ -58,13 +58,27 @@ const baseChatMessageCSS = `
     background: var(--color-secondary);
     padding: 2rem;
     word-break: break-word;
+    display: flex;
+    align-items: center;
+    gap; .5rem;
     
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
 }
 
 .chat-message .emote {
-    max-width: 3rem;
+    max-height: 4.5rem;
+}
+
+.chat-message .text {
+	margin:0 .425rem;
+	
+	&:first-child {
+		margin-left: 0;
+	}
+	&:last-child {
+		margin-right: 0;
+	}
 }
 
 .chat-message img {
