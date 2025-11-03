@@ -60,6 +60,7 @@ const baseChatMessageCSS = `
     word-break: break-word;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap; .5rem;
     
     border-bottom-left-radius: inherit;
