@@ -8,7 +8,7 @@
 import { log, objectToMap } from '@shared/helpers.ts';
 import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
 import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';
-import { parseChatMessage } from '@twurple/chat';
+import { buildEmoteImageUrl, parseChatMessage } from '@twurple/chat';
 import { SevenTV } from '@modules/integrations/SevenTV.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
@@ -89,37 +89,27 @@ export class Emotes
 		{
 			if ( messagePart.type === 'text' )
 			{
-				messageParts.push( `<span>${ messagePart.text }</span>` );
-				continue;
-			}
+				// Replace all External Emotes
+				const textPart = messagePart.text.split( ' ' ).map( ( word ) =>
+					emotes.has( word ) ?
+						`<img src="${ emotes.get( word ) }" class="emote emote-external" />` :
+						`<span>${ word }</span>`
+				).join( ' ' );
 
-			// Replace known Emotes
-			if ( emotes.has( messagePart.name ) )
-			{
-				messageParts.push(
-					`<img src='${
-						emotes.get( messagePart.name )
-					}' alt='${ messagePart.name }' class='emote emote-known' />`
-				);
+				console.log( textPart );
+
+				messageParts.push( textPart );
 			}
-			// Replace unknown Emotes
 			else if ( messagePart.type === 'emote' )
 			{
-				messageParts.push(
-					`<img src='https://static-cdn.jtvnw.net/emoticons/v2/${ messagePart.id }/static/dark/3.0' alt='${ messagePart.name }' class='emote emote-unknown' />`
-				);
+				const emotePart = buildEmoteImageUrl( messagePart.id, {
+					backgroundType: 'dark',
+					size: '3.0'
+				} );
+				messageParts.push( `<img src="${ emotePart }" class="emote emote-unknown" />` );
 			}
 		}
 
-		let messageWithEmotes = messageParts.join( ' ' );
-
-		// Replace all External Emotes
-		messageWithEmotes = messageWithEmotes.split( ' ' ).map( ( word ) =>
-			emotes.has( word ) ?
-				`<img src='${ emotes.get( word ) }' alt='${ word }' class='emote emote-external' />` :
-				word
-		).join( ' ' );
-
-		return messageWithEmotes;
+		return messageParts.join( ' ' );
 	}
 }

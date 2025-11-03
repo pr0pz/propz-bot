@@ -44,27 +44,7 @@ export class MessageProcessor
 			text: chatMessagesWithEmotes
 		} );
 
-		// Reactions
-		// for ( const [ _index, reaction ] of Object.entries( this.data.reactions ) )
-		// {
-		// 	if (
-		// 		!reaction?.trigger ||
-		// 		!reaction?.message ||
-		// 		!chatMessage.match( reaction.trigger.toRegExp() )
-		// 	)
-		// 	{
-		// 		continue;
-		// 	}
-		//
-		// 	let message = getMessage( reaction.message );
-		// 	message = message.replace( '[user]', user.displayName );
-		// 	// Reply
-		// 	// this.chat.sendMessage( message, msg );
-		// 	void this.chat.sendAction( message );
-		// }
-
-		if ( !this.twitch.stream.isActive )
-			return;
+		if ( !this.twitch.stream.isActive ) return;
 
 		// First Chat Event
 		this.twitch.firstChatter.set( user );

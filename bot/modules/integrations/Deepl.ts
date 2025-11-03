@@ -21,7 +21,7 @@ export class Deepl
 			const message = sanitizeMessage(
 				options.messageObject.parentMessageText ?? ''
 			);
-			if ( twitch.chat.chatMessageProcessor.isValidMessageText( message, options.messageObject ) )
+			if ( twitch.chat.messageProcessor.isValidMessageText( message, options.messageObject ) )
 			{
 				const translation = await Deepl.translate(
 					message,

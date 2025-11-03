@@ -10,7 +10,7 @@ import { StreamEvents } from '@services/StreamEvents.ts';
 import { StreamStats} from '@services/StreamStats.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
-import type { SimpleUser } from '@shared/types.ts';
+import type { SimpleUser, TwitchEvent } from '@shared/types.ts';
 import type { ChatUser } from '@twurple/chat';
 import type { HelixUser } from '@twurple/api';
 import type { Twitch } from '@twitch/core/Twitch.ts';
@@ -41,26 +41,16 @@ export class EventProcessor
 			sender = UserHelper.broadcasterName
 		} = options;
 
-		if ( !this.validate( eventType, user ) )
-			return;
+		if ( !this.validate( eventType, user ) ) return;
 
-		// Get user data for username
-		if ( typeof user === 'string' )
-		{
-			const userName = this.twitch.userHelper.getUsernameFromObject( user );
-			user = await this.twitch.userHelper.getUser( userName ) || '';
-			// Twitch user not found = Probably kofi event
-			if ( typeof user === 'string' )
-			{
-				if ( !eventType.startsWith( 'kofi' ) ) return;
-				user = { name: userName, displayName: userName } as SimpleUser;
-			}
-		}
-		user = await this.twitch.userHelper.convertToSimplerUser( user );
+		// Get user data
+		user = await this.getEventUser( user, eventType );
 		if ( !user ) return;
 
+		// Get Event
 		const event = this.twitch.streamEvents.get( eventType );
 
+		// Send to WS
 		this.twitch.ws.maybeSendWebsocketData( {
 			type: eventType,
 			user: user,
@@ -74,39 +64,18 @@ export class EventProcessor
 			saveEvent: event.saveEvent
 		} );
 
-		log( `${eventType} › ${user.displayName}` );
-
-		// Exec command
+		// Maybe run command
 		if ( event.isCommand )
 			void this.twitch.commands.process( `!${eventType} ${eventText}`, null, user );
 
 		// Save Event data persistent
 		if ( !isTest && event.saveEvent && user.id )
-		{
-			StreamEvents.add( {
-				type: eventType,
-				user: user,
-				timestamp: Math.floor( Date.now() / 1000 ),
-				count: eventCount
-			} );
+			this.saveEvent( user, eventType, eventCount );
 
-			StreamStats.update( user, eventType, eventCount );
-		}
+		// Send Event Message
+		this.sendEventMessage( event, user, eventCount, sender );
 
-		// Check for event messages and send to chat.
-		let message = getMessage( event.message, this.twitch.stream.language ) || '';
-		if ( !message )
-			return;
-
-		message = message.replaceAll( '[user]', user.displayName || user.name );
-		message = message.replaceAll( '[count]', eventCount.toString() );
-		message = message.replaceAll( '[sender]', sender );
-
-		// Check for announcement
-		if ( event.isAnnouncement )
-			void this.twitch.chat.sendAnnouncement( message );
-		else
-			void this.twitch.chat.sendAction( message );
+		log( `${eventType} › ${user.displayName}` );
 	}
 
 	/** Check if event can be fired
@@ -151,6 +120,77 @@ export class EventProcessor
 			return false;
 
 		return true;
+	}
+
+	/**
+	 * Get User for event processing
+	 *
+	 * @param {HelixUser | ChatUser | SimpleUser| string | null} user
+	 * @param {string} eventType
+	 * @returns {Promise<SimpleUser | null>}
+	 * @private
+	 */
+	private async getEventUser( user: HelixUser | ChatUser | SimpleUser | string | null, eventType: string ): Promise<SimpleUser | null>
+	{
+		if ( typeof user === 'string' )
+		{
+			const userName = this.twitch.userHelper.getUsernameFromObject( user );
+			user = await this.twitch.userHelper.getUser( userName ) || '';
+
+			// Twitch user not found = Probably kofi event
+			if ( typeof user === 'string' )
+			{
+				if ( !eventType.startsWith( 'kofi' ) ) return null;
+				return { name: userName, displayName: userName } as SimpleUser;
+			}
+		}
+		return await this.twitch.userHelper.convertToSimplerUser( user );
+	}
+
+	/**
+	 * Maybe save event persistent
+	 *
+	 * @param {SimpleUser} user
+	 * @param {string} eventType
+	 * @param {number} eventCount
+	 * @private
+	 */
+	private saveEvent( user: SimpleUser, eventType: string, eventCount: number ): void
+	{
+		StreamEvents.add( {
+			type: eventType,
+			user: user,
+			timestamp: Math.floor( Date.now() / 1000 ),
+			count: eventCount
+		} );
+
+		StreamStats.update( user, eventType, eventCount );
+	}
+
+	/**
+	 * Maybe send event message to chat
+	 *
+	 * @param {TwitchEvent} event
+	 * @param {SimpleUser} user
+	 * @param {number} eventCount
+	 * @param {string} sender
+	 * @private
+	 */
+	private sendEventMessage( event: TwitchEvent, user: SimpleUser, eventCount: number, sender: string ): void
+	{
+		// Check for event messages and send to chat.
+		let message = getMessage( event.message, this.twitch.stream.language ) || '';
+		if ( !message ) return;
+
+		message = message.replaceAll( '[user]', user.displayName || user.name );
+		message = message.replaceAll( '[count]', eventCount.toString() );
+		message = message.replaceAll( '[sender]', sender );
+
+		// Check for announcement
+		if ( event.isAnnouncement )
+			void this.twitch.chat.sendAnnouncement( message );
+		else
+			void this.twitch.chat.sendAction( message );
 	}
 
 	/** Send test event
