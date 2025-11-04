@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 2.0.1
+ * @version 2.0.3
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -50,7 +50,7 @@ export class Commands
 
 		if ( !sender ) return;
 
-		const commandName = this.getCommandFromMessage( chatMessage );
+		const commandName = this.getFromMessage( chatMessage );
 		const command = this.commands.get( commandName )!;
 
 		this.twitch.ws.maybeSendWebsocketData( {
@@ -88,7 +88,7 @@ export class Commands
 	{
 		if ( !chatMessage || !user ) return false;
 
-		const commandName = this.getCommandFromMessage( chatMessage );
+		const commandName = this.getFromMessage( chatMessage );
 		const command = this.commands.get( commandName );
 
 		// No data for this command
@@ -116,7 +116,7 @@ export class Commands
 	}
 
 	/** Extracts the command name form chat message */
-	private getCommandFromMessage( chatMessage: string ): string
+	private getFromMessage( chatMessage: string ): string
 	{
 		if ( !chatMessage ) return '';
 

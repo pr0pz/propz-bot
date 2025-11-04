@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.3
  */
 
 import { log } from '@shared/helpers.ts';
@@ -16,6 +16,7 @@ import type { SpotifyTokenData } from '@shared/types.ts';
 export class Spotify
 {
 	private skipNextTrack = 0;
+	private queue = [];
 
 	constructor() {}
 
@@ -425,7 +426,10 @@ export class Spotify
 
 		try
 		{
-			void await fetch( `${Spotify.apiUrl}/me/player/next`, { headers: headers } );
+			void await fetch( `${Spotify.apiUrl}/me/player/next`, {
+				headers: headers,
+				method: 'post'
+			} );
 		}
 		catch ( error: unknown ) { log( error ) }
 		return '';
