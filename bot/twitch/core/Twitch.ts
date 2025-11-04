@@ -41,7 +41,7 @@ export class Twitch
 	public firstChatter!: FirstChatter;
 	public focus!: Focus;
 	public rewards!: TwitchRewards;
-	public spotify = new Spotify();
+	public spotify!: Spotify;
 	public stream!: StreamHelper;
 	public streamEvents = new StreamEvents();
 	public twitchApi!: ApiClient;
@@ -73,6 +73,7 @@ export class Twitch
 		this.firstChatter = new FirstChatter( this );
 		this.focus = new Focus( this );
 		this.rewards = new TwitchRewards( this.twitchApi );
+		this.spotify = new Spotify( this );
 		this.stream = new StreamHelper( this );
 		this.userHelper = new UserHelper( this );
 

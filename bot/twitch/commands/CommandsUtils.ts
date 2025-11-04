@@ -3,7 +3,7 @@
  * Bot Utilities & Tool Commands (AI, Translation, Weather, Spotify, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.3
+ * @version 2.0.4
  */
 
 import { Deepl } from '@modules/integrations/Deepl.ts';
@@ -16,7 +16,8 @@ import { Youtube } from '@modules/integrations/Youtube.ts';
 import type { TwitchCommand, TwitchCommandOptions } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
 
-export default function createUtilitiesCommands(twitch: Twitch): Record<string, TwitchCommand> {
+export default function createUtilitiesCommands(twitch: Twitch): Record<string, TwitchCommand>
+{
 	return {
 		ai: {
 			aliases: ['ki'],
@@ -69,10 +70,22 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 				en: 'Twitch: [emotes] / BetterTTV: KEKW HAhaa ddHuh CouldYouNot WeSmart OMEGALUL POGGERS SnoopPls vibePls HeadBanging Dance catJAM PETTHEMODS 200IQ Loading'
 			}
 		},
+		mysong: {
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				return twitch.spotify.getUserTrackQueuePosition( options.sender );
+			}
+		},
 		playlist: {
 			description: 'Link zur aktuellen Playlist',
 			handler: async (_options: TwitchCommandOptions) => {
 				return await Spotify.getCurrentPlaylist();
+			}
+		},
+		queue: {
+			handler: () =>
+			{
+				return twitch.spotify.getQueue();
 			}
 		},
 		reloadcss: {
@@ -80,7 +93,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		rewardsongrequest: {
 			handler: async (options: TwitchCommandOptions) => {
-				const track = await Spotify.addToQueue(options.param);
+				const track = await twitch.spotify.addToQueue(options.param, options.sender);
 				if (track.includes('Error'))
 					return track;
 
@@ -93,14 +106,14 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		skip: {
 			description: '2 votes to skip a Song',
-			handler: async (_options: TwitchCommandOptions) => {
+			handler: async () => {
 				return await twitch.spotify.skipToNext();
 			}
 		},
 		song: {
 			description: 'Der aktuelle Song',
-			handler: async (_options: TwitchCommandOptions) => {
-				return await Spotify.getCurrentSong();
+			handler: async () => {
+				return await twitch.spotify.getCurrentTrack( false );
 			}
 		},
 		soundboard: {
