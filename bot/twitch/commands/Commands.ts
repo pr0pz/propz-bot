@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -125,7 +125,7 @@ export class Commands
 
 		for ( const [ cmdName, cmd ] of this.commands.entries() )
 		{
-			if ( cmd.aliases?.includes( commandName ) )
+			if ( cmd.aliases?.includes( commandName.toLowerCase() ) )
 				return cmdName;
 		}
 

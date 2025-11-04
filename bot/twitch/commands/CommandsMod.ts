@@ -157,7 +157,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 		},
 		reload: {
 			handler: async () => {
-				await twitch.commands.reloadCommands();
+				await twitch.commands.reload();
 				await twitch.rewards.init();
 				twitch.streamEvents.reload();
 				return 'Reloaded';
