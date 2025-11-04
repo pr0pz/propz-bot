@@ -8,7 +8,8 @@
 .idea/
 .claude/
 deno.lock
-frontend/public/build
+frontend/dist
+frontend/.vite
 
 ._*
 .Spotlight-V100

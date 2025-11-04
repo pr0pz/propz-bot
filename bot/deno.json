@@ -13,6 +13,6 @@
 		"@types/spotify-api": "npm:@types/spotify-api@^0.0.25",
 		"cld": "npm:cld@^2.10.1",
 		"discord.js": "npm:discord.js@^14.23.2",
-		"puppeteer": "npm:puppeteer@^24.26.1"
+		"puppeteer": "npm:puppeteer@^24.28.0"
 	}
 }

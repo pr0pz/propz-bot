@@ -1,13 +1,6 @@
 {
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"nodeModulesDir": "auto",
-	"fmt": {
-		"singleQuote": true,
-		"useTabs": true,
-		"exclude": [
-			"*/*.json"
-		]
-	},
 	"lint": {
 		"include": [
 			"./bot",
@@ -22,26 +15,13 @@
 		"./local",
 		"./shared"
 	],
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"jsxFactory": "React.createElement",
-		"jsxFragmentFactory": "React.Fragment",
-		"jsxImportSource": "npm:react",
-		"jsxImportSourceTypes": "npm:@types/react",
-		"lib": [
-			"dom",
-			"dom.iterable",
-			"esnext",
-			"deno.ns"
-		]
-	},
 	"tasks": {
 		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file ./bot/index.ts dev",
 		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
 		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' ./bot/index.ts dev",
-		"local": "deno run -A --env-file --watch ./local/index.ts",
-		"dev": "deno run -A --env-file --watch='./frontend/src/' --watch='./shared/' ./frontend/dev.ts",
-		"build": "deno run -A --env-file ./frontend/build.ts"
+		"local": "deno run -A --env-file ./local/index.ts",
+		"dev": "cd frontend && deno run -A --env-file npm:vite",
+		"build": "cd frontend && deno run -A --env-file npm:vite build"
 	},
 	"imports": {
 		"@services/": "./bot/services/",
