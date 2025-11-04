@@ -2,11 +2,11 @@
  * Single Chat message with Shadow DOM isolation
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.2
  */
 
 import parse from 'html-react-parser';
-import { useEvent } from '../EventContext.tsx';
+import { useEvent } from '@frontend/EventContext.tsx';
 import { useEffect, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 

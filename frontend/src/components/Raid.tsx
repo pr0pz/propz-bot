@@ -2,13 +2,13 @@
  * Raid
  *
  * @author Wellington Estevo
- * @version 1.4.0
+ * @version 2.0.2
  */
 
 import { useEffect, useState } from 'react';
-import { useEvent } from '../EventContext.tsx';
-import Window from './Window.tsx';
-import type { WebSocketData } from '../../../shared/types.ts';
+import { useEvent } from '@frontend/EventContext.tsx';
+import Window from '@components/Window.tsx';
+import type { WebSocketData } from '@shared/types.ts';
 
 const Raid = () =>
 {

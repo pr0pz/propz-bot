@@ -1,15 +1,15 @@
 /**
  * Main COmponent
- * 
+ *
  * @author Wellington Estevo
- * @version 1.2.2
+ * @version 2.0.2
  */
 
-import Alerts from './Alerts.tsx';
-import AdBreakBox from './AdBreakBox.tsx';
-import EmoteEffects from './EmoteEffects.tsx';
-import Mediaboard from './Mediaboard.tsx';
-import Raid from './Raid.tsx';
+import Alerts from '@components/Alerts.tsx';
+import AdBreakBox from '@components/AdBreakBox.tsx';
+import EmoteEffects from '@components/EmoteEffects.tsx';
+import Mediaboard from '@components/Mediaboard.tsx';
+import Raid from '@components/Raid.tsx';
 
 const Main = () =>
 {

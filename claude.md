@@ -347,7 +347,7 @@ All errors caught as `unknown` type, logged via `log(error)` - graceful degradat
 - **Daily (04:00):** Database cleanup (stream_stats table)
 
 ### Hot-Reload
-Commands can be reloaded without bot restart via `!reloadcommands` - uses dynamic imports with timestamp cache-busting.
+Commands can be reloaded without bot restart via `!reload` - uses dynamic imports with timestamp cache-busting.
 
 ### Focus Mode
 Disables commands/events with `disableOnFocus: true` - for concentrated work without alerts.

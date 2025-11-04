@@ -17,11 +17,6 @@ export default defineConfig( {
 		deno(),
 		react()
 	],
-	resolve: {
-		alias: {
-			'@propz': new URL( '../shared/', import.meta.url ).pathname
-		}
-	},
 	define: {
 		'process.env.BOT_URL': botUrl,
 		'process.env.OBS_PASSWORD': obsPassword

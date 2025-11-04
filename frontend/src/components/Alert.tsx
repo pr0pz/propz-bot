@@ -2,13 +2,13 @@
  * Single ALert
  *
  * @author Wellington Estevo
- * @version 1.8.4
+ * @version 2.0.2
  */
 
 import { useEffect, useState } from 'react';
-import { useEvent } from '../EventContext.tsx';
-import { log } from '../../../shared/helpers.ts';
-import Window from './Window.tsx';
+import { useEvent } from '@frontend/EventContext.tsx';
+import { log } from '@shared/helpers.ts';
+import Window from '@components/Window.tsx';
 
 const Alert = ( propz: {
 	type: string;

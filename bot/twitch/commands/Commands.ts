@@ -50,7 +50,7 @@ export class Commands
 
 		if ( !sender ) return;
 
-		const commandName = this.getCommandNameFromMessage( chatMessage );
+		const commandName = this.getCommandFromMessage( chatMessage );
 		const command = this.commands.get( commandName )!;
 
 		this.twitch.ws.maybeSendWebsocketData( {
@@ -88,7 +88,7 @@ export class Commands
 	{
 		if ( !chatMessage || !user ) return false;
 
-		const commandName = this.getCommandNameFromMessage( chatMessage );
+		const commandName = this.getCommandFromMessage( chatMessage );
 		const command = this.commands.get( commandName );
 
 		// No data for this command
@@ -109,14 +109,14 @@ export class Commands
 			user.name.toLowerCase() !==  UserHelper.broadcasterName.toLowerCase()
 		) return false;
 
-		if ( this.isCommandInCooldown( commandName ) )
+		if ( this.isInCooldown( commandName ) )
 			return false;
 
 		return true;
 	}
 
 	/** Extracts the command name form chat message */
-	private getCommandNameFromMessage( chatMessage: string ): string
+	private getCommandFromMessage( chatMessage: string ): string
 	{
 		if ( !chatMessage ) return '';
 
@@ -133,7 +133,7 @@ export class Commands
 	}
 
 	/** Check if command is in cooldown */
-	private isCommandInCooldown( commandName: string ): boolean
+	private isInCooldown( commandName: string ): boolean
 	{
 		if (
 			!commandName ||
@@ -163,7 +163,7 @@ export class Commands
 	 *
 	 * @returns {Promise<void>}
 	 */
-	public async reloadCommands(): Promise<void>
+	public async reload(): Promise<void>
 	{
 		try
 		{

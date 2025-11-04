@@ -25,10 +25,12 @@
 	},
 	"imports": {
 		"@services/": "./bot/services/",
+		"@components/": "./frontend/src/components/",
 		"@config/": "./bot/config/",
 		"@discord/": "./bot/discord/",
 		"@modules/": "./bot/modules/",
 		"@features/": "./bot/modules/features/",
+		"@frontend/": "./frontend/src/",
 		"@integrations/": "./bot/modules/integrations/",
 		"@shared/": "./shared/",
 		"@twitch/": "./bot/twitch/",

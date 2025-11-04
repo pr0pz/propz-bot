@@ -2,13 +2,13 @@
  * Media Manager
  *
  * @author Wellington Estevo
- * @version 1.7.20
+ * @version 2.0.2
  */
 
-import { log } from '../../../shared/helpers.ts';
-import type { TwitchCommand, TwitchEvent, WebSocketData } from '../../../shared/types.ts';
+import { log } from '@shared/helpers.ts';
+import type { TwitchCommand, TwitchEvent, WebSocketData } from '@shared/types.ts';
 import { useEffect, useState } from 'react';
-import { useEvent } from '../EventContext.tsx';
+import { useEvent } from '@frontend/EventContext.tsx';
 
 const Mediaboard = () =>
 {

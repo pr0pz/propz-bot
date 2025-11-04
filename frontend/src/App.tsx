@@ -1,21 +1,21 @@
 /**
  * App
- * 
+ *
  * @author Wellington Estevo
- * @version 1.6.2
+ * @version 2.0.2
  */
 
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 // Controllers
-import { EventProvider } from './EventContext.tsx';
-import Chat from './components/Chat.tsx';
-import Events from './components/Events.tsx';
-import Main from './components/Main.tsx';
-import Focus from './components/Focus.tsx';
-import Credits from './components/Credits.tsx';
-import Weather from './components/Weather.tsx';
+import { EventProvider } from '@frontend/EventContext.tsx';
+import Chat from '@components/Chat.tsx';
+import Events from '@components/Events.tsx';
+import Main from '@components/Main.tsx';
+import Focus from '@components/Focus.tsx';
+import Credits from '@components/Credits.tsx';
+import Weather from '@components/Weather.tsx';
 
 const App = () =>
 {

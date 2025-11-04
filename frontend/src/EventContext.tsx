@@ -2,11 +2,11 @@
  * Global event context
  *
  * @author Wellington Estevo
- * @version 1.6.10
+ * @version 2.0.2
  */
 
-import ObsController from '../../shared/obs.ts';
-import WebsocketController from '../../shared/websocket.ts';
+import ObsController from '@shared/obs.ts';
+import WebsocketController from '@shared/websocket.ts';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const EventContext = createContext();

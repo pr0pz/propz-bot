@@ -1,13 +1,13 @@
 /**
  * Focus Manager
- * 
+ *
  * @author Wellington Estevo
- * @version 1.1.4
+ * @version 2.0.2
  */
 
 import { useEffect, useState } from 'react';
-import { useEvent } from '../EventContext.tsx';
-import Button from './Button.tsx';
+import { useEvent } from '@frontend/EventContext.tsx';
+import Button from '@components/Button.tsx';
 
 const Focus = () =>
 {
