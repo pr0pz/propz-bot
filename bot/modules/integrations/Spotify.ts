@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.6
+ * @version 2.0.7
  */
 
 import { log } from '@shared/helpers.ts';
@@ -27,6 +27,7 @@ export class Spotify
 
 	private static get apiUrl() { return 'https://api.spotify.com/v1' }
 	private static get authUrl() { return 'https://accounts.spotify.com/api/token' }
+	private static get trackUrl() { return 'https://open.spotify.com/track/' }
 	private static get playlistBanger() { return '7zVD6GFNSJQv7aenpcKIrr' }
 	private static get spotifyClientId() { return Deno.env.get( 'SPOTIFY_CLIENT_ID' ) || '' }
 	private static get spotifyClientSecret() { return Deno.env.get( 'SPOTIFY_CLIENT_SECRET' ) || '' }
@@ -250,7 +251,7 @@ export class Spotify
 			const track = result.item as SpotifyApi.TrackObjectFull;
 			const artist = Spotify.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
 
-			return Spotify.getTrackName( artist, track.name );
+			return `${ Spotify.getTrackName( artist, track.name ) } > ${ Spotify.trackUrl }${ track.id }`;
 		}
 		catch ( error: unknown )
 		{
@@ -303,8 +304,7 @@ export class Spotify
 			// Refresh
 			if ( tokenData.expires_at <= Date.prototype.timestamp() )
 			{
-				const newTokenData = await Spotify.refreshAccessToken( tokenData );
-				return newTokenData;
+				return await Spotify.refreshAccessToken( tokenData );
 			}
 
 			return tokenData;
