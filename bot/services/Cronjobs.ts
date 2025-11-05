@@ -2,7 +2,7 @@
  * Cronjobs
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import { log } from '@shared/helpers.ts';
@@ -23,6 +23,7 @@ export class Cronjobs
 
 		void Deno.cron( 'Bot daily', '0 4 * * *', () =>
 		{
+			this.twitch.firstChatter.cronjobDaily();
 			Database.cronjobDaily();
 		} );
 

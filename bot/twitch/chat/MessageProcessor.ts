@@ -2,7 +2,7 @@
  * Chat Message Processor
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import cld from 'cld';

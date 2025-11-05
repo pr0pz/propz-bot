@@ -558,8 +558,8 @@
 	},
 	"firstchatter": {
 		"message": {
-			"de": "BOOYAKASHA! Erster Chat des Streams geht an @[user] 🔥",
-			"en": "BOOYAKASHA! First chat of the stream goes to @[user] 🔥"
+			"de": "BOOYAKASHA! Erster Chat des Streams geht an @[user] 🔥 > Gewonnen um [count] ms",
+			"en": "BOOYAKASHA! First chat of the stream goes to @[user] 🔥 > Won by [count] ms"
 		},
 		"extra": {
 			"de": {

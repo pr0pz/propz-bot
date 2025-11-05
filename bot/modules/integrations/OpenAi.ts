@@ -2,7 +2,7 @@
  * OpenAI
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import { log } from '@shared/helpers.ts';
@@ -28,7 +28,7 @@ export class OpenAI
 					},
 					method: 'POST',
 					body: JSON.stringify( {
-						model: 'gpt-4o-mini',
+						model: 'gpt-5-nano',
 						messages: [
 							{ role: 'system', content: system },
 							{ role: 'user', content: `{username: ${user}, request: ${message}}` }

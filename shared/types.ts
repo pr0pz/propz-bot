@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.0.6
+ * @version 2.0.8
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -44,6 +44,7 @@ export interface TwitchCommandOptions
 
 export interface TwitchEvent
 {
+	date?: Date;
 	isAnnouncement?: boolean;
 	message?: BotReactionMessage;
 	messageImage?: BotReactionMessage;
@@ -154,21 +155,9 @@ export interface TwitchUserData
 	[key: string]: number | string | boolean | null;
 }
 
-export type TwitchInsightsBot = [ string, number, number ];
-
 export interface TwitchEmote
 {
 	[key: string]: string;
-}
-
-export interface TwitchStreamDate
-{
-	title: string;
-	categoryName: string;
-	startDate: number;
-	endDate: number;
-	isRecurring: boolean;
-	cancelEndDate: number;
 }
 
 export interface TwitchBadge
@@ -182,6 +171,12 @@ export interface TwitchBadgeVersion
 	id: string;
 	name: string;
 	url: string;
+}
+
+export interface TwitchFirstChatter
+{
+	name: string;
+	timestamp: number;
 }
 
 export interface UserStreamStats

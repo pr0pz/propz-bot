@@ -2,7 +2,7 @@
  * Event Processor
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
@@ -28,6 +28,7 @@ export class EventProcessor
 		user: HelixUser | ChatUser | SimpleUser | string | null;
 		eventCount?: number;
 		eventText?: string;
+		eventDate?: Date;
 		isTest?: boolean;
 		sender?: string;
 	} ): Promise<void>
@@ -37,6 +38,7 @@ export class EventProcessor
 			user,
 			eventCount = 0,
 			eventText = '',
+			eventDate = new Date(),
 			isTest = false,
 			sender = UserHelper.broadcasterName
 		} = options;
@@ -49,6 +51,7 @@ export class EventProcessor
 
 		// Get Event
 		const event = this.twitch.streamEvents.get( eventType );
+		event.date = eventDate;
 
 		// Send to WS
 		this.twitch.ws.maybeSendWebsocketData( {

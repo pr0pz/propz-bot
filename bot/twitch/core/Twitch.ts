@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import '@shared/prototypes.ts';
@@ -11,7 +11,7 @@ import { log } from '@shared/helpers.ts';
 import { Api } from '@modules/features/Api.ts';
 import { ApiClient } from '@twurple/api';
 import { Commands } from '@twitch/commands/Commands.ts';
-import { Cronjobs } from '@modules/features/Cronjobs.ts';
+import { Cronjobs } from '@services/Cronjobs.ts';
 import { Emotes } from '@twitch/chat/Emotes.ts';
 import { FirstChatter } from '@modules/features/FirstChatter.ts';
 import { Focus } from '@modules/features/Focus.ts';

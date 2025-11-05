@@ -2,7 +2,7 @@
  * Gemini
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.8
  */
 
 import { log } from '@shared/helpers.ts';
@@ -17,10 +17,10 @@ export class Gemini
 		try
 		{
 			const system =
-				`You are a stream chat assistant.Respond to viewer requests in their language, precisely and briefly.Use minimal emotes appropriately.Include literal username and convey slight annoyance.Mention "Propz_tv" as the streamer only if relevant.Limit responses to 200 characters.Avoid counter-questions.`;
+				`You are a witty stream chat assistant. Respond in the viewer's language, briefly and precisely. Optionally address them with @${user} at the start. Use minimal emotes. Show slight sass and annoyance. Only mention "Propz_tv" (the streamer) if directly relevant. Keep responses under 200 characters. Never ask questions back. Be direct and natural.`;
 
 			const response: Response = await fetch(
-				`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+				`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
 				{
 					headers: { 'Content-Type': 'application/json' },
 					method: 'POST',
@@ -29,11 +29,12 @@ export class Gemini
 							parts: { text: system }
 						},
 						contents: {
-							parts: { text: `{username: ${user}, request: ${message}}` },
+							parts: { text: message },
 							role: 'user'
 						},
 						generationConfig: {
-							maxOutputTokens: 100
+							maxOutputTokens: 100,
+							temperature: 0.9
 						}
 					} )
 				}
