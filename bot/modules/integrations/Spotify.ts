@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.4
+ * @version 2.0.5
  */
 
 import { log } from '@shared/helpers.ts';
@@ -138,10 +138,11 @@ export class Spotify
 	{
 		if ( !this.twitch.stream.isActive ) return;
 		const currentTrack = await this.getCurrentTrack();
-		for ( const [index, track] of this.queue.entries() )
+		for ( const [_index, track] of this.queue.entries() )
 		{
 			if ( currentTrack !== track.trackName ) continue;
-			this.currentTrack = this.queue.splice( index, 1 )[ 0 ];
+			this.currentTrack = track;
+			this.removeTrackFromQueue( track.trackName );
 		}
 	}
 
@@ -265,7 +266,7 @@ export class Spotify
 	{
 		if ( !fromSpotify && this.currentTrack )
 		{
-			return `${ this.currentTrack.trackName } - wished by @${ this.currentTrack.userName }`;
+			return `@${ this.currentTrack.userName }: ${ this.currentTrack.trackName }`;
 		}
 
 		const headers = await Spotify.getAuthHeaders();
@@ -281,7 +282,7 @@ export class Spotify
 			const track = result.item as SpotifyApi.TrackObjectFull;
 			const artist = Spotify.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
 
-			return `${artist} - ${track.name} › ${track.external_urls.spotify}`;
+			return Spotify.getTrackName( artist, track.name );
 		}
 		catch ( error: unknown )
 		{
@@ -361,13 +362,27 @@ export class Spotify
 			}
 
 			const artist = Spotify.getArtist( trackResponse.artists as SpotifyApi.ArtistObjectSimplified[] );
-			return `${artist} - ${trackResponse.name}`;
+			return Spotify.getTrackName( artist, trackResponse.name );
 		}
 		catch ( error: unknown )
 		{
 			log( error );
 			return '';
 		}
+	}
+
+	/**
+	 * Build track name with artist
+	 *
+	 * @param {string} trackArtist
+	 * @param {string} trackName
+	 * @returns {string}
+	 * @private
+	 */
+	private static getTrackName( trackArtist: string, trackName: string ): string
+	{
+		if ( !trackArtist || !trackName ) return '';
+		return `${trackArtist} - ${trackName}`;
 	}
 
 	/**
@@ -455,6 +470,17 @@ export class Spotify
 	}
 
 	/**
+	 * Remove specific track from queue
+	 *
+	 * @param {string} trackName
+	 * @private
+	 */
+	private removeTrackFromQueue( trackName: string ): void
+	{
+		this.queue = this.queue.filter( track => !(track.trackName === trackName) );
+	}
+
+	/**
 	 * Save token to Database
 	 *
 	 * @param tokenData
@@ -490,11 +516,12 @@ export class Spotify
 
 		try
 		{
+			const currentTrack = await this.getCurrentTrack();
 			void await fetch( `${Spotify.apiUrl}/me/player/next`, {
 				headers: headers,
 				method: 'post'
 			} );
-			this.queue.shift();
+			this.removeTrackFromQueue( currentTrack );
 		}
 		catch ( error: unknown ) { log( error ) }
 		return '';
