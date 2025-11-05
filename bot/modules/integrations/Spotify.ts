@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.5
+ * @version 2.0.6
  */
 
 import { log } from '@shared/helpers.ts';
@@ -32,11 +32,6 @@ export class Spotify
 	private static get spotifyClientSecret() { return Deno.env.get( 'SPOTIFY_CLIENT_SECRET' ) || '' }
 	private static get spotifyInitialOauthCode() { return Deno.env.get( 'SPOTIFY_INITIAL_OAUTH_CODE' ) || '' }
 
-	/**
-	 * Add Song to banger playlist
-	 *
-	 * @returns
-	 */
 	public static async addBangerToPlaylist()
 	{
 		const headers = await Spotify.getAuthHeaders();
@@ -80,20 +75,19 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Add Song to queue
-	 *
-	 * @param {string} trackUrl
-	 * @param {SimpleUser} user
-	 * @returns
-	 */
 	public async addToQueue( trackUrl: string, user: SimpleUser )
 	{
-		const headers = await Spotify.getAuthHeaders();
-		if ( !headers ) return '';
 		const trackUrlInfo = trackUrl.match( /track\/(\w+)\??/i );
 		if ( !trackUrlInfo?.[1] ) return '';
 		const trackUri = encodeURIComponent( `spotify:track:${trackUrlInfo[1]}` );
+
+		if (
+			this.queue.find( (track) => track.trackUri === trackUri ) ||
+			await this.getCurrentTrackUri() === trackUri
+		) return 'Track already in queue';
+
+		const headers = await Spotify.getAuthHeaders();
+		if ( !headers ) return '';
 
 		try
 		{
@@ -116,10 +110,11 @@ export class Spotify
 
 			this.queue.push({
 				userName: user.displayName,
-				trackName: trackName
-			})
+				trackName: trackName,
+				trackUri: trackUri
+			});
 
-			return trackName;
+			return `@${ user.displayName } added "${trackName}" to the queue`;
 		}
 		catch ( error: unknown )
 		{
@@ -128,29 +123,18 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Remove current track from queue
-	 *
-	 * @returns {Promise<void>}
-	 * @private
-	 */
-	private async cleanUpQueue()
+	private async cleanUpQueue(): Promise<void>
 	{
 		if ( !this.twitch.stream.isActive ) return;
-		const currentTrack = await this.getCurrentTrack();
+		const currentTrackUri = await this.getCurrentTrackUri();
 		for ( const [_index, track] of this.queue.entries() )
 		{
-			if ( currentTrack !== track.trackName ) continue;
+			if ( currentTrackUri !== track.trackUri ) continue;
 			this.currentTrack = track;
-			this.removeTrackFromQueue( track.trackName );
+			this.removeTrackFromQueue( track.trackUri );
 		}
 	}
 
-	/**
-	 * Get initial access token from Spotify
-	 *
-	 * @returns
-	 */
 	private static async getAccessToken(): Promise<SpotifyTokenData | null>
 	{
 		if (
@@ -202,22 +186,11 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Return name of all track artists
-	 *
-	 * @param artists
-	 * @returns
-	 */
 	private static getArtist( artists: SpotifyApi.ArtistObjectSimplified[] ): string
 	{
 		return artists.map( ( artist ) => artist.name ).join( ' feat. ' );
 	}
 
-	/**
-	 * Get current playlist
-	 *
-	 * @returns
-	 */
 	public static async getCurrentPlaylist(): Promise<string>
 	{
 		const headers = await Spotify.getAuthHeaders();
@@ -257,14 +230,9 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Get current playing Song
-	 *
-	 * @returns String
-	 */
-	public async getCurrentTrack( fromSpotify: boolean = true ): Promise<string>
+	public async getCurrentTrack(): Promise<string>
 	{
-		if ( !fromSpotify && this.currentTrack )
+		if ( this.currentTrack )
 		{
 			return `@${ this.currentTrack.userName }: ${ this.currentTrack.trackName }`;
 		}
@@ -291,25 +259,36 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Get queued tracks
-	 *
-	 * @returns {string}
-	 */
-	public getQueue(): string
+	public async getCurrentTrackUri(): Promise<string>
 	{
+		const headers = await Spotify.getAuthHeaders();
+		if ( !headers ) return '';
+
+		try
+		{
+			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
+
+			const result = await response.json() as SpotifyApi.CurrentlyPlayingResponse;
+			if ( !result?.item?.uri ) return '';
+
+			return result.item.uri;
+		}
+		catch ( error: unknown )
+		{
+			log( error );
+			return '';
+		}
+	}
+
+	public getQueuedTracks(): string
+	{
+		if ( !this.queue.length ) return 'Queue is empty. Add a Song with the "Song Request" Reward.';
 		return this.queue.
 			filter( (_track, index) => index < 3 ).
 			map( (track, index) => `${ index + 1}. @${track.userName}: ${track.trackName}` ).
 			join( ' ||| ' );
 	}
 
-	/**
-	 * Get current spotify token data.
-	 * Is created here if it doesn't exist.
-	 *
-	 * @returns
-	 */
 	private static async getTokenData(): Promise<SpotifyTokenData | null>
 	{
 		try
@@ -339,17 +318,17 @@ export class Spotify
 
 	/**
 	 * Get Single track name
-	 * @param trackId
+	 * @param trackUri
 	 * @returns
 	 */
-	private static async getTrack( trackId: string ): Promise<string>
+	private static async getTrack( trackUri: string ): Promise<string>
 	{
 		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
 
 		try
 		{
-			const track = await fetch( `${Spotify.apiUrl}/tracks/${trackId}`, { headers: headers } );
+			const track = await fetch( `${Spotify.apiUrl}/tracks/${trackUri}`, { headers: headers } );
 
 			const trackResponse = await track.json();
 			if ( !track.ok && trackResponse.error )
@@ -385,11 +364,6 @@ export class Spotify
 		return `${trackArtist} - ${trackName}`;
 	}
 
-	/**
-	 * Get auth header for every request
-	 *
-	 * @returns
-	 */
 	private static async getAuthHeaders(): Promise<Headers | null>
 	{
 		const tokenData = await Spotify.getTokenData();
@@ -397,13 +371,7 @@ export class Spotify
 		return new Headers( { Authorization: `Bearer ${tokenData.access_token}` } );
 	}
 
-	/**
-	 * Get the queue position of the users next track
-	 *
-	 * @param {SimpleUser} user
-	 * @returns {string}
-	 */
-	public getUserTrackQueuePosition( user: SimpleUser ): string
+	public getUserNextTrackQueuePosition( user: SimpleUser ): string
 	{
 		for( const [index, track] of this.queue.entries() )
 		{
@@ -413,12 +381,6 @@ export class Spotify
 		return '';
 	}
 
-	/**
-	 * Refresh Spotify token
-	 *
-	 * @param tokenData SpotifyTokenData
-	 * @returns
-	 */
 	private static async refreshAccessToken( tokenData: SpotifyTokenData ): Promise<SpotifyTokenData | null>
 	{
 		if (
@@ -469,22 +431,11 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Remove specific track from queue
-	 *
-	 * @param {string} trackName
-	 * @private
-	 */
-	private removeTrackFromQueue( trackName: string ): void
+	private removeTrackFromQueue( trackUri: string ): void
 	{
-		this.queue = this.queue.filter( track => !(track.trackName === trackName) );
+		this.queue = this.queue.filter( track => !(track.trackUri === trackUri) );
 	}
 
-	/**
-	 * Save token to Database
-	 *
-	 * @param tokenData
-	 */
 	private static saveTokenData( tokenData: SpotifyTokenData )
 	{
 		try
@@ -499,9 +450,6 @@ export class Spotify
 		catch ( error: unknown ) { log( error ) }
 	}
 
-	/**
-	 * Skips the playback to the next track.
-	 */
 	public async skipToNext(): Promise<string>
 	{
 		if ( this.skipNextTrack === 0 )
@@ -516,12 +464,12 @@ export class Spotify
 
 		try
 		{
-			const currentTrack = await this.getCurrentTrack();
+			const currentTrackUri = await this.getCurrentTrackUri();
 			void await fetch( `${Spotify.apiUrl}/me/player/next`, {
 				headers: headers,
 				method: 'post'
 			} );
-			this.removeTrackFromQueue( currentTrack );
+			this.removeTrackFromQueue( currentTrackUri );
 		}
 		catch ( error: unknown ) { log( error ) }
 		return '';

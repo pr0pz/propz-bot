@@ -3,7 +3,7 @@
  * Bot Utilities & Tool Commands (AI, Translation, Weather, Spotify, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.4
+ * @version 2.0.6
  */
 
 import { Deepl } from '@modules/integrations/Deepl.ts';
@@ -73,7 +73,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		mysong: {
 			handler: ( options: TwitchCommandOptions ) =>
 			{
-				return twitch.spotify.getUserTrackQueuePosition( options.sender );
+				return twitch.spotify.getUserNextTrackQueuePosition( options.sender );
 			}
 		},
 		playlist: {
@@ -85,7 +85,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		queue: {
 			handler: () =>
 			{
-				return twitch.spotify.getQueue();
+				return twitch.spotify.getQueuedTracks();
 			}
 		},
 		reloadcss: {
@@ -93,15 +93,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		rewardsongrequest: {
 			handler: async (options: TwitchCommandOptions) => {
-				const track = await twitch.spotify.addToQueue(options.param, options.sender);
-				if (track.includes('Error'))
-					return track;
-
-				return options.returnMessage.replace('[song]', track);
-			},
-			message: {
-				de: '[song] zur Warteschlange hinzugefügt',
-				en: '[song] added to queue'
+				return await twitch.spotify.addToQueue(options.param, options.sender);
 			}
 		},
 		skip: {
@@ -113,7 +105,7 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		song: {
 			description: 'Der aktuelle Song',
 			handler: async () => {
-				return await twitch.spotify.getCurrentTrack( false );
+				return await twitch.spotify.getCurrentTrack();
 			}
 		},
 		soundboard: {
