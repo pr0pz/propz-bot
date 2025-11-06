@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.7
+ * @version 2.0.9
  */
 
 import { log } from '@shared/helpers.ts';
@@ -79,12 +79,12 @@ export class Spotify
 	public async addToQueue( trackUrl: string, user: SimpleUser )
 	{
 		const trackUrlInfo = trackUrl.match( /track\/(\w+)\??/i );
-		if ( !trackUrlInfo?.[1] ) return '';
-		const trackUri = encodeURIComponent( `spotify:track:${trackUrlInfo[1]}` );
+		const trackId = trackUrlInfo?.[1] || '';
+		if ( !trackId ) return '';
 
 		if (
-			this.queue.find( (track) => track.trackUri === trackUri ) ||
-			await this.getCurrentTrackUri() === trackUri
+			this.queue.find( (track) => track.trackId === trackId ) ||
+			await this.getCurrentTrackId() === trackId
 		) return 'Track already in queue';
 
 		const headers = await Spotify.getAuthHeaders();
@@ -92,7 +92,7 @@ export class Spotify
 
 		try
 		{
-			const addToQueue = await fetch( `${Spotify.apiUrl}/me/player/queue?uri=${trackUri}`, {
+			const addToQueue = await fetch( `${Spotify.apiUrl}/me/player/queue?uri=${ encodeURIComponent( `spotify:track:${trackId}` ) }`, {
 				headers: headers,
 				method: 'post'
 			} );
@@ -107,12 +107,12 @@ export class Spotify
 				return 'Error › Couldn\'t add song to queue';
 			}
 
-			const trackName = await Spotify.getTrack( trackUrlInfo[1] );
+			const trackName = await Spotify.getTrack( trackId );
 
 			this.queue.push({
 				userName: user.displayName,
 				trackName: trackName,
-				trackUri: trackUri
+				trackId: trackId
 			});
 
 			return `@${ user.displayName } added "${trackName}" to the queue`;
@@ -127,12 +127,12 @@ export class Spotify
 	private async cleanUpQueue(): Promise<void>
 	{
 		if ( !this.twitch.stream.isActive ) return;
-		const currentTrackUri = await this.getCurrentTrackUri();
+		const currentTrackId = await this.getCurrentTrackId();
 		for ( const [_index, track] of this.queue.entries() )
 		{
-			if ( currentTrackUri !== track.trackUri ) continue;
+			if ( currentTrackId !== track.trackId ) continue;
 			this.currentTrack = track;
-			this.removeTrackFromQueue( track.trackUri );
+			this.removeTrackFromQueue( track.trackId );
 		}
 	}
 
@@ -260,7 +260,7 @@ export class Spotify
 		}
 	}
 
-	public async getCurrentTrackUri(): Promise<string>
+	public async getCurrentTrackId(): Promise<string>
 	{
 		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
@@ -268,11 +268,10 @@ export class Spotify
 		try
 		{
 			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			if ( !response.ok ) return '';
 
 			const result = await response.json() as SpotifyApi.CurrentlyPlayingResponse;
-			if ( !result?.item?.uri ) return '';
-
-			return result.item.uri;
+			return result?.item?.id || '';
 		}
 		catch ( error: unknown )
 		{
@@ -431,9 +430,9 @@ export class Spotify
 		}
 	}
 
-	private removeTrackFromQueue( trackUri: string ): void
+	private removeTrackFromQueue( trackId: string ): void
 	{
-		this.queue = this.queue.filter( track => !(track.trackUri === trackUri) );
+		this.queue = this.queue.filter( track => !(track.trackId === trackId) );
 	}
 
 	private static saveTokenData( tokenData: SpotifyTokenData )
@@ -464,7 +463,7 @@ export class Spotify
 
 		try
 		{
-			const currentTrackUri = await this.getCurrentTrackUri();
+			const currentTrackUri = await this.getCurrentTrackId();
 			void await fetch( `${Spotify.apiUrl}/me/player/next`, {
 				headers: headers,
 				method: 'post'

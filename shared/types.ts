@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.0.8
+ * @version 2.0.9
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -613,7 +613,7 @@ export interface SpotifyQueueTrack
 	position?: number;
 	userName: string;
 	trackName: string;
-	trackUri: string;
+	trackId: string;
 }
 
 export interface UserChatStyles {
