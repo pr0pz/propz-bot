@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.9
+ * @version 2.0.10
  */
 
 import { log } from '@shared/helpers.ts';
@@ -42,7 +42,12 @@ export class Spotify
 		{
 			// Current Track info
 			const currentPlaying = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
-			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
+			if ( !currentPlaying.ok || currentPlaying.status === 204 ) return 'Error › No Song is playing or what';
+
+			const text = await currentPlaying.text();
+			if ( !text ) return 'Error › No Song is playing or what';
+
+			const currentPlayingResponse = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
 
 			if ( !currentPlayingResponse?.item ) return 'Error › No Song is playing or what';
 			const track = currentPlayingResponse.item as SpotifyApi.TrackObjectFull;
@@ -201,7 +206,12 @@ export class Spotify
 		{
 			// Current Track info
 			const currentPlaying = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
-			const currentPlayingResponse = await currentPlaying.json() as SpotifyApi.CurrentlyPlayingResponse;
+			if ( !currentPlaying.ok || currentPlaying.status === 204 ) return 'Playlist not found';
+
+			const text = await currentPlaying.text();
+			if ( !text ) return 'Playlist not found';
+
+			const currentPlayingResponse = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
 			if ( !currentPlayingResponse?.context?.href ) return 'Playlist not found';
 
 			// Get playlist
@@ -235,7 +245,7 @@ export class Spotify
 	{
 		if ( this.currentTrack )
 		{
-			return `@${ this.currentTrack.userName }: ${ this.currentTrack.trackName }`;
+			return `@${ this.currentTrack.userName }: ${ this.currentTrack.trackName } > ${ Spotify.trackUrl }${ this.currentTrack.trackId }`;
 		}
 
 		const headers = await Spotify.getAuthHeaders();
@@ -244,8 +254,12 @@ export class Spotify
 		try
 		{
 			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
+			if ( !response.ok || response.status === 204 ) return '';
 
-			const result = await response.json() as SpotifyApi.CurrentlyPlayingResponse;
+			const text = await response.text();
+			if ( !text ) return '';
+
+			const result = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
 			if ( !result?.item ) return '';
 
 			const track = result.item as SpotifyApi.TrackObjectFull;
@@ -268,9 +282,12 @@ export class Spotify
 		try
 		{
 			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
-			if ( !response.ok ) return '';
+			if ( !response.ok || response.status === 204 ) return '';
 
-			const result = await response.json() as SpotifyApi.CurrentlyPlayingResponse;
+			const text = await response.text();
+			if ( !text ) return '';
+
+			const result = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
 			return result?.item?.id || '';
 		}
 		catch ( error: unknown )
