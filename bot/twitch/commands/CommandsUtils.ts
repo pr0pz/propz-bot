@@ -3,7 +3,7 @@
  * Bot Utilities & Tool Commands (AI, Translation, Weather, Spotify, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.6
+ * @version 2.0.11
  */
 
 import { Deepl } from '@modules/integrations/Deepl.ts';
@@ -98,8 +98,8 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 		},
 		skip: {
 			description: '2 votes to skip a Song',
-			handler: async () => {
-				return await twitch.spotify.skipToNext();
+			handler: async ( options: TwitchCommandOptions ) => {
+				return await twitch.spotify.skipToNext( options.sender.name );
 			}
 		},
 		song: {

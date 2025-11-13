@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.10
+ * @version 2.0.11
  */
 
 import { log } from '@shared/helpers.ts';
@@ -16,7 +16,7 @@ import type { Twitch } from '@twitch/core/Twitch.ts';
 
 export class Spotify
 {
-	private skipNextTrack = 0;
+	private skipNextTrack = '';
 	private currentTrack: SpotifyQueueTrack | null = null;
 	private queue: SpotifyQueueTrack[] = [];
 
@@ -466,14 +466,21 @@ export class Spotify
 		catch ( error: unknown ) { log( error ) }
 	}
 
-	public async skipToNext(): Promise<string>
+	public async skipToNext( userName: string ): Promise<string>
 	{
-		if ( this.skipNextTrack === 0 )
+		if (
+			userName.toLowerCase() !== this.twitch.userHelper.twitchUser?.name.toLowerCase() &&
+			this.skipNextTrack === ''
+		)
 		{
-			this.skipNextTrack++;
+			this.skipNextTrack = userName;
 			return 'One more vote to skip the Song.';
 		}
-		this.skipNextTrack = 0;
+		else if ( userName === this.skipNextTrack )
+		{
+			return '';
+		}
+		this.skipNextTrack = '';
 
 		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
