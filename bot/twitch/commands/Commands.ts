@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 2.0.3
+ * @version 2.0.13
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -167,28 +167,28 @@ export class Commands
 	{
 		try
 		{
-			const soundboardCommands = await import(
+			const soundboardCommandsModule = await import(
 				`@twitch/commands/CommandsSoundboard.ts?cache-bust=${ Date.now() }`
 			);
-			const createFunCommands = await import(
+			const createFunCommandsModule = await import(
 				`@twitch/commands/CommandsFun.ts?cache-bust=${ Date.now() }`
 			);
-			const createModCommands = await import(
+			const createModCommandsModule = await import(
 				`@twitch/commands/CommandsMod.ts?cache-bust=${ Date.now() }`
 			);
-			const createUtilitiesCommands = await import(
+			const createUtilitiesCommandsModule = await import(
 				`@twitch/commands/CommandsUtils.ts?cache-bust=${ Date.now() }`
 			);
-			const createInfoCommands = await import(
+			const createInfoCommandsModule = await import(
 				`@twitch/commands/CommandsInfo.ts?cache-bust=${ Date.now() }`
 			);
 
 			this.commands = new Map( Object.entries( {
-				...soundboardCommands,
-				...createFunCommands( this.twitch ),
-				...createModCommands( this.twitch ),
-				...createUtilitiesCommands( this.twitch ),
-				...createInfoCommands( this.twitch )
+				...soundboardCommandsModule.default(),
+				...createFunCommandsModule.default( this.twitch ),
+				...createModCommandsModule.default( this.twitch ),
+				...createUtilitiesCommandsModule.default( this.twitch ),
+				...createInfoCommandsModule.default( this.twitch )
 			} ) );
 
 			log( 'Commands reloaded ♻️' );

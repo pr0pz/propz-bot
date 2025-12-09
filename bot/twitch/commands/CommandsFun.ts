@@ -3,7 +3,7 @@
  * Interactive & Entertainment Commands (Jokes, Quotes, Games, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.12
+ * @version 2.0.13
  */
 
 import { Jokes } from '@modules/features/Jokes.ts';
@@ -44,8 +44,8 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 		},
 		giveaway: {
 			message: {
-				de: 'Zu gewinnen gibt es eine Obergeile Tasse aus Brasilien! - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg',
-				en: 'You can win a wonderful mug from Brazil! - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg'
+				de: 'Zu gewinnen gibt es eine Obergeile Tasse aus Brasilien! Teilnehmen mit !klassetasse - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg',
+				en: 'You can win a wonderful mug from Brazil! Join with !klassetasse - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg'
 			}
 		},
 		joke: {
