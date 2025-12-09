@@ -52,8 +52,12 @@ export class DiscordUtils
 	 * @param {string} htmlContent
 	 * @returns {Promise<Buffer | null>}
 	 */
-	private async generateWelcomeImage( htmlContent: string ): Promise<Buffer | undefined>
+	private async generateWelcomeImage( htmlContent: string ): Promise<Buffer | null>
 	{
+		let browser;
+		let page;
+		let screenshotBuffer;
+
 		try {
 			const puppeteerArgs = [
 				'--no-sandbox',
@@ -66,22 +70,35 @@ export class DiscordUtils
 				'--disable-gpu'
 			];
 
-			const browser = await puppeteer.launch( {
+			// https://pptr.dev/guides/headless-modes
+			browser = await puppeteer.launch( {
 				args: puppeteerArgs,
 				headless: 'shell',
+				defaultViewport:{ width: 1920, height: 1080 }
 			} );
-			const page = await browser.newPage();
 
+			page = await browser.newPage();
 			void await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
 			void await page.setViewport({ width: 1920, height: 1080 });
-			const screenshotBuffer = await page.screenshot({ fullPage: true });
-
-			await page.close();
-			await browser.close();
-
-			return Buffer.from( screenshotBuffer );
+			screenshotBuffer = await page.screenshot({ fullPage: true, type: 'png' });
 		}
-		catch( error: unknown ) { log( error ) }
+		catch( error: unknown )
+		{
+			log( error )
+		}
+		finally
+		{
+			try
+			{
+				if ( page ) await page.close();
+				if ( browser ) await browser.close();
+				log( 'Puppetter > closed' );
+			}
+			catch( error: unknown ) { log( error ) }
+		}
+
+		if ( !screenshotBuffer ) return null;
+		return Buffer.from( screenshotBuffer );
 	}
 
 	/** Generate Github event embed

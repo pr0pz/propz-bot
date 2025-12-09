@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.0.12
  */
 
 import { Database } from '@services/Database.ts';
@@ -43,8 +43,10 @@ export class Giveaway
 		let i = 0;
 		while( i < winnerCount )
 		{
+			if ( results.length === 0 ) return;
 			const winnerUser = results[ getRandomNumber( results.length - 1, 0 ) ];
 			winners.push( winnerUser );
+			results.splice( results.indexOf( winnerUser ), 1 );
 			// Delete winner from db
 			db.query( `DELETE FROM giveaway WHERE user_id = ?`, [ winnerUser[0] ] );
 			i++;
