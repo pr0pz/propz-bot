@@ -5,7 +5,7 @@
 	},
 	"imports": {
 		"@twurple/chat": "npm:@twurple/chat@^7.4.0",
-		"obs-websocket-js": "npm:obs-websocket-js@^5.0.6",
+		"obs-websocket-js": "npm:obs-websocket-js@^5.0.7",
 		"events": "npm:events@^3.3.0"
 	}
 }

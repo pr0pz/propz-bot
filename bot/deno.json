@@ -4,7 +4,7 @@
 		".": "./index.ts"
 	},
 	"imports": {
-		"@std/fs": "jsr:@std/fs@^1.0.19",
+		"@std/fs": "jsr:@std/fs@^1.0.20",
 		"@twurple/auth": "npm:@twurple/auth@^7.4.0",
 		"@twurple/api": "npm:@twurple/api@^7.4.0",
 		"@twurple/chat": "npm:@twurple/chat@^7.4.0",
@@ -12,7 +12,7 @@
 		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.4.0",
 		"@types/spotify-api": "npm:@types/spotify-api@^0.0.25",
 		"cld": "npm:cld@^2.10.1",
-		"discord.js": "npm:discord.js@^14.23.2",
-		"puppeteer": "npm:puppeteer@^24.28.0"
+		"discord.js": "npm:discord.js@^14.25.1",
+		"puppeteer": "npm:puppeteer@^24.32.1"
 	}
 }
