@@ -2,12 +2,11 @@
  * Printer Controller
  *
  * @author Wellington Estevo
- * @version 1.8.0
+ * @version 2.1.0
  */
 
 import { log } from '@shared/helpers.ts';
 import { Buffer } from 'node:buffer'; // To download images if necessary
-import puppeteer from 'puppeteer';
 import sharp from 'sharp';
 import usb from 'usb';
 
@@ -146,71 +145,56 @@ export default class PrintController
 	}
 
 	// Save image to file and return buffer
-	private async generateAndSaveImage( type: string, user: string, count: number )
+	private async generateImage( type: string, user: string, count: number )
 	{
-		// HTML-Datei einlesen
-		let htmlContent = await Deno.readTextFileSync( './local/PrintTemplate.html' );
+		const CLOUDFLARE_ACCOUNT_ID = Deno.env.get( 'CLOUDFLARE_ACCOUNT_ID' ) ?? '';
+		const CLOUDFLARE_API_TOKEN = Deno.env.get( 'CLOUDFLARE_API_TOKEN' ) ?? '';
+		if ( !CLOUDFLARE_API_TOKEN || !CLOUDFLARE_ACCOUNT_ID ) return;
 
-		let title = this.events?.[type]?.title ?? 'Omega Danke';
-		title = title.replaceAll( '[count]', count.toString() );
-		let text = this.events?.[type]?.text ?? 'Sehr geil!';
-		text = text.replaceAll( '[count]', count.toString() );
-
-		if ( type.includes( 'chatscore' ) )
-			text = `>> ${count} <<`;
-
-		htmlContent = htmlContent.replaceAll( '[[user]]', user );
-		htmlContent = htmlContent.replaceAll( '[[text]]', text );
-		htmlContent = htmlContent.replaceAll( '[[title]]', title );
-		// htmlContent = htmlContent.replaceAll( '[[profilePictureUrl]]', profilePictureUrl );
-		htmlContent = htmlContent.replaceAll( '[[count]]', count.toString() );
-		htmlContent = htmlContent.replaceAll( '[[date]]', this.formatDate( new Date() ) );
-
-		const imageBuffer = await this.generateImageFromHTML( htmlContent );
-		return imageBuffer;
-	}
-
-	private async generateImageFromHTML( htmlContent: string )
-	{
 		try
 		{
-			const puppeteerArgs = [
-				'--no-sandbox',
-				'--disable-setuid-sandbox',
-				'--disable-dev-shm-usage',
-				'--disable-accelerated-2d-canvas',
-				'--no-first-run',
-				'--no-zygote',
-				'--single-process',
-				'--disable-gpu'
-			];
-			const browser = await puppeteer.launch( { args: puppeteerArgs } );
-			const page = await browser.newPage();
+			let htmlContent = Deno.readTextFileSync( './local/PrintTemplate.html' );
 
-			await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
+			let title = this.events?.[type]?.title ?? 'Omega Danke';
+			title = title.replaceAll( '[count]', count.toString() );
+			let message = this.events?.[type]?.text ?? 'Sehr geil!';
+			message = message.replaceAll( '[count]', count.toString() );
 
-			// Wait for the content to be rendered
-			const element = await page.waitForSelector( '#window', { visible: true } );
-			if ( !element )
+			if ( type.includes( 'chatscore' ) ) message = `>> ${count} <<`;
+
+			htmlContent = htmlContent.replaceAll( '[[user]]', user );
+			htmlContent = htmlContent.replaceAll( '[[text]]', message );
+			htmlContent = htmlContent.replaceAll( '[[title]]', title );
+			// htmlContent = htmlContent.replaceAll( '[[profilePictureUrl]]', profilePictureUrl );
+			htmlContent = htmlContent.replaceAll( '[[count]]', count.toString() );
+			htmlContent = htmlContent.replaceAll( '[[date]]', this.formatDate( new Date() ) );
+
+			const response = await fetch( `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/browser-rendering/screenshot`, {
+				body: JSON.stringify( {
+					html: htmlContent,
+					viewport: {
+						width: 473,
+						height: 1000
+					},
+				} ),
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+					'Content-Type': 'application/json'
+				}
+			} );
+
+			if ( !response.ok )
 			{
-				log( new Error( 'No element found' ) );
+				log( new Error( `Worker returned ${response.status}: ${response.statusText}` ) );
 				return;
 			}
 
-			// Get the height of the element
-			const elementHeight = await page.evaluate( () =>
-			{
-				const element = document.querySelector( '#window' ) as HTMLElement;
-				return element?.offsetHeight || 0;
-			} );
+			// Convert response to buffer
+			const arrayBuffer = await response.arrayBuffer();
+			const imageBuffer = Buffer.from( arrayBuffer );
 
-			await page.setViewport( { width: 480 - 7, height: elementHeight } );
-
-			const screenshotBuffer = await element.screenshot();
-			await page.close();
-			await browser.close();
-
-			return screenshotBuffer;
+			return imageBuffer;
 		}
 		catch ( error: unknown )
 		{
@@ -339,7 +323,7 @@ export default class PrintController
 	{
 		if ( !this.events[type] ) return;
 
-		const imageBuffer = await this.generateAndSaveImage( type, user, count );
+		const imageBuffer = await this.generateImage( type, user, count );
 		if ( !imageBuffer ) return;
 
 		const image = await this.convertBufferToEscPosImage( imageBuffer );

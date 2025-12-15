@@ -2,7 +2,7 @@
  * The local workspace just controls my own printer for special events
  *
  * @author Wellington Estevo
- * @version 1.7.7
+ * @version 2.1.0
  */
 
 // import ObsController from '@shared/obs.ts';
@@ -15,6 +15,7 @@ const init = () =>
 	const botUrl = Deno.env.get( 'BOT_URL' ) || '';
 	const ws = new WebsocketController( botUrl );
 	ws.connect();
+	Deno.addSignalListener( 'SIGINT', () => Deno.exit() );
 
 	// const obs = new ObsController();
 	// obs.connect();

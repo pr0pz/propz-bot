@@ -12,7 +12,6 @@
 		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^7.4.0",
 		"@types/spotify-api": "npm:@types/spotify-api@^0.0.25",
 		"cld": "npm:cld@^2.10.1",
-		"discord.js": "npm:discord.js@^14.25.1",
-		"puppeteer": "npm:puppeteer@^24.32.1"
+		"discord.js": "npm:discord.js@^14.25.1"
 	}
 }

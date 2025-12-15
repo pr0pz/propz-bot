@@ -9,9 +9,9 @@
 		"@std/http": "jsr:@std/http@^1.0.22",
 		"@vitejs/plugin-react": "npm:@vitejs/plugin-react@^5.1.2",
 		"html-react-parser": "npm:html-react-parser@^5.2.10",
-		"react": "npm:react@^19.2.1",
-		"react-dom": "npm:react-dom@^19.2.1",
-		"react-dom/client": "npm:react-dom@^19.2.1/client",
+		"react": "npm:react@^19.2.3",
+		"react-dom": "npm:react-dom@^19.2.3",
+		"react-dom/client": "npm:react-dom@^19.2.3/client",
 		"react-router-dom": "npm:react-router-dom@^7.10.1",
 		"vite": "npm:vite@^6.4.1",
 		"vite-plugin-sass": "npm:vite-plugin-sass@^0.1.0"

@@ -2,11 +2,10 @@
  * Discord Helper
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 import '@shared/prototypes.ts';
-import puppeteer from 'puppeteer';
 import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
 import { log } from '@shared/helpers.ts';
 import { Buffer } from 'node:buffer';
@@ -23,6 +22,10 @@ export class DiscordUtils
 	public async generateWelcomeImageAttachment( member: GuildMember, message: string ): Promise<AttachmentBuilder|undefined>
 	{
 		if ( !member || !message ) return;
+
+		const CLOUDFLARE_ACCOUNT_ID = Deno.env.get( 'CLOUDFLARE_ACCOUNT_ID' ) ?? '';
+		const CLOUDFLARE_API_TOKEN = Deno.env.get( 'CLOUDFLARE_API_TOKEN' ) ?? '';
+
 		try {
 			let htmlContent = Deno.readTextFileSync( './bot/discord/DiscordWelcome.html' );
 			const colors = [ 'red', 'green', 'yellow', 'beige', 'blue', 'purple' ];
@@ -36,13 +39,26 @@ export class DiscordUtils
 			htmlContent = htmlContent.replace( '[[avatar]]', avatarUrl );
 			htmlContent = htmlContent.replace( '[[number]]', '#' + member.guild.memberCount );
 
-			// Create Discord attachment
-			log( 'generateWelcomeImage' );
-			const attachmentImageBuffer = await this.generateWelcomeImage( htmlContent );
-			if ( !attachmentImageBuffer ) return;
+			const response = await fetch( `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/browser-rendering/screenshot`, {
+				body: JSON.stringify( {
+					html: htmlContent
+				} ),
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+					'Content-Type': 'application/json'
+				}
+			} );
 
-			log( 'AttachmentBuilder' );
-			return new AttachmentBuilder( attachmentImageBuffer, { name: `welcome-${member.displayName}.png` } );
+			if ( !response.ok )
+			{
+				log( new Error( `Worker returned ${response.status}: ${response.statusText}` ) );
+				return;
+			}
+
+			// Convert response to buffer
+			const screenshotBuffer = Buffer.from( await response.arrayBuffer() );
+			return new AttachmentBuilder( screenshotBuffer, { name: `welcome-${member.displayName}.png` } );
 		}
 		catch( error: unknown ) { log( error ) }
 	}
