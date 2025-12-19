@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 2.0.13
+ * @version 2.1.3
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -184,7 +184,7 @@ export class Commands
 			);
 
 			this.commands = new Map( Object.entries( {
-				...soundboardCommandsModule.default(),
+				...soundboardCommandsModule.default,
 				...createFunCommandsModule.default( this.twitch ),
 				...createModCommandsModule.default( this.twitch ),
 				...createUtilitiesCommandsModule.default( this.twitch ),
