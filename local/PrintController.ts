@@ -2,7 +2,7 @@
  * Printer Controller
  *
  * @author Wellington Estevo
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 import { log } from '@shared/helpers.ts';
@@ -173,8 +173,8 @@ export default class PrintController
 				body: JSON.stringify( {
 					html: htmlContent,
 					viewport: {
-						width: 473,
-						height: 1000
+						width: 478,
+						height: 1050
 					},
 				} ),
 				method: 'POST',
