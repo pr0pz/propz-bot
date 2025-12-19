@@ -3,7 +3,7 @@
  * Information & Social Commands (Links, Stats, Rankings, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.1.2
  */
 
 import { Rankings } from '@modules/features/Rankings.ts';
@@ -22,6 +22,13 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 				en: 'Business Noise › The Businesstalk with @dorothea_coaching ▶️ https://business-rauschen.de 🖼️'
 			},
 			description: 'Business Rauschen Website'
+		},
+		chatbubble: {
+			aliases: [ "bubble" ],
+			message: {
+				de: "propztSPINNER Style deine eigene Chatbubble: https://propz.de/twitch-dashboard/",
+				en: "propztSPINNER Style your own Chat bubble: https://propz.de/twitch-dashboard/"
+			}
 		},
 		chatscore: {
 			description: 'Anzahl geschriebener Chat-Nachrichten',
@@ -258,10 +265,11 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 			}
 		},
 		testconf: {
-			message: {
-				de: 'TECH STREAM CONFERENCE 🚀 Alle Infos hier ▶️ https://test-conf.de',
-				en: 'TECH STREAM CONFERENCE 🚀 All Informations here ▶️ https://test-conf.de'
-			},
+			// message: {
+			// 	de: 'TECH STREAM CONFERENCE 🚀 Alle Infos hier ▶️ https://test-conf.de',
+			// 	en: 'TECH STREAM CONFERENCE 🚀 All Informations here ▶️ https://test-conf.de'
+			// },
+			message: "TECH STREAM CONFERENCE 🚀 'The State of CSS 2025' Talk: https://www.youtube.com/watch?v=uHL_u7Cqpyk",
 			description: 'Beste Konferenz'
 		},
 		tiktok: {
