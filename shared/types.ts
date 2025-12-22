@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.0.9
+ * @version 2.1.6
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -81,6 +81,16 @@ export interface TwitchEventData
 {
 	type: string;
 	user: SimpleUser;
+	timestamp: number;
+	count?: number;
+	extra?: TwitchEventExtra;
+}
+
+export interface TwitchEventDataLast
+{
+	type: string;
+	user_id: string;
+	name: string;
 	timestamp: number;
 	count?: number;
 	extra?: TwitchEventExtra;

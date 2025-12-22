@@ -2,7 +2,7 @@
  * Event Data
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.1.6
  */
 
 import { Database } from '@services/Database.ts';
@@ -12,6 +12,7 @@ import { UserData } from '@services/UserData.ts';
 import events from '@config/twitchEvents.json' with { type: 'json' };
 
 import type { TwitchEvent, TwitchEventData } from '@shared/types.ts';
+import { TwitchEventDataLast } from "../../shared/types.ts";
 
 export class StreamEvents
 {
@@ -78,8 +79,8 @@ export class StreamEvents
 					e.count,
 					u.name
 				FROM twitch_events e
-					LEFT JOIN twitch_users u ON e.user_id = u.id
-					ORDER BY e.id DESC
+				LEFT JOIN twitch_users u ON e.user_id = u.id
+				ORDER BY e.id DESC
 			` );
 
 			return events.some(
@@ -89,14 +90,14 @@ export class StreamEvents
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.user.name
+							event.user_id === eventToCheck.user.id
 						);
 					}
 					else
 					{
 						return (
 							event.type === eventToCheck.type &&
-							event.name == eventToCheck.user.name &&
+							event.user_id === eventToCheck.user.id &&
 							event.count === eventToCheck.count &&
 							(
 								event.timestamp === eventToCheck.timestamp ||
@@ -113,7 +114,7 @@ export class StreamEvents
 	}
 
 	/** Get last 10 saved events */
-	public getLast( streamLanguage: string = 'de' ): TwitchEventData[]
+	public getLast( streamLanguage: string = 'de' ): TwitchEventDataLast[]
 	{
 		try
 		{
@@ -130,7 +131,7 @@ export class StreamEvents
 				LEFT JOIN twitch_users u ON e.user_id = u.id
 				ORDER BY e.id DESC
 				LIMIT 10;
-			` ) as unknown as TwitchEventData[];
+			` ) as unknown as TwitchEventDataLast[];
 
 			for ( const [ index, event ] of events.entries() )
 			{

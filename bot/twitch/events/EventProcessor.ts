@@ -2,7 +2,7 @@
  * Event Processor
  *
  * @author Wellington Estevo
- * @version 2.0.8
+ * @version 2.1.6
  */
 
 import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
@@ -115,7 +115,7 @@ export class EventProcessor
 			lastEvent &&
 			eventType.startsWith( 'chatscore' ) &&
 			eventType === lastEvent.type &&
-			userName.toLowerCase() === (lastEvent.user?.name?.toLowerCase() || '')
+			userName.toLowerCase() === (lastEvent.name?.toLowerCase() || '')
 		) return false;
 
 		// Focus Mode
