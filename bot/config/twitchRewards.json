@@ -88,7 +88,7 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
-		"autoFulfill": true
+		"autoFulfill": false
 	},
 	{
 		"id": "42ae03b6-b0cb-4923-8043-76405363e350",
@@ -101,7 +101,7 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": false,
 		"isEnabled": true,
-		"autoFulfill": true
+		"autoFulfill": false
 	},
 	{
 		"id": "e5a69e18-2728-49c1-9b23-37f24ad3c289",
@@ -231,7 +231,7 @@
 		"maxRedemptionsPerUserPerStream": null,
 		"userInputRequired": true,
 		"isEnabled": true,
-		"autoFulfill": true
+		"autoFulfill": false
 	},
 	{
 		"id": "e8a4be54-cf7d-4384-bbb2-205eb8051c49",

@@ -4,7 +4,7 @@
  * https://developer.spotify.com/documentation/web-api/concepts/api-calls
  *
  * @author Wellington Estevo
- * @version 2.0.11
+ * @version 2.1.4
  */
 
 import { log } from '@shared/helpers.ts';
@@ -131,11 +131,21 @@ export class Spotify
 
 	private async cleanUpQueue(): Promise<void>
 	{
-		if ( !this.twitch.stream.isActive ) return;
-		const currentTrackId = await this.getCurrentTrackId();
+		const currentTrack = await this.getCurrentTrackObject() as SpotifyApi.TrackObjectFull | null;
+		if ( !currentTrack?.id ) return;
+
+		if ( !this.queue.length && this.currentTrack?.trackId !== currentTrack.id )
+		{
+			this.currentTrack = {
+				trackId: currentTrack.id,
+				trackName: Spotify.getTrackName( Spotify.getArtist( currentTrack.artists ), currentTrack.name )
+			};
+			return;
+		}
+
 		for ( const [_index, track] of this.queue.entries() )
 		{
-			if ( currentTrackId !== track.trackId ) continue;
+			if ( currentTrack.id !== track.trackId ) continue;
 			this.currentTrack = track;
 			this.removeTrackFromQueue( track.trackId );
 		}
@@ -245,36 +255,26 @@ export class Spotify
 	{
 		if ( this.currentTrack )
 		{
-			return `@${ this.currentTrack.userName }: ${ this.currentTrack.trackName } > ${ Spotify.trackUrl }${ this.currentTrack.trackId }`;
+			let trackName = this.currentTrack.userName ? '@' + this.currentTrack.userName + ': ' : '';
+			trackName += Spotify.getTrackNameWithUrl( this.currentTrack.trackName, this.currentTrack.trackId );
+			return trackName;
 		}
 
-		const headers = await Spotify.getAuthHeaders();
-		if ( !headers ) return '';
+		const currentTrack = await this.getCurrentTrackObject() as SpotifyApi.TrackObjectFull | null;
+		if ( !currentTrack?.id ) return '';
 
-		try
-		{
-			const response = await fetch( `${Spotify.apiUrl}/me/player/currently-playing`, { headers: headers } );
-			if ( !response.ok || response.status === 204 ) return '';
+		const artist = Spotify.getArtist( currentTrack.artists as SpotifyApi.ArtistObjectSimplified[] );
 
-			const text = await response.text();
-			if ( !text ) return '';
-
-			const result = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
-			if ( !result?.item ) return '';
-
-			const track = result.item as SpotifyApi.TrackObjectFull;
-			const artist = Spotify.getArtist( track.artists as SpotifyApi.ArtistObjectSimplified[] );
-
-			return `${ Spotify.getTrackName( artist, track.name ) } > ${ Spotify.trackUrl }${ track.id }`;
-		}
-		catch ( error: unknown )
-		{
-			log( error );
-			return '';
-		}
+		return `${ Spotify.getTrackName( artist, currentTrack.name ) } > ${ Spotify.trackUrl }${ currentTrack.id }`;
 	}
 
 	public async getCurrentTrackId(): Promise<string>
+	{
+		const currentTrack = await this.getCurrentTrackObject() as SpotifyApi.TrackObjectFull | null;
+		return currentTrack?.id ?? '';
+	}
+
+	public async getCurrentTrackObject()
 	{
 		const headers = await Spotify.getAuthHeaders();
 		if ( !headers ) return '';
@@ -285,10 +285,12 @@ export class Spotify
 			if ( !response.ok || response.status === 204 ) return '';
 
 			const text = await response.text();
-			if ( !text ) return '';
+			if ( !text ) return null;
 
 			const result = JSON.parse( text ) as SpotifyApi.CurrentlyPlayingResponse;
-			return result?.item?.id || '';
+			if ( !result?.item ) return null;
+
+			return result.item as SpotifyApi.TrackObjectFull;
 		}
 		catch ( error: unknown )
 		{
@@ -332,11 +334,6 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Get Single track name
-	 * @param trackUri
-	 * @returns
-	 */
 	private static async getTrack( trackUri: string ): Promise<string>
 	{
 		const headers = await Spotify.getAuthHeaders();
@@ -366,18 +363,15 @@ export class Spotify
 		}
 	}
 
-	/**
-	 * Build track name with artist
-	 *
-	 * @param {string} trackArtist
-	 * @param {string} trackName
-	 * @returns {string}
-	 * @private
-	 */
-	private static getTrackName( trackArtist: string, trackName: string ): string
+	public static getTrackName( trackArtist: string, trackName: string ): string
 	{
 		if ( !trackArtist || !trackName ) return '';
 		return `${trackArtist} - ${trackName}`;
+	}
+
+	public static getTrackNameWithUrl( trackName: string, trackId: string ): string
+	{
+		return `${ trackName } > ${ Spotify.trackUrl }${ trackId }`;
 	}
 
 	private static async getAuthHeaders(): Promise<Headers | null>

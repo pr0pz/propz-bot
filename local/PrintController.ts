@@ -174,7 +174,7 @@ export default class PrintController
 					html: htmlContent,
 					viewport: {
 						width: 478,
-						height: 1050
+						height: 1100
 					},
 				} ),
 				method: 'POST',

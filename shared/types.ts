@@ -611,7 +611,7 @@ export interface SpotifyTokenData
 export interface SpotifyQueueTrack
 {
 	position?: number;
-	userName: string;
+	userName?: string;
 	trackName: string;
 	trackId: string;
 }
