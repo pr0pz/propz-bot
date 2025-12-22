@@ -2,7 +2,7 @@
  * Stream Credits
  *
  * @author Wellington Estevo
- * @version 2.0.2
+ * @version 2.1.5
  */
 
 import { useEffect, useState } from 'react';
@@ -123,7 +123,7 @@ const Credits = () =>
 					break;
 
 				case 'raid':
-					data.count = eventDetails.count || 1,
+					data.count = eventDetails.count || 1;
 					newEvents.raid = new Map( prevEvents.raid ).set( eventDetails.user, data );
 					break;
 
@@ -131,13 +131,22 @@ const Credits = () =>
 				case 'resub-1':
 				case 'resub-2':
 				case 'resub-3':
-					data.count = ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 ),
+				case 'resub-4':
+				case 'resub-5':
+					//data.count = ( prevEvents.sub.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 ),
+					data.count = eventDetails.count || 1;
 					newEvents.sub = new Map( prevEvents.sub ).set( eventDetails.user, data );
 					break;
 
 				case 'subgift':
-				case 'communitysub':
-					data.count = ( prevEvents.subgift.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 ),
+				case 'communitysub-1':
+				case 'communitysub-2':
+				case 'communitysub-3':
+				case 'communitysub-4':
+				case 'communitysub-5':
+				case 'communitysub-6':
+				case 'communitysub-7':
+					data.count = ( prevEvents.subgift.get( eventDetails.user )?.count || 0 ) + ( eventDetails.count || 1 );
 					newEvents.subgift = new Map( prevEvents.subgift ).set( eventDetails.user, data );
 					break;
 			}
