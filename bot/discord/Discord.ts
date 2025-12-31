@@ -13,7 +13,7 @@ import { DiscordUtils } from '@discord/DiscordUtils.ts';
 import discordEvents from '@config/discordEvents.json' with { type: 'json' };
 
 import type { StreamData } from '@shared/types.ts';
-import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, ForumChannel, ForumThreadChannel, Guild, GuildForumThreadCreateOptions, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
+import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, Guild, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
 import type { TwitchEvent } from "@shared/types.ts";
 
 export class Discord extends DiscordUtils
@@ -78,7 +78,6 @@ export class Discord extends DiscordUtils
 	{
 		this.client.on( 'clientReady', this.onClientReady );
 		this.client.on( 'messageCreate', this.onMessageCreate );
-		this.client.on( 'message', this.onMessage );
 		this.client.on( 'interactionCreate', this.onInteractionCreate );
 		this.client.on( 'guildMemberAdd', this.onGuildMemberAdd );
 	}
@@ -92,7 +91,7 @@ export class Discord extends DiscordUtils
 		if ( !guildId ) return;
 		try
 		{
-			let guild = this.client.guilds.cache.find( ( guild ) => guild.id === guildId );
+			let guild = this.client.guilds.cache.get( guildId );
 
 			if ( !guild )
 				guild = await this.client.guilds.fetch( guildId );
@@ -106,17 +105,18 @@ export class Discord extends DiscordUtils
 	 *
 	 * @param {string} channelId Channel id to get
 	 */
-	private async getChannelById( channelId: string ): Promise<Channel | undefined | null>
+	private async getChannelById( channelId: string ): Promise<Channel | undefined>
 	{
 		if ( !channelId ) return;
 		try
 		{
-			let channel: Channel | undefined | null = this.client.channels.cache.find( ( channel: Channel ) =>
-				channel.id === channelId
-			);
+			let channel = this.client.channels.cache.get( channelId );
 
 			if ( !channel )
-				channel = await this.client.channels.fetch( channelId );
+			{
+				const fetched = await this.client.channels.fetch( channelId );
+				channel = fetched ?? undefined;
+			}
 
 			return channel;
 		}
@@ -217,9 +217,9 @@ export class Discord extends DiscordUtils
 	/** Process Github Event
 	 *
 	 * @param {string} eventName Github event name
-	 * @param {any} githubData Github event data
+	 * @param {unknown} githubData Github event data
 	 */
-	public handleGithubEvent( eventName: string, githubData: any ): void
+	public handleGithubEvent( eventName: string, githubData: unknown ): void
 	{
 		if ( !eventName || !githubData || !this.client.isReady() ) return;
 
@@ -275,7 +275,18 @@ export class Discord extends DiscordUtils
 		if ( !message ) return;
 
 		log( `<${message.author.tag}> '${message.content}'` );
-		if ( message?.author?.tag !== 'propz_tv' ) return;
+		if ( !message.inGuild() )
+		{
+			if ( message.author.bot ) return;
+			try
+			{
+				await message.author.send( 'ok ' + message.author.id );
+			}
+			catch ( error: unknown ) { log( error ) }
+			return;
+		}
+
+		if ( message.author.username !== 'propz_tv' ) return;
 
 		// Handle commands
 		const splittedMessage: string[] = message.content.split( ' ' );
@@ -299,14 +310,6 @@ export class Discord extends DiscordUtils
 			}
 			catch ( error: unknown ) { log( error ) }
 		}
-	};
-
-	/** When someone writes a message */
-	public onMessage = ( message: Message ) =>
-	{
-		if ( !message ) return;
-		log( `PM <${message.author.tag}>: '${message.content}'` );
-		if ( !message.author.bot ) message.author.send( 'ok ' + message.author.id );
 	};
 
 	/** On command interaction */
