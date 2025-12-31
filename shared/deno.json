@@ -1,7 +1,7 @@
 {
 	"name": "@propz/shared",
 	"exports": {
-		".": "./helper.ts"
+		".": "./helpers.ts"
 	},
 	"imports": {
 		"@twurple/chat": "npm:@twurple/chat@^7.4.0",

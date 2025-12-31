@@ -19,11 +19,13 @@
 		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file ./bot/index.ts dev",
 		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
 		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' ./bot/index.ts dev",
+		"render-welcome": "deno run -A --unstable-detect-cjs --env-file ./bot/scripts/render_welcome.ts",
 		"local": "deno run -A --env-file ./local/index.ts",
 		"dev": "cd frontend && deno run -A --env-file npm:vite",
 		"build": "cd frontend && deno run -A --env-file npm:vite build"
 	},
 	"imports": {
+		"@std/path": "jsr:@std/path@^1.0.2",
 		"@services/": "./bot/services/",
 		"@components/": "./frontend/src/components/",
 		"@config/": "./bot/config/",
@@ -39,5 +41,6 @@
 		"@twitch/commands/": "./bot/twitch/commands/",
 		"@twitch/events/": "./bot/twitch/events/",
 		"@twitch/utils/": "./bot/twitch/utils/"
-	}
+	},
+	"allowScripts": ["npm:cld@2.10.1", "npm:esbuild@0.25.12", "npm:sharp@0.34.5", "npm:usb@2.16.0"]
 }
