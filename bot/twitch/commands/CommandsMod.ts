@@ -3,7 +3,7 @@
  * Moderator-Only Commands (Stream Control, Admin, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.0
  */
 
 import { log } from '@shared/helpers.ts';
@@ -475,6 +475,17 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 					requestData: {}
 				}
 			],
+			onlyMods: true
+		},
+		tts: {
+			handler( options: TwitchCommandOptions )
+			{
+				twitch.events.eventProcessor.process( {
+					eventType: 'rewardtts',
+					eventText: options.message,
+					user: options.sender
+				} );
+			},
 			onlyMods: true
 		},
 		win: {

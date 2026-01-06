@@ -472,7 +472,7 @@ export interface ApiRequest
 
 export interface ApiResponse
 {
-	data: Array<object> | object | boolean | string;
+	data?: Array<object> | object | boolean | string;
 }
 
 export interface ObsData

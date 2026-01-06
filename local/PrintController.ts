@@ -333,6 +333,7 @@ export default class PrintController
 	private async printData( data: ImageBuffer )
 	{
 		let device: usb.usb.Device | undefined;
+		let deviceInterface: usb.Interface | undefined;
 
 		try
 		{
@@ -343,21 +344,27 @@ export default class PrintController
 				log( new Error( 'Printer not found' ) );
 				return;
 			}
+
+			device.__open();
+			device.__claimInterface( 0 );
+			device.open();
+			log( 'Printer connection opened' );
+
+			deviceInterface = device.interface( 0 );
+			if ( !deviceInterface )
+			{
+				log( new Error( 'Printer Interface not found' ) );
+				return;
+			}
+
+			deviceInterface.claim();
+			log( 'Printer interface claimed' );
 		}
 		catch ( error: unknown )
 		{
 			log( error );
 			return;
 		}
-
-		device.__open();
-		device.__claimInterface( 0 );
-		device.open();
-		// log( 'Printer connection opened' );
-
-		const deviceInterface = device.interface( 0 );
-		deviceInterface.claim();
-		// log( 'Printer interface claimed' );
 
 		const outEndpoint = deviceInterface.endpoint( 0x01 ) as OutEndpoint;
 		if ( !outEndpoint )

@@ -6,6 +6,7 @@
  */
 
 import { log, mapToObject } from '@shared/helpers.ts';
+import { Elevenlabs } from '@integrations/Elevenlabs.ts';
 import { OpenWeather } from '@integrations/OpenWeather.ts';
 import { StreamStats } from '@services/StreamStats.ts';
 
@@ -43,6 +44,10 @@ export class Api
 		{
 			case 'chatCommands':
 				response.data = Object.fromEntries( this.twitch.commands.get() );
+				break;
+
+			case 'generateTts':
+				response.data = await Elevenlabs.generateTts( apiRequest?.data?.text ?? '' );
 				break;
 
 			case 'getStreamStats':

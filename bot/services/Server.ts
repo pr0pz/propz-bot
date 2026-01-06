@@ -183,12 +183,12 @@ export class Server
 		}
 
 		response = await this.twitch.api.process( body );
-		const statusCode = typeof response.data !== 'undefined' ? 200 : 400;
+		console.log( response );
 
 		return new Response(
 			JSON.stringify( response ),
 			{
-				status: statusCode,
+				status: typeof response.data !== 'undefined' ? 200 : 400,
 				headers: {
 					'content-type': 'application/json',
 					'access-control-allow-origin': '*',
