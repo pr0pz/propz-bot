@@ -4,15 +4,16 @@
 		".": "./src/index.tsx"
 	},
 	"imports": {
-		"@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.5",
-		"@std/fs": "jsr:@std/fs@^1.0.20",
-		"@std/http": "jsr:@std/http@^1.0.22",
+		"@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.6",
+		"@std/fs": "jsr:@std/fs@^1.0.21",
+		"@std/http": "jsr:@std/http@^1.0.23",
+		"@std/random": "jsr:@std/random@^0.1.4",
 		"@vitejs/plugin-react": "npm:@vitejs/plugin-react@^5.1.2",
-		"html-react-parser": "npm:html-react-parser@^5.2.10",
+		"html-react-parser": "npm:html-react-parser@^5.2.11",
 		"react": "npm:react@^19.2.3",
 		"react-dom": "npm:react-dom@^19.2.3",
 		"react-dom/client": "npm:react-dom@^19.2.3/client",
-		"react-router-dom": "npm:react-router-dom@^7.10.1",
+		"react-router-dom": "npm:react-router-dom@^7.11.0",
 		"vite": "npm:vite@^6.4.1",
 		"vite-plugin-sass": "npm:vite-plugin-sass@^0.1.0"
 	}

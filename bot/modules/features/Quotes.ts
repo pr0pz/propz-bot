@@ -2,10 +2,10 @@
  * Quote
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.1
  */
 
-import { getRandomNumber, log } from '@shared/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 import { Youtube } from '@integrations/Youtube.ts';
 
@@ -67,36 +67,26 @@ export class Quotes
 		try
 		{
 			const db = Database.getInstance();
-			let quoteIndex = quoteId;
-			if ( quoteIndex < 1 )
-			{
-				const totalQuotes = db.queryEntries( `SELECT COUNT(*) as count FROM twitch_quotes` );
-
-				if ( !totalQuotes?.[0]?.count )
-					return '';
-
-				quoteIndex = getRandomNumber( Number( totalQuotes[0].count ), 1 );
-			}
-
 			const quote = db.queryEntries<TwitchQuoteRow>( `
-				SELECT 
-					q.id,
-					q.date,
-					q.category,
-					q.text,
-					q.user_id,
-					q.vod_url,
-					u.name  -- Include the username from users table
-				FROM twitch_quotes q
+				SELECT
+                    q.id,
+                    q.date,
+                    q.category,
+                    q.text,
+                    q.user_id,
+                    q.vod_url,
+                    u.name  -- Include the username from users table
+                FROM twitch_quotes q
 				LEFT JOIN twitch_users u ON q.user_id = u.id
-				WHERE q.id = ?
-				ORDER BY q.id`, [ quoteIndex ] );
+                WHERE (? = 0 OR q.id = ?)  -- If quoteId is 0, this becomes TRUE for all rows
+                ORDER BY RANDOM()
+                LIMIT 1`, [ quoteId, quoteId ] );
 
 			if ( quote.length === 0 )
 				return '';
 
 			const date = new Date( Date.parse( quote[0].date ) );
-			let message = `${quote[0].text} - @${quote[0].name} [ #${quoteIndex} / ${
+			let message = `${quote[0].text} - @${quote[0].name} [ #${quote[0].id} / ${
 				date.toLocaleDateString( 'de-DE', {
 					day: '2-digit',
 					month: '2-digit',

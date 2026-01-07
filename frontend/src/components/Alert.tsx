@@ -135,12 +135,19 @@ const Alert = ( propz: {
 		try
 		{
 			const response = await fetch( `${ urlPrefix }://${ process.env.BOT_URL }/api`, {
-				body: JSON.stringify( {
-					request: 'generateTts',
-					data: {
-						text: text
+				body: JSON.stringify(
+					{
+						request: 'generateTts',
+						data: {
+							text: text
+						}
+					} satisfies {
+						request: string,
+						data: {
+							text: string
+						}
 					}
-				} ),
+				),
 				method: 'POST',
 			} );
 

@@ -2,10 +2,11 @@
  * Helper functions
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.1
  */
 
 import type { TwitchTimers, TwitchUserData } from './types.ts';
+import { sample } from '@std/random';
 
 /** Log function + overloads
  *
@@ -73,17 +74,6 @@ export function log(
 	console.error( message );
 }
 
-/** Get random number between min and max
- *
- * @param {number} max Max number
- * @param {number} min Min number
- */
-export function getRandomNumber( max: number = 1, min: number = 0 )
-{
-	if ( isNaN( max ) || isNaN( min ) ) return 0;
-	return Math.floor( Math.random() * ( max - min ) ) + min;
-}
-
 /** Get time since date.
  *
  * 1. Pass in milliseconds
@@ -145,12 +135,7 @@ export function getMessage(
 	}
 
 	// Get random message
-	if ( msg.length > 0 )
-	{
-		const randomIndex = getRandomNumber( msg.length );
-		return msg[randomIndex];
-	}
-	return '';
+	return msg.length > 0 ? sample( msg ) : '';
 }
 
 /** Sanitize chat message

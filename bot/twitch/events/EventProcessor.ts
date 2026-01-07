@@ -2,13 +2,14 @@
  * Event Processor
  *
  * @author Wellington Estevo
- * @version 2.1.6
+ * @version 2.2.1
  */
 
-import { getMessage, getRandomNumber, log } from '@shared/helpers.ts';
+import { getMessage, log } from '@shared/helpers.ts';
 import { StreamEvents } from '@services/StreamEvents.ts';
 import { StreamStats} from '@services/StreamStats.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
+import { randomIntegerBetween } from '@std/random';
 
 import type { SimpleUser, TwitchEvent } from '@shared/types.ts';
 import type { ChatUser } from '@twurple/chat';
@@ -252,7 +253,7 @@ export class EventProcessor
 		];
 		let count = parseInt( splittedMessage[ 2 ] || '0' );
 		if ( !count && eventTypesWithCount.includes( eventType ) )
-			count = getRandomNumber( 50, 1 );
+			count = randomIntegerBetween( 1, 50 );
 
 		void this.process( {
 			eventType: eventType,

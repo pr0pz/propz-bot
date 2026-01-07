@@ -2,14 +2,15 @@
  * Twitch Chat Controller
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.1
  */
 
 import '@shared/prototypes.ts';
 import { ChatClient } from '@twurple/chat';
 import { MessageProcessor } from '@twitch/chat/MessageProcessor.ts';
-import { clearTimer, getRandomNumber, log } from '@shared/helpers.ts';
+import { clearTimer, log } from '@shared/helpers.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
+import { sample } from '@std/random';
 
 import type {
 	ChatCommunitySubInfo,
@@ -130,7 +131,7 @@ export class TwitchChat
 			'[Boop Bleep]',
 			'[Beep Bop]'
 		];
-		const beep = beeps[ getRandomNumber( beeps.length - 1 ) ] + ' ';
+		const beep = sample( beeps ) + ' ';
 
 		try
 		{

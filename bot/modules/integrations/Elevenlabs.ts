@@ -2,10 +2,11 @@
  * Elevenlabs
  *
  * @author Wellington Estevo
- * @version 2.2.0
+ * @version 2.2.1
  */
 
-import { getRandomNumber, log } from "@shared/helpers.ts";
+import { log } from "@shared/helpers.ts";
+import { sample } from '@std/random';
 
 export class Elevenlabs
 {
@@ -20,7 +21,7 @@ export class Elevenlabs
 		if ( !Deno.env.get( 'ELEVENLABS_API_KEY' ) ) return '';
 		try
 		{
-			const response = await fetch( `${ this.api_url }/${ Elevenlabs.voices[ getRandomNumber( Elevenlabs.voices.length - 1, 0 ) ] }`, {
+			const response = await fetch( `${ this.api_url }/${ sample( Elevenlabs.voices ) }`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

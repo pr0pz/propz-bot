@@ -2,10 +2,10 @@
  * Joke
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.1
  */
 
-import { getRandomNumber, log } from '@shared/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 
 import type { ChatMessage } from '@twurple/chat';
@@ -57,29 +57,19 @@ export class Jokes
 		try
 		{
 			const db = Database.getInstance();
-			let jokeIndex = jokeId;
-			if ( jokeIndex < 1 )
-			{
-				const totalJokes = db.queryEntries( `SELECT COUNT(*) as count FROM twitch_jokes` );
-
-				if ( !totalJokes?.[0]?.count )
-					return '';
-
-				jokeIndex = getRandomNumber( Number( totalJokes[0].count ), 1 );
-			}
-
-			const joke = db.queryEntries<TwitchJokeRow>( `
-				SELECT 
-					q.id,
-					q.text,
-					q.user_id,
-					u.name  -- Include the username from users table
+			const joke = db.queryEntries<TwitchJokeRow>(
+				`SELECT
+				   q.id,
+				   q.text,
+				   q.user_id,
+				   u.name  -- Include the username from users table
 				FROM twitch_jokes q
 				LEFT JOIN twitch_users u ON q.user_id = u.id
-				WHERE q.id = ?
-				ORDER BY q.id`, [ jokeIndex ] );
+				WHERE (? = 0 OR q.id = ?)  -- If jokeId is 0, this becomes TRUE for all rows
+				ORDER BY RANDOM()
+				LIMIT 1`,  [ jokeId, jokeId ] );
 
-			return joke.length === 0 ? '' : `${joke[0].text} - ${joke[0].name} [ #${jokeIndex} ]`;
+			return joke.length === 0 ? '' : `${joke[0].text} - ${joke[0].name} [ #${joke[0].id} ]`;
 		}
 		catch ( error: unknown ) { log( error ) }
 		return '';

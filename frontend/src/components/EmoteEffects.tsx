@@ -2,12 +2,13 @@
  * Emote Effects
  *
  * @author Wellington Estevo
- * @version 2.0.2
+ * @version 2.2.1
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import { log } from '@shared/helpers.ts';
+import { randomIntegerBetween, sample } from '@std/random';
 
 import type { WebSocketData } from '@shared/types.ts';
 
@@ -110,8 +111,7 @@ const EmoteEffects = () =>
 			...configParam
 		};
 
-		const getRandomNumber = ( max = 1, min = 0 ) => Math.floor( Math.random() * ( max - min ) ) + min;
-		const numberOfEmotes = getRandomNumber( config.maxEmotes, config.minEmotes );
+		const numberOfEmotes = randomIntegerBetween( config.minEmotes, config.maxEmotes );
 
 		// Create Canvas + some Settings
 		const wrapper = document.createElement( 'div' );
@@ -154,21 +154,21 @@ const EmoteEffects = () =>
 		for ( let i = 0; i < numberOfEmotes; i++ )
 		{
 			// Bigger angle = bigger swing
-			const angle = getRandomNumber( config.maxSwingAngle, config.maxSwingAngle / 2 );
+			const angle = randomIntegerBetween( config.maxSwingAngle / 2, config.maxSwingAngle );
 			// Swing intensity = lower number means bigger swing
-			const dir = [-1,1][ getRandomNumber( config.maxSwingAngle / 10 ) ];
+			const dir = [-1,1][ randomIntegerBetween( 0, config.maxSwingAngle / 10 ) ];
 			// Velocity = y coord change per frame (something between 1 and 2 is good)
 			const velocity = config.velocity / angle;
 
 			emotes.push({
-				x: getRandomNumber( canvas.width - config.emoteSize / 2 ),
-				y: getRandomNumber( -100, canvas.height / 2 * -1 ),
+				x: randomIntegerBetween( 0, canvas.width - config.emoteSize / 2 ),
+				y: randomIntegerBetween( canvas.height / 2 * -1, -100 ),
 				w: config.emoteSize,
 				h: config.emoteSize,
 				v: velocity,
 				a: angle,
 				d: dir,
-				i: emoteImages[ getRandomNumber( emoteImages.length ) ]
+				i: sample( emoteImages )
 			});
 		}
 
@@ -188,8 +188,8 @@ const EmoteEffects = () =>
 					if ( config.infinite )
 					{
 						// Reset values
-						emotes[i].y = getRandomNumber( -100, canvas.height / 2 * -1 );
-						emotes[i].x = getRandomNumber( canvas.width - config.emoteSize / 2 );
+						emotes[i].y = randomIntegerBetween( canvas.height / 2 * -1, -100 );
+						emotes[i].x = randomIntegerBetween( 0, canvas.width - config.emoteSize / 2 );
 					}
 					else
 					{
@@ -249,8 +249,7 @@ const EmoteEffects = () =>
 			...configParam
 		};
 
-		const getRandomNumber = ( max = 1, min = 0 ) => Math.floor( Math.random() * ( max - min ) ) + min;
-		const numberOfElements = getRandomNumber( config.maxEmotes, config.minEmotes );
+		const numberOfElements = randomIntegerBetween( config.minEmotes, config.maxEmotes );
 
 		// Create wrapper
 		const wrapper = document.createElement( 'div' );
@@ -282,13 +281,13 @@ const EmoteEffects = () =>
 			emote.id = `propzEmote-${i}`;
 			emote.classList.add( 'propzEmote' );
 			//emote.innerHTML = '🎉';
-			emote.src = config.emoteImages[ getRandomNumber( config.emoteImages.length ) ];
+			emote.src = sample( config.emoteImages );
 
 			// Randomize Animation stuff
-			emote.style.left = `${ getRandomNumber( 100 ) }%`;
+			emote.style.left = `${ randomIntegerBetween( 0, 100 ) }%`;
 			emote.style.transform = `translateY(-${ config.emoteSize * config.emoteSize }px)`;
-			emote.style.animationDelay = `${ getRandomNumber( 3000 ) }ms`;
-			emote.style.animationDuration = `${ getRandomNumber( 5000 ) + 15000 }ms`;
+			emote.style.animationDelay = `${ randomIntegerBetween( 0, 3000 ) }ms`;
+			emote.style.animationDuration = `${ randomIntegerBetween( 0, 5000 ) + 15000 }ms`;
 
 			emotesWrapper.appendChild( emote );
 		}

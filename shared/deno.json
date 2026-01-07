@@ -4,6 +4,7 @@
 		".": "./helper.ts"
 	},
 	"imports": {
+		"@std/random": "jsr:@std/random@^0.1.4",
 		"@twurple/chat": "npm:@twurple/chat@^7.4.0",
 		"obs-websocket-js": "npm:obs-websocket-js@^5.0.7",
 		"events": "npm:events@^3.3.0"

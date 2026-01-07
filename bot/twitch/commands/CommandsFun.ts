@@ -3,7 +3,7 @@
  * Interactive & Entertainment Commands (Jokes, Quotes, Games, etc.)
  *
  * @author Wellington Estevo
- * @version 2.0.13
+ * @version 2.2.1
  */
 
 import { Jokes } from '@modules/features/Jokes.ts';
@@ -44,8 +44,8 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 		},
 		giveaway: {
 			message: {
-				de: 'Zu gewinnen gibt es eine Obergeile Tasse aus Brasilien! Teilnehmen mit !klassetasse - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg',
-				en: 'You can win a wonderful mug from Brazil! Join with !klassetasse - https://www.twitch.tv/propz_tv/clip/TawdrySecretiveOcelotKeyboardCat-Vp_K5XTm-JkSkfbg'
+				de: 'Zu gewinnen gibt es ein Game Key für "No Mans Sky" - Teilnehmen mit !gönnung - https://store.steampowered.com/app/275850/No_Mans_Sky/',
+				en: 'You can win a game key for "No Mans Sky" - Join with !loot - https://store.steampowered.com/app/275850/No_Mans_Sky/'
 			}
 		},
 		joke: {
@@ -67,7 +67,8 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 			message: '🍪',
 			description: '🍪'
 		},
-		klassetasse: {
+		loot: {
+			aliases: [ 'gönnung' ],
 			handler: (options: TwitchCommandOptions) => {
 				if (!options.sender.id) return '';
 				Giveaway.join(options.sender.id);

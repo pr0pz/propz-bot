@@ -2,7 +2,7 @@
  * Bot Server
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.1
  */
 
 import '@shared/prototypes.ts';
@@ -183,7 +183,6 @@ export class Server
 		}
 
 		response = await this.twitch.api.process( body );
-		console.log( response );
 
 		return new Response(
 			JSON.stringify( response ),
