@@ -2,7 +2,7 @@
  * BetterTTV
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.2
  */
 
 import { log } from '@shared/helpers.ts';
@@ -11,7 +11,7 @@ import type { BTTVEmote, BTTVResponse, TwitchEmote } from '@shared/types.ts';
 export class BetterTTV
 {
 	/** Fetch BTTV Emotes */
-	public static async getEmotes( userId: string ): Promise<TwitchEmote | undefined>
+	public static async getEmotes( userId: string ): Promise<Map<string, string> | undefined>
 	{
 		if ( !userId ) return;
 		let globalEmotes: BTTVEmote[];
@@ -54,14 +54,14 @@ export class BetterTTV
 			return;
 		}
 
-		const emoteMap: TwitchEmote = {};
+		const emoteMap: Map<string, string> = new Map();
 		for ( const emote of [
 			...globalEmotes,
 			...channelEmotes.channelEmotes,
 			...channelEmotes.sharedEmotes
 		] )
 		{
-			emoteMap[emote.code] = `https://cdn.betterttv.net/emote/${emote.id}/3x`;
+			emoteMap.set( emote.code, `https://cdn.betterttv.net/emote/${emote.id}/3x` );
 		}
 
 		return emoteMap;

@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.1.6
+ * @version 2.2.2
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -165,11 +165,6 @@ export interface TwitchUserData
 	[key: string]: number | string | boolean | null;
 }
 
-export interface TwitchEmote
-{
-	[key: string]: string;
-}
-
 export interface TwitchBadge
 {
 	id: string;
@@ -297,28 +292,33 @@ export interface BTTVUser
 	providerId: string;
 }
 
-export interface SevenTVEmoteSet
+export interface SevenTVApiResponse
 {
+	errors: any;
 	data: {
-		emoteSet: {
-			id: string;
-			name: string;
-			emotes: SevenTVEmote[];
-		};
+		emoteSets: {
+			emoteSets: SevenTVEmoteSet[];
+		}
 	};
 	extensions: any;
 }
 
+export interface SevenTVEmoteSet
+{
+	id: string;
+	name: string;
+	emotes: {
+		items: SevenTVEmote[]
+	}
+}
+
 export interface SevenTVEmote
 {
-	data: {
+	alias: string;
+	emote: {
+		defaultName: string;
 		id: string;
-		name: string;
-		host: {
-			url: string;
-			files: any;
-		};
-	};
+	}
 }
 
 export interface GithubData

@@ -2,63 +2,68 @@
  * SevenTV
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.2
  */
 
 import { log } from '@shared/helpers.ts';
-import type { SevenTVEmoteSet, TwitchEmote } from '@shared/types.ts';
+import type { SevenTVApiResponse, SevenTVEmoteSet, SevenTVEmote } from '@shared/types.ts';
 
 export class SevenTV
 {
+	static cdnUrl = 'https://cdn.7tv.app/emote/{emoteId}/4x.webp';
+
 	/** Fetch 7TV Emotes
-	 *
-	 * query GetEmoteSet($id: ObjectID!) { emoteSet(id: $id) { emotes { data { name host { url } } } } }
 	 *
 	 * global: 01GD17VE2R000E0RPNH2V9Z16G
 	 * propz: 01HZKY8CFR0002X9JFJVAG7PKX
 	 *
 	 * @returns {Promise<TwitchEmote|undefined>}
 	 */
-	public static async getEmotes(): Promise<TwitchEmote | undefined>
+	public static async getEmotes(): Promise<Map<string, string> | undefined>
 	{
 		let seventv: SevenTVEmoteSet[];
 		try
 		{
-			const response = await fetch( 'https://7tv.io/v3/gql', {
+			const response = await fetch( 'https://7tv.io/v4/gql', {
 				method: 'post',
-				body: JSON.stringify( [
+				body: JSON.stringify(
 					{
-						operationName: 'GetEmoteSet',
-						variables: { id: '01GD17VE2R000E0RPNH2V9Z16G' },
-						query:
-							'query GetEmoteSet($id: ObjectID!, $formats: [ImageFormat!]) { emoteSet(id: $id) { id name emotes { data { id name host { url files(formats: $formats) { name format } } } } } }'
-					},
-					{
-						operationName: 'GetEmoteSet',
-						variables: { id: '01HZKY8CFR0002X9JFJVAG7PKX' },
-						query:
-							'query GetEmoteSet($id: ObjectID!, $formats: [ImageFormat!]) { emoteSet(id: $id) { id name emotes { data { id name host { url files(formats: $formats) { name format } } } } } }'
+						query: `
+						{
+							emoteSets {
+								emoteSets(ids: [ "01GD17VE2R000E0RPNH2V9Z16G", "01HZKY8CFR0002X9JFJVAG7PKX" ]) {
+									id
+									name
+									emotes(page: 1, perPage: 300) {
+										items {
+											alias
+											emote {
+												defaultName
+												id
+											}
+										}
+									}
+								}
+							}
+						}`
 					}
-				] )
+				)
 			} );
 
-			const data = await response.json();
+			const json = await response.json() as SevenTVApiResponse;
 
 			if (
 				!response.ok ||
-				data?.[0]?.errors?.[0]?.message ||
-				data?.[1]?.errors?.[0]?.message ||
-				!data[0]?.data?.emoteSet?.emotes ||
-				!data[1]?.data?.emoteSet?.emotes
+				!json?.data ||
+				json.errors?.[0]?.message ||
+				!json.data.emoteSets?.emoteSets
 			)
 			{
-				const errorMessage = [ data?.[0]?.errors?.[0]?.message ?? '', data?.[1]?.errors?.[0]?.message ?? '' ]
-					.join( '/' );
-				log( new Error( errorMessage ?? 'Unknown error with 7TV' ) );
+				log( new Error( json.errors?.[0]?.message ?? 'Unknown error with 7TV' ) );
 				return;
 			}
 
-			seventv = data;
+			seventv = json.data.emoteSets.emoteSets;
 		}
 		catch ( error: unknown )
 		{
@@ -66,11 +71,10 @@ export class SevenTV
 			return;
 		}
 
-		const emoteMap: TwitchEmote = {};
-		for ( const emote of [ ...seventv[0].data.emoteSet.emotes, ...seventv[1].data.emoteSet.emotes ] )
+		const emoteMap: Map<string, string> = new Map();
+		for ( const emote of [ ...seventv[0].emotes.items, ...seventv[1].emotes.items ] )
 		{
-			// https://cdn.7tv.app/emote/60ae958e229664e8667aea38/1x.webp
-			emoteMap[emote.data.name] = `${emote.data.host.url}/3x.webp`;
+			emoteMap.set( emote.alias, SevenTV.cdnUrl.replace( '{emoteId}', emote.emote.id ) );
 		}
 
 		return emoteMap;

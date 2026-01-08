@@ -2,10 +2,10 @@
  * Emotes
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.2
  */
 
-import { log, objectToMap } from '@shared/helpers.ts';
+import { log } from '@shared/helpers.ts';
 import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
 import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';
 import { buildEmoteImageUrl, parseChatMessage } from '@twurple/chat';
@@ -14,7 +14,6 @@ import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ApiClient } from '@twurple/api';
 import type { ChatMessage } from '@twurple/chat';
-import type { TwitchEmote } from '@shared/types.ts';
 
 export class Emotes
 {
@@ -28,41 +27,58 @@ export class Emotes
 	public async init(): Promise<void>
 	{
 		const [ emotesTwitch, emotesFFZ, emotes7TV, emotesBTTV ] = await Promise.all( [
-			this.getFromTwitch(),
+			this.getAllEmotes(),
 			FrankerFaceZ.getEmotes( UserHelper.broadcasterId ),
 			SevenTV.getEmotes(),
 			BetterTTV.getEmotes( UserHelper.broadcasterId )
 		] );
-		const emotes = Object.assign(
-			{},
-			emotesTwitch,
-			emotesFFZ,
-			emotes7TV,
-			emotesBTTV
-		);
-
-		this.emotes = objectToMap( emotes );
+		this.emotes = new Map([ ...emotesTwitch, ...emotesFFZ, ...emotes7TV, ...emotesBTTV ]);
 	}
 
-	/** Fetch twitch Emotes */
-	private async getFromTwitch(): Promise<TwitchEmote>
+	private async getAllEmotes(): Promise<Map<string, string>>
 	{
-		const emoteMap: TwitchEmote = {};
+		let emoteMap: Map<string, string> = new Map();
 		try
 		{
 			const [ globalEmotes, channelEmotes ] = await Promise.all( [
-				this.twitchApi.chat.getGlobalEmotes(),
-				this.twitchApi.chat.getChannelEmotes( UserHelper.broadcasterId )
+				this.getGlobalEmotes(),
+				this.getChannelEmotes()
 			] );
+			emoteMap = new Map( [ ...globalEmotes, ...channelEmotes ] );
+		}
+		catch ( error: unknown ) { log( error ) }
+		return emoteMap;
+	}
 
-			globalEmotes.concat( channelEmotes ).forEach( ( emote ) =>
+	public async getChannelEmotes(): Promise<Map<string, string>>
+	{
+		const emoteMap: Map<string, string> = new Map();
+		try
+		{
+			const channelEmotes = await Promise.resolve( this.twitchApi.chat.getChannelEmotes( UserHelper.broadcasterId ) );
+			channelEmotes.forEach( ( emote ) =>
 			{
 				let url = emote.getAnimatedImageUrl( '3.0' );
 				if ( !url ) url = emote.getFormattedImageUrl( '3.0' );
-				emoteMap[emote.name] = url;
+				emoteMap.set( emote.name, url );
 			} );
+		}
+		catch ( error: unknown ) { log( error ) }
+		return emoteMap;
+	}
 
-			return emoteMap;
+	private async getGlobalEmotes(): Promise<Map<string, string>>
+	{
+		const emoteMap: Map<string, string> = new Map();
+		try
+		{
+			const globalEmotes = await Promise.resolve( this.twitchApi.chat.getGlobalEmotes() );
+			globalEmotes.forEach( ( emote ) =>
+			{
+				let url = emote.getAnimatedImageUrl( '3.0' );
+				if ( !url ) url = emote.getFormattedImageUrl( '3.0' );
+				emoteMap.set( emote.name, url );
+			} );
 		}
 		catch ( error: unknown ) { log( error ) }
 		return emoteMap;

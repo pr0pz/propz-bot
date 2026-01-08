@@ -2,17 +2,22 @@
  * API Features
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.2
  */
 
 import { log, mapToObject } from '@shared/helpers.ts';
+import { BetterTTV } from '@integrations/BetterTTV.ts';
 import { Elevenlabs } from '@integrations/Elevenlabs.ts';
+import { FrankerFaceZ } from '@integrations/FrankerFaceZ.ts';
 import { OpenWeather } from '@integrations/OpenWeather.ts';
+import { SevenTV } from '@integrations/SevenTV.ts';
 import { StreamStats } from '@services/StreamStats.ts';
+import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { ApiRequest, ApiResponse, KofiData, SimpleUser } from '@shared/types.ts';
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { HelixUser } from '@twurple/api';
+
 
 export class Api
 {
@@ -55,7 +60,23 @@ export class Api
 				break;
 
 			case 'getEmotes':
-				response.data = this.twitch.emotes.get();
+				response.data = mapToObject( this.twitch.emotes.get() );
+				break;
+
+			case 'getChannelEmotes':
+				response.data = mapToObject( await this.twitch.emotes.getChannelEmotes() );
+				break;
+
+			case 'getSeventvEmotes':
+				response.data = mapToObject( await SevenTV.getEmotes() || new Map() );
+				break;
+
+			case 'getBetterttvEmotes':
+				response.data = mapToObject( await BetterTTV.getEmotes( UserHelper.broadcasterId ) || new Map() );
+				break;
+
+			case 'getFrankerfacezEmotes':
+				response.data = mapToObject( await FrankerFaceZ.getEmotes( UserHelper.broadcasterId ) || new Map() );
 				break;
 
 			case 'getStream':

@@ -2,16 +2,16 @@
  * FrankerFaceZ
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.2.2
  */
 
 import { log } from '@shared/helpers.ts';
-import type { FrankerFaceZEmoteSet, TwitchEmote } from '@shared/types.ts';
+import type { FrankerFaceZEmoteSet } from '@shared/types.ts';
 
 export class FrankerFaceZ
 {
 	/** Fetch FFZ Emotes */
-	public static async getEmotes( userId: string ): Promise<TwitchEmote | undefined>
+	public static async getEmotes( userId: string ): Promise<Map<string, string> | undefined>
 	{
 		if ( !userId ) return;
 		let globalEmotes: FrankerFaceZEmoteSet[];
@@ -59,12 +59,12 @@ export class FrankerFaceZ
 			return;
 		}
 
-		const emoteMap: TwitchEmote = {};
+		const emoteMap: Map<string, string> = new Map();
 		for ( const set of [ ...globalEmotes, ...channelEmotes ] )
 		{
 			for ( const emote of set.emoticons )
 			{
-				emoteMap[emote.name] = emote.urls['4'];
+				emoteMap.set( emote.name, emote.urls['4'] );
 			}
 		}
 

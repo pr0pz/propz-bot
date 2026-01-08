@@ -2,13 +2,14 @@
  * Emote Effects
  *
  * @author Wellington Estevo
- * @version 2.2.1
+ * @version 2.2.2
  */
 
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import { log } from '@shared/helpers.ts';
 import { randomIntegerBetween, sample } from '@std/random';
+import { objectToMap } from '@shared/helpers.ts';
 
 import type { WebSocketData } from '@shared/types.ts';
 
@@ -27,28 +28,7 @@ const EmoteEffects = () =>
 		emoteSize: 100,
 		infinite: false,
 		velocity: 25,
-		maxSwingAngle: 25,
-		emoteImages: [
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_be79061517314c0bb5dd0cfe610d5776/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_78340db291d44f4fa2a5a84b375952b7/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_80c586af401c4634b6925bfe7759a13f/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_2f9e53027d37461a9eb22a2dd5fddc69/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_cb95a3189a294235a7326be0bdfc7718/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_e2b1db480a5243c19a72bd70ec98eb27/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_7ed3ff8285954bde88c9530b51c31a07/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_c628df4914c04ea89712928eb3e00c1b/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_4534ff50ed2b476f8fc3dd772c8728d0/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_e3a727c581c947cdb7ea0e93f4d0fe40/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_d6fe024a463f48d298d4824fe86512cb/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_0812d9fbe830474bb402baa76fbc38f1/animated/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_18b7f03116574747be2a33efd4d42adf/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_16073ef4ea0942deba5ec88d46344690/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_64c0fee62f2f450682631e4e993dca58/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_f6d4a80b970e41778732fbbc69c7f56d/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_b48dabbbda714142973a7d2d058262e0/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_60efb136afd6466e8eef3d317fd77062/static/light/3.0',
-			'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_b4a4305a337c4cca9b6c1b3dc2eb86b6/animated/light/3.0'
-		]
+		maxSwingAngle: 25
 	}
 
 	useEffect( () =>
@@ -66,6 +46,29 @@ const EmoteEffects = () =>
 	[event]);
 
 	useEffect( () => processEventQueue(), [ eventQueue, isAnimating, currentEvent ]);
+
+	const getEmotes = async (): Promise<Map<string, string>|undefined> =>
+	{
+		let urlPrefix = 'https';
+		if ( process.env.BOT_URL.includes( 'localhost' ) || process.env.BOT_URL.includes( '127.0.0.1' ) )
+			urlPrefix = 'http';
+
+		const url = `${ urlPrefix }://${ process.env.BOT_URL }/api`;
+		console.log( url );
+		const response = await fetch( `${ urlPrefix }://${ process.env.BOT_URL }/api`, {
+			body: JSON.stringify(
+				{
+					request: 'getChannelEmotes'
+				}
+			),
+			method: 'POST',
+		} );
+
+		if ( !response.ok ) return;
+		const emotes = await response.json();
+		if ( !emotes?.data ) return;
+		return objectToMap( emotes.data );
+	}
 
 	const processEventQueue = () =>
 	{
@@ -103,7 +106,7 @@ const EmoteEffects = () =>
 	 *
 	 * @param {Object} configParam - Contains the rain config.
 	 */
-	const emoteRain = ( configParam?: any ) =>
+	const emoteRain = async ( configParam?: any ) =>
 	{
 		// Basic config
 		const config = {
@@ -134,20 +137,18 @@ const EmoteEffects = () =>
 		const ctx = canvas.getContext( '2d' );
 
 		// Setup and load all images
-		const emoteImages = [];
-		const totalEmoteImages = config.emoteImages.length;
-		let emoteImagesLoaded = 0;
-		for ( let i = 0; i < totalEmoteImages; i++ )
-		{
-			const image = new Image();
-			image.src = config.emoteImages[ i ] ? config.emoteImages[ i ] : '';
+		const channelEmotes = await getEmotes();
+		if ( !channelEmotes ) return;
 
-			if ( image.src )
-			{
-				image.onload = () => { emoteImagesLoaded++ };
-				emoteImages.push( image );
-			}
-		}
+		const emoteImages: Image[] = [];
+		let emoteImagesLoaded = 0;
+		channelEmotes.forEach( ( value, _key ) => {
+			const image = new Image();
+			if ( !value ) return;
+			image.src = value;
+			image.onload = () => { emoteImagesLoaded++ };
+			emoteImages.push( image );
+		});
 
 		// Setup initial random vars for all emotes
 		const emotes = [];
@@ -213,7 +214,7 @@ const EmoteEffects = () =>
 			requestAnimationFrame( draw );
 
 			// Only start updating when all images are loaded
-			if ( totalEmoteImages !== emoteImagesLoaded ) return;
+			if ( channelEmotes.size !== emoteImagesLoaded ) return;
 			update( dt );
 
 			ctx.clearRect( 0, 0, canvas.width, canvas.height );
@@ -242,7 +243,7 @@ const EmoteEffects = () =>
 	 *
 	 * @param {Object} configParam - Contains the rain config
 	 */
-	const emoteTornado = ( configParam?: any ) =>
+	const emoteTornado = async ( configParam?: any ) =>
 	{
 		const config = {
 			...configDefaults,
@@ -273,6 +274,9 @@ const EmoteEffects = () =>
 
 		wrapper.appendChild( emotesWrapper );
 
+		const emoteImages = await getEmotes();
+		if ( !emoteImages ) return;
+
 		// Actually create all emote elements
 		for( let i = 1; i <= numberOfElements; i++ )
 		{
@@ -281,7 +285,7 @@ const EmoteEffects = () =>
 			emote.id = `propzEmote-${i}`;
 			emote.classList.add( 'propzEmote' );
 			//emote.innerHTML = '🎉';
-			emote.src = sample( config.emoteImages );
+			emote.src = sample( [...emoteImages.values()] );
 
 			// Randomize Animation stuff
 			emote.style.left = `${ randomIntegerBetween( 0, 100 ) }%`;
