@@ -1,5 +1,5 @@
 -- BotData Database Schema
--- Version 1.10.0
+-- Version 2.3.0
 
 -- Authentication
 CREATE TABLE IF NOT EXISTS auth (
@@ -80,3 +80,18 @@ CREATE TABLE IF NOT EXISTS giveaway (
     date INTEGER,
     FOREIGN KEY (user_id) REFERENCES twitch_users(id)
 );
+
+-- Counters
+CREATE TABLE IF NOT EXISTS twitch_counters (
+    key TEXT PRIMARY KEY,
+    value INTEGER DEFAULT 1,
+    created INTEGER DEFAULT (strftime('%s', 'now')) NOT NULL,
+    updated INTEGER DEFAULT (strftime('%s', 'now')) NOT NULL
+);
+
+CREATE TRIGGER IF NOT EXISTS update_twitch_counter_timestamp
+    AFTER UPDATE ON twitch_counters
+BEGIN
+    UPDATE twitch_counters SET updated = unixepoch()
+    WHERE key = NEW.key;
+END;

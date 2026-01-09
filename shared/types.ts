@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.2.2
+ * @version 2.3.0
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -36,6 +36,7 @@ export interface TwitchCommandOptions
 {
 	sender: SimpleUser;
 	param: string;
+	commandName: string;
 	message: string;
 	returnMessage: string;
 	messageObject: ChatMessage | null;
@@ -131,6 +132,19 @@ export interface TwitchJokeRow extends TwitchJoke
 {
 	id: string | number;
 	[key: string]: any;
+}
+
+export interface TwitchCounter
+{
+	key: string;
+	value: number;
+	created: number;
+	updated: number;
+}
+
+export interface TwitchCounterRow extends TwitchCounter
+{
+	[key: string]: string|integer;
 }
 
 export interface TwitchReward

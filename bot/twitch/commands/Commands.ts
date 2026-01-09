@@ -2,7 +2,7 @@
  * Twitch Commands
  *
  * @author Wellington Estevo
- * @version 2.1.3
+ * @version 2.3.0
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -69,6 +69,7 @@ export class Commands
 			const chatMessageSplitted = chatMessage.trim().split( ' ' );
 			const options: TwitchCommandOptions = {
 				sender: sender,
+				commandName: commandName,
 				param: chatMessageSplitted[1] || '',
 				message: chatMessage.replaceAll( /^(?:@\w+\s)?!\w+/gi, '' ).trim(),
 				returnMessage: message,

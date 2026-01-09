@@ -252,6 +252,11 @@ export function toObject(
 	return Object.fromEntries( data );
 }
 
+export function toEmojiNumbers( str: string )
+{
+	return str.replace(/[0-9]/g, (match) => match + '\uFE0F\u20E3');
+}
+
 export function clearTimer( timer: number ): number
 {
 	if ( timer ) clearTimeout( timer );

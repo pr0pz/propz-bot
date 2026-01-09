@@ -6,6 +6,8 @@
  * @version 2.2.1
  */
 
+import { getTimePassed, toEmojiNumbers } from '@shared/helpers.ts';
+import { Counters } from '@modules/features/Counters.ts';
 import { Jokes } from '@modules/features/Jokes.ts';
 import { Quotes } from '@modules/features/Quotes.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';
@@ -66,6 +68,33 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 			aliases: ['cookie'],
 			message: '🍪',
 			description: '🍪'
+		},
+		leaked: {
+			aliases: [ 'leak' ],
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				const counter = Counters.update( options.commandName );
+				if ( !counter ) return '';
+				return options.returnMessage
+			  		.replace( '[count]', toEmojiNumbers( `${counter.value}` ) )
+					.replace( '[days]', toEmojiNumbers( getTimePassed( Date.now() - counter?.updated * 1000 ) ) );
+			},
+			message: {
+				de: `Meine Fresse, ${UserHelper.broadcasterName} hat zum [count]. mal seine scheiß Keys geleaked. Es waren [days] seit dem letzten Leak.`,
+				en: `WTF, again? ${UserHelper.broadcasterName} has leaked his fucking keys for [counter]x times. It has been [days] since the last leak.`
+			}
+		},
+		lastleak: {
+			handler: ( options: TwitchCommandOptions ) =>
+			{
+				const counter = Counters.get( 'leaked' );
+				if ( !counter ) return '';
+				return options.returnMessage.replace( '[days]', toEmojiNumbers( getTimePassed( Date.now() - counter?.updated * 1000 ) ) );
+			},
+			message: {
+				de: '[days] seit dem letzten Leak.',
+				en: '[days] since last leak.'
+			}
 		},
 		loot: {
 			aliases: [ 'gönnung' ],

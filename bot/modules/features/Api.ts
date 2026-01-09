@@ -18,7 +18,6 @@ import type { ApiRequest, ApiResponse, KofiData, SimpleUser } from '@shared/type
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { HelixUser } from '@twurple/api';
 
-
 export class Api
 {
 	constructor( private twitch: Twitch ) {}
