@@ -2,11 +2,11 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 2.3.1
+ * @version 2.4.0
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
-import { EventSubWsListener } from '@twurple/eventsub-ws';
+import { EventSubHttpListener, ReverseProxyAdapter } from '@twurple/eventsub-http';
 import { EventProcessor } from '@twitch/events/EventProcessor.ts';
 import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
@@ -19,7 +19,7 @@ import externalStreamers from '@config/externalStreamers.json' with { type: 'jso
 
 export class TwitchEvents
 {
-	public listener: EventSubWsListener;
+	public listener: EventSubHttpListener|null = null;
 	public eventProcessor: EventProcessor;
 	private listenerTimer: number = 0;
 	private externalStreamers: Map<string, ExternalStreamer> = new Map();
@@ -27,8 +27,27 @@ export class TwitchEvents
 	constructor( private twitch: Twitch )
 	{
 		this.eventProcessor = new EventProcessor( this.twitch );
-		this.listener = new EventSubWsListener( {
-			apiClient: this.twitch.twitchApi
+	}
+
+	public init()
+	{
+		if (
+			!Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) ||
+			!Deno.env.get( 'BOT_URL' ) )
+		{
+			log( `Can't start Eventsub without secret and bot url` );
+			return;
+		}
+
+		this.listener = new EventSubHttpListener( {
+			adapter: new ReverseProxyAdapter({
+				hostName: Deno.env.get( 'BOT_URL' ) || '',
+				pathPrefix: '/eventsub',
+				port: 1338,
+				usePathPrefixInHandlers: false
+			}),
+			apiClient: this.twitch.twitchApi,
+			secret: Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) || '',
 		} );
 
 		this.handleEvents();
@@ -37,6 +56,8 @@ export class TwitchEvents
 	/** Add event handler fucntions to events */
 	private handleEvents(): void
 	{
+		if ( !this.listener ) return;
+
 		this.listener.onStreamOnline(  UserHelper.broadcasterId, this.onStreamOnline );
 		this.listener.onStreamOffline(  UserHelper.broadcasterId, this.onStreamOffline );
 		this.listener.onChannelFollow(  UserHelper.broadcasterId,  UserHelper.broadcasterId, this.onChannelFollow );

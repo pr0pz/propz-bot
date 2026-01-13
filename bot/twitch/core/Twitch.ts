@@ -78,6 +78,7 @@ export class Twitch
 		this.userHelper = new UserHelper( this );
 
 		// Init
+		void this.events.init();
 		void this.userHelper.init();
 		void this.rewards.init();
 		void this.emotes.init();
