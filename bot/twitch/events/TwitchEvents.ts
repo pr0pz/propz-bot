@@ -2,28 +2,35 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.3.1
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
 import { EventSubWsListener } from '@twurple/eventsub-ws';
-import { EventProcessor } from "./EventProcessor.ts";
+import { EventProcessor } from '@twitch/events/EventProcessor.ts';
 import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
 import type { Twitch } from '@twitch/core/Twitch.ts';
+import type { ExternalStreamer } from '@shared/types.ts';
+
+import externalStreamers from '@config/externalStreamers.json' with { type: 'json' };
 
 export class TwitchEvents
 {
 	public listener: EventSubWsListener;
 	public eventProcessor: EventProcessor;
 	private listenerTimer: number = 0;
+	private externalStreamers: Map<string, ExternalStreamer> = new Map();
 
 	constructor( private twitch: Twitch )
 	{
 		this.eventProcessor = new EventProcessor( this.twitch );
-		this.listener = new EventSubWsListener( { apiClient: this.twitch.twitchApi } );
+		this.listener = new EventSubWsListener( {
+			apiClient: this.twitch.twitchApi
+		} );
+
 		this.handleEvents();
 	}
 
@@ -42,6 +49,13 @@ export class TwitchEvents
 			this.onChannelShieldModeEnd );
 		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
 		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
+
+		if ( !externalStreamers ) return;
+		for( const streamer of externalStreamers as ExternalStreamer[] )
+		{
+			this.externalStreamers.set( streamer.name, streamer );
+			this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+		}
 	}
 
 	/** Start listener */
@@ -72,9 +86,13 @@ export class TwitchEvents
 		// Try to get the stream 5 times
 		let stream = null;
 		let counter = 0;
+		const isExternal = event.broadcasterName !== UserHelper.broadcasterName;
 		while ( counter < 5 )
 		{
-			stream = await this.twitch.stream.set();
+			stream = isExternal ?
+				await this.twitch.twitchApi.streams.getStreamByUserName( event.broadcasterName ):
+				await this.twitch.stream.set();
+
 			if ( stream !== null ) break;
 			await sleep( 250 );
 			counter++;
@@ -88,14 +106,17 @@ export class TwitchEvents
 		// Check for test stream
 		if ( stream?.gameName && stream?.gameName?.toLowerCase().includes( 'test' ) ) return;
 
-		void this.eventProcessor.process( {
-			eventType: 'streamonline',
-			user: event.broadcasterName
-		} );
+		if ( !isExternal )
+		{
+			void this.eventProcessor.process( {
+				eventType: 'streamonline',
+				user: event.broadcasterName
+			} );
 
-		void this.twitch.focus.handle( 7 );
+			void this.twitch.focus.handle( 10 );
+		}
 
-		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream );
+		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream, this.externalStreamers.get( event.broadcasterName )?.message ?? '' );
 	};
 
 	/** Subscribes to events representing a stream going offline.
