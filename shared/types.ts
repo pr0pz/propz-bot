@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.3.0
+ * @version 2.3.1
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -369,7 +369,7 @@ export interface StreamData
 	streamTitle: string;
 	streamDescription: string;
 	streamAnnouncementMessage: string;
-	test: boolean;
+	test?: boolean;
 }
 
 export interface StreamDataApi
@@ -643,4 +643,11 @@ export interface SpotifyQueueTrack
 export interface UserChatStyles {
 	twitch_user_id: string;
 	chat_styles: string;
+}
+
+export interface ExternalStreamer {
+	id: number;
+	name: string;
+	message: string;
+	discordUid?: string;
 }

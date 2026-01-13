@@ -13,8 +13,8 @@
 		"react": "npm:react@^19.2.3",
 		"react-dom": "npm:react-dom@^19.2.3",
 		"react-dom/client": "npm:react-dom@^19.2.3/client",
-		"react-router-dom": "npm:react-router-dom@^7.11.0",
-		"vite": "npm:vite@^6.4.1",
+		"react-router-dom": "npm:react-router-dom@^7.12.0",
+		"vite": "npm:vite@^7.3.1",
 		"vite-plugin-sass": "npm:vite-plugin-sass@^0.1.0"
 	}
 }

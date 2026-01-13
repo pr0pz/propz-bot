@@ -46,9 +46,7 @@ export class TwitchRewards
 				{
 					const rewardCreated = await this.twitchApi.channelPoints.createCustomReward( UserHelper.broadcasterId, reward );
 					rewards[index].id = rewardCreated.id;
-					log(
-						`createCustomReward › ${getRewardSlug( reward.title )} › ${rewardCreated.id}`
-					);
+					log( `createCustomReward › ${getRewardSlug( reward.title )} › ${rewardCreated.id}` );
 					saveFile( 'twitchRewards', rewards, 'config' );
 				}
 				else
@@ -69,7 +67,7 @@ export class TwitchRewards
 						reward.autoFulfill !== rewardCurrent.autoFulfill
 					)
 					{
-						this.twitchApi.channelPoints.updateCustomReward(
+						void await this.twitchApi.channelPoints.updateCustomReward(
 							UserHelper.broadcasterId,
 							reward.id.toString(),
 							reward

@@ -2,7 +2,7 @@
  * Event Data
  *
  * @author Wellington Estevo
- * @version 2.1.6
+ * @version 2.3.1
  */
 
 import { Database } from '@services/Database.ts';
@@ -11,8 +11,7 @@ import { UserData } from '@services/UserData.ts';
 
 import events from '@config/twitchEvents.json' with { type: 'json' };
 
-import type { TwitchEvent, TwitchEventData } from '@shared/types.ts';
-import { TwitchEventDataLast } from "../../shared/types.ts";
+import type { TwitchEvent, TwitchEventData, TwitchEventDataLast } from '@shared/types.ts';
 
 export class StreamEvents
 {

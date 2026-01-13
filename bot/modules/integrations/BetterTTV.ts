@@ -2,11 +2,11 @@
  * BetterTTV
  *
  * @author Wellington Estevo
- * @version 2.2.2
+ * @version 2.3.1
  */
 
 import { log } from '@shared/helpers.ts';
-import type { BTTVEmote, BTTVResponse, TwitchEmote } from '@shared/types.ts';
+import type { BTTVEmote, BTTVResponse } from '@shared/types.ts';
 
 export class BetterTTV
 {

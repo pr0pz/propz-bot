@@ -32,7 +32,7 @@ export class UserHelper
 
 	/** Get User Data from Twitch
 	 *
-	 * @param {string|HelixUser} user User ID, name or object
+	 * @param {string|HelixUser} user User name or object
 	 */
 	public async getUser( user?: string | HelixUser ): Promise<HelixUser | null>
 	{
