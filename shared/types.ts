@@ -643,3 +643,10 @@ export interface UserChatStyles {
 	twitch_user_id: string;
 	chat_styles: string;
 }
+
+export interface ExternalStreamer {
+	id: number;
+	name: string;
+	message: string;
+	discordUid?: string;
+}
