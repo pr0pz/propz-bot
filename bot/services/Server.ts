@@ -2,7 +2,7 @@
  * Bot Server
  *
  * @author Wellington Estevo
- * @version 2.2.1
+ * @version 2.4.0
  */
 
 import '@shared/prototypes.ts';
@@ -24,8 +24,9 @@ export class Server
 	/** Start server */
 	public start(): void
 	{
+		const port = parseInt( Deno.env.get( 'BOT_PORT' ) ?? '8000' );
 		this.server = Deno.serve(
-			{ port: 1337, hostname: '127.0.0.1' },
+			{ port: port, hostname: '127.0.0.1' },
 			this.handleServerRequests
 		);
 	}

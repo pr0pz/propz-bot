@@ -31,9 +31,10 @@ export class TwitchEvents
 
 	public init()
 	{
-		if (
-			!Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) ||
-			!Deno.env.get( 'BOT_URL' ) )
+		const secret = Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) || '';
+		const botUrl = Deno.env.get( 'BOT_URL' ) || '';
+		const botPort = parseInt( Deno.env.get( 'BOT_PORT' ) || '8080' ) + 1;
+		if ( !secret || !botUrl )
 		{
 			log( `Can't start Eventsub without secret and bot url` );
 			return;
@@ -41,13 +42,13 @@ export class TwitchEvents
 
 		this.listener = new EventSubHttpListener( {
 			adapter: new ReverseProxyAdapter({
-				hostName: Deno.env.get( 'BOT_URL' ) || '',
-				pathPrefix: '/eventsub',
-				port: 1338,
+				hostName: botUrl,
+				port: botPort,
+				pathPrefix: 'eventsub',
 				usePathPrefixInHandlers: false
 			}),
 			apiClient: this.twitch.twitchApi,
-			secret: Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) || '',
+			secret: secret,
 		} );
 
 		this.handleEvents();
@@ -71,6 +72,7 @@ export class TwitchEvents
 		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
 		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
 
+		// twitch event trigger streamup -F http://localhost:1338/eventsub -f 633095490 -t 663947590
 		if ( !externalStreamers ) return;
 		for( const streamer of externalStreamers as ExternalStreamer[] )
 		{
@@ -133,7 +135,6 @@ export class TwitchEvents
 				eventType: 'streamonline',
 				user: event.broadcasterName
 			} );
-
 			void this.twitch.focus.handle( 10 );
 		}
 

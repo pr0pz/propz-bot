@@ -2,7 +2,7 @@
  * Stream Helper functions
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.4.0
  */
 
 import { getMessage, log } from '@shared/helpers.ts';
@@ -76,27 +76,33 @@ export class StreamHelper
 	/** Send Stream Online Data to discord
 	 *
 	 * @param {HelixStream} stream Current Stream
+	 * @param {string} streamAnnouncementMessage
 	 */
-	public async sendStreamOnlineDataToDiscord( stream?: HelixStream | undefined | null ): Promise<void>
+	public async sendStreamOnlineDataToDiscord(
+		stream?: HelixStream | undefined | null,
+		streamAnnouncementMessage: string = ''
+	): Promise<void>
 	{
 		if ( !this.twitch.discord.client.isReady() ) return;
 
 		stream = stream ? stream : this.stream;
 		if ( !stream ) return;
 
-		const user = await this.twitch.userHelper.getUser();
+		const user = await this.twitch.userHelper.getUser( stream.userName );
 		if ( !user ) return;
 
-		const streamAnnouncementMessage = getMessage(
+		if ( !streamAnnouncementMessage )
+		{
+			streamAnnouncementMessage = getMessage(
 				this.twitch.streamEvents.get( 'streamonline' ).message,
 				this.language
-			).replace( '[user]', user.displayName ) ||
-			`${ user.displayName } ist jetzt live!`;
+			).replace( '[user]', user.displayName ) || `${ user.displayName } ist jetzt live!`;
+		}
 
 		const streamData: StreamData = {
-			displayName: user.displayName,
+			displayName: stream.userDisplayName,
 			profilePictureUrl: user.profilePictureUrl,
-			streamUrl: `https://twitch.tv/${ user.name }/`,
+			streamUrl: `https://twitch.tv/${ stream.userName }`,
 			streamThumbnailUrl: stream?.thumbnailUrl ?
 				stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` :
 				`${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-propz.jpg`,
@@ -104,8 +110,7 @@ export class StreamHelper
 			streamDescription: stream?.gameName ?
 				stream.gameName :
 				'Software & Game Development',
-			streamAnnouncementMessage: streamAnnouncementMessage,
-			test: !stream
+			streamAnnouncementMessage: streamAnnouncementMessage
 		};
 
 		console.table( streamData );

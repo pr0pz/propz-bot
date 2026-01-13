@@ -2,7 +2,7 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import type { ChatMessage } from '@twurple/chat';
@@ -369,7 +369,6 @@ export interface StreamData
 	streamTitle: string;
 	streamDescription: string;
 	streamAnnouncementMessage: string;
-	test: boolean;
 }
 
 export interface StreamDataApi

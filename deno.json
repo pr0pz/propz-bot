@@ -16,8 +16,8 @@
 		"./shared"
 	],
 	"tasks": {
-		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file ./bot/index.ts dev",
-		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
+		"bot": "deno run -A --unstable-cron --unstable-detect-cjs --env-file=.env.dev ./bot/index.ts dev",
+		"botwatch": "deno run -A --unstable-cron --unstable-detect-cjs --env-file=.env.dev --watch-exclude='./bot/*/*.json' --watch ./bot/index.ts dev",
 		"botdebug": "deno run --inspect=127.0.0.1:9229 -A --unstable-cron --unstable-detect-cjs --env-file --watch-exclude='./bot/*/*.json' ./bot/index.ts dev",
 		"local": "deno run -A --env-file ./local/index.ts",
 		"dev": "cd frontend && deno run -A --env-file npm:vite",
