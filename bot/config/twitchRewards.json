@@ -1,6 +1,6 @@
 [
 	{
-		"id": "",
+		"id": "06d188ee-130c-4597-b620-b09dea031937",
 		"title": "Boom",
 		"cost": 400,
 		"backgroundColor": "#FFF8E3",
@@ -13,7 +13,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "12335263-1b79-44e3-9665-c9a584cc3d1a",
 		"title": "Change Background",
 		"cost": 100,
 		"backgroundColor": "#FFBB82",
@@ -26,7 +26,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "e8f7acbb-2b5f-4d37-b9c3-cd1a63584842",
 		"title": "Confetti",
 		"cost": 100,
 		"backgroundColor": "#FF9BB5",
@@ -39,7 +39,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "bc7ce398-c250-4af2-85fb-8662e195b3cc",
 		"title": "PROPZ!",
 		"cost": 200,
 		"backgroundColor": "#1f1f23",
@@ -52,7 +52,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "a639eee5-ba33-4ac5-9a9d-0439b06b826a",
 		"title": "Disconnect",
 		"cost": 10000,
 		"backgroundColor": "#D2DAF9",
@@ -65,7 +65,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "3e7ee48d-3177-4887-8a35-95045df75bfe",
 		"title": "Du Vogel!",
 		"cost": 5000,
 		"backgroundColor": "#CECFCD",
@@ -78,7 +78,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "8fc0e759-0133-4d07-ab85-64baf0e5248e",
 		"title": "Emote Rain",
 		"cost": 400,
 		"backgroundColor": "#F5D688",
@@ -91,7 +91,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "a61cb997-95a0-4d8b-8669-8962ff87347a",
 		"title": "Emote Tornado",
 		"cost": 400,
 		"backgroundColor": "#A2AAAC",
@@ -104,7 +104,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "b9375def-06df-4912-936c-717ae518c121",
 		"title": "Fireworks",
 		"cost": 300,
 		"backgroundColor": "#F9DA6C",
@@ -117,7 +117,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "3ad7125f-5ff5-4d95-9420-5cc8c9c78585",
 		"title": "FUNtastico",
 		"cost": 7500,
 		"backgroundColor": "#FFA49C",
@@ -130,7 +130,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "6d15bffa-ea94-48f5-9181-63ab656d7d26",
 		"title": "Hydrate!",
 		"cost": 100,
 		"backgroundColor": "#E0D8CB",
@@ -143,7 +143,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "e7227d3d-a56c-4253-bc36-e8cbeff7ada1",
 		"title": "OH NO?!",
 		"cost": 600,
 		"backgroundColor": "#6AB695",
@@ -156,7 +156,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "7d80be31-9ab3-4852-b02b-904d77a505ef",
 		"title": "On fire!",
 		"cost": 600,
 		"backgroundColor": "#BC6364",
@@ -169,7 +169,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "d47787c4-3b4c-439b-bd4b-2f89a90a96dc",
 		"title": "Pedro!",
 		"cost": 1500,
 		"backgroundColor": "#C2B09F",
@@ -182,7 +182,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "81d81115-693e-4685-9695-290dd123d0bb",
 		"title": "Quack",
 		"cost": 50,
 		"backgroundColor": "#DBC2BE",
@@ -195,7 +195,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "b519ae89-461e-42c3-a866-4bb652ae5eb1",
 		"title": "RIP",
 		"cost": 400,
 		"backgroundColor": "#C3C3C3",
@@ -208,7 +208,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "e7392863-599b-4ce5-80f6-4096d21ebd7e",
 		"title": "Shake It Off",
 		"cost": 1500,
 		"backgroundColor": "#BF93FF",
@@ -221,7 +221,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "692855f6-9164-4ead-adb1-1fde1c9532d6",
 		"title": "Song Request",
 		"cost": 200,
 		"backgroundColor": "#CBCAED",
@@ -234,7 +234,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "0db8e626-5df4-47db-9036-613745d0ef3a",
 		"title": "SUS",
 		"cost": 200,
 		"backgroundColor": "#EC8988",
@@ -247,7 +247,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "eb28142d-9fdd-4681-b7c2-9635d4803d0b",
 		"title": "This is fine",
 		"cost": 1000,
 		"backgroundColor": "#FFD68A",
@@ -260,7 +260,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "aceef7db-b500-42ce-a4f1-4f14667b9e57",
 		"title": "TTS",
 		"cost": 1000,
 		"backgroundColor": "#4868E4",
@@ -273,7 +273,7 @@
 		"autoFulfill": false
 	},
 	{
-		"id": "",
+		"id": "bd1b0940-5f1c-4561-9555-91a5054c257a",
 		"title": "Wrong Scene",
 		"cost": 10,
 		"backgroundColor": "#F9DA6C",
@@ -286,7 +286,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "78999abd-6d1a-4fd0-8a31-0be841b7c6c5",
 		"title": "WTF?!",
 		"cost": 600,
 		"backgroundColor": "#FF9810",
@@ -299,7 +299,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "c68be6f0-baba-49e4-b45a-6de3cec12326",
 		"title": "Zoom In",
 		"cost": 100,
 		"backgroundColor": "#FFBCFF",
@@ -312,7 +312,7 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "",
+		"id": "bbf21e74-c370-4fef-9f97-c89bf1226245",
 		"title": "Zoom Out",
 		"cost": 100,
 		"backgroundColor": "#FFBCFF",
