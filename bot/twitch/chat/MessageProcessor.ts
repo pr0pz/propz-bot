@@ -5,7 +5,6 @@
  * @version 2.0.8
  */
 
-import cld from 'cld';
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';
@@ -54,7 +53,7 @@ export class MessageProcessor
 		{
 			UserData.update( user, 'message_count' );
 			StreamStats.update( user, 'message' );
-			void this.translateIfNeeded( chatMessageSanitized, msg );
+			//void this.translateIfNeeded( chatMessageSanitized, msg );
 		}
 
 		// Check for chat score
@@ -141,17 +140,17 @@ export class MessageProcessor
 	{
 		try
 		{
-			const result = await cld.detect( message, {
-				bestEffort: true
-			} );
-
-			if ( result?.languages?.[0]?.code !== 'pt' )
-			{
-				return;
-			}
-
-			const translation = await Deepl.translate( message, this.twitch.stream.language );
-			void this.twitch.chat.sendMessage( translation, msg );
+			// const result = await cld.detect( message, {
+			// 	bestEffort: true
+			// } );
+			//
+			// if ( result?.languages?.[0]?.code !== 'pt' )
+			// {
+			// 	return;
+			// }
+			//
+			// const translation = await Deepl.translate( message, this.twitch.stream.language );
+			// void this.twitch.chat.sendMessage( translation, msg );
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
