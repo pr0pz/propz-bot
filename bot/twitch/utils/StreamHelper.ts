@@ -89,19 +89,18 @@ export class StreamHelper
 		if ( !stream ) return;
 
 		const user = await this.twitch.userHelper.getUser( stream.userName );
-		if ( !user ) return;
 
 		if ( !streamAnnouncementMessage )
 		{
 			streamAnnouncementMessage = getMessage(
 				this.twitch.streamEvents.get( 'streamonline' ).message,
 				this.language
-			).replace( '[user]', user.displayName ) || `${ user.displayName } ist jetzt live!`;
+			).replace( '[user]', stream.userDisplayName ) || `${ stream.userDisplayName } ist jetzt live!`;
 		}
 
 		const streamData: StreamData = {
 			displayName: stream.userDisplayName,
-			profilePictureUrl: user.profilePictureUrl,
+			profilePictureUrl: user?.profilePictureUrl ?? 'https://propz.de/uploads/logo-propz-o.png',
 			streamUrl: `https://twitch.tv/${ stream.userName }`,
 			streamThumbnailUrl: stream?.thumbnailUrl ?
 				stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` :
@@ -114,6 +113,6 @@ export class StreamHelper
 		};
 
 		console.table( streamData );
-		this.twitch.discord.sendStreamOnlineMessage( streamData );
+		this.twitch.discord.sendStreamOnlineMessage( streamData, UserHelper.broadcasterId !== stream.userId );
 	}
 }

@@ -45,17 +45,17 @@ export class TwitchEvents
 				hostName: botUrl,
 				port: botPort,
 				pathPrefix: 'eventsub',
-				usePathPrefixInHandlers: false
+				usePathPrefixInHandlers: true
 			}),
 			apiClient: this.twitch.twitchApi,
 			secret: secret,
 		} );
 
-		this.handleEvents();
+		void this.handleEvents();
 	}
 
 	/** Add event handler fucntions to events */
-	private handleEvents(): void
+	private async handleEvents(): Promise<void>
 	{
 		if ( !this.listener ) return;
 
@@ -72,12 +72,13 @@ export class TwitchEvents
 		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
 		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
 
-		// twitch event trigger streamup -F http://localhost:1338/eventsub -f 633095490 -t 663947590
+		// twitch event trigger streamup -F https://dev.bot.propz.tv/eventsub/event/stream.online.633095490 -s testsecret
 		if ( !externalStreamers ) return;
 		for( const streamer of externalStreamers as ExternalStreamer[] )
 		{
 			this.externalStreamers.set( streamer.name, streamer );
-			this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+			const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+			log( await onStreamOnline.getCliTestCommand() );
 		}
 	}
 
