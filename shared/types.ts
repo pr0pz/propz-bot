@@ -2,13 +2,13 @@
  * Types
  *
  * @author Wellington Estevo
- * @version 2.3.1
+ * @version 2.4.0
  */
 
-import type { ChatMessage } from '@twurple/chat';
 import type { Buffer } from 'node:buffer';
 import type { HelixStream } from '@twurple/api';
 import type { RefreshingAuthProvider } from '@twurple/auth';
+import type { ChatMessage } from '@twurple/chat';
 
 export interface BotReactionMessage
 {
@@ -369,7 +369,6 @@ export interface StreamData
 	streamTitle: string;
 	streamDescription: string;
 	streamAnnouncementMessage: string;
-	test?: boolean;
 }
 
 export interface StreamDataApi

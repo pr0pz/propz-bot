@@ -2,7 +2,7 @@
  * Discord Controller
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.4.0
  */
 
 import '@shared/prototypes.ts';
@@ -13,7 +13,7 @@ import { DiscordUtils } from '@discord/DiscordUtils.ts';
 import discordEvents from '@config/discordEvents.json' with { type: 'json' };
 
 import type { StreamData } from '@shared/types.ts';
-import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, ForumChannel, ForumThreadChannel, Guild, GuildForumThreadCreateOptions, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
+import type { Attachment, AttachmentBuilder, Channel, Collection, EmbedBuilder, Guild, GuildMember, Interaction, Message, Snowflake } from 'discord.js';
 import type { TwitchEvent } from "@shared/types.ts";
 
 export class Discord extends DiscordUtils
@@ -29,6 +29,7 @@ export class Discord extends DiscordUtils
 		channelStream: '1181683702430978048',
 		channelTest: '1111209160521023520',
 		channelWelcome: '960223627079454760',
+		channelStreams: '1460229461583855726',
 		forumCodeTalk: '1199061906317660300',
 		forumDesignTalk: '1199063282405879910'
 	};
@@ -201,15 +202,18 @@ export class Discord extends DiscordUtils
 	/** Send Stream online message
 	 *
 	 * @param {StreamData} streamData Stream data
+	 * @param isExternal
 	 */
-	public sendStreamOnlineMessage( streamData: StreamData ): void
+	public sendStreamOnlineMessage( streamData: StreamData, isExternal: boolean = false ): void
 	{
 		if ( !streamData ) return;
 		try
 		{
-			const embedData = this.generateStreamOnlineMessageEmbed( streamData );
-			const channelToSend = streamData.test ? this.channels.channelTest : this.channels.channelAnnouncements;
-			void this.sendEmbed( channelToSend, embedData, streamData.streamAnnouncementMessage );
+			void this.sendEmbed(
+				isExternal ? this.channels.channelStreams : this.channels.channelAnnouncements,
+				this.generateStreamOnlineMessageEmbed( streamData ),
+				streamData.streamAnnouncementMessage
+			);
 		}
 		catch ( error: unknown ) { log( error ) }
 	}

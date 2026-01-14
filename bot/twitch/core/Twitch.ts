@@ -2,7 +2,7 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 2.0.8
+ * @version 2.4.0
  */
 
 import '@shared/prototypes.ts';
@@ -78,6 +78,7 @@ export class Twitch
 		this.userHelper = new UserHelper( this );
 
 		// Init
+		void this.events.init();
 		void this.userHelper.init();
 		void this.rewards.init();
 		void this.emotes.init();

@@ -2,7 +2,7 @@
  * Discord Helper
  *
  * @author Wellington Estevo
- * @version 2.1.0
+ * @version 2.4.0
  */
 
 import '@shared/prototypes.ts';
@@ -61,60 +61,6 @@ export class DiscordUtils
 			return new AttachmentBuilder( screenshotBuffer, { name: `welcome-${member.displayName}.png` } );
 		}
 		catch( error: unknown ) { log( error ) }
-	}
-
-	/** Creates html puppeteer stuff and generates screenshot
-	 *
-	 * @param {string} htmlContent
-	 * @returns {Promise<Buffer | null>}
-	 */
-	private async generateWelcomeImage( htmlContent: string ): Promise<Buffer | null>
-	{
-		let browser;
-		let page;
-		let screenshotBuffer;
-
-		try {
-			const puppeteerArgs = [
-				'--no-sandbox',
-				'--disable-setuid-sandbox',
-				'--disable-dev-shm-usage',
-				'--disable-accelerated-2d-canvas',
-				'--no-first-run',
-				'--no-zygote',
-				'--single-process',
-				'--disable-gpu'
-			];
-
-			// https://pptr.dev/guides/headless-modes
-			browser = await puppeteer.launch( {
-				args: puppeteerArgs,
-				headless: 'shell',
-				defaultViewport:{ width: 1920, height: 1080 }
-			} );
-
-			page = await browser.newPage();
-			void await page.setContent( htmlContent, { waitUntil: 'networkidle0' } );
-			void await page.setViewport({ width: 1920, height: 1080 });
-			screenshotBuffer = await page.screenshot({ fullPage: true, type: 'png' });
-		}
-		catch( error: unknown )
-		{
-			log( error )
-		}
-		finally
-		{
-			try
-			{
-				if ( page ) await page.close();
-				if ( browser ) await browser.close();
-				log( 'Puppetter > closed' );
-			}
-			catch( error: unknown ) { log( error ) }
-		}
-
-		if ( !screenshotBuffer ) return null;
-		return Buffer.from( screenshotBuffer );
 	}
 
 	/** Generate Github event embed

@@ -75,34 +75,36 @@ export class StreamHelper
 
 	/** Send Stream Online Data to discord
 	 *
-	 * @param {HelixStream} stream Stream to announce
+	 * @param {HelixStream} stream Current Stream
 	 * @param {string} streamAnnouncementMessage
 	 */
-	public async sendStreamOnlineDataToDiscord( stream?: HelixStream | undefined | null, streamAnnouncementMessage: string = '' ): Promise<void>
+	public async sendStreamOnlineDataToDiscord(
+		stream?: HelixStream | undefined | null,
+		streamAnnouncementMessage: string = ''
+	): Promise<void>
 	{
 		if ( !this.twitch.discord.client.isReady() ) return;
 
 		stream = stream ? stream : this.stream;
 		if ( !stream ) return;
 
-		const user = await this.twitch.userHelper.getUser( stream.userName );
-		if ( !user ) return;
+		const user = await stream.getUser();
 
 		if ( !streamAnnouncementMessage )
 		{
 			streamAnnouncementMessage = getMessage(
 				this.twitch.streamEvents.get( 'streamonline' ).message,
 				this.language
-			).replace( '[user]', user.displayName ) || `${ user.displayName } ist jetzt live!`;
+			).replace( '[user]', stream.userDisplayName ) || `${ stream.userDisplayName } ist jetzt live!`;
 		}
 
 		const streamData: StreamData = {
-			displayName: user.displayName,
-			profilePictureUrl: user.profilePictureUrl,
-			streamUrl: `https://twitch.tv/${ user.name }/`,
+			displayName: user?.displayName ?? stream.userDisplayName,
+			profilePictureUrl: user?.profilePictureUrl ?? 'https://propz.de/uploads/logo-propz-o.png',
+			streamUrl: `https://twitch.tv/${ user?.name ?? stream.userName }`,
 			streamThumbnailUrl: stream?.thumbnailUrl ?
 				stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` :
-				`${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-${stream.userName}.jpg`,
+				`${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-propz.jpg`,
 			streamTitle: stream?.title ? stream.title : streamAnnouncementMessage,
 			streamDescription: stream?.gameName ?
 				stream.gameName :
@@ -111,6 +113,6 @@ export class StreamHelper
 		};
 
 		console.table( streamData );
-		this.twitch.discord.sendStreamOnlineMessage( streamData, UserHelper.broadcasterName !== user.name );
+		this.twitch.discord.sendStreamOnlineMessage( streamData, UserHelper.broadcasterId !== stream.userId );
 	}
 }

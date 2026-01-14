@@ -4,7 +4,7 @@
  * https://twurple.js.org/docs/auth/providers/refreshing.html
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.4.0
  */
 
 import { log } from '@shared/helpers.ts';
@@ -70,7 +70,7 @@ export class TwitchAuth
 
 	private clientId = Deno.env.get( 'TWITCH_CLIENT_ID' ) || '';
 	private clientSecret = Deno.env.get( 'TWITCH_CLIENT_SECRET' ) || '';
-	private redirectUri = Deno.env.get( 'TWITCH_REDIRECT_URI' ) || '';
+	private redirectUri = `http://localhost:${ Deno.env.get( 'BOT_PORT' ) || '3000' }`;
 
 	constructor()
 	{
@@ -176,6 +176,6 @@ export class TwitchAuth
 			log( `Tokendata for ${ type } ready (from Twitch)` );
 			return newTokenData;
 		}
-		catch ( error: unknown ) { log( error ) }
+		catch ( error: unknown ){ log( error ) }
 	}
 }

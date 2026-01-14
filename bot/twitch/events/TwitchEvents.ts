@@ -2,34 +2,63 @@
  * Twitch Event Controller
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.4.0
  */
 
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
-import { EventSubWsListener } from '@twurple/eventsub-ws';
-import { EventProcessor } from "./EventProcessor.ts";
+import { EventSubHttpListener, ReverseProxyAdapter } from '@twurple/eventsub-http';
+import { EventProcessor } from '@twitch/events/EventProcessor.ts';
 import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
 import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
 import type { Twitch } from '@twitch/core/Twitch.ts';
+import type { ExternalStreamer } from '@shared/types.ts';
+
+import externalStreamers from '@config/externalStreamers.json' with { type: 'json' };
 
 export class TwitchEvents
 {
-	public listener: EventSubWsListener;
+	public listener: EventSubHttpListener|null = null;
 	public eventProcessor: EventProcessor;
 	private listenerTimer: number = 0;
+	private externalStreamers: Map<string, ExternalStreamer> = new Map();
 
 	constructor( private twitch: Twitch )
 	{
 		this.eventProcessor = new EventProcessor( this.twitch );
-		this.listener = new EventSubWsListener( { apiClient: this.twitch.twitchApi } );
-		this.handleEvents();
+	}
+
+	public init()
+	{
+		const secret = Deno.env.get( 'TWITCH_EVENTSUB_SECRET' ) || '';
+		const botUrl = Deno.env.get( 'BOT_URL' ) || '';
+		const botPort = parseInt( Deno.env.get( 'BOT_PORT' ) || '8080' ) + 1;
+		if ( !secret || !botUrl )
+		{
+			log( `Can't start Eventsub without secret and bot url` );
+			return;
+		}
+
+		this.listener = new EventSubHttpListener( {
+			adapter: new ReverseProxyAdapter({
+				hostName: botUrl,
+				port: botPort,
+				pathPrefix: 'eventsub',
+				usePathPrefixInHandlers: true
+			}),
+			apiClient: this.twitch.twitchApi,
+			secret: secret,
+		} );
+
+		void this.handleEvents();
 	}
 
 	/** Add event handler fucntions to events */
-	private handleEvents(): void
+	private async handleEvents(): Promise<void>
 	{
+		if ( !this.listener ) return;
+
 		this.listener.onStreamOnline(  UserHelper.broadcasterId, this.onStreamOnline );
 		this.listener.onStreamOffline(  UserHelper.broadcasterId, this.onStreamOffline );
 		this.listener.onChannelFollow(  UserHelper.broadcasterId,  UserHelper.broadcasterId, this.onChannelFollow );
@@ -42,6 +71,15 @@ export class TwitchEvents
 			this.onChannelShieldModeEnd );
 		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
 		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
+
+		// twitch event trigger streamup -F https://dev.bot.propz.tv/eventsub/event/stream.online.633095490 -s testsecret
+		if ( !externalStreamers ) return;
+		for( const streamer of externalStreamers as ExternalStreamer[] )
+		{
+			this.externalStreamers.set( streamer.id.toString(), streamer );
+			const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+			log( await onStreamOnline.getCliTestCommand() );
+		}
 	}
 
 	/** Start listener */
@@ -72,9 +110,13 @@ export class TwitchEvents
 		// Try to get the stream 5 times
 		let stream = null;
 		let counter = 0;
+		const isExternal = event.broadcasterName !== UserHelper.broadcasterName;
 		while ( counter < 5 )
 		{
-			stream = await this.twitch.stream.set();
+			stream = isExternal ?
+				await this.twitch.twitchApi.streams.getStreamByUserId( event.broadcasterId ):
+				await this.twitch.stream.set();
+
 			if ( stream !== null ) break;
 			await sleep( 250 );
 			counter++;
@@ -88,14 +130,16 @@ export class TwitchEvents
 		// Check for test stream
 		if ( stream?.gameName && stream?.gameName?.toLowerCase().includes( 'test' ) ) return;
 
-		void this.eventProcessor.process( {
-			eventType: 'streamonline',
-			user: event.broadcasterName
-		} );
+		if ( !isExternal )
+		{
+			void this.eventProcessor.process( {
+				eventType: 'streamonline',
+				user: event.broadcasterName
+			} );
+			void this.twitch.focus.handle( 10 );
+		}
 
-		void this.twitch.focus.handle( 7 );
-
-		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream );
+		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream, this.externalStreamers.get( event.broadcasterId )?.message ?? '' );
 	};
 
 	/** Subscribes to events representing a stream going offline.

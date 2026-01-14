@@ -10,7 +10,7 @@
 		"@twurple/api": "npm:@twurple/api@^8.0.3",
 		"@twurple/chat": "npm:@twurple/chat@^8.0.3",
 		"@twurple/eventsub-base": "npm:@twurple/eventsub-base@^8.0.3",
-		"@twurple/eventsub-ws": "npm:@twurple/eventsub-ws@^8.0.3",
+		"@twurple/eventsub-http": "npm:@twurple/eventsub-http@^8.0.3",
 		"@types/spotify-api": "npm:@types/spotify-api@^0.0.25",
 		"discord.js": "npm:discord.js@^14.25.1"
 	}

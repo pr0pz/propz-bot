@@ -5,6 +5,8 @@
 	},
 	"imports": {
 		"@std/random": "jsr:@std/random@^0.1.4",
+		"@twurple/auth": "npm:@twurple/auth@^8.0.3",
+		"@twurple/api": "npm:@twurple/api@^8.0.3",
 		"@twurple/chat": "npm:@twurple/chat@^8.0.3",
 		"obs-websocket-js": "npm:obs-websocket-js@^5.0.7",
 		"events": "npm:events@^3.3.0"
