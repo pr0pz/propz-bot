@@ -88,7 +88,7 @@ export class StreamHelper
 		stream = stream ? stream : this.stream;
 		if ( !stream ) return;
 
-		const user = await this.twitch.userHelper.getUser( stream.userName );
+		const user = await stream.getUser();
 
 		if ( !streamAnnouncementMessage )
 		{
@@ -99,9 +99,9 @@ export class StreamHelper
 		}
 
 		const streamData: StreamData = {
-			displayName: stream.userDisplayName,
+			displayName: user?.displayName ?? stream.userDisplayName,
 			profilePictureUrl: user?.profilePictureUrl ?? 'https://propz.de/uploads/logo-propz-o.png',
-			streamUrl: `https://twitch.tv/${ stream.userName }`,
+			streamUrl: `https://twitch.tv/${ user?.name ?? stream.userName }`,
 			streamThumbnailUrl: stream?.thumbnailUrl ?
 				stream.getThumbnailUrl( 800, 450 ) + `?id=${ stream.id }` :
 				`${ Deno.env.get( 'PUBLIC_URL' )?.toString() }/assets/thumbnail-propz.jpg`,

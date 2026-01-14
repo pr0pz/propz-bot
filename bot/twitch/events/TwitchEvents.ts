@@ -76,7 +76,7 @@ export class TwitchEvents
 		if ( !externalStreamers ) return;
 		for( const streamer of externalStreamers as ExternalStreamer[] )
 		{
-			this.externalStreamers.set( streamer.name, streamer );
+			this.externalStreamers.set( streamer.id.toString(), streamer );
 			const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
 			log( await onStreamOnline.getCliTestCommand() );
 		}
@@ -114,7 +114,7 @@ export class TwitchEvents
 		while ( counter < 5 )
 		{
 			stream = isExternal ?
-				await this.twitch.twitchApi.streams.getStreamByUserName( event.broadcasterName ):
+				await this.twitch.twitchApi.streams.getStreamByUserId( event.broadcasterId ):
 				await this.twitch.stream.set();
 
 			if ( stream !== null ) break;
@@ -139,7 +139,7 @@ export class TwitchEvents
 			void this.twitch.focus.handle( 10 );
 		}
 
-		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream, this.externalStreamers.get( event.broadcasterName )?.message ?? '' );
+		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream, this.externalStreamers.get( event.broadcasterId )?.message ?? '' );
 	};
 
 	/** Subscribes to events representing a stream going offline.
