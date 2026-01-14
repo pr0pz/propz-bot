@@ -209,13 +209,11 @@ export class Discord extends DiscordUtils
 		if ( !streamData ) return;
 		try
 		{
-			const embedData = this.generateStreamOnlineMessageEmbed( streamData );
-
-			// Set correct channel
-			let channelToSend = isExternal ? this.channels.channelStreams : this.channels.channelAnnouncements;
-			if ( streamData.test ) channelToSend = this.channels.channelTest;
-
-			void this.sendEmbed( channelToSend, embedData, streamData.streamAnnouncementMessage );
+			void this.sendEmbed(
+				isExternal ? this.channels.channelStreams : this.channels.channelAnnouncements,
+				this.generateStreamOnlineMessageEmbed( streamData ),
+				streamData.streamAnnouncementMessage
+			);
 		}
 		catch ( error: unknown ) { log( error ) }
 	}
