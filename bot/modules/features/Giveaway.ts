@@ -2,11 +2,11 @@
  * Twitch Utils
  *
  * @author Wellington Estevo
- * @version 2.2.1
+ * @version 2.4.1
  */
 
 import { Database } from '@services/Database.ts';
-import { sample } from '@std/random';
+import { sample, shuffle } from '@std/random';
 
 export class Giveaway
 {
@@ -41,12 +41,13 @@ export class Giveaway
 		if ( results.length === 0 ) return;
 
 		let i = 0;
+		const users = shuffle( results );
 		while( i < winnerCount )
 		{
-			if ( results.length === 0 ) return;
-			const winnerUser = sample( results )!;
+			if ( users.length === 0 ) return;
+			const winnerUser = sample( users )!;
 			winners.push( winnerUser );
-			results.splice( results.indexOf( winnerUser ), 1 );
+			users.splice( results.indexOf( winnerUser ), 1 );
 			// Delete winner from db
 			//db.query( `DELETE FROM giveaway WHERE user_id = ?`, [ winnerUser[0] ] );
 			i++;

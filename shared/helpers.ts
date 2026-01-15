@@ -2,10 +2,10 @@
  * Helper functions
  *
  * @author Wellington Estevo
- * @version 2.2.1
+ * @version 2.4.1
  */
 
-import type { TwitchTimers, TwitchUserData } from './types.ts';
+import type { TwitchTimers, TwitchUserData } from '@shared/types.ts';
 import { sample } from '@std/random';
 
 /** Log function + overloads

@@ -2,11 +2,11 @@
  * Websocket Controller
  *
  * @author Wellington Estevo
- * @version 2.0.0
+ * @version 2.4.1
  */
 
 import EventEmitter from 'events';
-import { clearTimer, log } from './helpers.ts';
+import { clearTimer, log } from '@shared/helpers.ts';
 
 export default class WebsocketController
 {
@@ -18,9 +18,10 @@ export default class WebsocketController
 
 	constructor( botUrl: string )
 	{
-		let websocketPrefix = 'wss';
-		if ( botUrl.includes( 'localhost' ) || botUrl.includes( '127.0.0.1' ) )
-			websocketPrefix = 'ws';
+		const websocketPrefix =
+			botUrl.includes( 'localhost' ) || botUrl.includes( '127.0.0.1' ) ?
+			'ws':
+			'wss';
 
 		this.websocketUrl = `${websocketPrefix}://${botUrl}/websocket`;
 	}
@@ -35,10 +36,7 @@ export default class WebsocketController
 			this.ws.addEventListener( 'error', this.onError );
 			this.ws.addEventListener( 'message', this.onMessage );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	disconnect()
@@ -88,9 +86,6 @@ export default class WebsocketController
 			const data = JSON.parse( event.data );
 			this.websocketEvents.emit( 'message', { detail: data } );
 		}
-		catch ( error: unknown )
-		{
-			log( error );
-		}
+		catch ( error: unknown ) { log( error ) }
 	};
 }

@@ -2,7 +2,7 @@
  * Counters
  *
  * @author Wellington Estevo
- * @version 2.3.0
+ * @version 2.4.1
  */
 
 import { Database } from '@services/Database.ts';
@@ -41,6 +41,9 @@ export class Counters
 		}
 		else
 		{
+			// Don't update if the last update is less than 1min old
+			const lastUpdateDiff = Date.now() - result[0].updated * 1000;
+			if ( lastUpdateDiff < 60000 ) return;
 			db.query( `UPDATE twitch_counters SET value = value + 1 WHERE key = ?`, [ key ] );
 			result[0].value++;
 			return result[0] as TwitchCounter;
