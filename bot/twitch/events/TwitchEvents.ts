@@ -1,10 +1,3 @@
-/**
- * Twitch Event Controller
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
 import { EventSubHttpListener, ReverseProxyAdapter } from '@twurple/eventsub-http';
 import { EventProcessor } from '@twitch/events/EventProcessor.ts';
@@ -77,8 +70,9 @@ export class TwitchEvents
 		for( const streamer of externalStreamers as ExternalStreamer[] )
 		{
 			this.externalStreamers.set( streamer.id.toString(), streamer );
-			const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
-			log( await onStreamOnline.getCliTestCommand() );
+			this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+			// const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+			// log( await onStreamOnline.getCliTestCommand() );
 		}
 	}
 

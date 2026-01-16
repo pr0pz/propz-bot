@@ -1,10 +1,3 @@
-/**
- * Bot Server
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import '@shared/prototypes.ts';
 import { log } from '@shared/helpers.ts';
 
@@ -37,23 +30,6 @@ export class Server
 	 */
 	private handleServerRequests = async ( req: Request ): Promise<Response> =>
 	{
-		// CORS Preflight-Request (OPTIONS)
-		if (
-			!req ||
-			req.method === 'OPTIONS' ||
-			req.method === 'HEAD'
-		)
-		{
-			return new Response( null, {
-				status: 204,
-				headers: {
-					'access-control-allow-origin': '*',
-					'access-control-allow-methods': 'GET, POST, OPTIONS, HEAD',
-					'access-control-allow-headers': 'Content-Type, Authorization'
-				}
-			} );
-		}
-
 		const path = req.url.match( /(\/\w+)$/i )?.[ 0 ];
 		switch ( path )
 		{
@@ -189,12 +165,7 @@ export class Server
 			JSON.stringify( response ),
 			{
 				status: typeof response.data !== 'undefined' ? 200 : 400,
-				headers: {
-					'content-type': 'application/json',
-					'access-control-allow-origin': '*',
-					'access-control-allow-methods': 'GET, POST, OPTIONS',
-					'access-control-allow-headers': 'Content-Type, Authorization'
-				}
+				headers: { 'content-type': 'application/json' }
 			}
 		);
 	}
