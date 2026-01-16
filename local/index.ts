@@ -7,7 +7,7 @@
 
 import WebsocketController from '@shared/websocket.ts';
 import PrintController from './PrintController.ts';
-// import SpotifyAdMuter from './SpotifyAdMuter.ts';
+import SpotifyAdMuter from './SpotifyAdMuter.ts';
 
 const init = () =>
 {
@@ -18,11 +18,11 @@ const init = () =>
 
 	// Only works for mac
 	// Only needed without premium
-	// if ( Deno.build.os === 'darwin' )
-	// {
-	// 	const spotify = new SpotifyAdMuter();
-	// 	spotify.start();
-	// }
+	if ( Deno.build.os === 'darwin' )
+	{
+		const spotify = new SpotifyAdMuter();
+		spotify.start();
+	}
 
 	// Only works for propz
 	let printController = null;

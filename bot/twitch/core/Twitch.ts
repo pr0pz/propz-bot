@@ -1,10 +1,3 @@
-/**
- * Twitch Utils
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import '@shared/prototypes.ts';
 
 import { log } from '@shared/helpers.ts';
@@ -83,7 +76,6 @@ export class Twitch
 		void this.rewards.init();
 		void this.emotes.init();
 		void this.chat.init();
-		this.events.startListener();
 		await this.stream.set();
 		this.cronjobs.run();
 		LastFollowers.get( this );

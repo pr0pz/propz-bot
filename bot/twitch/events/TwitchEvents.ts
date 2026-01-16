@@ -1,10 +1,10 @@
-import { clearTimer, getRewardSlug, log, sleep } from '@shared/helpers.ts';
+import { getRewardSlug, log, sleep } from '@shared/helpers.ts';
 import { EventSubHttpListener, ReverseProxyAdapter } from '@twurple/eventsub-http';
 import { EventProcessor } from '@twitch/events/EventProcessor.ts';
 import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 
-import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent } from '@twurple/eventsub-base';
+import type { EventSubChannelAdBreakBeginEvent, EventSubChannelFollowEvent, EventSubChannelRaidEvent, EventSubChannelRedemptionAddEvent, EventSubChannelShieldModeBeginEvent, EventSubChannelShieldModeEndEvent, EventSubChannelUpdateEvent, EventSubStreamOfflineEvent, EventSubStreamOnlineEvent, EventSubSubscription } from '@twurple/eventsub-base';
 import type { Twitch } from '@twitch/core/Twitch.ts';
 import type { ExternalStreamer } from '@shared/types.ts';
 
@@ -13,8 +13,8 @@ import externalStreamers from '@config/externalStreamers.json' with { type: 'jso
 export class TwitchEvents
 {
 	public listener: EventSubHttpListener|null = null;
+	public subscriptions: EventSubSubscription<unknown>[] = [];
 	public eventProcessor: EventProcessor;
-	private listenerTimer: number = 0;
 	private externalStreamers: Map<string, ExternalStreamer> = new Map();
 
 	constructor( private twitch: Twitch )
@@ -29,7 +29,7 @@ export class TwitchEvents
 		const botPort = parseInt( Deno.env.get( 'BOT_PORT' ) || '8080' ) + 1;
 		if ( !secret || !botUrl )
 		{
-			log( `Can't start Eventsub without secret and bot url` );
+			log( new Error( `Can't start Eventsub without secret and bot url` ) );
 			return;
 		}
 
@@ -45,52 +45,68 @@ export class TwitchEvents
 		} );
 
 		void this.handleEvents();
+
+		try
+		{
+			if ( !this.listener ) return;
+			this.listener.start();
+			log( `Listening to events ✅` );
+		}
+		catch ( error: unknown ) { log( error ) }
 	}
 
 	/** Add event handler fucntions to events */
-	private async handleEvents(): Promise<void>
+	private handleEvents(): void
 	{
 		if ( !this.listener ) return;
 
-		this.listener.onStreamOnline(  UserHelper.broadcasterId, this.onStreamOnline );
-		this.listener.onStreamOffline(  UserHelper.broadcasterId, this.onStreamOffline );
-		this.listener.onChannelFollow(  UserHelper.broadcasterId,  UserHelper.broadcasterId, this.onChannelFollow );
-		this.listener.onChannelRedemptionAdd(  UserHelper.broadcasterId, this.onChannelRedemptionAdd );
-		this.listener.onChannelUpdate(  UserHelper.broadcasterId, this.onChannelUpdate );
-		this.listener.onChannelAdBreakBegin(  UserHelper.broadcasterId, this.onChannelAdBreakBegin );
-		this.listener.onChannelShieldModeBegin(  UserHelper.broadcasterId,  UserHelper.broadcasterId,
-			this.onChannelShieldModeBegin );
-		this.listener.onChannelShieldModeEnd(  UserHelper.broadcasterId,  UserHelper.broadcasterId,
-			this.onChannelShieldModeEnd );
-		this.listener.onChannelRaidFrom(  UserHelper.broadcasterId, this.onChannelRaidFrom );
-		this.listener.onChannelRaidTo(  UserHelper.broadcasterId, this.onChannelRaidTo );
-
-		// twitch event trigger streamup -F https://dev.bot.propz.tv/eventsub/event/stream.online.633095490 -s testsecret
-		if ( !externalStreamers ) return;
-		for( const streamer of externalStreamers as ExternalStreamer[] )
-		{
-			this.externalStreamers.set( streamer.id.toString(), streamer );
-			this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
-			// const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
-			// log( await onStreamOnline.getCliTestCommand() );
-		}
-	}
-
-	/** Start listener */
-	public startListener(): void
-	{
-		this.listenerTimer = clearTimer( this.listenerTimer );
-		if ( !this.listener ) return;
 		try
 		{
-			this.listener.start();
-			log( `Listening to events` );
+			this.subscriptions.push( this.listener.onStreamOnline( UserHelper.broadcasterId, this.onStreamOnline ) );
+			this.subscriptions.push( this.listener.onStreamOffline( UserHelper.broadcasterId, this.onStreamOffline ) );
+			this.subscriptions.push( this.listener.onChannelFollow( UserHelper.broadcasterId, UserHelper.broadcasterId, this.onChannelFollow ) );
+			this.subscriptions.push( this.listener.onChannelRedemptionAdd( UserHelper.broadcasterId, this.onChannelRedemptionAdd ) );
+			this.subscriptions.push( this.listener.onChannelUpdate( UserHelper.broadcasterId, this.onChannelUpdate ) );
+			this.subscriptions.push( this.listener.onChannelAdBreakBegin( UserHelper.broadcasterId, this.onChannelAdBreakBegin ) );
+			this.subscriptions.push( this.listener.onChannelShieldModeBegin( UserHelper.broadcasterId, UserHelper.broadcasterId,
+				this.onChannelShieldModeBegin ) );
+			this.subscriptions.push( this.listener.onChannelShieldModeEnd( UserHelper.broadcasterId, UserHelper.broadcasterId,
+				this.onChannelShieldModeEnd ) );
+			this.subscriptions.push( this.listener.onChannelRaidFrom( UserHelper.broadcasterId, this.onChannelRaidFrom ) );
+			this.subscriptions.push( this.listener.onChannelRaidTo( UserHelper.broadcasterId, this.onChannelRaidTo ) );
+
+			// twitch event trigger streamup -F https://dev.bot.propz.tv/eventsub/event/stream.online.633095490 -s testsecret
+			if ( !externalStreamers ) return;
+			for ( const streamer of externalStreamers as ExternalStreamer[] )
+			{
+				this.externalStreamers.set( streamer.id.toString(), streamer );
+				const onStreamOnline = this.listener.onStreamOnline( streamer.id, this.onStreamOnline );
+				this.subscriptions.push( onStreamOnline );
+			}
 		}
 		catch ( error: unknown )
 		{
 			log( error );
-			this.listenerTimer = setTimeout( () => this.startListener(), 5000 );
+			this.stop();
 		}
+	}
+
+	/** Stop all subscriptions and listener */
+	public stop(): void
+	{
+		for ( const sub of this.subscriptions )
+		{
+			try
+			{
+				sub.stop();
+			}
+			catch ( error: unknown ) { log( error ) }
+		}
+		this.subscriptions = [];
+
+		if ( this.listener ) this.listener.stop();
+
+		log( 'All EventSub subscriptions stopped and listener shut down ✅' );
 	}
 
 	/** Subscribes to events representing a stream going live.

@@ -1,10 +1,3 @@
-/**
- * Main Bot file
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 import { Server } from '@services/Server.ts';
@@ -46,7 +39,7 @@ class Bot
 				this.twitch.chat.chatClient.quit();
 
 			if ( this.twitch.events.listener )
-				this.twitch.events.listener.stop();
+				this.twitch.events.stop();
 
 			if ( this.discord.client )
 				await this.discord.client.destroy();
