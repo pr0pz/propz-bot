@@ -33,16 +33,16 @@ class Bot
 	{
 		Deno.addSignalListener( 'SIGINT', async () =>
 		{
-			await this.server.get().shutdown();
+			void await this.server.get().shutdown();
 
 			if ( this.twitch.chat.chatClient )
 				this.twitch.chat.chatClient.quit();
 
 			if ( this.twitch.events.listener )
-				this.twitch.events.stop();
+				void await this.twitch.events.stop();
 
 			if ( this.discord.client )
-				await this.discord.client.destroy();
+				void await this.discord.client.destroy();
 
 			const db = Database.getInstance();
 			db.cleanupDatabase();

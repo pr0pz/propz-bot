@@ -92,21 +92,22 @@ export class TwitchEvents
 	}
 
 	/** Stop all subscriptions and listener */
-	public stop(): void
+	public async stop(): Promise<void>
 	{
-		for ( const sub of this.subscriptions )
+		try
 		{
-			try
-			{
-				sub.stop();
-			}
-			catch ( error: unknown ) { log( error ) }
+			await this.twitch.twitchApi.eventSub.deleteAllSubscriptions();
+			log( `Deleted all EventSub subscriptions ✅` );
 		}
-		this.subscriptions = [];
+		catch ( error: unknown )
+		{
+			log( new Error( 'Failed to delete subscriptions' ) );
+			log( error );
+		}
 
 		if ( this.listener ) this.listener.stop();
 
-		log( 'All EventSub subscriptions stopped and listener shut down ✅' );
+		log( 'All EventSub subscriptions deleted and listener stopped ✅' );
 	}
 
 	/** Subscribes to events representing a stream going live.
