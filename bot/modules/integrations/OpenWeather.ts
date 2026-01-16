@@ -1,10 +1,3 @@
-/**
- * OpenWeather
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import {log} from '@shared/helpers.ts';
 import type {OpenWeatherResponse, WeatherData} from '@shared/types.ts';
 

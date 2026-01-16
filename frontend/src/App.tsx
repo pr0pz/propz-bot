@@ -1,10 +1,3 @@
-/**
- * App
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 

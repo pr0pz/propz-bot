@@ -1,11 +1,3 @@
-/**
- * Fun Commands
- * Interactive & Entertainment Commands (Jokes, Quotes, Games, etc.)
- *
- * @author Wellington Estevo
- * @version 2.2.1
- */
-
 import { getTimePassed, toEmojiNumbers } from '@shared/helpers.ts';
 import { Counters } from '@modules/features/Counters.ts';
 import { Jokes } from '@modules/features/Jokes.ts';

@@ -1,12 +1,3 @@
-/**
- * YouTube Controller
- *
- * https://developers.google.com/youtube/v3/docs/search/list#usage
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 
 export class Youtube

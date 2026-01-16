@@ -1,10 +1,3 @@
-/**
- * Twitch Commands
- *
- * @author Wellington Estevo
- * @version 2.3.0
- */
-
 import { getMessage, log } from '@shared/helpers.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 

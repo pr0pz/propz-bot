@@ -1,10 +1,3 @@
-/**
- * Types
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import type { Buffer } from 'node:buffer';
 import type { HelixStream } from '@twurple/api';
 import type { RefreshingAuthProvider } from '@twurple/auth';

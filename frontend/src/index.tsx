@@ -1,10 +1,3 @@
-/**
- * Index
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 

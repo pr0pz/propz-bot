@@ -1,12 +1,3 @@
-/**
- * Twitch Auth Provider Controller
- *
- * https://twurple.js.org/docs/auth/providers/refreshing.html
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { exchangeCode, RefreshingAuthProvider } from '@twurple/auth';
 import { Database } from '@services/Database.ts';

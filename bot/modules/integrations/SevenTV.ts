@@ -1,10 +1,3 @@
-/**
- * SevenTV
- *
- * @author Wellington Estevo
- * @version 2.2.2
- */
-
 import { log } from '@shared/helpers.ts';
 import type { SevenTVApiResponse, SevenTVEmoteSet, SevenTVEmote } from '@shared/types.ts';
 

@@ -1,10 +1,3 @@
-/**
- * Media Manager
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { log } from '@shared/helpers.ts';
 import type { TwitchCommand, TwitchEvent, WebSocketData } from '@shared/types.ts';
 import { useEffect, useState } from 'react';

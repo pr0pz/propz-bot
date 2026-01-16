@@ -1,10 +1,3 @@
-/**
- * Alert Manager
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import Alert from '@components/Alert.tsx';

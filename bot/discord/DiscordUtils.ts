@@ -1,10 +1,3 @@
-/**
- * Discord Helper
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import '@shared/prototypes.ts';
 import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
 import { log } from '@shared/helpers.ts';

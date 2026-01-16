@@ -1,10 +1,3 @@
-/**
- * Joke
- *
- * @author Wellington Estevo
- * @version 2.2.1
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 

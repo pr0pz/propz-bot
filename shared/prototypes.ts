@@ -1,10 +1,3 @@
-/**
- * Prototype stuff
- *
- * @author Wellington Estevo
- * @version 1.7.16
- */
-
 declare global
 {
 	interface Object

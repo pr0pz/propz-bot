@@ -1,10 +1,3 @@
-/**
- * Timed Messages
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { getMessage, objectToMap } from '@shared/helpers.ts';
 
 import type { Twitch } from '@twitch/core/Twitch.ts';

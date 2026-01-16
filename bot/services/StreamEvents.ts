@@ -1,10 +1,3 @@
-/**
- * Event Data
- *
- * @author Wellington Estevo
- * @version 2.3.1
- */
-
 import { Database } from '@services/Database.ts';
 import { log, objectToMap } from '@shared/helpers.ts';
 import { UserData } from '@services/UserData.ts';

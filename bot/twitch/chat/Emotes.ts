@@ -1,10 +1,3 @@
-/**
- * Emotes
- *
- * @author Wellington Estevo
- * @version 2.2.2
- */
-
 import { log } from '@shared/helpers.ts';
 import { BetterTTV } from '@modules/integrations/BetterTTV.ts';
 import { FrankerFaceZ } from '@modules/integrations/FrankerFaceZ.ts';

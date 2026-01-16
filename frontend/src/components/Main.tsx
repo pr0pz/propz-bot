@@ -1,10 +1,3 @@
-/**
- * Main COmponent
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import Alerts from '@components/Alerts.tsx';
 import AdBreakBox from '@components/AdBreakBox.tsx';
 import EmoteEffects from '@components/EmoteEffects.tsx';

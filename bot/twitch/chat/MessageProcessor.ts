@@ -1,10 +1,3 @@
-/**
- * Chat Message Processor
- *
- * @author Wellington Estevo
- * @version 2.3.2
- */
-
 import { Deepl} from "@modules/integrations/Deepl.ts";
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 import { parseChatMessage } from '@twurple/chat';

@@ -1,10 +1,3 @@
-/**
- * Twitch Chat Controller
- *
- * @author Wellington Estevo
- * @version 2.2.1
- */
-
 import '@shared/prototypes.ts';
 import { ChatClient } from '@twurple/chat';
 import { MessageProcessor } from '@twitch/chat/MessageProcessor.ts';

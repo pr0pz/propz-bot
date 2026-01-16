@@ -1,10 +1,3 @@
-/**
- * FrankerFaceZ
- *
- * @author Wellington Estevo
- * @version 2.2.2
- */
-
 import { log } from '@shared/helpers.ts';
 import type { FrankerFaceZEmoteSet } from '@shared/types.ts';
 

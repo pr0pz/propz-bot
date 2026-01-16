@@ -1,10 +1,3 @@
-/**
- * BetterTTV
- *
- * @author Wellington Estevo
- * @version 2.3.1
- */
-
 import { log } from '@shared/helpers.ts';
 import type { BTTVEmote, BTTVResponse } from '@shared/types.ts';
 

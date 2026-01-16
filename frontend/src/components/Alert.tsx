@@ -1,10 +1,3 @@
-/**
- * Single ALert
- *
- * @author Wellington Estevo
- * @version 2.2.0
- */
-
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import { log } from '@shared/helpers.ts';

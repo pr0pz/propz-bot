@@ -1,10 +1,3 @@
-/**
- * Stream Stats
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { Database } from '@services/Database.ts';
 import { log } from '@shared/helpers.ts';
 

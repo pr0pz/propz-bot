@@ -1,10 +1,3 @@
-/**
- * Vite config for frontend (React overlay)
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { defineConfig } from 'npm:vite';
 import react from '@vitejs/plugin-react';
 import deno from '@deno/vite-plugin';

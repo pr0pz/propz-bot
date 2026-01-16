@@ -1,11 +1,3 @@
-/**
- * Utilities Commands
- * Bot Utilities & Tool Commands (AI, Translation, Weather, Spotify, etc.)
- *
- * @author Wellington Estevo
- * @version 2.0.11
- */
-
 import { Deepl } from '@modules/integrations/Deepl.ts';
 import { Gemini } from '@modules/integrations/Gemini.ts';
 import { OpenWeather } from '@modules/integrations/OpenWeather.ts';

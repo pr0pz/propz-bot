@@ -1,10 +1,3 @@
-/**
- * Cronjobs
- *
- * @author Wellington Estevo
- * @version 2.0.8
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 import { TimedMessages } from '@modules/features/TimedMessages.ts';

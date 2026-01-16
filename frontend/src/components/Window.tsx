@@ -1,10 +1,3 @@
-/**
- * Window
- * 
- * @author Wellington Estevo
- * @version 1.1.4
- */
-
 const Window = ( propz: { id?: string, theme?: string, color?: string, children: React.ReactNode } ) =>
 {
 	return(

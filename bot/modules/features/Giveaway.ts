@@ -1,10 +1,3 @@
-/**
- * Twitch Utils
- *
- * @author Wellington Estevo
- * @version 2.4.1
- */
-
 import { Database } from '@services/Database.ts';
 import { sample, shuffle } from '@std/random';
 

@@ -1,12 +1,3 @@
-/**
- * Streamelements Controller
- *
- * https://dev.streamelements.com/docs/api-docs/5fff39cc30655-channel-redemptions
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 import type { StreamElementsViewerStats } from '@shared/types.ts';
 

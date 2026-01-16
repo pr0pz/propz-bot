@@ -1,10 +1,3 @@
-/**
- * Rankings
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { StreamElements } from '@integrations/StreamElements.ts';
 import { getTimePassed } from '@shared/helpers.ts';
 import { UserData } from '@services/UserData.ts';

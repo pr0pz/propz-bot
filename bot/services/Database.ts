@@ -1,11 +1,4 @@
 // deno-lint-ignore-file no-import-prefix
-/**
- * DB handler
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { DB } from 'https://deno.land/x/sqlite/mod.ts';
 import type { PreparedQuery } from 'https://deno.land/x/sqlite/mod.ts';

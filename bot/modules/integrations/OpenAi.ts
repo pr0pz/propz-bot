@@ -1,10 +1,3 @@
-/**
- * OpenAI
- *
- * @author Wellington Estevo
- * @version 2.0.8
- */
-
 import { log } from '@shared/helpers.ts';
 
 export class OpenAI

@@ -1,9 +1,3 @@
-/**
- * Check for the last followers and update DB if Bot was e.g. offline
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
 import { StreamEvents } from '@services/StreamEvents.ts';
 import { UserData} from '@services/UserData.ts';
 

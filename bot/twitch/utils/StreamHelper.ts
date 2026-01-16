@@ -1,10 +1,3 @@
-/**
- * Stream Helper functions
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import { getMessage, log } from '@shared/helpers.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 

@@ -1,10 +1,3 @@
-/**
- * The local workspace just controls my own printer for special events
- *
- * @author Wellington Estevo
- * @version 2.4.1
- */
-
 import WebsocketController from '@shared/websocket.ts';
 import PrintController from './PrintController.ts';
 import SpotifyAdMuter from './SpotifyAdMuter.ts';

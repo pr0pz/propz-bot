@@ -1,11 +1,3 @@
-/**
- * Mod Commands
- * Moderator-Only Commands (Stream Control, Admin, etc.)
- *
- * @author Wellington Estevo
- * @version 2.2.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 import { Giveaway } from '@modules/features/Giveaway.ts';

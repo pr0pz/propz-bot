@@ -1,10 +1,3 @@
-/**
- * Deepl
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log, sanitizeMessage } from '@shared/helpers.ts';
 
 import type { Twitch } from '@twitch/core/Twitch.ts';

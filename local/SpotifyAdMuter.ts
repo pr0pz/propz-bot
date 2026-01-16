@@ -1,10 +1,3 @@
-/**
- * Spotify Ad Muter
- * 
- * @author Wellington Estevo
- * @version 1.0.9
- */
-
 import { execCommand, log } from '@shared/helpers.ts';
 
 export default class SpotifyAdMuter
@@ -98,7 +91,7 @@ export default class SpotifyAdMuter
 	checkSpotify = () =>
 	{
 		const trackType = this.getCurrentTrackType();
-		
+
 		if ( trackType === 'ad' )
 			this.handleAd();
 		else

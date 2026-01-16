@@ -1,10 +1,3 @@
-/**
- * User Data Controller
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 

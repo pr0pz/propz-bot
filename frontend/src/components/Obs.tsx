@@ -1,10 +1,3 @@
-/**
- * Check OBS JS Object
- * 
- * @author Wellington Estevo
- * @version 1.0.3
- */
-
 import { useEffect, useState } from 'react';
 
 const Obs = () =>

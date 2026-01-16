@@ -1,10 +1,3 @@
-/**
- * User Converter functions
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { log } from '@shared/helpers.ts';
 import { HelixUser } from '@twurple/api';
 import { ChatUser } from '@twurple/chat';

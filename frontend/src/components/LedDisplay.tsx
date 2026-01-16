@@ -1,10 +1,3 @@
-/**
- * LED Display Manager
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import { log } from '@shared/helpers.ts';

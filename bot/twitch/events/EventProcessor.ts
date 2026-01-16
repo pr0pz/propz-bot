@@ -1,10 +1,3 @@
-/**
- * Event Processor
- *
- * @author Wellington Estevo
- * @version 2.2.1
- */
-
 import { getMessage, log } from '@shared/helpers.ts';
 import { StreamEvents } from '@services/StreamEvents.ts';
 import { StreamStats} from '@services/StreamStats.ts';

@@ -1,9 +1,3 @@
-/**
- * Helper functions
- *
- * @author Wellington Estevo
- * @version 2.4.1
- */
 
 import type { TwitchTimers, TwitchUserData } from '@shared/types.ts';
 import { sample } from '@std/random';

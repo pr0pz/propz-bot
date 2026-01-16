@@ -1,10 +1,3 @@
-/**
- * Button
- * 
- * @author Wellington Estevo
- * @version 1.1.4
- */
-
 const Button = ( propz: { id?: string, theme?: string, style?: React.CSSProperties, children: React.ReactNode } ) =>
 {
 	return(

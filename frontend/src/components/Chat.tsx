@@ -1,10 +1,3 @@
-/**
- * Chat Manager
- *
- * @author Wellington Estevo
- * @version 2.0.2
- */
-
 import { log } from '@shared/helpers.ts';
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';

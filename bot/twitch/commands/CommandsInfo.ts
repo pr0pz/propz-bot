@@ -1,11 +1,3 @@
-/**
- * Info Commands
- * Information & Social Commands (Links, Stats, Rankings, etc.)
- *
- * @author Wellington Estevo
- * @version 2.1.2
- */
-
 import { Rankings } from '@modules/features/Rankings.ts';
 import { UserData } from '@services/UserData.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';

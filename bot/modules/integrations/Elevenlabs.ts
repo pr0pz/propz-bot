@@ -1,10 +1,3 @@
-/**
- * Elevenlabs
- *
- * @author Wellington Estevo
- * @version 2.2.1
- */
-
 import { log } from "@shared/helpers.ts";
 import { sample } from '@std/random';
 

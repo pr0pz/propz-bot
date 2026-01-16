@@ -1,10 +1,3 @@
-/**
- * OBS Websocket Controller
- *
- * @author Wellington Estevo
- * @version 2.4.1
- */
-
 import { log } from '@shared/helpers.ts';
 import OBSWebSocket from 'obs-websocket-js';
 

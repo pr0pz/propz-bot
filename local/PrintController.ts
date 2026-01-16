@@ -1,10 +1,3 @@
-/**
- * Printer Controller
- *
- * @author Wellington Estevo
- * @version 2.1.1
- */
-
 import { log } from '@shared/helpers.ts';
 import { Buffer } from 'node:buffer'; // To download images if necessary
 import sharp from 'sharp';

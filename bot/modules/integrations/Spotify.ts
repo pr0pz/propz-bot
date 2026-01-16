@@ -1,12 +1,3 @@
-/**
- * Spotify
- *
- * https://developer.spotify.com/documentation/web-api/concepts/api-calls
- *
- * @author Wellington Estevo
- * @version 2.1.4
- */
-
 import { log } from '@shared/helpers.ts';
 import { Database } from '@services/Database.ts';
 

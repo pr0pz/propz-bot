@@ -1,11 +1,3 @@
-/**
- * Soundboard Commands
- * Sound & Video Commands (Media-Playback)
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import type { TwitchCommand } from '@shared/types.ts';
 
 const commandsSoundboard: Record<string, TwitchCommand> = {

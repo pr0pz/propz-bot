@@ -1,10 +1,3 @@
-/**
- * Rewards
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import { getRewardSlug, log, saveFile } from '@shared/helpers.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
 

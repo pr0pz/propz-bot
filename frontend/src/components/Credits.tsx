@@ -1,10 +1,3 @@
-/**
- * Stream Credits
- *
- * @author Wellington Estevo
- * @version 2.1.5
- */
-
 import { useEffect, useState } from 'react';
 import { useEvent } from '@frontend/EventContext.tsx';
 import { log } from '@shared/helpers.ts';

@@ -1,10 +1,3 @@
-/**
- * Websocket Handler
- *
- * @author Wellington Estevo
- * @version 2.0.0
- */
-
 import '@shared/prototypes.ts';
 import { log } from '@shared/helpers.ts';
 import type { ObsData, SimpleUser, TwitchEventExtra, WebSocketData } from '@shared/types.ts';

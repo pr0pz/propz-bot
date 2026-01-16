@@ -1,10 +1,3 @@
-/**
- * API Features
- *
- * @author Wellington Estevo
- * @version 2.2.2
- */
-
 import { log, mapToObject } from '@shared/helpers.ts';
 import { BetterTTV } from '@integrations/BetterTTV.ts';
 import { Elevenlabs } from '@integrations/Elevenlabs.ts';

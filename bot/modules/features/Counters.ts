@@ -1,10 +1,3 @@
-/**
- * Counters
- *
- * @author Wellington Estevo
- * @version 2.4.1
- */
-
 import { Database } from '@services/Database.ts';
 import type { TwitchCounter, TwitchCounterRow } from '@shared/types.ts';
 
