@@ -25,6 +25,8 @@ export class MessageProcessor
 
 		const user = await this.twitch.userHelper.convertToSimplerUser( msg.userInfo );
 		if ( !user ) return;
+		// Adds user to db before anything else
+		if ( user.id ) UserData.addUser( user.id, user.name );
 
 		const chatMessageSanitized = sanitizeMessage( chatMessage );
 		const chatMessagesWithEmotes = this.twitch.emotes.searchReplace( chatMessageSanitized, msg );

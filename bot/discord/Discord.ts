@@ -1,10 +1,3 @@
-/**
- * Discord Controller
- *
- * @author Wellington Estevo
- * @version 2.4.0
- */
-
 import '@shared/prototypes.ts';
 
 import { getMessage, log, objectToMap } from '@shared/helpers.ts';

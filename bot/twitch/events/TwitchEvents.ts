@@ -56,7 +56,7 @@ export class TwitchEvents
 	}
 
 	/** Add event handler fucntions to events */
-	private handleEvents(): void
+	private async handleEvents(): Promise<void>
 	{
 		if ( !this.listener ) return;
 
@@ -87,27 +87,26 @@ export class TwitchEvents
 		catch ( error: unknown )
 		{
 			log( error );
-			this.stop();
+			this.listener.stop();
+			void this.deleteAllSubscriptions()
 		}
 	}
 
-	/** Stop all subscriptions and listener */
-	public async stop(): Promise<void>
+	public async deleteAllSubscriptions()
 	{
+		let message = 'Failed to delete subscriptions ❌';
 		try
 		{
 			await this.twitch.twitchApi.eventSub.deleteAllSubscriptions();
-			log( `Deleted all EventSub subscriptions ✅` );
+			message = `Deleted all EventSub subscriptions ✅`;
+			log( message );
 		}
 		catch ( error: unknown )
 		{
-			log( new Error( 'Failed to delete subscriptions' ) );
+			log( new Error( message ) );
 			log( error );
 		}
-
-		if ( this.listener ) this.listener.stop();
-
-		log( 'All EventSub subscriptions deleted and listener stopped ✅' );
+		return message;
 	}
 
 	/** Subscribes to events representing a stream going live.
@@ -150,7 +149,12 @@ export class TwitchEvents
 			void this.twitch.focus.handle( 10 );
 		}
 
-		void this.twitch.stream.sendStreamOnlineDataToDiscord( stream, this.externalStreamers.get( event.broadcasterId )?.message ?? '' );
+		const announcementMessage = this.externalStreamers.get( event.broadcasterId )?.message ?? '';
+
+		void this.twitch.stream.sendStreamOnlineDataToDiscord(
+			stream,
+			announcementMessage
+		);
 	};
 
 	/** Subscribes to events representing a stream going offline.

@@ -39,7 +39,7 @@ class Bot
 				this.twitch.chat.chatClient.quit();
 
 			if ( this.twitch.events.listener )
-				void await this.twitch.events.stop();
+				this.twitch.events.listener.stop();
 
 			if ( this.discord.client )
 				void await this.discord.client.destroy();

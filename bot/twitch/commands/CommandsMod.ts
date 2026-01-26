@@ -59,6 +59,10 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 			},
 			onlyMods: true
 		},
+		deletesubscriptions: {
+			handler: async () => await twitch.events.deleteAllSubscriptions(),
+			onlyMods: true
+		},
 		ende: {
 			aliases: ['end'],
 			message: 'Scene changed: END',
@@ -492,7 +496,7 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 				);
 			},
 			message: {
-				de: 'Herzlichen Glückwunsch an @[user] - DU HAST GEWONNEN 🎉🎉🎉',
+				de: 'Herzlichen Glückwunsch an @[user] - WIN WIN WIN 🎉🎉🎉',
 				en: 'Congratulations to @[user] - YOU WON 🎉🎉🎉'
 			},
 			onlyMods: true

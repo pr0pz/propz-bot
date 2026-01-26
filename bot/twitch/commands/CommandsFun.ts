@@ -38,8 +38,8 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 		},
 		giveaway: {
 			message: {
-				de: 'Zu gewinnen gibt es ein Game Key für "No Mans Sky" - Teilnehmen mit !gönnung - https://store.steampowered.com/app/275850/No_Mans_Sky/',
-				en: 'You can win a game key for "No Mans Sky" - Join with !loot - https://store.steampowered.com/app/275850/No_Mans_Sky/'
+				de: 'Zu gewinnen gibt es ein Game Key für "ARC Raiders" - Teilnehmen mit !loot - https://store.steampowered.com/app/1808500/ARC_Raiders/',
+				en: 'You can win a game key for "ARC Raiders" - Join with !loot - https://store.steampowered.com/app/1808500/ARC_Raiders/'
 			}
 		},
 		joke: {
@@ -89,7 +89,6 @@ export default function createFunCommands(twitch: Twitch): Record<string, Twitch
 			}
 		},
 		loot: {
-			aliases: [ 'gönnung' ],
 			handler: (options: TwitchCommandOptions) => {
 				if (!options.sender.id) return '';
 				Giveaway.join(options.sender.id);
