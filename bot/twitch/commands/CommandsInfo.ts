@@ -57,12 +57,6 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 			},
 			description: 'Link zur Discord Community'
 		},
-		dogado: {
-			message: {
-				de: 'Hosting made in Germany: Super schnelle NVMe VPS mit ISO zertifizierten Support ⚡ https://propz.de/dogado-vps [Werbung]',
-				en: 'Hosting made in Germany: Super fast NVMe VPS with ISO certified Support ⚡ https://propz.de/dogado-vps [Ad]',
-			}
-		},
 		donate: {
 			aliases: ['kofi'],
 			description: 'Support the Stream',
@@ -165,6 +159,12 @@ export default function createInfoCommands(twitch: Twitch): Record<string, Twitc
 				en: 'Creative Coding Chaos par excellence ▶️ https://propz.de/github/ 💻'
 			},
 			description: 'Creative Coding Chaos'
+		},
+		hetzner: {
+			message: {
+				de: 'Preisgekrönte Cloud Server & VPS mit bestem Preis-Leistungs-Verhältnis bei Hetzner ⚡ https://propz.de/hetzner [Werbung]',
+				en: 'Award winning Cloud Server & VPS with the best price-performance ratio at Hetzner! ⚡ https://propz.de/hetzner [Ad]',
+			}
 		},
 		instagram: {
 			aliases: ['insta'],

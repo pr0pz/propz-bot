@@ -11,11 +11,11 @@ const init = () =>
 
 	// Only works for mac
 	// Only needed without premium
-	if ( Deno.build.os === 'darwin' )
-	{
-		const spotify = new SpotifyAdMuter();
-		spotify.start();
-	}
+	// if ( Deno.build.os === 'darwin' )
+	// {
+	// 	const spotify = new SpotifyAdMuter();
+	// 	spotify.start();
+	// }
 
 	// Only works for propz
 	let printController = null;

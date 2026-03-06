@@ -163,11 +163,6 @@ const commandsSoundboard: Record<string, TwitchCommand> = {
 	tnt: {
 		hasVideo: true
 	},
-	uwu: {
-		cooldown: 30,
-		hasVideo: true,
-		disableOnFocus: true
-	},
 	wild: {
 		cooldown: 20,
 		disableOnFocus: true,
