@@ -5,8 +5,9 @@ export class Elevenlabs
 {
 	private static api_url = 'https://api.elevenlabs.io/v1/text-to-speech'
 	private static voices = [
-		'r0fLdYmTH96Lr4s10B6K', // Ramona
-		'Qy4b2JlSGxY7I9M9Bqxb',	// Lisa
+		'pFZP5JQG7iQjIQuC4Bku', // Lily
+		'r0fLdYmTH96Lr4s10B6K', // Ramona (paid)
+		'Qy4b2JlSGxY7I9M9Bqxb',	// Lisa (paid)
 	]
 
 	public static async generateTts( text: string ): Promise<string>
@@ -26,7 +27,23 @@ export class Elevenlabs
 				} )
 			} );
 			//console.log( response );
-			if ( !response.ok ) return '';
+			/**
+			 * {
+			 *   "detail": {
+			 *     "type": "payment_required",
+			 *     "code": "paid_plan_required",
+			 *     "message": "Free users cannot use library voices via the API. Please upgrade your subscription to use this voice.",
+			 *     "status": "payment_required",
+			 *     "request_id": "xxx"
+			 *   }
+			 * }
+			 */
+			if ( !response.ok )
+			{
+				const data = await response.json();
+				log( new Error(`(${response.status}) ${ data?.detail?.type ?? '' }: ${data?.detail?.message ?? ''}`) );
+				return '';
+			}
 			//return await response.blob();
 
 			const reader = new FileReader();

@@ -4,8 +4,8 @@
 		".": "./index.ts"
 	},
 	"imports": {
-		"@std/random": "jsr:@std/random@^0.1.4",
-		"@std/fs": "jsr:@std/fs@^1.0.21",
+		"@std/random": "jsr:@std/random@^0.1.5",
+		"@std/fs": "jsr:@std/fs@^1.0.23",
 		"@twurple/auth": "npm:@twurple/auth@^8.0.3",
 		"@twurple/api": "npm:@twurple/api@^8.0.3",
 		"@twurple/chat": "npm:@twurple/chat@^8.0.3",

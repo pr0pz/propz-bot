@@ -67,7 +67,7 @@ export class Commands
 				message: chatMessage.replaceAll( /^(?:@\w+\s)?!\w+/gi, '' ).trim(),
 				returnMessage: message,
 				messageObject: msg,
-				stream: this.twitch.stream
+				stream: this.twitch.stream.stream
 			};
 
 			message = await command.handler( options ) || '';
@@ -103,23 +103,21 @@ export class Commands
 			user.name.toLowerCase() !==  UserHelper.broadcasterName.toLowerCase()
 		) return false;
 
-		if ( this.isInCooldown( commandName ) )
-			return false;
-
-		return true;
+		return !this.isInCooldown( commandName );
 	}
 
-	/** Extracts the command name form chat message */
+	/** Extracts the command name from chat message */
 	private getFromMessage( chatMessage: string ): string
 	{
 		if ( !chatMessage ) return '';
 
 		const [ ...matches ] = chatMessage.matchAll( /^(?:@\w+\s)?!(\w+)/ig );
-		const commandName = matches?.[0]?.[1] ?? '';
+		const commandName = matches?.[0]?.[1].toLowerCase() ?? '';
+		if ( !commandName ) return '';
 
 		for ( const [ cmdName, cmd ] of this.commands.entries() )
 		{
-			if ( cmd.aliases?.includes( commandName.toLowerCase() ) )
+			if ( cmd.aliases?.includes( commandName ) )
 				return cmdName;
 		}
 

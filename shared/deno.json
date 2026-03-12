@@ -4,7 +4,7 @@
 		".": "./helper.ts"
 	},
 	"imports": {
-		"@std/random": "jsr:@std/random@^0.1.4",
+		"@std/random": "jsr:@std/random@^0.1.5",
 		"@twurple/auth": "npm:@twurple/auth@^8.0.3",
 		"@twurple/api": "npm:@twurple/api@^8.0.3",
 		"@twurple/chat": "npm:@twurple/chat@^8.0.3",

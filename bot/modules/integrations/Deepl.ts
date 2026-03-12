@@ -30,7 +30,7 @@ export class Deepl
 		);
 	}
 
-	public static async translate( message: string, targetLang: string = 'de' ): Promise<string>
+	public static async translate( message: string, targetLang: string = 'en' ): Promise<string>
 	{
 		const apiKey = Deno.env.get( 'DEEPL_API_KEY' );
 		if ( !message || !apiKey ) return '';

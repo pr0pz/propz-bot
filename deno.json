@@ -1,5 +1,5 @@
 {
-	"version": "2.4.5",
+	"version": "2.4.6",
 	"nodeModulesDir": "auto",
 	"lint": {
 		"include": [
@@ -40,5 +40,6 @@
 		"@twitch/commands/": "./bot/twitch/commands/",
 		"@twitch/events/": "./bot/twitch/events/",
 		"@twitch/utils/": "./bot/twitch/utils/"
-	}
+	},
+	"allowScripts": ["npm:esbuild@0.27.2", "npm:fsevents@2.3.3", "npm:sharp@0.34.5", "npm:usb@2.17.0"]
 }

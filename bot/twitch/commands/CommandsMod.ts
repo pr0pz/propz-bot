@@ -15,8 +15,8 @@ export default function createModCommands(twitch: Twitch): Record<string, Twitch
 						UserHelper.broadcasterId,
 						180
 					);
-				} catch (error: unknown) {
-					log(error);
+				} catch (_error: unknown) {
+					//log(error);
 				}
 			},
 			aliases: ['adbreak', 'werbung'],
