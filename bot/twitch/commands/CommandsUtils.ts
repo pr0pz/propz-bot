@@ -1,5 +1,6 @@
 import { Deepl } from '@modules/integrations/Deepl.ts';
 import { Gemini } from '@modules/integrations/Gemini.ts';
+import { OpenAI } from '@modules/integrations/OpenAi.ts';
 import { OpenWeather } from '@modules/integrations/OpenWeather.ts';
 import { Spotify } from '@modules/integrations/Spotify.ts';
 import { UserHelper } from '@twitch/utils/UserHelper.ts';
@@ -16,7 +17,11 @@ export default function createUtilitiesCommands(twitch: Twitch): Record<string, 
 			description: 'AI-Antwort im Twitch Chat',
 			disableIfOffline: true,
 			handler: async (options: TwitchCommandOptions) => {
-				return await Gemini.generate(
+				// return await Gemini.generate(
+				// 	options.message,
+				// 	options.sender.name || UserHelper.broadcasterName
+				// );
+				return await OpenAI.generate(
 					options.message,
 					options.sender.name || UserHelper.broadcasterName
 				);

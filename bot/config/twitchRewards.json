@@ -39,19 +39,6 @@
 		"autoFulfill": true
 	},
 	{
-		"id": "bc7ce398-c250-4af2-85fb-8662e195b3cc",
-		"title": "PROPZ!",
-		"cost": 200,
-		"backgroundColor": "#1f1f23",
-		"prompt": "",
-		"globalCooldown": 30,
-		"maxRedemptionsPerStream": null,
-		"maxRedemptionsPerUserPerStream": null,
-		"userInputRequired": false,
-		"isEnabled": true,
-		"autoFulfill": true
-	},
-	{
 		"id": "a639eee5-ba33-4ac5-9a9d-0439b06b826a",
 		"title": "Disconnect",
 		"cost": 10000,
@@ -143,6 +130,19 @@
 		"autoFulfill": true
 	},
 	{
+		"id": "",
+		"title": "Loot",
+		"cost": 200,
+		"backgroundColor": "#6AB695",
+		"prompt": "Redeem to participate on giveaways.",
+		"globalCooldown": 0,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": 1,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
+	},
+	{
 		"id": "e7227d3d-a56c-4253-bc36-e8cbeff7ada1",
 		"title": "OH NO?!",
 		"cost": 600,
@@ -180,6 +180,19 @@
 		"userInputRequired": false,
 		"isEnabled": true,
 		"autoFulfill": false
+	},
+	{
+		"id": "bc7ce398-c250-4af2-85fb-8662e195b3cc",
+		"title": "PROPZ!",
+		"cost": 200,
+		"backgroundColor": "#1f1f23",
+		"prompt": "",
+		"globalCooldown": 30,
+		"maxRedemptionsPerStream": null,
+		"maxRedemptionsPerUserPerStream": null,
+		"userInputRequired": false,
+		"isEnabled": true,
+		"autoFulfill": true
 	},
 	{
 		"id": "81d81115-693e-4685-9695-290dd123d0bb",
